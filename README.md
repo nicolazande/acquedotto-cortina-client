@@ -1,6 +1,4 @@
-# acquedotto-cortina-client
-
-# Acquedotto Cortina
+# Acquedotto Cortina - Client
 
 Questo repository contiene il progetto Acquedotto Cortina, composto da un client React e un server Node.js per gestire in modo efficiente il consumo di acqua attraverso la gestione degli utenti e delle loro posizioni.
 
