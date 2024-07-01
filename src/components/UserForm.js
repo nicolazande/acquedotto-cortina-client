@@ -59,6 +59,12 @@ const UserForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!position) {
+            alert('Per favore seleziona una posizione sulla mappa.');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('name', name);
         formData.append('surname', surname);

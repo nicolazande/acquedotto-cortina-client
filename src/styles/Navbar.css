@@ -1,6 +1,6 @@
 .navbar {
     background-color: #333; /* Colore di sfondo della barra di navigazione */
-    padding: 10px 20px; /* Padding interno per spaziatura */
+    padding: 20px 20px; /* Padding interno per spaziatura */
 }
 
 .navbar-nav {
@@ -11,7 +11,7 @@
 }
 
 .nav-item {
-    margin-right: 15px; /* Spaziatura tra i link */
+    margin-right: 25px; /* Spaziatura tra i link */
 }
 
 .nav-link {

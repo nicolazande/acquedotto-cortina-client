@@ -1,10 +1,12 @@
-// client/src/pages/Home.js
 import React from 'react';
+import '../styles/Home.css'; // Importa il file CSS per lo stile della Home
 
 const Home = () => (
-    <div>
-        <h1>Welcome to Acquedotto Cortina</h1>
-        <p>Manage your water consumption efficiently.</p>
+    <div className="home-container">
+        <div className="home-content">
+            <h1>Acquedotto di Cortina</h1>
+            <p>Gestisci il consumo in modo efficiente</p>
+        </div>
     </div>
 );
 
