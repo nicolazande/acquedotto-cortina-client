@@ -1,6 +1,6 @@
 .navbar {
     background-color: #333; /* Colore di sfondo della barra di navigazione */
-    padding: 20px 20px; /* Padding interno per spaziatura */
+    padding: 2vh 1vh; /* Padding interno per spaziatura */
 }
 
 .navbar-nav {
@@ -11,7 +11,15 @@
 }
 
 .nav-item {
-    margin-right: 25px; /* Spaziatura tra i link */
+    margin-right: 2vh; /* Spaziatura tra i link */
+    background-color: rgba(255, 255, 255, 0.2); /* Colore di sfondo chiaro e trasparente per ogni riquadro */
+    padding: 1vh 2vh; /* Padding per i riquadri */
+    border-radius: 5px; /* Bordo arrotondato per i riquadri */
+    transition: background-color 0.3s; /* Transizione del colore di sfondo al passaggio del mouse */
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.4); /* Cambia colore di sfondo al passaggio del mouse */
 }
 
 .nav-link {

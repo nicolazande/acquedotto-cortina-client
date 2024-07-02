@@ -1,13 +1,12 @@
 .home-container {
     position: relative;
     background-color: #333; /* Colore di sfondo scuro */
-    height: 80vh; /* Altezza a schermo intero */
+    height: 90vh; /* Altezza a schermo intero */
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden; /* Nasconde eventuali overflow */
-    padding: 20px; /* Spaziatura interna */
-    border-bottom: 20px solid #333; /* Bordo scuro sotto l'immagine */
+    padding: 0vh; /* Spaziatura interna */
     background-image: url('../assets/images/zuel-abitato.jpg'); /* Immagine di sfondo */
     background-size: cover; /* Adatta l'immagine per coprire tutto lo spazio disponibile */
     background-position: center; /* Centra l'immagine */
@@ -18,8 +17,8 @@
     z-index: 1; /* Posto davanti all'immagine di sfondo */
     text-align: center;
     color: #fff; /* Colore del testo */
-    padding: 20px;
-    max-width: 800px; /* Larghezza massima del contenuto */
+    padding: 1vh;
+    max-width: 50vh; /* Larghezza massima del contenuto */
     background-color: rgba(0, 0, 0, 0.5); /* Sfondo con opacità per il contenuto */
     border: 10px solid #333; /* Bordo scuro */
     border-radius: 20px; /* Arrotondamento del bordo */
@@ -27,10 +26,21 @@
 
 .home-content h1 {
     font-size: 3rem; /* Dimensione del titolo */
-    margin-bottom: 10px;
+    margin-bottom: 0px;
 }
 
 .home-content p {
     font-size: 1.5rem; /* Dimensione del paragrafo */
     line-height: 1.6;
+}
+
+/* Barra nera in fondo */
+.home-bottom-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5vh; /* Altezza della barra */
+    background-color: #333; /* Colore nero */
+    z-index: 0; /* Dietro il contenuto principale */
 }

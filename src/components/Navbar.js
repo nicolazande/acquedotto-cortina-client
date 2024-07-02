@@ -12,7 +12,7 @@ const Navbar = () => (
                 <Link to="/view-users" className="nav-link">Visualizza Utenti</Link>
             </li>
             <li className="nav-item">
-                <Link to="/register" className="nav-link">Registre Utenti</Link>
+                <Link to="/register" className="nav-link">Registra Utenti</Link>
             </li>
         </ul>
     </nav>
