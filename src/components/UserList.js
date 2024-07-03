@@ -18,17 +18,16 @@ const UserList = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get('/api/users');
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/users`);
                 setUsers(response.data);
             } catch (error) {
                 alert(`Error fetching users: ${error.message}`);
                 console.error('Error fetching users:', error); // Stampa l'errore completo nella console
             }
         };
-    
+
         fetchUsers();
     }, []);
-    
 
     useEffect(() => {
         if (mapRef.current === null) {
@@ -55,13 +54,13 @@ const UserList = () => {
             // Aggiungi nuovi marker
             const newMarkers = users.map((user) => {
                 if (user.position) {
-                    const marker = L.marker([user.position.lat, user.position.lng], { 
-                        icon: L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' }) 
+                    const marker = L.marker([user.position.lat, user.position.lng], {
+                        icon: L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' })
                     }).addTo(map)
                       .bindPopup(`${user.name} ${user.surname}`);
 
                     marker.user = user; // Salva il riferimento all'utente nell'oggetto marker
-                    
+
                     marker.on('click', () => {
                         handleMarkerClick(marker); // Gestisci il clic su un marker
                     });
@@ -77,7 +76,7 @@ const UserList = () => {
 
     const handleDelete = async (userId) => {
         try {
-            await axios.delete(`/api/users/${userId}`);
+            await axios.delete(`${process.env.REACT_APP_API_URL}/api/users/${userId}`);
             setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
             alert('User deleted successfully');
         } catch (error) {
