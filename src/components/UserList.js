@@ -21,12 +21,14 @@ const UserList = () => {
                 const response = await axios.get('/api/users');
                 setUsers(response.data);
             } catch (error) {
-                alert('Error fetching users');
+                alert(`Error fetching users: ${error.message}`);
+                console.error('Error fetching users:', error); // Stampa l'errore completo nella console
             }
         };
-
+    
         fetchUsers();
     }, []);
+    
 
     useEffect(() => {
         if (mapRef.current === null) {
