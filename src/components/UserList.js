@@ -22,7 +22,6 @@ const UserList = () => {
                 setUsers(response.data);
             } catch (error) {
                 alert(`Error fetching users: ${error.message}`);
-                alert(`request: ${process.env.REACT_APP_API_URL}/api/users`);
                 console.error('Error fetching users:', error); // Stampa l'errore completo nella console
             }
         };
