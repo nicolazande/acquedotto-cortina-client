@@ -1,65 +1,85 @@
+/* Navbar Styles */
 .navbar {
-    background-color: #333; /* Colore di sfondo della barra di navigazione */
-    padding: 1vh 2vh; /* Padding interno per spaziatura */
+    background-color: rgba(0, 0, 0, 0.7); /* Sfondo scuro leggermente trasparente */
+    padding: 1vh 2vh;
     display: flex;
-    justify-content: space-between; /* Spazia gli elementi su tutta la larghezza */
-    align-items: center; /* Centra verticalmente gli elementi */
-    flex-wrap: wrap; /* Consente la piegatura su schermi più piccoli */
+    justify-content: space-between;
+    align-items: center;
+    position: relative; /* Per gestire il posizionamento dei dropdown */
+    z-index: 1000; /* Assicura che la navbar sia in primo piano */
 }
 
 .navbar-brand {
-    color: #fff; /* Colore del brand */
-    font-size: 1.5rem; /* Dimensione del testo del brand */
-    text-decoration: none; /* Rimuove il sottolineato */
+    color: #fff;
+    font-size: 1.5rem;
+    text-decoration: none;
     font-weight: bold; /* Testo in grassetto */
-    margin-right: 2vh; /* Margine a destra */
+    margin-right: 2vh;
 }
 
-.navbar-nav {
-    list-style-type: none; /* Rimuove i punti elenco */
-    padding: 0;
-    margin: 0;
-    display: flex; /* Imposta il layout dei link in linea */
-    flex-wrap: wrap; /* Consente la piegatura su schermi più piccoli */
+/* Dropdown Menu Styles */
+.dropdown {
+    position: relative;
 }
 
-.nav-item {
-    margin: 1vh; /* Margine per i link */
-    background-color: rgba(255, 255, 255, 0.2); /* Colore di sfondo chiaro e trasparente per ogni riquadro */
-    padding: 1vh 2vh; /* Padding per i riquadri */
-    border-radius: 5px; /* Bordo arrotondato per i riquadri */
-    transition: background-color 0.3s; /* Transizione del colore di sfondo al passaggio del mouse */
-}
-
-.nav-item:hover {
-    background-color: rgba(255, 255, 255, 0.4); /* Cambia colore di sfondo al passaggio del mouse */
-}
-
-.nav-link {
-    text-decoration: none; /* Rimuove il sottolineato dai link */
-    color: #fff; /* Colore del testo dei link */
+.dropbtn {
+    background-color: transparent; /* Sfondo trasparente */
+    color: #fff;
+    padding: 1vh 2vh;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
     font-weight: bold; /* Testo in grassetto */
-    transition: color 0.3s; /* Transizione del colore al passaggio del mouse */
 }
 
-.nav-link:hover {
-    color: #f0f0f0; /* Cambia colore del testo al passaggio del mouse */
+.dropbtn:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Cambia colore di sfondo al passaggio del mouse */
 }
 
-/* Media queries per design responsivo */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7); /* Sfondo scuro leggermente trasparente */
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1001; /* Assicura che il dropdown sia sopra la navbar */
+    border-radius: 5px;
+    flex-direction: column;
+}
+
+.dropdown-content.show {
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-content a {
+    color: #fff;
+    padding: 1vh 2vh;
+    text-decoration: none;
+    display: block;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    font-weight: bold; /* Testo in grassetto */
+}
+
+.dropdown-content a:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Cambia colore di sfondo al passaggio del mouse */
+}
+
+/* Media queries for responsive design */
 @media (max-width: 768px) {
     .navbar {
-        padding: 2vh; /* Aumenta il padding su schermi più piccoli */
+        padding: 2vh;
     }
 
-    .navbar-nav {
-        flex-direction: column; /* Disposizione verticale dei link su schermi più piccoli */
-        width: 100%; /* Larghezza completa per la navbar */
+    .dropbtn {
+        width: 100%;
+        text-align: center;
     }
 
-    .nav-item {
-        width: 100%; /* Larghezza completa per ogni link */
-        text-align: center; /* Centra il testo */
-        margin: 0.5vh 0; /* Margine verticale */
+    .dropdown-content {
+        min-width: 100%;
     }
 }

@@ -1,7 +1,7 @@
 .home-container {
     position: relative;
     background-color: #333; /* Colore di sfondo scuro */
-    height: 91.8vh; /* Altezza a schermo intero */
+    height: 90vh; /* Altezza a schermo intero */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,6 +11,7 @@
     background-size: cover; /* Adatta l'immagine per coprire tutto lo spazio disponibile */
     background-position: center; /* Centra l'immagine */
     text-align: center; /* Allinea il testo al centro */
+    z-index: 1; /* Assicurati che abbia un valore z-index minore rispetto alla navbar */
 }
 
 .home-content {
@@ -52,7 +53,7 @@
 /* Media queries per design responsivo */
 @media (max-width: 768px) {
     .home-content {
-        max-width: 90%; /* Riduci la larghezza massima su schermi più piccoli */
+        max-width: 95%; /* Riduci la larghezza massima su schermi più piccoli */
         padding: 3vh;
     }
 
@@ -67,7 +68,7 @@
 
 @media (max-width: 480px) {
     .home-content {
-        max-width: 50%; /* Usa tutta la larghezza su schermi molto piccoli */
+        max-width: 100%; /* Usa tutta la larghezza su schermi molto piccoli */
         padding: 4vh;
     }
 
