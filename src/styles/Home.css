@@ -1,7 +1,7 @@
 .home-container {
     position: relative;
     background-color: #333; /* Colore di sfondo scuro */
-    height: 90vh; /* Altezza a schermo intero */
+    height: 91.8vh; /* Altezza a schermo intero */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -52,7 +52,7 @@
 /* Media queries per design responsivo */
 @media (max-width: 768px) {
     .home-content {
-        max-width: 95%; /* Riduci la larghezza massima su schermi più piccoli */
+        max-width: 90%; /* Riduci la larghezza massima su schermi più piccoli */
         padding: 3vh;
     }
 
@@ -67,7 +67,7 @@
 
 @media (max-width: 480px) {
     .home-content {
-        max-width: 100%; /* Usa tutta la larghezza su schermi molto piccoli */
+        max-width: 50%; /* Usa tutta la larghezza su schermi molto piccoli */
         padding: 4vh;
     }
 
