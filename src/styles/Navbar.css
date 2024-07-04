@@ -9,14 +9,6 @@
     z-index: 1000; /* Assicura che la navbar sia in primo piano */
 }
 
-.navbar-brand {
-    color: #fff;
-    font-size: 1.5rem;
-    text-decoration: none;
-    font-weight: bold; /* Testo in grassetto */
-    margin-right: 2vh;
-}
-
 /* Dropdown Menu Styles */
 .dropdown {
     position: relative;
@@ -26,7 +18,7 @@
     background-color: transparent; /* Sfondo trasparente */
     color: #fff;
     padding: 1vh 2vh;
-    font-size: 1rem;
+    font-size: 1.25rem;
     border: none;
     cursor: pointer;
     border-radius: 5px;
