@@ -11,8 +11,6 @@ const UserForm = () => {
     const [phone, setPhone] = useState('');
     const [meterReading, setMeterReading] = useState('');
     const [position, setPosition] = useState(null);
-    const [map, setMap] = useState(null);
-    const [marker, setMarker] = useState(null);
     const [file, setFile] = useState(null);
 
     const mapRef = useRef(null); // Reference to map instance
@@ -20,15 +18,17 @@ const UserForm = () => {
 
     useEffect(() => {
         if (!mapRef.current) {
-            const mapInstance = L.map('map').setView([46.5396, 12.1357], 13);
+            const mapInstance = L.map('map', { zoomControl: false }).setView([46.5396, 12.1357], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(mapInstance);
 
+            // Add zoom control at the desired position (e.g., bottomright)
+            L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
+
             mapInstance.on('click', handleMapClick);
 
             mapRef.current = mapInstance;
-            setMap(mapInstance);
         }
 
         return () => {

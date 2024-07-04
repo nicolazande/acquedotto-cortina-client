@@ -31,7 +31,12 @@ const UserList = () => {
 
     useEffect(() => {
         if (mapRef.current === null) {
-            const mapInstance = L.map('map').setView([46.5396, 12.1357], 10);
+            const mapInstance = L.map('map', {
+                center: [46.5396, 12.1357],
+                zoom: 10,
+                zoomControl: false, // Disabilita il controllo di zoom di default
+            });
+
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(mapInstance);
