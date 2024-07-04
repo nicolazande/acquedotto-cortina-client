@@ -1,7 +1,7 @@
 .home-container {
     position: relative;
     background-color: #333; /* Colore di sfondo scuro */
-    height: 90vh; /* Altezza a schermo intero */
+    height: 92vh; /* Altezza a schermo intero */
     display: flex;
     justify-content: center;
     align-items: center;

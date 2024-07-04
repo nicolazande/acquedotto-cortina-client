@@ -36,10 +36,11 @@
     display: none;
     position: absolute;
     background-color: rgba(0, 0, 0, 0.7); /* Sfondo scuro leggermente trasparente */
-    min-width: 160px;
+    min-width: 180px; /* Aumentato per rendere il menu leggermente più grande */
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1001; /* Assicura che il dropdown sia sopra la navbar */
     border-radius: 5px;
+    border: 5px solid rgba(255, 255, 255, 0.3); /* Bordo leggero e trasparente */
     flex-direction: column;
     z-index: 1003;
 }
@@ -63,6 +64,20 @@
     background-color: rgba(255, 255, 255, 0.2); /* Cambia colore di sfondo al passaggio del mouse */
 }
 
+/* Logo Container Styles */
+.logo-container {
+    background-color: rgba(255, 255, 255, 0.5); /* Light transparent background */
+    padding: 2px; /* Padding to make the box larger */
+    border-radius: 5px; /* Rounded corners */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-container img {
+    height: 50px; /* Altezza del logo */
+}
+
 /* Media queries for responsive design */
 @media (max-width: 768px) {
     .navbar {
@@ -76,5 +91,9 @@
 
     .dropdown-content {
         min-width: 100%;
+    }
+
+    .logo-container img {
+        height: 30px; /* Riduce l'altezza del logo per schermi piccoli */
     }
 }

@@ -36,6 +36,9 @@ const Navbar = () => {
                     <Link to="/register" className="nav-link" onClick={() => setDropdownOpen(false)}>Registrati</Link>
                 </div>
             </div>
+            <div className="logo-container"> {/* Logo container with transparent box */}
+                <img src={`${process.env.PUBLIC_URL}/icon.ico`} alt="Logo" className="navbar-logo" />
+            </div>
         </nav>
     );
 };
