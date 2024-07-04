@@ -6,32 +6,36 @@
     justify-content: center;
     align-items: center;
     overflow: hidden; /* Nasconde eventuali overflow */
-    padding: 0vh; /* Spaziatura interna */
+    padding: 0; /* Spaziatura interna */
     background-image: url('../assets/images/zuel-abitato.jpg'); /* Immagine di sfondo */
     background-size: cover; /* Adatta l'immagine per coprire tutto lo spazio disponibile */
     background-position: center; /* Centra l'immagine */
+    text-align: center; /* Allinea il testo al centro */
 }
 
 .home-content {
     position: relative;
     z-index: 1; /* Posto davanti all'immagine di sfondo */
-    text-align: center;
     color: #fff; /* Colore del testo */
-    padding: 1vh;
-    max-width: 50vh; /* Larghezza massima del contenuto */
+    padding: 2vh;
+    max-width: 90%; /* Larghezza massima del contenuto */
     background-color: rgba(0, 0, 0, 0.5); /* Sfondo con opacità per il contenuto */
-    border: 10px solid #333; /* Bordo scuro */
-    border-radius: 20px; /* Arrotondamento del bordo */
+    border: 2px solid #555; /* Bordo scuro */
+    border-radius: 15px; /* Arrotondamento del bordo */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Ombra per il contenuto */
+    margin: 2vh; /* Margine intorno al contenuto */
 }
 
 .home-content h1 {
-    font-size: 3rem; /* Dimensione del titolo */
-    margin-bottom: 0px;
+    font-size: 2.5rem; /* Dimensione del titolo */
+    margin-bottom: 1vh;
+    font-weight: bold;
 }
 
 .home-content p {
-    font-size: 1.5rem; /* Dimensione del paragrafo */
+    font-size: 1.2rem; /* Dimensione del paragrafo */
     line-height: 1.6;
+    margin-bottom: 2vh;
 }
 
 /* Barra nera in fondo */
@@ -43,4 +47,35 @@
     height: 5vh; /* Altezza della barra */
     background-color: #333; /* Colore nero */
     z-index: 0; /* Dietro il contenuto principale */
+}
+
+/* Media queries per design responsivo */
+@media (max-width: 768px) {
+    .home-content {
+        max-width: 95%; /* Riduci la larghezza massima su schermi più piccoli */
+        padding: 3vh;
+    }
+
+    .home-content h1 {
+        font-size: 2rem; /* Riduci la dimensione del titolo su schermi più piccoli */
+    }
+
+    .home-content p {
+        font-size: 1rem; /* Riduci la dimensione del paragrafo su schermi più piccoli */
+    }
+}
+
+@media (max-width: 480px) {
+    .home-content {
+        max-width: 100%; /* Usa tutta la larghezza su schermi molto piccoli */
+        padding: 4vh;
+    }
+
+    .home-content h1 {
+        font-size: 1.8rem; /* Riduci ulteriormente la dimensione del titolo su schermi molto piccoli */
+    }
+
+    .home-content p {
+        font-size: 0.9rem; /* Riduci ulteriormente la dimensione del paragrafo su schermi molto piccoli */
+    }
 }

@@ -1,6 +1,18 @@
 .navbar {
     background-color: #333; /* Colore di sfondo della barra di navigazione */
-    padding: 2vh 1vh; /* Padding interno per spaziatura */
+    padding: 1vh 2vh; /* Padding interno per spaziatura */
+    display: flex;
+    justify-content: space-between; /* Spazia gli elementi su tutta la larghezza */
+    align-items: center; /* Centra verticalmente gli elementi */
+    flex-wrap: wrap; /* Consente la piegatura su schermi più piccoli */
+}
+
+.navbar-brand {
+    color: #fff; /* Colore del brand */
+    font-size: 1.5rem; /* Dimensione del testo del brand */
+    text-decoration: none; /* Rimuove il sottolineato */
+    font-weight: bold; /* Testo in grassetto */
+    margin-right: 2vh; /* Margine a destra */
 }
 
 .navbar-nav {
@@ -8,10 +20,11 @@
     padding: 0;
     margin: 0;
     display: flex; /* Imposta il layout dei link in linea */
+    flex-wrap: wrap; /* Consente la piegatura su schermi più piccoli */
 }
 
 .nav-item {
-    margin-right: 2vh; /* Spaziatura tra i link */
+    margin: 1vh; /* Margine per i link */
     background-color: rgba(255, 255, 255, 0.2); /* Colore di sfondo chiaro e trasparente per ogni riquadro */
     padding: 1vh 2vh; /* Padding per i riquadri */
     border-radius: 5px; /* Bordo arrotondato per i riquadri */
@@ -31,4 +44,22 @@
 
 .nav-link:hover {
     color: #f0f0f0; /* Cambia colore del testo al passaggio del mouse */
+}
+
+/* Media queries per design responsivo */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 2vh; /* Aumenta il padding su schermi più piccoli */
+    }
+
+    .navbar-nav {
+        flex-direction: column; /* Disposizione verticale dei link su schermi più piccoli */
+        width: 100%; /* Larghezza completa per la navbar */
+    }
+
+    .nav-item {
+        width: 100%; /* Larghezza completa per ogni link */
+        text-align: center; /* Centra il testo */
+        margin: 0.5vh 0; /* Margine verticale */
+    }
 }
