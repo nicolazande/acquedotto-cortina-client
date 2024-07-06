@@ -53,6 +53,10 @@
 
 /* Media queries per design responsivo */
 @media (max-width: 768px) {
+    .home-container {
+        background-position: right; /* Centra l'immagine */
+    }
+
     .home-content {
         max-width: 95%; /* Riduci la larghezza massima su schermi più piccoli */
         padding: 3vh;
@@ -68,6 +72,10 @@
 }
 
 @media (max-width: 480px) {
+    .home-container {
+        background-position: right; /* Centra l'immagine */
+    }
+
     .home-content {
         max-width: 100%; /* Usa tutta la larghezza su schermi molto piccoli */
         padding: 4vh;
