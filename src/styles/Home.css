@@ -1,12 +1,12 @@
 .home-container {
     position: relative;
     background-color: #333; /* Colore di sfondo scuro */
-    height: 90vh; /* Altezza a schermo intero */
+    height: 100vh; /* Altezza a schermo intero */
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden; /* Nasconde eventuali overflow */
-    padding: 0; /* Spaziatura interna */
+    padding: 0px; /* Spaziatura interna */
     background-image: url('../assets/images/zuel-abitato.jpg'); /* Immagine di sfondo */
     background-size: cover; /* Adatta l'immagine per coprire tutto lo spazio disponibile */
     background-position: center; /* Centra l'immagine */

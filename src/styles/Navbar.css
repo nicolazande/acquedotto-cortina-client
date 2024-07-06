@@ -79,7 +79,7 @@
 }
 
 .logo-container img {
-    height: 50px; /* Altezza del logo */
+    height: 5vh; /* Altezza del logo */
 }
 
 /* Media queries for responsive design */
@@ -98,6 +98,6 @@
     }
 
     .logo-container img {
-        height: 30px; /* Riduce l'altezza del logo per schermi piccoli */
+        height: 5vh; /* Riduce l'altezza del logo per schermi piccoli */
     }
 }
