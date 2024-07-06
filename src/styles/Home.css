@@ -7,7 +7,7 @@
     align-items: center;
     overflow: hidden; /* Nasconde eventuali overflow */
     padding: 0; /* Spaziatura interna */
-    background-image: url('../assets/images/zuel-abitato.jfif'); /* Immagine di sfondo */
+    background-image: url('../assets/images/zuel-abitato.jpg'); /* Immagine di sfondo */
     background-size: cover; /* Adatta l'immagine per coprire tutto lo spazio disponibile */
     background-position: center; /* Centra l'immagine */
     text-align: center; /* Allinea il testo al centro */
