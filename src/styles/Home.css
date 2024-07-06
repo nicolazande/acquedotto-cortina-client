@@ -54,7 +54,7 @@
 /* Media queries per design responsivo */
 @media (max-width: 768px) {
     .home-container {
-        background-position: right; /* Centra l'immagine */
+        background-position: top; /* Centra l'immagine */
     }
 
     .home-content {
@@ -73,7 +73,7 @@
 
 @media (max-width: 480px) {
     .home-container {
-        background-position: right; /* Centra l'immagine */
+        background-position: top; /* Centra l'immagine */
     }
 
     .home-content {
