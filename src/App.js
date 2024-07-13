@@ -1,26 +1,21 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
-import UserForm from './components/UserForm';
-import UserList from './components/UserList';
-import Login from './components/Login';
-import PrivateRoute from './components/PrivateRoute';
-import { AuthProvider } from './contexts/AuthContext';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import ClientePage from './pages/ClientePage';
+import ContatorePage from './pages/ContatorePage';
+import './styles/App.css';
 
-const App = () => (
-    <AuthProvider>
+const App = () => {
+    return (
         <Router>
-            <Navbar />
-            <Switch>
-                <Route path="/login" component={Login} />
-                <PrivateRoute path="/home" component={Home} />
-                <PrivateRoute path="/register" component={UserForm} />
-                <PrivateRoute path="/view-users" component={UserList} />
-                <Route path="/" render={() => <Redirect to="/login" />} />
-            </Switch>
+            <div className="App">
+                <Switch>
+                    <Route path="/clienti" component={ClientePage} />
+                    <Route path="/contatori" component={ContatorePage} />
+                    <Route path="/" render={() => <div>Home Page</div>} />
+                </Switch>
+            </div>
         </Router>
-    </AuthProvider>
-);
+    );
+};
 
 export default App;
