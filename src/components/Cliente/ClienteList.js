@@ -43,7 +43,7 @@ const ClienteList = ({ onSelectCliente, selectedClienteId, onDeselectCliente }) 
                             key={cliente._id}
                             id={cliente._id}
                             className={`cliente-list-item ${cliente._id === selectedClienteId ? 'highlight' : ''}`}
-                            onClick={() => onSelectCliente(cliente._id)}
+                            //onClick={() => onSelectCliente(cliente._id)}
                         >
                             <span>{cliente.nome} {cliente.cognome}</span>
                             <button className="btn" onClick={(e) => { e.stopPropagation(); onSelectCliente(cliente._id); }}>Dettagli</button>

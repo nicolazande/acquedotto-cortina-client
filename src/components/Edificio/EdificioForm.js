@@ -52,7 +52,11 @@ const EdificioForm = ({ onSuccess }) => {
 
     const handleMapClick = (e) => {
         const clickedPosition = e.latlng;
-        setFormData((prevData) => ({ ...prevData, latitudine: clickedPosition.lat, longitudine: clickedPosition.lng }));
+        setFormData((prevData) => ({
+            ...prevData,
+            latitudine: clickedPosition.lat,
+            longitudine: clickedPosition.lng
+        }));
 
         if (markerRef.current) {
             mapRef.current.removeLayer(markerRef.current);
@@ -98,6 +102,10 @@ const EdificioForm = ({ onSuccess }) => {
                 note: ''
             });
             if (onSuccess) onSuccess();
+            if (markerRef.current) {
+                mapRef.current.removeLayer(markerRef.current);
+                markerRef.current = null;
+            }
         } catch (error) {
             alert('Errore durante la registrazione dell\'edificio');
             console.error(error);
@@ -143,6 +151,14 @@ const EdificioForm = ({ onSuccess }) => {
                 <input type="number" name="postiLetto" value={formData.postiLetto} onChange={handleChange} />
             </div>
             <div className="form-group">
+                <label>Latitudine:</label>
+                <input type="number" name="latitudine" value={formData.latitudine} onChange={handleChange} required />
+            </div>
+            <div className="form-group">
+                <label>Longitudine:</label>
+                <input type="number" name="longitudine" value={formData.longitudine} onChange={handleChange} required />
+            </div>
+            <div className="form-group">
                 <label>Unità Abitative:</label>
                 <input type="number" name="unitaAbitative" value={formData.unitaAbitative} onChange={handleChange} />
             </div>
@@ -168,7 +184,7 @@ const EdificioForm = ({ onSuccess }) => {
             </div>
             <div className="form-group">
                 <label>Note:</label>
-                <textarea name="note" value={formData.note} onChange={handleChange} />
+                <textarea name="note" value={formData.note} onChange={handleChange}></textarea>
             </div>
             <div id="map" className="edificio-map"></div>
             <button type="submit" className="submit-button">Registra Edificio</button>

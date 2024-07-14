@@ -133,20 +133,42 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
             <div className="edificio-list">
                 <h2>Lista Edifici</h2>
                 <div id="map" className="edificio-map"></div>
-                <ul>
-                    {edifici.map((edificio) => (
-                        <li
-                            key={edificio._id}
-                            id={edificio._id}
-                            className={`edificio-list-item ${edificio._id === selectedEdificioId ? 'highlight' : ''}`}
-                            onClick={(e) => handleTableRowClick(edificio._id, e)}
-                        >
-                            <span>{edificio.descrizione}</span>
-                            <button className="btn" onClick={(e) => { e.stopPropagation(); onSelectEdificio(edificio._id); }}>Dettagli</button>
-                            <button className="btn btn-delete" onClick={(e) => handleDelete(edificio._id, e)}>Cancella</button>
-                        </li>
-                    ))}
-                </ul>
+                <table className="edificio-table">
+                    <thead>
+                        <tr>
+                            <th>Descrizione</th>
+                            <th>Indirizzo</th>
+                            <th>Numero</th>
+                            <th>CAP</th>
+                            <th>Località</th>
+                            <th>Longitudine</th>
+                            <th>Latitudine</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {edifici.map((edificio) => (
+                            <tr
+                                key={edificio._id}
+                                id={edificio._id}
+                                className={`edificio-list-item ${edificio._id === selectedEdificioId ? 'highlight' : ''}`}
+                                onClick={(e) => handleTableRowClick(edificio._id, e)}
+                            >
+                                <td>{edificio.descrizione}</td>
+                                <td>{edificio.indirizzo}</td>
+                                <td>{edificio.numero}</td>
+                                <td>{edificio.CAP}</td>
+                                <td>{edificio.localita}</td>
+                                <td>{edificio.longitudine}</td>
+                                <td>{edificio.latitudine}</td>
+                                <td>
+                                    <button className="btn" onClick={(e) => { e.stopPropagation(); onSelectEdificio(edificio._id); }}>Dettagli</button>
+                                    <button className="btn btn-delete" onClick={(e) => handleDelete(edificio._id, e)}>Cancella</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
             {selectedEdificioId && (
                 <div className="edificio-detail">

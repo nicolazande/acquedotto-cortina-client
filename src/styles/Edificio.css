@@ -13,7 +13,7 @@
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 20px;
-    max-width: 800px;
+    max-width: 1200px; /* Allargato il form e la lista */
     margin: 0 auto;
 }
 
@@ -66,25 +66,30 @@
     margin-bottom: 20px;
 }
 
-.edificio-list ul {
-    list-style: none;
-    padding: 0;
+.edificio-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
-.edificio-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+.edificio-table th,
+.edificio-table td {
+    border: 1px solid #ddd;
+    padding: 12px; /* Aumentato il padding per più spazio */
+    text-align: left;
+}
+
+.edificio-table th {
+    background-color: #f2f2f2;
+    color: #333;
 }
 
 .edificio-list-item:hover {
     background-color: #f1f1f1;
 }
 
-.edificio-list-item span {
-    flex-grow: 1;
+.edificio-list-item.highlight {
+    background-color: #ffffcc;
 }
 
 .edificio-list-item .btn {
@@ -94,7 +99,8 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 5px;
+    transition: background-color 0.3s;
 }
 
 .edificio-list-item .btn:hover {
@@ -109,7 +115,20 @@
     background-color: #c4302b;
 }
 
-/* Modal styles */
+.edificio-list-item .btn-back {
+    background-color: #6c757d;
+}
+
+.edificio-list-item .btn-back:hover {
+    background-color: #5a6268;
+}
+
+.edificio-map {
+    height: 400px;
+    width: 100%;
+    margin-top: 20px;
+}
+
 .modal {
     position: fixed;
     top: 0;
@@ -166,14 +185,4 @@
 
 .modal-content button:hover {
     background-color: #d32f2f;
-}
-
-.edificio-map {
-    height: 400px;
-    width: 100%;
-    margin-top: 20px;
-}
-
-.edificio-list-item.highlight {
-    background-color: #ffffcc;
 }
