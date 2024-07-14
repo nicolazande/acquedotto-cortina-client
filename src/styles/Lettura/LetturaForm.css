@@ -1,39 +1,29 @@
-/* Apple-style form and list styling for Edificio */
+/* Styles for LetturaForm */
 
-.edificio-page {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color: #333;
-}
-
-.edificio-form,
-.edificio-list,
-.edificio-detail {
+.lettura-form {
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 20px;
-    max-width: 1200px; /* Allargato il form e la lista */
+    max-width: 1200px;
     margin: 0 auto;
 }
 
-.edificio-form .form-group,
-.edificio-detail .form-group {
+.lettura-form .form-group {
     margin-bottom: 15px;
 }
 
-.edificio-form label,
-.edificio-detail label {
+.lettura-form label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
-.edificio-form input[type="text"],
-.edificio-form input[type="date"],
-.edificio-form input[type="email"],
-.edificio-form input[type="number"],
-.edificio-form textarea {
+.lettura-form input[type="text"],
+.lettura-form input[type="date"],
+.lettura-form input[type="number"],
+.lettura-form textarea {
     width: calc(100% - 20px);
     padding: 10px;
     margin: 5px 0;
@@ -42,11 +32,11 @@
     box-sizing: border-box;
 }
 
-.edificio-form input[type="checkbox"] {
+.lettura-form input[type="checkbox"] {
     margin-right: 10px;
 }
 
-.edificio-form .submit-button {
+.lettura-form .submit-button {
     background-color: #007aff;
     color: white;
     border: none;
@@ -57,78 +47,34 @@
     margin-top: 10px;
 }
 
-.edificio-form .submit-button:hover {
+.lettura-form .submit-button:hover {
     background-color: #005bb5;
 }
 
-.edificio-list h2 {
-    font-size: 1.5em;
-    margin-bottom: 20px;
+.lettura-form .input-group {
+    display: flex;
+    align-items: center;
 }
 
-.edificio-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+.lettura-form .input-group input {
+    flex: 1;
+    margin-right: 10px;
 }
 
-.edificio-table th,
-.edificio-table td {
-    border: 1px solid #ddd;
-    padding: 12px; /* Aumentato il padding per più spazio */
-    text-align: left;
-}
-
-.edificio-table th {
-    background-color: #f2f2f2;
-    color: #333;
-}
-
-.edificio-list-item:hover {
-    background-color: #f1f1f1;
-}
-
-.edificio-list-item.highlight {
-    background-color: #ffffcc;
-}
-
-.edificio-list-item .btn {
+.lettura-form .input-group button {
     background-color: #007aff;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 5px;
-    transition: background-color 0.3s;
 }
 
-.edificio-list-item .btn:hover {
+.lettura-form .input-group button:hover {
     background-color: #005bb5;
 }
 
-.edificio-list-item .btn-delete {
-    background-color: #ff3b30;
-}
-
-.edificio-list-item .btn-delete:hover {
-    background-color: #c4302b;
-}
-
-.edificio-list-item .btn-back {
-    background-color: #6c757d;
-}
-
-.edificio-list-item .btn-back:hover {
-    background-color: #5a6268;
-}
-
-.edificio-map {
-    height: 400px;
-    width: 100%;
-    margin-top: 20px;
-}
-
+/* Modal styles */
 .modal {
     position: fixed;
     top: 0;

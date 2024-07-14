@@ -1,0 +1,59 @@
+/* Styles for EdificioForm */
+
+.edificio-form {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.edificio-form .form-group {
+    margin-bottom: 15px;
+}
+
+.edificio-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.edificio-form input[type="text"],
+.edificio-form input[type="date"],
+.edificio-form input[type="email"],
+.edificio-form input[type="number"],
+.edificio-form textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.edificio-form input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.edificio-form .submit-button {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.edificio-form .submit-button:hover {
+    background-color: #005bb5;
+}
+
+.edificio-map {
+    height: 400px;
+    width: 100%;
+    margin-top: 20px;
+}

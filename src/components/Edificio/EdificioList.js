@@ -3,7 +3,7 @@ import edificioApi from '../../api/edificioApi';
 import EdificioDetails from './EdificioDetails';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import '../../styles/Edificio.css';
+import '../../styles/Edificio/EdificioList.css';
 
 const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio }) => {
     const [edifici, setEdifici] = useState([]);

@@ -3,7 +3,7 @@ import ContatoreForm from '../components/Contatore/ContatoreForm';
 import ContatoreList from '../components/Contatore/ContatoreList';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import '../styles/Contatore.css';
+import '../styles/Contatore/ContatorePage.css';
 
 const ContatorePage = () => {
     const [selectedContatoreId, setSelectedContatoreId] = useState(null);

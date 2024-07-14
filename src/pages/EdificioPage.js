@@ -3,7 +3,7 @@ import EdificioForm from '../components/Edificio/EdificioForm';
 import EdificioList from '../components/Edificio/EdificioList';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import '../styles/Edificio.css';
+import '../styles/Edificio/EdificioPage.css';
 
 const EdificioPage = () => {
     const [selectedEdificioId, setSelectedEdificioId] = useState(null);

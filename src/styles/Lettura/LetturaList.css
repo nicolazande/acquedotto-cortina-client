@@ -1,0 +1,71 @@
+/* Styles for LetturaList */
+
+.lettura-list {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.lettura-list h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.lettura-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.lettura-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.lettura-list-item:hover {
+    background-color: #f1f1f1;
+}
+
+.lettura-list-item span {
+    flex-grow: 1;
+}
+
+.lettura-list-item .btn {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.lettura-list-item .btn:hover {
+    background-color: #005bb5;
+}
+
+.lettura-list-item .btn-delete {
+    background-color: #ff3b30;
+}
+
+.lettura-list-item .btn-delete:hover {
+    background-color: #c4302b;
+}
+
+.lettura-list-item .btn-back {
+    background-color: #6c757d;
+}
+
+.lettura-list-item .btn-back:hover {
+    background-color: #5a6268;
+}
+
+.lettura-list-item.highlight {
+    background-color: #ffffcc;
+}

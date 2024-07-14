@@ -1,0 +1,65 @@
+/* Styles for EdificioList */
+
+.edificio-list {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.edificio-list h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.edificio-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.edificio-table th,
+.edificio-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.edificio-table th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.edificio-list-item:hover {
+    background-color: #f1f1f1;
+}
+
+.edificio-list-item.highlight {
+    background-color: #ffffcc;
+}
+
+.edificio-list-item .btn {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 5px;
+    transition: background-color 0.3s;
+}
+
+.edificio-list-item .btn:hover {
+    background-color: #005bb5;
+}
+
+.edificio-list-item .btn-delete {
+    background-color: #ff3b30;
+}
+
+.edificio-list-item .btn-delete:hover {
+    background-color: #c4302b;
+}

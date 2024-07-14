@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import clienteApi from '../../api/clienteApi';
-import '../../styles/Cliente.css';
+import '../../styles/Cliente/ClienteDetails.css';
 
 const ClienteDetails = ({ clienteId }) => {
     const [cliente, setCliente] = useState(null);

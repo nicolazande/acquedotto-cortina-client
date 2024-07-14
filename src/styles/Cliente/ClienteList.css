@@ -1,61 +1,13 @@
-.cliente-page {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color: #333;
-}
+/* Styles for ClienteList */
 
-.cliente-form,
-.cliente-list,
-.cliente-detail {
+.cliente-list {
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 20px;
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
-}
-
-.cliente-form .form-group,
-.cliente-detail .form-group {
-    margin-bottom: 15px;
-}
-
-.cliente-form label,
-.cliente-detail label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.cliente-form input[type="text"],
-.cliente-form input[type="date"],
-.cliente-form input[type="email"],
-.cliente-form textarea {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-.cliente-form input[type="checkbox"] {
-    margin-right: 10px;
-}
-
-.cliente-form .submit-button {
-    background-color: #007aff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 10px;
-}
-
-.cliente-form .submit-button:hover {
-    background-color: #005bb5;
 }
 
 .cliente-list h2 {
@@ -114,6 +66,6 @@
     background-color: #5a6268;
 }
 
-cliente-list-item .highlight {
+.cliente-list-item.highlight {
     background-color: #ffffcc;
 }

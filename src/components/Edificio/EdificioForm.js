@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import edificioApi from '../../api/edificioApi';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import '../../styles/Edificio.css';
+import '../../styles/Edificio/EdificioForm.css';
 
 const EdificioForm = ({ onSuccess }) => {
     const [formData, setFormData] = useState({

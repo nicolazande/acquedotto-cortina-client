@@ -3,7 +3,7 @@ import contatoreApi from '../../api/contatoreApi';
 import clienteApi from '../../api/clienteApi';
 import edificioApi from '../../api/edificioApi';
 import listinoApi from '../../api/listinoApi';
-import '../../styles/Contatore.css';
+import '../../styles/Contatore/ContatoreForm.css';
 
 const ContatoreForm = ({ onSuccess }) => {
     const [formData, setFormData] = useState({

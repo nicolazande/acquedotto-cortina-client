@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import edificioApi from '../../api/edificioApi';
-import '../../styles/Edificio.css';
+import '../../styles/Edificio/EdificioDetails.css';
 
 const EdificioDetails = ({ edificioId }) => {
     const [edificio, setEdificio] = useState(null);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import contatoreApi from '../../api/contatoreApi';
-import '../../styles/Contatore.css';
+import '../../styles/Contatore/ContatoreDetails.css';
 
 const ContatoreDetails = ({ contatoreId }) => {
     const [contatore, setContatore] = useState(null);

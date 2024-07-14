@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import clienteApi from '../../api/clienteApi';
-import '../../styles/Cliente.css';
+import '../../styles/Cliente/ClienteForm.css';
 
 const ClienteForm = ({ onSuccess }) => {
     const [formData, setFormData] = useState({

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import contatoreApi from '../../api/contatoreApi';
 import ContatoreDetails from './ContatoreDetails';
-import '../../styles/Contatore.css';
+import '../../styles/Contatore/ContatoreList.css';
 
 const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectContatore }) => {
     const [contatori, setContatori] = useState([]);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import clienteApi from '../../api/clienteApi';
 import ClienteDetails from './ClienteDetails';
-import '../../styles/Cliente.css';
+import '../../styles/Cliente/ClienteList.css';
 
 const ClienteList = ({ onSelectCliente, selectedClienteId, onDeselectCliente }) => {
     const [clienti, setClienti] = useState([]);

@@ -3,7 +3,7 @@ import ClienteForm from '../components/Cliente/ClienteForm';
 import ClienteList from '../components/Cliente/ClienteList';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import '../styles/Cliente.css';
+import '../styles/Cliente/ClientePage.css';
 
 const ClientePage = () => {
     const [selectedClienteId, setSelectedClienteId] = useState(null);
