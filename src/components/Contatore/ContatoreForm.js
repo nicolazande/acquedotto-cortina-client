@@ -205,7 +205,7 @@ const ContatoreForm = ({ onSuccess }) => {
                         <ul>
                             {edifici.map((edificio) => (
                                 <li key={edificio._id} onClick={() => handleSelectEdificio(edificio._id)}>
-                                    {edificio.nome}
+                                    {edificio.descrizione}
                                 </li>
                             ))}
                         </ul>

@@ -38,7 +38,7 @@ const ContatoreDetails = ({ contatoreId }) => {
             <p><strong>Data Installazione:</strong> {new Date(contatore.dataInstallazione).toLocaleDateString()}</p>
             <p><strong>Data Scadenza:</strong> {new Date(contatore.dataScadenza).toLocaleDateString()}</p>
             <p><strong>Note:</strong> {contatore.note}</p>
-            <p><strong>Edificio:</strong> {contatore.edificio ? contatore.edificio.nome : 'N/A'}</p>
+            <p><strong>Edificio:</strong> {contatore.edificio ? contatore.edificio.descrizione : 'N/A'}</p>
             <p><strong>Listino:</strong> {contatore.listino ? contatore.listino.nome : 'N/A'}</p>
             <p><strong>Cliente:</strong> {contatore.cliente ? `${contatore.cliente.nome} ${contatore.cliente.cognome}` : 'N/A'}</p>
         </div>

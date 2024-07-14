@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import contatoreApi from '../../api/contatoreApi';
-import ContatoreDetail from './ContatoreDetails';
+import ContatoreDetails from './ContatoreDetails';
 import '../../styles/Contatore.css';
 
 const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectContatore }) => {
@@ -49,7 +49,7 @@ const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectConta
             </div>
             {selectedContatoreId && (
                 <div className="contatore-detail">
-                    <ContatoreDetail contatoreId={selectedContatoreId} />
+                    <ContatoreDetails contatoreId={selectedContatoreId} />
                     <button onClick={onDeselectContatore} className="btn btn-back">Indietro</button>
                 </div>
             )}

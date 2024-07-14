@@ -1,33 +1,35 @@
 import React, { useState } from 'react';
 import ClienteForm from '../components/Cliente/ClienteForm';
 import ClienteList from '../components/Cliente/ClienteList';
-import ClienteDetail from '../components/Cliente/ClienteDetails';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 import '../styles/Cliente.css';
 
 const ClientePage = () => {
     const [selectedClienteId, setSelectedClienteId] = useState(null);
-    const [refresh, setRefresh] = useState(false);
 
     const handleClienteSelect = (clienteId) => {
         setSelectedClienteId(clienteId);
     };
 
-    const handleRefresh = () => {
-        setRefresh((prev) => !prev); // Cambia il valore di refresh per forzare l'aggiornamento della lista
+    const handleClienteDeselect = () => {
+        setSelectedClienteId(null);
     };
 
     return (
         <div className="cliente-page">
-            <div className="cliente-form">
-                <h1>Registra Cliente</h1>
-                <ClienteForm onSuccess={handleRefresh} />
-            </div>
-            <div className="cliente-list">
-                <ClienteList onSelectCliente={handleClienteSelect} refresh={refresh} />
-            </div>
-            <div className="cliente-detail">
-                <ClienteDetail clienteId={selectedClienteId} />
-            </div>
+            <Tabs>
+                <TabList>
+                    <Tab>Registra Cliente</Tab>
+                    <Tab>Lista Clienti</Tab>
+                </TabList>
+                <TabPanel>
+                    <ClienteForm onSuccess={handleClienteDeselect} />
+                </TabPanel>
+                <TabPanel>
+                    <ClienteList onSelectCliente={handleClienteSelect} selectedClienteId={selectedClienteId} onDeselectCliente={handleClienteDeselect} />
+                </TabPanel>
+            </Tabs>
         </div>
     );
 };

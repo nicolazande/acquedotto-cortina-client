@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import ContatoreForm from '../components/Contatore/ContatoreForm';
 import ContatoreList from '../components/Contatore/ContatoreList';
-import ContatoreDetail from '../components/Contatore/ContatoreDetails';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import '../styles/Contatore.css';

@@ -1,32 +1,119 @@
-/* Cliente.css */
 .cliente-page {
-    display: flex;
-    justify-content: space-between;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #333;
 }
 
-.cliente-form, .cliente-list, .cliente-detail {
-    width: 30%;
+.cliente-form,
+.cliente-list,
+.cliente-detail {
+    background-color: #f9f9f9;
     padding: 20px;
-    border: 1px solid #ccc;
-    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-.cliente-form form div {
-    margin-bottom: 10px;
+.cliente-form .form-group,
+.cliente-detail .form-group {
+    margin-bottom: 15px;
+}
+
+.cliente-form label,
+.cliente-detail label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.cliente-form input[type="text"],
+.cliente-form input[type="date"],
+.cliente-form input[type="email"],
+.cliente-form textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.cliente-form input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.cliente-form .submit-button {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.cliente-form .submit-button:hover {
+    background-color: #005bb5;
+}
+
+.cliente-list h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
 }
 
 .cliente-list ul {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
 }
 
-.cliente-list li {
-    cursor: pointer;
-    padding: 5px;
-    border: 1px solid #ddd;
-    margin-bottom: 5px;
+.cliente-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
 }
 
-.cliente-list li:hover {
-    background-color: #f0f0f0;
+.cliente-list-item:hover {
+    background-color: #f1f1f1;
+}
+
+.cliente-list-item span {
+    flex-grow: 1;
+}
+
+.cliente-list-item .btn {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.cliente-list-item .btn:hover {
+    background-color: #005bb5;
+}
+
+.cliente-list-item .btn-delete {
+    background-color: #ff3b30;
+}
+
+.cliente-list-item .btn-delete:hover {
+    background-color: #c4302b;
+}
+
+.cliente-list-item .btn-back {
+    background-color: #6c757d;
+}
+
+.cliente-list-item .btn-back:hover {
+    background-color: #5a6268;
+}
+
+.highlight {
+    background-color: #e0f7fa;
 }
