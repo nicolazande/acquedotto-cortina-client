@@ -1,6 +1,6 @@
 /* Styles for ClienteDetails */
 
-.cliente-detail {
+.cliente-details {
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
@@ -10,12 +10,56 @@
     margin: 0 auto;
 }
 
-.cliente-detail .form-group {
-    margin-bottom: 15px;
+.cliente-info,
+.contatori-section,
+.contatore-detail {
+    margin-bottom: 20px;
 }
 
-.cliente-detail label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+.info-table,
+.contatori-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.info-table th,
+.info-table td,
+.contatori-table th,
+.contatori-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.info-table th,
+.contatori-table th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.contatori-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.contatori-table tr td input[type="checkbox"] {
+    cursor: not-allowed;
+}
+
+.btn-show-contatori,
+.btn-details {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.btn-show-contatori:hover,
+.btn-details:hover {
+    background-color: #005bb5;
 }

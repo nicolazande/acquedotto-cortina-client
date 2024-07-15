@@ -10,12 +10,78 @@
     margin: 0 auto;
 }
 
-.edificio-detail .form-group {
-    margin-bottom: 15px;
+.edificio-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
-.edificio-detail label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+.edificio-table th,
+.edificio-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.edificio-table th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.edificio-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.btn-show-contatori {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.btn-show-contatori:hover {
+    background-color: #005bb5;
+}
+
+.contatori-section {
+    margin-top: 20px;
+}
+
+.contatori-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.contatori-table th,
+.contatori-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.contatori-table th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.contatori-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.btn-details {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-details:hover {
+    background-color: #005bb5;
 }
