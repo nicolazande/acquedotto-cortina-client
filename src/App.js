@@ -4,6 +4,8 @@ import ClientePage from './pages/ClientePage';
 import ContatorePage from './pages/ContatorePage';
 import EdificioPage from './pages/EdificioPage';
 import LetturaPage from './pages/LetturaPage';
+import FatturaPage from './pages/FatturaPage';
+import ServizioPage from './pages/ServizioPage';
 import './styles/App.css';
 
 const App = () => {
@@ -15,6 +17,8 @@ const App = () => {
                     <Route path="/contatori" component={ContatorePage} />
                     <Route path="/edifici" component={EdificioPage} />
                     <Route path="/letture" component={LetturaPage} />
+                    <Route path="/fatture" component={FatturaPage} />
+                    <Route path="/servizi" component={ServizioPage} />
                     <Route path="/" render={() => <div>Home Page</div>} />
                 </Switch>
             </div>
