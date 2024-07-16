@@ -1,0 +1,69 @@
+.fascia-list {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.fascia-list h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.fascia-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.fascia-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.fascia-list-item:hover {
+    background-color: #f1f1f1;
+}
+
+.fascia-list-item span {
+    flex-grow: 1;
+}
+
+.fascia-list-item .btn {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.fascia-list-item .btn:hover {
+    background-color: #005bb5;
+}
+
+.fascia-list-item .btn-delete {
+    background-color: #ff3b30;
+}
+
+.fascia-list-item .btn-delete:hover {
+    background-color: #c4302b;
+}
+
+.fascia-list-item .btn-back {
+    background-color: #6c757d;
+}
+
+.fascia-list-item .btn-back:hover {
+    background-color: #5a6268;
+}
+
+.fascia-list-item.highlight {
+    background-color: #ffffcc;
+}

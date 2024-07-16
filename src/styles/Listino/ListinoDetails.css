@@ -1,0 +1,119 @@
+.listino-detail {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 1200px;
+}
+
+.listino-detail h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.info-table th, .info-table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.info-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.btn-show-letture {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    display: block;
+    margin: 20px auto;
+}
+
+.btn-show-letture:hover {
+    background-color: #0056b3;
+}
+
+.letture-section {
+    margin-top: 20px;
+}
+
+.letture-section h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.letture-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.letture-table th, .letture-table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.letture-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.btn-delete {
+    background-color: #ff3b30;
+}
+
+.btn-delete:hover {
+    background-color: #c4302b;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.associated-info .cliente-info, .associated-info .edificio-info {
+    background-color: #ffffff;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.associated-info h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.associated-info p {
+    margin: 5px 0;
+}

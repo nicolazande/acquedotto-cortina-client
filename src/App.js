@@ -6,6 +6,9 @@ import EdificioPage from './pages/EdificioPage';
 import LetturaPage from './pages/LetturaPage';
 import FatturaPage from './pages/FatturaPage';
 import ServizioPage from './pages/ServizioPage';
+import ArticoloPage from './pages/ArticoloPage';
+import ListinoPage from './pages/ListinoPage';
+import FasciaPage from './pages/FasciaPage';
 import './styles/App.css';
 
 const App = () => {
@@ -19,6 +22,9 @@ const App = () => {
                     <Route path="/letture" component={LetturaPage} />
                     <Route path="/fatture" component={FatturaPage} />
                     <Route path="/servizi" component={ServizioPage} />
+                    <Route path="/articoli" component={ArticoloPage} />
+                    <Route path="/listini" component={ListinoPage} />
+                    <Route path="/fasce" component={FasciaPage} />
                     <Route path="/" render={() => <div>Home Page</div>} />
                 </Switch>
             </div>
