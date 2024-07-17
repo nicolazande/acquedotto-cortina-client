@@ -1,21 +1,108 @@
-/* Styles for LetturaDetails */
+/* LetturaDetails.css */
 
 .lettura-detail {
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    margin: 20px auto;
+    max-width: 800px;
 }
 
-.lettura-detail .form-group {
-    margin-bottom: 15px;
+.lettura-detail h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-.lettura-detail label {
-    display: block;
-    margin-bottom: 5px;
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.info-table th, .info-table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.info-table th {
+    background-color: #f2f2f2;
     font-weight: bold;
+}
+
+.btn-show-servizi, .btn-associate-contatore, .btn-associate-servizio {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+}
+
+.btn-show-servizi:hover, .btn-associate-contatore:hover, .btn-associate-servizio:hover {
+    background-color: #0056b3;
+}
+
+.servizi-section {
+    margin-top: 20px;
+}
+
+.servizi-section h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.servizi-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.servizi-table th, .servizi-table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.servizi-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.btn-delete {
+    background-color: #ff3b30;
+}
+
+.btn-delete:hover {
+    background-color: #c4302b;
+}
+
+.btn-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-back-container {
+    text-align: center;
+    margin-top: 20px;
 }

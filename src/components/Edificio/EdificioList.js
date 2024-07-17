@@ -7,6 +7,7 @@ import '../../styles/Edificio/EdificioList.css';
 
 const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio }) => {
     const [edifici, setEdifici] = useState([]);
+    const [highlightedEdificioId, setHighlightedEdificioId] = useState(null);
     const mapRef = useRef(null);
     const markersRef = useRef([]);
     const highlightedMarkerRef = useRef(null);
@@ -93,13 +94,10 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
 
     const handleMarkerClick = (marker) => {
         const { _id } = marker.edificio;
-        handleSelectEdificio(_id);
-
         scrollToEdificioRow(_id);
-
         mapRef.current.setView(marker.getLatLng(), 12);
-
         highlightMarker(marker);
+        setHighlightedEdificioId(_id); // Evidenzia la riga corrispondente
     };
 
     const scrollToEdificioRow = (edificioId) => {
@@ -159,7 +157,7 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
                             <tr
                                 key={edificio._id}
                                 id={edificio._id}
-                                className={`edificio-list-item ${edificio._id === selectedEdificioId ? 'highlight' : ''}`}
+                                className={`edificio-list-item ${edificio._id === highlightedEdificioId ? 'highlight' : ''}`}
                                 onClick={(e) => handleTableRowClick(edificio._id, e)}
                             >
                                 <td>{edificio.descrizione}</td>

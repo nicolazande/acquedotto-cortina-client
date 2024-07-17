@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import LetturaForm from '../components/Lettura/LetturaForm';
 import LetturaList from '../components/Lettura/LetturaList';
-import LetturaDetails from '../components/Lettura/LetturaDetails';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import '../styles/Lettura/LetturaPage.css'
-
+import '../styles/Lettura/LetturaPage.css';
 
 const LetturaPage = () => {
     const [selectedLetturaId, setSelectedLetturaId] = useState(null);
@@ -30,13 +28,7 @@ const LetturaPage = () => {
                     <LetturaForm onSuccess={handleLetturaDeselect} />
                 </TabPanel>
                 <TabPanel>
-                    <LetturaList onSelectLettura={handleLetturaSelect} />
-                    {selectedLetturaId && (
-                        <div className="lettura-detail-container">
-                            <LetturaDetails letturaId={selectedLetturaId} />
-                            <button onClick={handleLetturaDeselect} className="btn btn-back">Indietro</button>
-                        </div>
-                    )}
+                    <LetturaList onSelectLettura={handleLetturaSelect} selectedLetturaId={selectedLetturaId} onDeselectLettura={handleLetturaDeselect} />
                 </TabPanel>
             </Tabs>
         </div>

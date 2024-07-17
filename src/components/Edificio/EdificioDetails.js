@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import edificioApi from '../../api/edificioApi';
+import contatoreApi from '../../api/contatoreApi';
 import '../../styles/Edificio/EdificioDetails.css';
 
 const EdificioDetails = ({ edificioId, onDeselectEdificio }) => {
@@ -38,11 +39,22 @@ const EdificioDetails = ({ edificioId, onDeselectEdificio }) => {
 
     const handleOpenContatoreModal = async () => {
         try {
-            const response = await edificioApi.getContatori(edificioId);
+            const response = await contatoreApi.getContatori();
             setContatori(response.data);
             setShowContatoreModal(true);
         } catch (error) {
             alert('Errore durante il recupero dei contatori');
+            console.error(error);
+        }
+    };
+
+    const handleSelectContatore = async (contatoreId) => {
+        try {
+            await edificioApi.associateContatore(edificioId, contatoreId);
+            setShowContatoreModal(false);
+            fetchContatori();
+        } catch (error) {
+            alert('Errore durante l\'associazione del contatore');
             console.error(error);
         }
     };
@@ -152,7 +164,11 @@ const EdificioDetails = ({ edificioId, onDeselectEdificio }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {contatori.length > 0 ? (
+                            {contatori.length === 0 ? (
+                                <tr>
+                                    <td colSpan="8">Nessun contatore associato</td>
+                                </tr>
+                            ) : (
                                 contatori.map((contatore) => (
                                     <tr key={contatore._id}>
                                         <td>{contatore.cliente ? `${contatore.cliente.nome} ${contatore.cliente.cognome}` : 'N/A'}</td>
@@ -165,13 +181,24 @@ const EdificioDetails = ({ edificioId, onDeselectEdificio }) => {
                                         <td><input type="checkbox" checked={contatore.subentro} readOnly /></td>
                                     </tr>
                                 ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="8">Nessun contatore associato</td>
-                                </tr>
                             )}
                         </tbody>
                     </table>
+                </div>
+            )}
+            {showContatoreModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Seleziona Contatore</h3>
+                        <ul>
+                            {contatori.map((contatore) => (
+                                <li key={contatore._id} onClick={() => handleSelectContatore(contatore._id)}>
+                                    {contatore.seriale}
+                                </li>
+                            ))}
+                        </ul>
+                        <button onClick={() => setShowContatoreModal(false)}>Chiudi</button>
+                    </div>
                 </div>
             )}
         </div>
