@@ -32,7 +32,7 @@
     font-weight: bold;
 }
 
-.btn-show-letture, .btn-associate-cliente, .btn-associate-edificio, .btn-associate-listino, .btn-associate-lettura {
+.btn-show-letture {
     background-color: #007bff;
     color: white;
     border: none;
@@ -40,10 +40,11 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-    margin: 5px;
+    display: block;
+    margin: 20px auto;
 }
 
-.btn-show-letture:hover, .btn-associate-cliente:hover, .btn-associate-edificio:hover, .btn-associate-listino:hover, .btn-associate-lettura:hover {
+.btn-show-letture:hover {
     background-color: #0056b3;
 }
 
@@ -98,11 +99,76 @@
 .btn-container {
     display: flex;
     justify-content: space-between;
-    flex-wrap: wrap;
     margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.associated-info .cliente-info, .associated-info .edificio-info {
+    background-color: #ffffff;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.associated-info h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.associated-info p {
+    margin: 5px 0;
 }
 
 .btn-back-container {
     text-align: center;
     margin-top: 20px;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-form .form-group {
+    margin-bottom: 15px;
+}
+
+.edit-form label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.edit-form input[type="text"],
+.edit-form input[type="date"],
+.edit-form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.edit-form input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.edit-form .btn-save {
+    background-color: #28a745;
+    color: white;
+}
+
+.edit-form .btn-save:hover {
+    background-color: #218838;
+}
+
+.edit-form .btn-cancel {
+    background-color: #dc3545;
+    color: white;
+}
+
+.edit-form .btn-cancel:hover {
+    background-color: #c82333;
 }

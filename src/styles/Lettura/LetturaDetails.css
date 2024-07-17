@@ -1,4 +1,4 @@
-/* LetturaDetails.css */
+/* Styles for LetturaDetails */
 
 .lettura-detail {
     background-color: #f9f9f9;
@@ -32,7 +32,7 @@
     font-weight: bold;
 }
 
-.btn-show-servizi, .btn-associate-contatore, .btn-associate-servizio {
+.btn-show-servizi {
     background-color: #007bff;
     color: white;
     border: none;
@@ -40,10 +40,11 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-    margin: 5px;
+    display: block;
+    margin: 20px auto;
 }
 
-.btn-show-servizi:hover, .btn-associate-contatore:hover, .btn-associate-servizio:hover {
+.btn-show-servizi:hover {
     background-color: #0056b3;
 }
 
@@ -97,12 +98,51 @@
 
 .btn-container {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     margin-top: 20px;
 }
 
 .btn-back-container {
-    text-align: center;
+    display: flex;
+    justify-content: center;
     margin-top: 20px;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.edit-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.edit-form label {
+    font-weight: bold;
+}
+
+.edit-form input,
+.edit-form textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.edit-form .btn-save {
+    background-color: #28a745;
+}
+
+.edit-form .btn-save:hover {
+    background-color: #218838;
+}
+
+.edit-form .btn-cancel {
+    background-color: #6c757d;
+}
+
+.edit-form .btn-cancel:hover {
+    background-color: #5a6268;
 }

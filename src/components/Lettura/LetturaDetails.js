@@ -11,12 +11,31 @@ const LetturaDetails = ({ letturaId, onDeselectLettura }) => {
     const [showContatoreModal, setShowContatoreModal] = useState(false);
     const [showServizioModal, setShowServizioModal] = useState(false);
     const [showServizi, setShowServizi] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editFormData, setEditFormData] = useState({
+        cliente: '',
+        tipo: '',
+        data: '',
+        valore: '',
+        UdM: '',
+        fatturata: false,
+        note: ''
+    });
 
     useEffect(() => {
         const fetchLettura = async () => {
             try {
                 const response = await letturaApi.getLettura(letturaId);
                 setLettura(response.data);
+                setEditFormData({
+                    cliente: response.data.cliente,
+                    tipo: response.data.tipo,
+                    data: response.data.data,
+                    valore: response.data.valore,
+                    UdM: response.data.UdM,
+                    fatturata: response.data.fatturata,
+                    note: response.data.note
+                });
                 const contatoreResponse = response.data.contatore;
                 if (contatoreResponse) {
                     setContatori([contatoreResponse]);
@@ -95,6 +114,25 @@ const LetturaDetails = ({ letturaId, onDeselectLettura }) => {
         }
     };
 
+    const handleEditChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
+    };
+
+    const handleUpdateLettura = async (e) => {
+        e.preventDefault();
+        try {
+            await letturaApi.updateLettura(letturaId, editFormData);
+            alert('Lettura aggiornata con successo');
+            setIsEditing(false);
+            const updatedLettura = await letturaApi.getLettura(letturaId);
+            setLettura(updatedLettura.data);
+        } catch (error) {
+            alert('Errore durante l\'aggiornamento della lettura');
+            console.error(error);
+        }
+    };
+
     if (!lettura) {
         return <div>Caricamento...</div>;
     }
@@ -102,48 +140,85 @@ const LetturaDetails = ({ letturaId, onDeselectLettura }) => {
     return (
         <div className="lettura-detail">
             <h2>Dettagli Lettura</h2>
-            <table className="info-table">
-                <tbody>
-                    <tr>
-                        <th>Cliente</th>
-                        <td>{lettura.cliente}</td>
-                    </tr>
-                    <tr>
-                        <th>Tipo</th>
-                        <td>{lettura.tipo}</td>
-                    </tr>
-                    <tr>
-                        <th>Data</th>
-                        <td>{new Date(lettura.data).toLocaleDateString()}</td>
-                    </tr>
-                    <tr>
-                        <th>Valore</th>
-                        <td>{lettura.valore}</td>
-                    </tr>
-                    <tr>
-                        <th>UdM</th>
-                        <td>{lettura.UdM}</td>
-                    </tr>
-                    <tr>
-                        <th>Fatturata</th>
-                        <td>{lettura.fatturata ? 'Si' : 'No'}</td>
-                    </tr>
-                    <tr>
-                        <th>Note</th>
-                        <td>{lettura.note}</td>
-                    </tr>
-                    <tr>
-                        <th>Contatore</th>
-                        <td>{contatori.length > 0 ? contatori[0].seriale : 'N/A'}</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div className="btn-container">
-                <button onClick={fetchServiziAssociati} className="btn btn-show-servizi">Visualizza Servizi</button>
-                <button onClick={handleOpenContatoreModal} className="btn btn-associate-contatore">Associa Contatore</button>
-                <button onClick={handleOpenServizioModal} className="btn btn-associate-servizio">Associa Servizio</button>
-            </div>
+            {isEditing ? (
+                <form onSubmit={handleUpdateLettura} className="edit-form">
+                    <div className="form-group">
+                        <label>Cliente:</label>
+                        <input type="text" name="cliente" value={editFormData.cliente} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Tipo:</label>
+                        <input type="text" name="tipo" value={editFormData.tipo} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Data:</label>
+                        <input type="date" name="data" value={editFormData.data} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Valore:</label>
+                        <input type="number" name="valore" value={editFormData.valore} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>UdM:</label>
+                        <input type="text" name="UdM" value={editFormData.UdM} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Fatturata:</label>
+                        <input type="checkbox" name="fatturata" checked={editFormData.fatturata} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Note:</label>
+                        <textarea name="note" value={editFormData.note} onChange={handleEditChange}></textarea>
+                    </div>
+                    <button type="submit" className="btn btn-save">Salva</button>
+                    <button type="button" className="btn btn-cancel" onClick={() => setIsEditing(false)}>Annulla</button>
+                </form>
+            ) : (
+                <>
+                    <table className="info-table">
+                        <tbody>
+                            <tr>
+                                <th>Cliente</th>
+                                <td>{lettura.cliente}</td>
+                            </tr>
+                            <tr>
+                                <th>Tipo</th>
+                                <td>{lettura.tipo}</td>
+                            </tr>
+                            <tr>
+                                <th>Data</th>
+                                <td>{new Date(lettura.data).toLocaleDateString()}</td>
+                            </tr>
+                            <tr>
+                                <th>Valore</th>
+                                <td>{lettura.valore}</td>
+                            </tr>
+                            <tr>
+                                <th>UdM</th>
+                                <td>{lettura.UdM}</td>
+                            </tr>
+                            <tr>
+                                <th>Fatturata</th>
+                                <td>{lettura.fatturata ? 'Si' : 'No'}</td>
+                            </tr>
+                            <tr>
+                                <th>Note</th>
+                                <td>{lettura.note}</td>
+                            </tr>
+                            <tr>
+                                <th>Contatore</th>
+                                <td>{contatori.length > 0 ? contatori[0].seriale : 'N/A'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div className="btn-container">
+                        <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>
+                        <button onClick={fetchServiziAssociati} className="btn btn-show-servizi">Visualizza Servizi</button>
+                        <button onClick={handleOpenContatoreModal} className="btn btn-associate-contatore">Associa Contatore</button>
+                        <button onClick={handleOpenServizioModal} className="btn btn-associate-servizio">Associa Servizio</button>
+                    </div>
+                </>
+            )}
             <div className="btn-back-container">
                 <button onClick={onDeselectLettura} className="btn btn-back">Indietro</button>
             </div>

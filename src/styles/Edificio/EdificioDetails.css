@@ -32,13 +32,7 @@
     font-weight: bold;
 }
 
-.btn-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-.btn {
+.btn-show-contatori {
     background-color: #007bff;
     color: white;
     border: none;
@@ -46,10 +40,11 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-    margin: 5px;
+    display: block;
+    margin: 20px auto;
 }
 
-.btn:hover {
+.btn-show-contatori:hover {
     background-color: #0056b3;
 }
 
@@ -78,46 +73,7 @@
     font-weight: bold;
 }
 
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 500px;
-    width: 100%;
-}
-
-.modal-content h3 {
-    margin-top: 0;
-}
-
-.modal-content ul {
-    list-style: none;
-    padding: 0;
-}
-
-.modal-content li {
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    cursor: pointer;
-}
-
-.modal-content li:hover {
-    background-color: #f1f1f1;
-}
-
-.modal-content button {
+.btn {
     background-color: #007bff;
     color: white;
     border: none;
@@ -125,9 +81,68 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-    margin-top: 10px;
+    margin: 5px;
 }
 
-.modal-content button:hover {
+.btn:hover {
     background-color: #0056b3;
+}
+
+.btn-delete {
+    background-color: #ff3b30;
+}
+
+.btn-delete:hover {
+    background-color: #c4302b;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-back-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.edit-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.edit-form label {
+    font-weight: bold;
+}
+
+.edit-form input,
+.edit-form textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.edit-form .btn-save {
+    background-color: #28a745;
+}
+
+.edit-form .btn-save:hover {
+    background-color: #218838;
+}
+
+.edit-form .btn-cancel {
+    background-color: #6c757d;
+}
+
+.edit-form .btn-cancel:hover {
+    background-color: #5a6268;
 }

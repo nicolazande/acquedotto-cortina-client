@@ -49,8 +49,7 @@ const ServizioList = ({ onSelectServizio, selectedServizioId, onDeselectServizio
             </div>
             {selectedServizioId && (
                 <div className="servizio-detail">
-                    <ServizioDetails servizioId={selectedServizioId} />
-                    <button onClick={onDeselectServizio} className="btn btn-back">Indietro</button>
+                    <ServizioDetails servizioId={selectedServizioId} onDeselectServizio={onDeselectServizio} />
                 </div>
             )}
         </div>

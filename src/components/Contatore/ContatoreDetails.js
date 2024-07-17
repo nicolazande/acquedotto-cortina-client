@@ -14,6 +14,20 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
     const [showEdificioModal, setShowEdificioModal] = useState(false);
     const [showListinoModal, setShowListinoModal] = useState(false);
     const [showLetturaModal, setShowLetturaModal] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editFormData, setEditFormData] = useState({
+        seriale: '',
+        serialeInterno: '',
+        ultimaLettura: '',
+        attivo: true,
+        condominiale: false,
+        sostituzione: false,
+        subentro: false,
+        dataInstallazione: '',
+        dataScadenza: '',
+        foto: '',
+        note: '',
+    });
 
     const [clienti, setClienti] = useState([]);
     const [edifici, setEdifici] = useState([]);
@@ -25,6 +39,19 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
             try {
                 const response = await contatoreApi.getContatore(contatoreId);
                 setContatore(response.data);
+                setEditFormData({
+                    seriale: response.data.seriale,
+                    serialeInterno: response.data.serialeInterno,
+                    ultimaLettura: response.data.ultimaLettura,
+                    attivo: response.data.attivo,
+                    condominiale: response.data.condominiale,
+                    sostituzione: response.data.sostituzione,
+                    subentro: response.data.subentro,
+                    dataInstallazione: response.data.dataInstallazione,
+                    dataScadenza: response.data.dataScadenza,
+                    foto: response.data.foto,
+                    note: response.data.note,
+                });
             } catch (error) {
                 alert('Errore durante il recupero del contatore');
                 console.error(error);
@@ -140,6 +167,25 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
         }
     };
 
+    const handleEditChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
+    };
+
+    const handleUpdateContatore = async (e) => {
+        e.preventDefault();
+        try {
+            await contatoreApi.updateContatore(contatoreId, editFormData);
+            alert('Contatore aggiornato con successo');
+            setIsEditing(false);
+            const updatedContatore = await contatoreApi.getContatore(contatoreId);
+            setContatore(updatedContatore.data);
+        } catch (error) {
+            alert('Errore durante l\'aggiornamento del contatore');
+            console.error(error);
+        }
+    };
+
     if (!contatore) {
         return <div>Seleziona un contatore per vedere i dettagli</div>;
     }
@@ -147,65 +193,119 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
     return (
         <div className="contatore-detail">
             <h2>Dettagli Contatore</h2>
-            <table className="info-table">
-                <tbody>
-                    <tr>
-                        <th>Seriale</th>
-                        <td>{contatore.seriale}</td>
-                    </tr>
-                    <tr>
-                        <th>Seriale Interno</th>
-                        <td>{contatore.serialeInterno}</td>
-                    </tr>
-                    <tr>
-                        <th>Ultima Lettura</th>
-                        <td>{new Date(contatore.ultimaLettura).toLocaleDateString()}</td>
-                    </tr>
-                    <tr>
-                        <th>Attivo</th>
-                        <td>{contatore.attivo ? 'Sì' : 'No'}</td>
-                    </tr>
-                    <tr>
-                        <th>Condominiale</th>
-                        <td>{contatore.condominiale ? 'Sì' : 'No'}</td>
-                    </tr>
-                    <tr>
-                        <th>Sostituzione</th>
-                        <td>{contatore.sostituzione ? 'Sì' : 'No'}</td>
-                    </tr>
-                    <tr>
-                        <th>Subentro</th>
-                        <td>{contatore.subentro ? 'Sì' : 'No'}</td>
-                    </tr>
-                    <tr>
-                        <th>Data Installazione</th>
-                        <td>{new Date(contatore.dataInstallazione).toLocaleDateString()}</td>
-                    </tr>
-                    <tr>
-                        <th>Data Scadenza</th>
-                        <td>{new Date(contatore.dataScadenza).toLocaleDateString()}</td>
-                    </tr>
-                    <tr>
-                        <th>Note</th>
-                        <td>{contatore.note}</td>
-                    </tr>
-                    <tr>
-                        <th>Cliente</th>
-                        <td>{contatore.cliente ? `${contatore.cliente.nome} ${contatore.cliente.cognome}` : 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <th>Edificio</th>
-                        <td>{contatore.edificio ? contatore.edificio.descrizione : 'N/A'}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div className="btn-container">
-                <button onClick={fetchLetture} className="btn btn-show-letture">Visualizza Letture</button>
-                <button onClick={handleOpenClienteModal} className="btn btn-associate-cliente">Associa Cliente</button>
-                <button onClick={handleOpenEdificioModal} className="btn btn-associate-edificio">Associa Edificio</button>
-                <button onClick={handleOpenListinoModal} className="btn btn-associate-listino">Associa Listino</button>
-                <button onClick={handleOpenLetturaModal} className="btn btn-associate-lettura">Associa Lettura</button>
-            </div>
+            {isEditing ? (
+                <form onSubmit={handleUpdateContatore} className="edit-form">
+                    <div className="form-group">
+                        <label>Seriale:</label>
+                        <input type="text" name="seriale" value={editFormData.seriale} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Seriale Interno:</label>
+                        <input type="text" name="serialeInterno" value={editFormData.serialeInterno} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Ultima Lettura:</label>
+                        <input type="date" name="ultimaLettura" value={editFormData.ultimaLettura} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Attivo:</label>
+                        <input type="checkbox" name="attivo" checked={editFormData.attivo} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Condominiale:</label>
+                        <input type="checkbox" name="condominiale" checked={editFormData.condominiale} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Sostituzione:</label>
+                        <input type="checkbox" name="sostituzione" checked={editFormData.sostituzione} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Subentro:</label>
+                        <input type="checkbox" name="subentro" checked={editFormData.subentro} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Data Installazione:</label>
+                        <input type="date" name="dataInstallazione" value={editFormData.dataInstallazione} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Data Scadenza:</label>
+                        <input type="date" name="dataScadenza" value={editFormData.dataScadenza} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Foto:</label>
+                        <input type="text" name="foto" value={editFormData.foto} onChange={handleEditChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Note:</label>
+                        <textarea name="note" value={editFormData.note} onChange={handleEditChange} />
+                    </div>
+                    <button type="submit" className="btn btn-save">Salva</button>
+                    <button type="button" className="btn btn-cancel" onClick={() => setIsEditing(false)}>Annulla</button>
+                </form>
+            ) : (
+                <>
+                    <table className="info-table">
+                        <tbody>
+                            <tr>
+                                <th>Seriale</th>
+                                <td>{contatore.seriale}</td>
+                            </tr>
+                            <tr>
+                                <th>Seriale Interno</th>
+                                <td>{contatore.serialeInterno}</td>
+                            </tr>
+                            <tr>
+                                <th>Ultima Lettura</th>
+                                <td>{new Date(contatore.ultimaLettura).toLocaleDateString()}</td>
+                            </tr>
+                            <tr>
+                                <th>Attivo</th>
+                                <td>{contatore.attivo ? 'Sì' : 'No'}</td>
+                            </tr>
+                            <tr>
+                                <th>Condominiale</th>
+                                <td>{contatore.condominiale ? 'Sì' : 'No'}</td>
+                            </tr>
+                            <tr>
+                                <th>Sostituzione</th>
+                                <td>{contatore.sostituzione ? 'Sì' : 'No'}</td>
+                            </tr>
+                            <tr>
+                                <th>Subentro</th>
+                                <td>{contatore.subentro ? 'Sì' : 'No'}</td>
+                            </tr>
+                            <tr>
+                                <th>Data Installazione</th>
+                                <td>{new Date(contatore.dataInstallazione).toLocaleDateString()}</td>
+                            </tr>
+                            <tr>
+                                <th>Data Scadenza</th>
+                                <td>{new Date(contatore.dataScadenza).toLocaleDateString()}</td>
+                            </tr>
+                            <tr>
+                                <th>Note</th>
+                                <td>{contatore.note}</td>
+                            </tr>
+                            <tr>
+                                <th>Cliente</th>
+                                <td>{contatore.cliente ? `${contatore.cliente.nome} ${contatore.cliente.cognome}` : 'N/A'}</td>
+                            </tr>
+                            <tr>
+                                <th>Edificio</th>
+                                <td>{contatore.edificio ? contatore.edificio.descrizione : 'N/A'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div className="btn-container">
+                        <button onClick={fetchLetture} className="btn btn-show-letture">Visualizza Letture</button>
+                        <button onClick={handleOpenClienteModal} className="btn btn-associate-cliente">Associa Cliente</button>
+                        <button onClick={handleOpenEdificioModal} className="btn btn-associate-edificio">Associa Edificio</button>
+                        <button onClick={handleOpenListinoModal} className="btn btn-associate-listino">Associa Listino</button>
+                        <button onClick={handleOpenLetturaModal} className="btn btn-associate-lettura">Associa Lettura</button>
+                        <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>
+                    </div>
+                </>
+            )}
             <div className="btn-back-container">
                 <button onClick={onDeselectContatore} className="btn btn-back">Indietro</button>
             </div>
@@ -223,15 +323,21 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {letture.map((lettura) => (
-                                <tr key={lettura._id}>
-                                    <td>{new Date(lettura.data).toLocaleDateString()}</td>
-                                    <td>{lettura.valore}</td>
-                                    <td>{lettura.UdM}</td>
-                                    <td><input type="checkbox" checked={lettura.fatturata} readOnly /></td>
-                                    <td>{lettura.note}</td>
+                            {letture.length === 0 ? (
+                                <tr>
+                                    <td colSpan="5">Nessuna lettura associata</td>
                                 </tr>
-                            ))}
+                            ) : (
+                                letture.map((lettura) => (
+                                    <tr key={lettura._id}>
+                                        <td>{new Date(lettura.data).toLocaleDateString()}</td>
+                                        <td>{lettura.valore}</td>
+                                        <td>{lettura.UdM}</td>
+                                        <td><input type="checkbox" checked={lettura.fatturata} readOnly /></td>
+                                        <td>{lettura.note}</td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
