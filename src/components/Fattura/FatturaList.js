@@ -5,6 +5,7 @@ import '../../styles/Fattura/FatturaList.css';
 
 const FatturaList = ({ onSelectFattura, selectedFatturaId, onDeselectFattura }) => {
     const [fatture, setFatture] = useState([]);
+    const [showDetails, setShowDetails] = useState(false);
 
     useEffect(() => {
         const fetchFatture = async () => {
@@ -19,6 +20,14 @@ const FatturaList = ({ onSelectFattura, selectedFatturaId, onDeselectFattura }) 
 
         fetchFatture();
     }, []);
+
+    const handleSelectFattura = (fatturaId) => {
+        setShowDetails(false); // Nascondi i dettagli correnti
+        setTimeout(() => {
+            onSelectFattura(fatturaId);
+            setShowDetails(true); // Mostra i nuovi dettagli dopo una piccola pausa per garantire che i vecchi dettagli siano chiusi
+        }, 0);
+    };
 
     const handleDelete = async (id) => {
         try {
@@ -39,18 +48,21 @@ const FatturaList = ({ onSelectFattura, selectedFatturaId, onDeselectFattura }) 
                 <h2>Lista Fatture</h2>
                 <ul>
                     {fatture.map((fattura) => (
-                        <li key={fattura._id} className="fattura-list-item">
+                        <li
+                            key={fattura._id}
+                            id={fattura._id}
+                            className={`fattura-list-item ${fattura._id === selectedFatturaId ? 'highlight' : ''}`}
+                        >
                             <span>{fattura.tipo} - {fattura.ragioneSociale}</span>
-                            <button onClick={() => onSelectFattura(fattura._id)} className="btn btn-details">Dettagli</button>
-                            <button onClick={() => handleDelete(fattura._id)} className="btn btn-delete">Cancella</button>
+                            <button className="btn" onClick={() => handleSelectFattura(fattura._id)}>Dettagli</button>
+                            <button className="btn btn-delete" onClick={() => handleDelete(fattura._id)}>Cancella</button>
                         </li>
                     ))}
                 </ul>
             </div>
-            {selectedFatturaId && (
+            {showDetails && selectedFatturaId && (
                 <div className="fattura-detail">
-                    <FatturaDetails fatturaId={selectedFatturaId} />
-                    <button onClick={onDeselectFattura} className="btn btn-back">Indietro</button>
+                    <FatturaDetails fatturaId={selectedFatturaId} onDeselectFattura={onDeselectFattura} />
                 </div>
             )}
         </div>

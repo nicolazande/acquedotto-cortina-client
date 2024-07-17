@@ -1,3 +1,5 @@
+/* Styles for FatturaList */
+
 .fattura-list-container {
     display: flex;
     flex-direction: column;
@@ -5,12 +7,13 @@
 }
 
 .fattura-list {
-    width: 100%;
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px 0;
+    margin: 20px;
+    max-width: 1200px;
+    width: 100%;
 }
 
 .fattura-list h2 {
@@ -19,9 +22,8 @@
 }
 
 .fattura-list ul {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
-    width: 100%;
 }
 
 .fattura-list-item {
@@ -36,50 +38,38 @@
     background-color: #f1f1f1;
 }
 
-.btn {
+.fattura-list-item span {
+    flex-grow: 1;
+}
+
+.fattura-list-item .btn {
     background-color: #007aff;
     color: white;
     border: none;
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-}
-
-.btn-details {
     margin-left: 10px;
+    transition: background-color 0.3s;
 }
 
-.btn-delete {
+.fattura-list-item .btn:hover {
+    background-color: #005bb5;
+}
+
+.fattura-list-item .btn-delete {
     background-color: #ff3b30;
 }
 
-.btn:hover {
-    background-color: #005bb5;
-}
-
-.btn-delete:hover {
+.fattura-list-item .btn-delete:hover {
     background-color: #c4302b;
 }
 
+.fattura-list-item.highlight {
+    background-color: #ffffcc;
+}
+
 .fattura-detail {
+    margin-top: 20px;
     width: 100%;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px 0;
-}
-
-.btn-back {
-    background-color: #007aff;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.btn-back:hover {
-    background-color: #005bb5;
 }
