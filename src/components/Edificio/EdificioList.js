@@ -93,7 +93,7 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
 
     const handleMarkerClick = (marker) => {
         const { _id } = marker.edificio;
-        onSelectEdificio(_id);
+        handleSelectEdificio(_id);
 
         scrollToEdificioRow(_id);
 
@@ -126,6 +126,14 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
 
         marker.setIcon(L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png' }));
         highlightedMarkerRef.current = marker;
+    };
+
+    const handleSelectEdificio = (edificioId) => {
+        if (selectedEdificioId === edificioId) {
+            onDeselectEdificio();
+        } else {
+            onSelectEdificio(edificioId);
+        }
     };
 
     return (
@@ -162,7 +170,7 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
                                 <td>{edificio.longitudine}</td>
                                 <td>{edificio.latitudine}</td>
                                 <td>
-                                    <button className="btn" onClick={(e) => { e.stopPropagation(); onSelectEdificio(edificio._id); }}>Dettagli</button>
+                                    <button className="btn" onClick={(e) => { e.stopPropagation(); handleSelectEdificio(edificio._id); }}>Dettagli</button>
                                     <button className="btn btn-delete" onClick={(e) => handleDelete(edificio._id, e)}>Cancella</button>
                                 </td>
                             </tr>
@@ -172,8 +180,7 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
             </div>
             {selectedEdificioId && (
                 <div className="edificio-detail">
-                    <EdificioDetails edificioId={selectedEdificioId} />
-                    <button onClick={onDeselectEdificio} className="btn btn-back">Indietro</button>
+                    <EdificioDetails edificioId={selectedEdificioId} onDeselectEdificio={onDeselectEdificio} />
                 </div>
             )}
         </div>

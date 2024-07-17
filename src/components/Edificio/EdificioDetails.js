@@ -2,16 +2,18 @@ import React, { useEffect, useState } from 'react';
 import edificioApi from '../../api/edificioApi';
 import '../../styles/Edificio/EdificioDetails.css';
 
-const EdificioDetails = ({ edificioId }) => {
+const EdificioDetails = ({ edificioId, onDeselectEdificio }) => {
     const [edificio, setEdificio] = useState(null);
     const [contatori, setContatori] = useState([]);
     const [showContatori, setShowContatori] = useState(false);
+    const [showContatoreModal, setShowContatoreModal] = useState(false);
 
     useEffect(() => {
         const fetchEdificio = async () => {
             try {
                 const response = await edificioApi.getEdificio(edificioId);
                 setEdificio(response.data);
+                setShowContatori(false);  // Chiude i contatori ogni volta che l'edificioId cambia
             } catch (error) {
                 alert('Errore durante il recupero dell\'edificio');
                 console.error(error);
@@ -28,6 +30,17 @@ const EdificioDetails = ({ edificioId }) => {
             const response = await edificioApi.getContatori(edificioId);
             setContatori(response.data);
             setShowContatori(true);
+        } catch (error) {
+            alert('Errore durante il recupero dei contatori');
+            console.error(error);
+        }
+    };
+
+    const handleOpenContatoreModal = async () => {
+        try {
+            const response = await edificioApi.getContatori(edificioId);
+            setContatori(response.data);
+            setShowContatoreModal(true);
         } catch (error) {
             alert('Errore durante il recupero dei contatori');
             console.error(error);
@@ -117,7 +130,11 @@ const EdificioDetails = ({ edificioId }) => {
                     </tr>
                 </tbody>
             </table>
-            <button onClick={fetchContatori} className="btn-show-contatori">Visualizza Contatori</button>
+            <div className="btn-container">
+                <button onClick={fetchContatori} className="btn btn-show-contatori">Visualizza Contatori</button>
+                <button onClick={handleOpenContatoreModal} className="btn btn-associate-contatore">Associa Contatore</button>
+                <button onClick={onDeselectEdificio} className="btn btn-back">Indietro</button>
+            </div>
             {showContatori && (
                 <div className="contatori-section">
                     <h3>Contatori Associati</h3>
@@ -135,18 +152,24 @@ const EdificioDetails = ({ edificioId }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {contatori.map((contatore) => (
-                                <tr key={contatore._id}>
-                                    <td>{contatore.cliente ? `${contatore.cliente.nome} ${contatore.cliente.cognome}` : 'N/A'}</td>
-                                    <td>{contatore.seriale}</td>
-                                    <td>{contatore.serialeInterno}</td>
-                                    <td>{new Date(contatore.ultimaLettura).toLocaleDateString()}</td>
-                                    <td><input type="checkbox" checked={!contatore.attivo} readOnly /></td>
-                                    <td><input type="checkbox" checked={contatore.condominiale} readOnly /></td>
-                                    <td><input type="checkbox" checked={contatore.sostituzione} readOnly /></td>
-                                    <td><input type="checkbox" checked={contatore.subentro} readOnly /></td>
+                            {contatori.length > 0 ? (
+                                contatori.map((contatore) => (
+                                    <tr key={contatore._id}>
+                                        <td>{contatore.cliente ? `${contatore.cliente.nome} ${contatore.cliente.cognome}` : 'N/A'}</td>
+                                        <td>{contatore.seriale}</td>
+                                        <td>{contatore.serialeInterno}</td>
+                                        <td>{new Date(contatore.ultimaLettura).toLocaleDateString()}</td>
+                                        <td><input type="checkbox" checked={!contatore.attivo} readOnly /></td>
+                                        <td><input type="checkbox" checked={contatore.condominiale} readOnly /></td>
+                                        <td><input type="checkbox" checked={contatore.sostituzione} readOnly /></td>
+                                        <td><input type="checkbox" checked={contatore.subentro} readOnly /></td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="8">Nessun contatore associato</td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>

@@ -1,5 +1,3 @@
-/* Styles for ClienteDetails */
-
 .cliente-details {
     background-color: #f9f9f9;
     padding: 20px;
@@ -12,12 +10,14 @@
 
 .cliente-info,
 .contatori-section,
-.contatore-detail {
+.contatore-detail,
+.fatture-section {
     margin-bottom: 20px;
 }
 
 .info-table,
-.contatori-table {
+.contatori-table,
+.fatture-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
@@ -26,27 +26,35 @@
 .info-table th,
 .info-table td,
 .contatori-table th,
-.contatori-table td {
+.contatori-table td,
+.fatture-table th,
+.fatture-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
 }
 
 .info-table th,
-.contatori-table th {
+.contatori-table th,
+.fatture-table th {
     background-color: #f2f2f2;
     color: #333;
 }
 
-.contatori-table tr:hover {
+.contatori-table tr:hover,
+.fatture-table tr:hover {
     background-color: #f1f1f1;
 }
 
-.contatori-table tr td input[type="checkbox"] {
+.contatori-table tr td input[type="checkbox"],
+.fatture-table tr td input[type="checkbox"] {
     cursor: not-allowed;
 }
 
 .btn-show-contatori,
+.btn-show-fatture,
+.btn-associate-contatore,
+.btn-associate-fattura,
 .btn-details {
     background-color: #007aff;
     color: white;
@@ -60,6 +68,29 @@
 }
 
 .btn-show-contatori:hover,
+.btn-show-fatture:hover,
+.btn-associate-contatore:hover,
+.btn-associate-fattura:hover,
 .btn-details:hover {
     background-color: #005bb5;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 500px;
 }

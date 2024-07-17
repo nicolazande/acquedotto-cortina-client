@@ -1,4 +1,4 @@
-/* ContatoreDetails.css */
+/* Styles for ContatoreDetails */
 
 .contatore-detail {
     background-color: #f9f9f9;
@@ -32,7 +32,7 @@
     font-weight: bold;
 }
 
-.btn-show-letture {
+.btn-show-letture, .btn-associate-cliente, .btn-associate-edificio, .btn-associate-listino, .btn-associate-lettura {
     background-color: #007bff;
     color: white;
     border: none;
@@ -40,11 +40,10 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-    display: block;
-    margin: 20px auto;
+    margin: 5px;
 }
 
-.btn-show-letture:hover {
+.btn-show-letture:hover, .btn-associate-cliente:hover, .btn-associate-edificio:hover, .btn-associate-listino:hover, .btn-associate-lettura:hover {
     background-color: #0056b3;
 }
 
@@ -99,23 +98,11 @@
 .btn-container {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     margin-top: 20px;
 }
 
-.associated-info .cliente-info, .associated-info .edificio-info {
-    background-color: #ffffff;
-    padding: 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
-.associated-info h3 {
-    margin-top: 0;
-    font-size: 1.2em;
-    margin-bottom: 10px;
-}
-
-.associated-info p {
-    margin: 5px 0;
+.btn-back-container {
+    text-align: center;
+    margin-top: 20px;
 }

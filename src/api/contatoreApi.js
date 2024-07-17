@@ -12,6 +12,7 @@ const contatoreApi =
     associateCliente: (contatoreId, clienteId) => axios.post(`${API_URL}/${contatoreId}/clienti/${clienteId}`),
     associateEdificio: (contatoreId, edificioId) => axios.post(`${API_URL}/${contatoreId}/edifici/${edificioId}`),
     associateListino: (contatoreId, listinoId) => axios.post(`${API_URL}/${contatoreId}/listini/${listinoId}`),
+    associateLettura: (contatoreId, letturaId) => axios.post(`${API_URL}/${contatoreId}/letture/${letturaId}`),
     getListino: (id) => axios.get(`${API_URL}/${id}/listino`),
     getEdificio: (id) => axios.get(`${API_URL}/${id}/edificio`),
     getLetture: (id) => axios.get(`${API_URL}/${id}/letture`),

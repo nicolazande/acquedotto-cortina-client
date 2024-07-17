@@ -33,6 +33,13 @@ const ClienteList = ({ onSelectCliente, selectedClienteId, onDeselectCliente }) 
         }
     };
 
+    const handleSelectCliente = (clienteId) => {
+        onDeselectCliente(); // Chiudi i dettagli del cliente precedente
+        setTimeout(() => { // Aspetta un breve istante per permettere la chiusura dei dettagli precedenti
+            onSelectCliente(clienteId); // Seleziona il nuovo cliente
+        }, 0);
+    };
+
     return (
         <div className="cliente-list-container">
             <div className="cliente-list">
@@ -43,10 +50,9 @@ const ClienteList = ({ onSelectCliente, selectedClienteId, onDeselectCliente }) 
                             key={cliente._id}
                             id={cliente._id}
                             className={`cliente-list-item ${cliente._id === selectedClienteId ? 'highlight' : ''}`}
-                            //onClick={() => onSelectCliente(cliente._id)}
                         >
                             <span>{cliente.nome} {cliente.cognome}</span>
-                            <button className="btn" onClick={(e) => { e.stopPropagation(); onSelectCliente(cliente._id); }}>Dettagli</button>
+                            <button className="btn" onClick={(e) => { e.stopPropagation(); handleSelectCliente(cliente._id); }}>Dettagli</button>
                             <button className="btn btn-delete" onClick={(e) => { e.stopPropagation(); handleDelete(cliente._id); }}>Cancella</button>
                         </li>
                     ))}
@@ -54,8 +60,7 @@ const ClienteList = ({ onSelectCliente, selectedClienteId, onDeselectCliente }) 
             </div>
             {selectedClienteId && (
                 <div className="cliente-detail">
-                    <ClienteDetails clienteId={selectedClienteId} />
-                    <button onClick={onDeselectCliente} className="btn btn-back">Indietro</button>
+                    <ClienteDetails clienteId={selectedClienteId} onDeselectCliente={onDeselectCliente} />
                 </div>
             )}
         </div>

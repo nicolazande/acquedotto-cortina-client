@@ -5,6 +5,7 @@ import '../../styles/Contatore/ContatoreList.css';
 
 const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectContatore }) => {
     const [contatori, setContatori] = useState([]);
+    const [showDetails, setShowDetails] = useState(false);
 
     useEffect(() => {
         const fetchContatori = async () => {
@@ -19,6 +20,14 @@ const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectConta
 
         fetchContatori();
     }, []);
+
+    const handleSelectContatore = (contatoreId) => {
+        setShowDetails(false); // Nascondi i dettagli correnti
+        setTimeout(() => {
+            onSelectContatore(contatoreId);
+            setShowDetails(true); // Mostra i nuovi dettagli dopo una piccola pausa per garantire che i vecchi dettagli siano chiusi
+        }, 0);
+    };
 
     const handleDelete = async (id) => {
         try {
@@ -39,18 +48,21 @@ const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectConta
                 <h2>Lista Contatori</h2>
                 <ul>
                     {contatori.map((contatore) => (
-                        <li key={contatore._id} className="contatore-list-item">
+                        <li
+                            key={contatore._id}
+                            id={contatore._id}
+                            className={`contatore-list-item ${contatore._id === selectedContatoreId ? 'highlight' : ''}`}
+                        >
                             <span>{contatore.seriale}</span>
-                            <button onClick={() => onSelectContatore(contatore._id)} className="btn btn-details">Dettagli</button>
-                            <button onClick={() => handleDelete(contatore._id)} className="btn btn-delete">Cancella</button>
+                            <button className="btn" onClick={() => handleSelectContatore(contatore._id)}>Dettagli</button>
+                            <button className="btn btn-delete" onClick={() => handleDelete(contatore._id)}>Cancella</button>
                         </li>
                     ))}
                 </ul>
             </div>
-            {selectedContatoreId && (
+            {showDetails && selectedContatoreId && (
                 <div className="contatore-detail">
-                    <ContatoreDetails contatoreId={selectedContatoreId} />
-                    <button onClick={onDeselectContatore} className="btn btn-back">Indietro</button>
+                    <ContatoreDetails contatoreId={selectedContatoreId} onDeselectContatore={onDeselectContatore} />
                 </div>
             )}
         </div>

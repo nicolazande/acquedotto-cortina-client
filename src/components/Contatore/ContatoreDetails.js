@@ -1,11 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import contatoreApi from '../../api/contatoreApi';
+import clienteApi from '../../api/clienteApi';
+import edificioApi from '../../api/edificioApi';
+import listinoApi from '../../api/listinoApi';
+import letturaApi from '../../api/letturaApi';
 import '../../styles/Contatore/ContatoreDetails.css';
 
-const ContatoreDetails = ({ contatoreId }) => {
+const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
     const [contatore, setContatore] = useState(null);
     const [letture, setLetture] = useState([]);
     const [showLetture, setShowLetture] = useState(false);
+    const [showClienteModal, setShowClienteModal] = useState(false);
+    const [showEdificioModal, setShowEdificioModal] = useState(false);
+    const [showListinoModal, setShowListinoModal] = useState(false);
+    const [showLetturaModal, setShowLetturaModal] = useState(false);
+
+    const [clienti, setClienti] = useState([]);
+    const [edifici, setEdifici] = useState([]);
+    const [listini, setListini] = useState([]);
+    const [lettureList, setLettureList] = useState([]);
 
     useEffect(() => {
         const fetchContatore = async () => {
@@ -21,6 +34,11 @@ const ContatoreDetails = ({ contatoreId }) => {
         if (contatoreId) {
             fetchContatore();
         }
+
+        setShowClienteModal(false);
+        setShowEdificioModal(false);
+        setShowListinoModal(false);
+        setShowLetturaModal(false);
     }, [contatoreId]);
 
     const fetchLetture = async () => {
@@ -30,6 +48,94 @@ const ContatoreDetails = ({ contatoreId }) => {
             setShowLetture(true);
         } catch (error) {
             alert('Errore durante il recupero delle letture');
+            console.error(error);
+        }
+    };
+
+    const handleOpenClienteModal = async () => {
+        try {
+            const response = await clienteApi.getClienti();
+            setClienti(response.data);
+            setShowClienteModal(true);
+        } catch (error) {
+            alert('Errore durante il recupero dei clienti');
+            console.error(error);
+        }
+    };
+
+    const handleOpenEdificioModal = async () => {
+        try {
+            const response = await edificioApi.getEdifici();
+            setEdifici(response.data);
+            setShowEdificioModal(true);
+        } catch (error) {
+            alert('Errore durante il recupero degli edifici');
+            console.error(error);
+        }
+    };
+
+    const handleOpenListinoModal = async () => {
+        try {
+            const response = await listinoApi.getListini();
+            setListini(response.data);
+            setShowListinoModal(true);
+        } catch (error) {
+            alert('Errore durante il recupero dei listini');
+            console.error(error);
+        }
+    };
+
+    const handleOpenLetturaModal = async () => {
+        try {
+            const response = await letturaApi.getLetture();
+            setLettureList(response.data);
+            setShowLetturaModal(true);
+        } catch (error) {
+            alert('Errore durante il recupero delle letture');
+            console.error(error);
+        }
+    };
+
+    const handleSelectCliente = async (clienteId) => {
+        try {
+            await contatoreApi.associateCliente(contatoreId, clienteId);
+            setShowClienteModal(false);
+            setContatore((prevData) => ({ ...prevData, cliente: { _id: clienteId } }));
+        } catch (error) {
+            alert('Errore durante l\'associazione del cliente');
+            console.error(error);
+        }
+    };
+
+    const handleSelectEdificio = async (edificioId) => {
+        try {
+            await contatoreApi.associateEdificio(contatoreId, edificioId);
+            setShowEdificioModal(false);
+            setContatore((prevData) => ({ ...prevData, edificio: { _id: edificioId } }));
+        } catch (error) {
+            alert('Errore durante l\'associazione dell\'edificio');
+            console.error(error);
+        }
+    };
+
+    const handleSelectListino = async (listinoId) => {
+        try {
+            await contatoreApi.associateListino(contatoreId, listinoId);
+            setShowListinoModal(false);
+            setContatore((prevData) => ({ ...prevData, listino: { _id: listinoId } }));
+        } catch (error) {
+            alert('Errore durante l\'associazione del listino');
+            console.error(error);
+        }
+    };
+
+    const handleSelectLettura = async (letturaId) => {
+        try {
+            await contatoreApi.associateLettura(contatoreId, letturaId);
+            setShowLetturaModal(false);
+            fetchLetture();
+        } catch (error) {
+            alert('Errore durante l\'associazione della lettura');
             console.error(error);
         }
     };
@@ -93,7 +199,16 @@ const ContatoreDetails = ({ contatoreId }) => {
                     </tr>
                 </tbody>
             </table>
-            <button onClick={fetchLetture} className="btn-show-letture">Visualizza Letture</button>
+            <div className="btn-container">
+                <button onClick={fetchLetture} className="btn btn-show-letture">Visualizza Letture</button>
+                <button onClick={handleOpenClienteModal} className="btn btn-associate-cliente">Associa Cliente</button>
+                <button onClick={handleOpenEdificioModal} className="btn btn-associate-edificio">Associa Edificio</button>
+                <button onClick={handleOpenListinoModal} className="btn btn-associate-listino">Associa Listino</button>
+                <button onClick={handleOpenLetturaModal} className="btn btn-associate-lettura">Associa Lettura</button>
+            </div>
+            <div className="btn-back-container">
+                <button onClick={onDeselectContatore} className="btn btn-back">Indietro</button>
+            </div>
             {showLetture && (
                 <div className="letture-section">
                     <h3>Letture Associate</h3>
@@ -119,6 +234,66 @@ const ContatoreDetails = ({ contatoreId }) => {
                             ))}
                         </tbody>
                     </table>
+                </div>
+            )}
+            {showClienteModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Seleziona Cliente</h3>
+                        <ul>
+                            {clienti.map((cliente) => (
+                                <li key={cliente._id} onClick={() => handleSelectCliente(cliente._id)}>
+                                    {cliente.nome} {cliente.cognome}
+                                </li>
+                            ))}
+                        </ul>
+                        <button onClick={() => setShowClienteModal(false)}>Chiudi</button>
+                    </div>
+                </div>
+            )}
+            {showEdificioModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Seleziona Edificio</h3>
+                        <ul>
+                            {edifici.map((edificio) => (
+                                <li key={edificio._id} onClick={() => handleSelectEdificio(edificio._id)}>
+                                    {edificio.descrizione}
+                                </li>
+                            ))}
+                        </ul>
+                        <button onClick={() => setShowEdificioModal(false)}>Chiudi</button>
+                    </div>
+                </div>
+            )}
+            {showListinoModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Seleziona Listino</h3>
+                        <ul>
+                            {listini.map((listino) => (
+                                <li key={listino._id} onClick={() => handleSelectListino(listino._id)}>
+                                    {listino.descrizione}
+                                </li>
+                            ))}
+                        </ul>
+                        <button onClick={() => setShowListinoModal(false)}>Chiudi</button>
+                    </div>
+                </div>
+            )}
+            {showLetturaModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Seleziona Lettura</h3>
+                        <ul>
+                            {lettureList.map((lettura) => (
+                                <li key={lettura._id} onClick={() => handleSelectLettura(lettura._id)}>
+                                    {new Date(lettura.data).toLocaleDateString()} - {lettura.valore} {lettura.UdM}
+                                </li>
+                            ))}
+                        </ul>
+                        <button onClick={() => setShowLetturaModal(false)}>Chiudi</button>
+                    </div>
                 </div>
             )}
         </div>

@@ -5,9 +5,14 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+.edificio-detail h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .edificio-table {
@@ -16,72 +21,113 @@
     margin-bottom: 20px;
 }
 
-.edificio-table th,
-.edificio-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+.edificio-table th, .edificio-table td {
     text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
 }
 
 .edificio-table th {
     background-color: #f2f2f2;
-    color: #333;
+    font-weight: bold;
 }
 
-.edificio-table tbody tr:nth-child(odd) {
-    background-color: #f9f9f9;
-}
-
-.btn-show-contatori {
-    background-color: #007aff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+.btn-container {
+    display: flex;
+    justify-content: space-between;
     margin-top: 20px;
 }
 
-.btn-show-contatori:hover {
-    background-color: #005bb5;
+.btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
 }
 
 .contatori-section {
     margin-top: 20px;
 }
 
-.contatori-table {
-    width: 100%;
-    border-collapse: collapse;
+.contatori-section h3 {
+    text-align: center;
     margin-bottom: 20px;
 }
 
-.contatori-table th,
-.contatori-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+.contatori-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.contatori-table th, .contatori-table td {
     text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
 }
 
 .contatori-table th {
     background-color: #f2f2f2;
-    color: #333;
+    font-weight: bold;
 }
 
-.contatori-table tbody tr:nth-child(odd) {
-    background-color: #f9f9f9;
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.btn-details {
-    background-color: #007aff;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 100%;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+}
+
+.modal-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.modal-content li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
     cursor: pointer;
 }
 
-.btn-details:hover {
-    background-color: #005bb5;
+.modal-content li:hover {
+    background-color: #f1f1f1;
+}
+
+.modal-content button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.modal-content button:hover {
+    background-color: #0056b3;
 }

@@ -4,30 +4,15 @@ const API_URL = `${process.env.REACT_APP_API_URL}/api/clienti`;
 
 const clienteApi =
 {
-    createCliente: (data) =>
-    {
-        return axios.post(API_URL, data);
-    },
-    getClienti: () =>
-    {
-        return axios.get(API_URL);
-    },
-    getCliente: (id) =>
-    {
-        return axios.get(`${API_URL}/${id}`);
-    },
-    updateCliente: (id, data) =>
-    {
-        return axios.put(`${API_URL}/${id}`, data);
-    },
-    deleteCliente: (id) =>
-    {
-        return axios.delete(`${API_URL}/${id}`);
-    },
-    getContatori: (id) =>
-    {
-        return axios.get(`${API_URL}/${id}/contatori`)
-    }
+    createCliente: (data) => axios.post(API_URL, data),
+    getClienti: () => axios.get(API_URL),
+    getCliente: (id) => axios.get(`${API_URL}/${id}`),
+    updateCliente: (id, data) => axios.put(`${API_URL}/${id}`, data),
+    deleteCliente: (id) => axios.delete(`${API_URL}/${id}`),
+    associateContatore: (clienteId, contatoreId) => axios.post(`${API_URL}/${clienteId}/contatori/${contatoreId}`),
+    associateFattura: (clienteId, fatturaId) => axios.post(`${API_URL}/${clienteId}/fatture/${fatturaId}`),
+    getContatori: (id) => axios.get(`${API_URL}/${id}/contatori`),
+    getFatture: (id) => axios.get(`${API_URL}/${id}/fatture`),
 };
 
 export default clienteApi;
