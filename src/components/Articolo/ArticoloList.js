@@ -49,8 +49,7 @@ const ArticoloList = ({ onSelectArticolo, selectedArticoloId, onDeselectArticolo
             </div>
             {selectedArticoloId && (
                 <div className="articolo-detail">
-                    <ArticoloDetails articoloId={selectedArticoloId} />
-                    <button onClick={onDeselectArticolo} className="btn btn-back">Indietro</button>
+                    <ArticoloDetails articoloId={selectedArticoloId} onDeselectArticolo={onDeselectArticolo} />
                 </div>
             )}
         </div>

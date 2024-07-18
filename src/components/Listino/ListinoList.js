@@ -49,8 +49,7 @@ const ListinoList = ({ onSelectListino, selectedListinoId, onDeselectListino }) 
             </div>
             {selectedListinoId && (
                 <div className="listino-detail">
-                    <ListinoDetails listinoId={selectedListinoId} />
-                    <button onClick={onDeselectListino} className="btn btn-back">Indietro</button>
+                    <ListinoDetails listinoId={selectedListinoId} onDeselectListino={onDeselectListino} />
                 </div>
             )}
         </div>
