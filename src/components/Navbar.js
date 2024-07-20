@@ -1,50 +1,46 @@
-// client/src/components/Navbar.js
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/Navbar.css';
-import { useAuth } from '../contexts/AuthContext';
+import '../styles/Navbar.css'
 
-const Navbar = () => {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
-    const { isAuthenticated, logout } = useAuth();
-
-    // Chiudi il dropdown quando si clicca fuori da esso
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setDropdownOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
-    const toggleDropdown = () => {
-        setDropdownOpen(!dropdownOpen);
-    };
-
+const Navbar = () => 
+{
     return (
         <nav className="navbar">
-            <div className="dropdown" ref={dropdownRef}>
-                <button className="dropbtn" onClick={toggleDropdown}>
-                    <div className="menu-icon">&#9776;</div> {/* Unicode per l'icona delle barre */}
-                </button>
-                {isAuthenticated() && (
-                    <div className={`dropdown-content ${dropdownOpen ? 'show' : ''}`}>
-                        <Link to="/home" className="nav-link" onClick={() => setDropdownOpen(false)}>Home</Link>
-                        <Link to="/view-users" className="nav-link" onClick={() => setDropdownOpen(false)}>Utenti</Link>
-                        <Link to="/register" className="nav-link" onClick={() => setDropdownOpen(false)}>Registrati</Link>
-                        <button className="nav-link logout-button" onClick={logout}>Logout</button>
-                    </div>
-                )}
+            <div className="navbar-brand">
+                <Link to="/">Acquedotto Zuel</Link>
             </div>
-            <div className="logo-container"> {/* Logo container with transparent box */}
-                <img src={`${process.env.PUBLIC_URL}/icon.ico`} alt="Logo" className="navbar-logo" />
-            </div>
+            <ul className="navbar-nav">
+                <li className="nav-item">
+                    <Link to="/" className="nav-link">Home</Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/clienti" className="nav-link">Clienti</Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/contatori" className="nav-link">Contatori</Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/edifici" className="nav-link">Edifici</Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/letture" className="nav-link">Letture</Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/fatture" className="nav-link">Fatture</Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/servizi" className="nav-link">Servizi</Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/articoli" className="nav-link">Articoli</Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/listini" className="nav-link">Listini</Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/fasce" className="nav-link">Fasce</Link>
+                </li>
+            </ul>
         </nav>
     );
 };

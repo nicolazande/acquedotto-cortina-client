@@ -62,3 +62,86 @@ Per installare e avviare il client sul tuo sistema locale, segui questi passaggi
     npm start
 
     Questo avvierà il client in modalità di sviluppo. Apri il tuo browser e vai a http://localhost:3000 per visualizzare l'applicazione.
+
+5. ***Struttura***
+
+    public/
+    ├── index.html
+    ├── favicon.ico
+    ├── manifest.json
+    └── robots.txt
+
+    src/
+    ├── api/
+    │   ├── articoloApi.js
+    │   ├── clienteApi.js
+    │   ├── contatoreApi.js
+    │   ├── edificioApi.js
+    │   ├── fasciaApi.js
+    │   ├── fatturaApi.js
+    │   ├── letturaApi.js
+    │   ├── listinoApi.js
+    │   └── servizioApi.js
+    ├── components/
+    │   ├── Articolo/
+    │   │   ├── ArticoloForm.js
+    │   │   ├── ArticoloList.js
+    │   │   └── ArticoloDetails.js
+    │   ├── Cliente/
+    │   │   ├── ClienteForm.js
+    │   │   ├── ClienteList.js
+    │   │   └── ClienteDetails.js
+    │   ├── Contatore/
+    │   │   ├── ContatoreForm.js
+    │   │   ├── ContatoreList.js
+    │   │   └── ContatoreDetails.js
+    │   ├── Edificio/
+    │   │   ├── EdificioForm.js
+    │   │   ├── EdificioList.js
+    │   │   └── EdificioDetails.js
+    │   ├── Fascia/
+    │   │   ├── FasciaForm.js
+    │   │   ├── FasciaList.js
+    │   │   └── FasciaDetails.js
+    │   ├── Fattura/
+    │   │   ├── FatturaForm.js
+    │   │   ├── FatturaList.js
+    │   │   └── FatturaDetails.js
+    │   ├── Lettura/
+    │   │   ├── LetturaForm.js
+    │   │   ├── LetturaList.js
+    │   │   └── LetturaDetails.js
+    │   ├── Listino/
+    │   │   ├── ListinoForm.js
+    │   │   ├── ListinoList.js
+    │   │   └── ListinoDetails.js
+    │   └── Servizio/
+    │       ├── ServizioForm.js
+    │       ├── ServizioList.js
+    │       └── ServizioDetails.js
+    ├── App.js
+    ├── index.js
+    ├── routes/
+    │   ├── ArticoloRoutes.js
+    │   ├── ClienteRoutes.js
+    │   ├── ContatoreRoutes.js
+    │   ├── EdificioRoutes.js
+    │   ├── FasciaRoutes.js
+    │   ├── FatturaRoutes.js
+    │   ├── LetturaRoutes.js
+    │   ├── ListinoRoutes.js
+    │   └── ServizioRoutes.js
+    ├── services/
+    │   ├── api.js
+    │   └── auth.js
+    └── styles/
+        ├── Articolo.css
+        ├── Cliente.css
+        ├── Contatore.css
+        ├── Edificio.css
+        ├── Fascia.css
+        ├── Fattura.css
+        ├── Lettura.css
+        ├── Listino.css
+        └── Servizio.css
+
