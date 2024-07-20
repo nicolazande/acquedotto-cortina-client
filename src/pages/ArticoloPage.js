@@ -5,14 +5,17 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import '../styles/Articolo/ArticoloPage.css';
 
-const ArticoloPage = () => {
+const ArticoloPage = () =>
+{
     const [selectedArticoloId, setSelectedArticoloId] = useState(null);
 
-    const handleArticoloSelect = (articoloId) => {
+    const handleArticoloSelect = (articoloId) => 
+    {
         setSelectedArticoloId(articoloId);
     };
 
-    const handleArticoloDeselect = () => {
+    const handleArticoloDeselect = () => 
+    {
         setSelectedArticoloId(null);
     };
 
@@ -20,15 +23,14 @@ const ArticoloPage = () => {
         <div className="articolo-page">
             <Tabs>
                 <TabList>
-                    <Tab>Registra Articolo</Tab>
                     <Tab>Lista Articoli</Tab>
+                    <Tab>Registra Articolo</Tab>
                 </TabList>
-
-                <TabPanel>
-                    <ArticoloForm onSuccess={handleArticoloDeselect} />
-                </TabPanel>
                 <TabPanel>
                     <ArticoloList onSelectArticolo={handleArticoloSelect} selectedArticoloId={selectedArticoloId} onDeselectArticolo={handleArticoloDeselect} />
+                </TabPanel>
+                <TabPanel>
+                    <ArticoloForm onSuccess={handleArticoloDeselect} />
                 </TabPanel>
             </Tabs>
         </div>

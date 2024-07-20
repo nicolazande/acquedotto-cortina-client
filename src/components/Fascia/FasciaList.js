@@ -3,15 +3,21 @@ import fasciaApi from '../../api/fasciaApi';
 import FasciaDetails from './FasciaDetails';
 import '../../styles/Fascia/FasciaList.css';
 
-const FasciaList = ({ onSelectFascia, selectedFasciaId, onDeselectFascia }) => {
+const FasciaList = ({ onSelectFascia, selectedFasciaId, onDeselectFascia }) =>
+{
     const [fasce, setFasce] = useState([]);
 
-    useEffect(() => {
-        const fetchFasce = async () => {
-            try {
+    useEffect(() => 
+    {
+        const fetchFasce = async () =>
+        {
+            try
+            {
                 const response = await fasciaApi.getFasce();
                 setFasce(response.data);
-            } catch (error) {
+            }
+            catch (error)
+            {
                 alert('Errore durante il recupero delle fasce');
                 console.error(error);
             }
@@ -20,14 +26,19 @@ const FasciaList = ({ onSelectFascia, selectedFasciaId, onDeselectFascia }) => {
         fetchFasce();
     }, []);
 
-    const handleDelete = async (id) => {
-        try {
+    const handleDelete = async (id) =>
+    {
+        try 
+        {
             await fasciaApi.deleteFascia(id);
             setFasce(fasce.filter(fascia => fascia._id !== id));
-            if (selectedFasciaId === id) {
+            if (selectedFasciaId === id) 
+            {
                 onDeselectFascia();
             }
-        } catch (error) {
+        }
+        catch (error) 
+        {
             alert('Errore durante la cancellazione della fascia');
             console.error(error);
         }

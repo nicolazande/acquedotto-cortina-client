@@ -2,28 +2,39 @@ import React, { useState } from 'react';
 import listinoApi from '../../api/listinoApi';
 import '../../styles/Listino/ListinoForm.css';
 
-const ListinoForm = ({ onSuccess }) => {
-    const [formData, setFormData] = useState({
+const ListinoForm = ({ onSuccess }) => 
+{
+    const [formData, setFormData] = useState(
+    {
         categoria: '',
         descrizione: ''
     });
 
-    const handleChange = (e) => {
+    const handleChange = (e) => 
+    {
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => 
+    {
         e.preventDefault();
-        try {
+        try 
+        {
             await listinoApi.createListino(formData);
             alert('Listino registrato con successo');
-            setFormData({
+            setFormData(
+            {
                 categoria: '',
                 descrizione: ''
             });
-            if (onSuccess) onSuccess();
-        } catch (error) {
+            if (onSuccess)
+            {
+                onSuccess();
+            }
+        } 
+        catch (error) 
+        {
             alert('Errore durante la registrazione del listino');
             console.error(error);
         }

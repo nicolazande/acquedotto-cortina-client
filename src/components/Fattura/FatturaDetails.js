@@ -4,7 +4,8 @@ import clienteApi from '../../api/clienteApi';
 import servizioApi from '../../api/servizioApi';
 import '../../styles/Fattura/FatturaDetails.css';
 
-const FatturaDetails = ({ fatturaId, onDeselectFattura }) => {
+const FatturaDetails = ({ fatturaId, onDeselectFattura }) =>
+{
     const [fattura, setFattura] = useState(null);
     const [cliente, setCliente] = useState(null);
     const [servizi, setServizi] = useState([]);
@@ -14,22 +15,29 @@ const FatturaDetails = ({ fatturaId, onDeselectFattura }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editFormData, setEditFormData] = useState({});
 
-    useEffect(() => {
-        const fetchFattura = async () => {
-            try {
+    useEffect(() =>
+    {
+        const fetchFattura = async () =>
+        {
+            try 
+            {
                 const response = await fatturaApi.getFattura(fatturaId);
                 setFattura(response.data);
                 setEditFormData(response.data);
-                if (response.data.cliente) {
+                if (response.data.cliente) 
+                {
                     setCliente(response.data);
                 }
-            } catch (error) {
+            } 
+            catch (error) 
+            {
                 alert('Errore durante il recupero della fattura');
                 console.error(error);
             }
         };
 
-        if (fatturaId) {
+        if (fatturaId) 
+        {
             fetchFattura();
         }
 
@@ -38,81 +46,107 @@ const FatturaDetails = ({ fatturaId, onDeselectFattura }) => {
         setShowServizi(false);
     }, [fatturaId]);
 
-    const handleOpenClienteModal = async () => {
-        try {
+    const handleOpenClienteModal = async () => 
+    {
+        try 
+        {
             const response = await clienteApi.getClienti();
             setCliente(response.data);
             setShowClienteModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero dei clienti');
             console.error(error);
         }
     };
 
-    const handleOpenServizioModal = async () => {
-        try {
+    const handleOpenServizioModal = async () => 
+    {
+        try 
+        {
             const response = await servizioApi.getServizi();
             setServizi(response.data);
             setShowServizioModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero dei servizi');
             console.error(error);
         }
     };
 
-    const handleSelectCliente = async (clienteId) => {
-        try {
+    const handleSelectCliente = async (clienteId) => 
+    {
+        try 
+        {
             await fatturaApi.associateCliente(fatturaId, clienteId);
             setShowClienteModal(false);
             const response = await fatturaApi.getFattura(fatturaId);
             setFattura(response.data);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'associazione del cliente');
             console.error(error);
         }
     };
 
-    const handleSelectServizio = async (servizioId) => {
-        try {
+    const handleSelectServizio = async (servizioId) => 
+    {
+        try 
+        {
             await fatturaApi.associateServizio(fatturaId, servizioId);
             setShowServizioModal(false);
             fetchServiziAssociati();
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'associazione del servizio');
             console.error(error);
         }
     };
 
-    const fetchServiziAssociati = async () => {
-        try {
+    const fetchServiziAssociati = async () => 
+    {
+        try 
+        {
             const response = await fatturaApi.getServizi(fatturaId);
             setServizi(response.data);
             setShowServizi(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero dei servizi');
             console.error(error);
         }
     };
 
-    const handleEditChange = (e) => {
+    const handleEditChange = (e) =>
+    {
         const { name, value, type, checked } = e.target;
         setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleEditSubmit = async (e) => {
+    const handleEditSubmit = async (e) =>
+    {
         e.preventDefault();
-        try {
+        try 
+        {
             await fatturaApi.updateFattura(fatturaId, editFormData);
             setFattura(editFormData);
             setIsEditing(false);
             alert('Fattura aggiornata con successo');
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'aggiornamento della fattura');
             console.error(error);
         }
     };
 
-    if (!fattura) {
+    if (!fattura) 
+    {
         return <div>Caricamento...</div>;
     }
 

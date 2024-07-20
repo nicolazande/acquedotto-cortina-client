@@ -5,14 +5,17 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import '../styles/Servizio/ServizioPage.css';
 
-const ServizioPage = () => {
+const ServizioPage = () => 
+{
     const [selectedServizioId, setSelectedServizioId] = useState(null);
 
-    const handleServizioSelect = (servizioId) => {
+    const handleServizioSelect = (servizioId) => 
+    {
         setSelectedServizioId(servizioId);
     };
 
-    const handleServizioDeselect = () => {
+    const handleServizioDeselect = () => 
+    {
         setSelectedServizioId(null);
     };
 
@@ -20,15 +23,14 @@ const ServizioPage = () => {
         <div className="servizio-page">
             <Tabs>
                 <TabList>
-                    <Tab>Registra Servizio</Tab>
                     <Tab>Lista Servizi</Tab>
+                    <Tab>Registra Servizio</Tab> 
                 </TabList>
-
-                <TabPanel>
-                    <ServizioForm onSuccess={handleServizioDeselect} />
-                </TabPanel>
                 <TabPanel>
                     <ServizioList onSelectServizio={handleServizioSelect} selectedServizioId={selectedServizioId} onDeselectServizio={handleServizioDeselect} />
+                </TabPanel>
+                <TabPanel>
+                    <ServizioForm onSuccess={handleServizioDeselect} />
                 </TabPanel>
             </Tabs>
         </div>

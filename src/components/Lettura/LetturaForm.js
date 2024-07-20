@@ -3,8 +3,10 @@ import letturaApi from '../../api/letturaApi';
 import contatoreApi from '../../api/contatoreApi';
 import '../../styles/Lettura/LetturaForm.css';
 
-const LetturaForm = ({ onSuccess }) => {
-    const [formData, setFormData] = useState({
+const LetturaForm = ({ onSuccess }) => 
+{
+    const [formData, setFormData] = useState(
+    {
         tipo: '',
         data: '',
         valore: '',
@@ -19,12 +21,17 @@ const LetturaForm = ({ onSuccess }) => {
     const [showContatoreModal, setShowContatoreModal] = useState(false);
     const [selectedContatore, setSelectedContatore] = useState(null);
 
-    useEffect(() => {
-        const fetchContatori = async () => {
-            try {
+    useEffect(() => 
+    {
+        const fetchContatori = async () => 
+        {
+            try 
+            {
                 const response = await contatoreApi.getContatori();
                 setContatori(response.data);
-            } catch (error) {
+            } 
+            catch (error) 
+            {
                 alert('Errore durante il recupero dei contatori');
                 console.error(error);
             }
@@ -33,17 +40,21 @@ const LetturaForm = ({ onSuccess }) => {
         fetchContatori();
     }, []);
 
-    const handleChange = (e) => {
+    const handleChange = (e) => 
+    {
         const { name, value, type, checked } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => 
+    {
         e.preventDefault();
-        try {
+        try 
+        {
             await letturaApi.createLettura(formData);
             alert('Lettura registrata con successo');
-            setFormData({
+            setFormData(
+            {
                 tipo: '',
                 data: '',
                 valore: '',
@@ -54,36 +65,50 @@ const LetturaForm = ({ onSuccess }) => {
                 cliente: '',
             });
             setSelectedContatore(null);
-            if (onSuccess) onSuccess();
-        } catch (error) {
+            if (onSuccess)
+            {
+                onSuccess();
+            }
+        } 
+        catch (error) 
+        {
             alert('Errore durante la registrazione della lettura');
             console.error(error);
         }
     };
 
-    const handleOpenContatoreModal = async () => {
-        try {
+    const handleOpenContatoreModal = async () => 
+    {
+        try 
+        {
             const response = await contatoreApi.getContatori();
             setContatori(response.data);
             setShowContatoreModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero dei contatori');
             console.error(error);
         }
     };
 
-    const handleSelectContatore = async (contatoreId) => {
-        try {
+    const handleSelectContatore = async (contatoreId) => 
+    {
+        try 
+        {
             const response = await contatoreApi.getContatore(contatoreId);
             const selectedContatore = response.data;
             setSelectedContatore(selectedContatore);
-            setFormData((prevData) => ({
+            setFormData((prevData) => (
+            {
                 ...prevData,
                 contatore: contatoreId,
                 cliente: selectedContatore.cliente ? `${selectedContatore.cliente.nome} ${selectedContatore.cliente.cognome}` : '',
             }));
             setShowContatoreModal(false);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero del contatore');
             console.error(error);
         }

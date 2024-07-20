@@ -3,16 +3,22 @@ import contatoreApi from '../../api/contatoreApi';
 import ContatoreDetails from './ContatoreDetails';
 import '../../styles/Contatore/ContatoreList.css';
 
-const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectContatore }) => {
+const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectContatore }) =>
+{
     const [contatori, setContatori] = useState([]);
     const [showDetails, setShowDetails] = useState(false);
 
-    useEffect(() => {
-        const fetchContatori = async () => {
-            try {
+    useEffect(() =>
+    {
+        const fetchContatori = async () => 
+        {
+            try 
+            {
                 const response = await contatoreApi.getContatori();
                 setContatori(response.data);
-            } catch (error) {
+            } 
+            catch (error) 
+            {
                 alert('Errore durante il recupero dei contatori');
                 console.error(error);
             }
@@ -21,22 +27,29 @@ const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectConta
         fetchContatori();
     }, []);
 
-    const handleSelectContatore = (contatoreId) => {
+    const handleSelectContatore = (contatoreId) => 
+    {
         setShowDetails(false); // Nascondi i dettagli correnti
-        setTimeout(() => {
+        setTimeout(() => 
+        {
             onSelectContatore(contatoreId);
             setShowDetails(true); // Mostra i nuovi dettagli dopo una piccola pausa per garantire che i vecchi dettagli siano chiusi
         }, 0);
     };
 
-    const handleDelete = async (id) => {
-        try {
+    const handleDelete = async (id) => 
+    {
+        try
+        {
             await contatoreApi.deleteContatore(id);
             setContatori(contatori.filter(contatore => contatore._id !== id));
-            if (selectedContatoreId === id) {
+            if (selectedContatoreId === id)
+            {
                 onDeselectContatore();
             }
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante la cancellazione del contatore');
             console.error(error);
         }

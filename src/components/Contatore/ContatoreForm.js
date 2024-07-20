@@ -5,8 +5,10 @@ import edificioApi from '../../api/edificioApi';
 import listinoApi from '../../api/listinoApi';
 import '../../styles/Contatore/ContatoreForm.css';
 
-const ContatoreForm = ({ onSuccess }) => {
-    const [formData, setFormData] = useState({
+const ContatoreForm = ({ onSuccess }) =>
+{
+    const [formData, setFormData] = useState(
+    {
         seriale: '',
         serialeInterno: '',
         ultimaLettura: '',
@@ -30,17 +32,21 @@ const ContatoreForm = ({ onSuccess }) => {
     const [showEdificioModal, setShowEdificioModal] = useState(false);
     const [showListinoModal, setShowListinoModal] = useState(false);
 
-    const handleChange = (e) => {
+    const handleChange = (e) =>
+    {
         const { name, value, type, checked } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) =>
+    {
         e.preventDefault();
-        try {
+        try
+        {
             await contatoreApi.createContatore(formData);
             alert('Contatore registrato con successo');
-            setFormData({
+            setFormData(
+            {
                 seriale: '',
                 serialeInterno: '',
                 ultimaLettura: '',
@@ -57,56 +63,73 @@ const ContatoreForm = ({ onSuccess }) => {
                 cliente: null
             });
             if (onSuccess) onSuccess();
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante la registrazione del contatore');
             console.error(error);
         }
     };
 
-    const handleOpenClienteModal = async () => {
-        try {
+    const handleOpenClienteModal = async () =>
+    {
+        try
+        {
             const response = await clienteApi.getClienti();
             setClienti(response.data);
             setShowClienteModal(true);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero dei clienti');
             console.error(error);
         }
     };
 
-    const handleOpenEdificioModal = async () => {
-        try {
+    const handleOpenEdificioModal = async () =>
+    {
+        try 
+        {
             const response = await edificioApi.getEdifici();
             setEdifici(response.data);
             setShowEdificioModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero degli edifici');
             console.error(error);
         }
     };
 
-    const handleOpenListinoModal = async () => {
-        try {
+    const handleOpenListinoModal = async () => 
+    {
+        try 
+        {
             const response = await listinoApi.getListini();
             setListini(response.data);
             setShowListinoModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero dei listini');
             console.error(error);
         }
     };
 
-    const handleSelectCliente = (clienteId) => {
+    const handleSelectCliente = (clienteId) => 
+    {
         setFormData((prevData) => ({ ...prevData, cliente: clienteId }));
         setShowClienteModal(false);
     };
 
-    const handleSelectEdificio = (edificioId) => {
+    const handleSelectEdificio = (edificioId) =>
+    {
         setFormData((prevData) => ({ ...prevData, edificio: edificioId }));
         setShowEdificioModal(false);
     };
 
-    const handleSelectListino = (listinoId) => {
+    const handleSelectListino = (listinoId) =>
+    {
         setFormData((prevData) => ({ ...prevData, listino: listinoId }));
         setShowListinoModal(false);
     };

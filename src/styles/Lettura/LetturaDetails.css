@@ -1,187 +1,148 @@
 /* Styles for LetturaDetails */
+
 .lettura-detail {
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px;
+    margin: 20px auto;
     max-width: 800px;
-    margin: 0 auto;
 }
 
-.info-table, .servizi-table {
+.lettura-detail h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.info-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-.info-table th, .info-table td, 
-.servizi-table th, .servizi-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+.info-table th, .info-table td {
     text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
 }
 
-.info-table th, .servizi-table th {
+.info-table th {
     background-color: #f2f2f2;
-    color: #333;
+    font-weight: bold;
 }
 
-.btn-container {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-}
-
-.btn-container button {
+.btn-show-servizi {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
-    margin: 5px;
-    transition: background-color 0.3s;
-    flex: 1;
-    max-width: 200px;
+    font-size: 14px;
+    display: block;
+    margin: 20px auto;
 }
 
-.btn-container button:hover {
+.btn-show-servizi:hover {
     background-color: #0056b3;
-}
-
-.btn-edit {
-    background-color: #28a745;
-}
-
-.btn-edit:hover {
-    background-color: #218838;
-}
-
-.btn-back-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.btn-back-container button {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-.btn-back-container button:hover {
-    background-color: #5a6268;
 }
 
 .servizi-section {
     margin-top: 20px;
 }
 
-.modal {
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
+.servizi-section h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.servizi-table {
     width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    border-collapse: collapse;
 }
 
-.modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 80%;
-    max-width: 600px;
-}
-
-.modal-content h3 {
-    margin-top: 0;
-}
-
-.modal-content ul {
-    list-style: none;
-    padding: 0;
-}
-
-.modal-content ul li {
+.servizi-table th, .servizi-table td {
+    text-align: left;
     padding: 10px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
+    border-bottom: 1px solid #ccc;
 }
 
-.modal-content ul li:hover {
+.servizi-table th {
     background-color: #f2f2f2;
-}
-
-.modal-content button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 20px;
-    transition: background-color 0.3s;
-}
-
-.modal-content button:hover {
-    background-color: #0056b3;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
     font-weight: bold;
 }
 
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group input[type="date"],
-.form-group textarea {
-    width: calc(100% - 20px);
+.btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.btn-delete {
+    background-color: #ff3b30;
+}
+
+.btn-delete:hover {
+    background-color: #c4302b;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-back-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.edit-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.edit-form label {
+    font-weight: bold;
+}
+
+.edit-form input,
+.edit-form textarea {
     padding: 10px;
-    margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
-    box-sizing: border-box;
 }
 
-.btn-save:hover {
-    background-color: #218838;
-}
-
-.btn-cancel:hover {
-    background-color: #c82333;
-}
-
-.btn-save {
+.edit-form .btn-save {
     background-color: #28a745;
 }
 
-.btn-cancel {
-    background-color: #dc3545;
+.edit-form .btn-save:hover {
+    background-color: #218838;
 }
 
-.form-actions {
-    display: flex;
-    justify-content: center; /* Centrato orizzontalmente */
-    gap: 10px;
-    margin-top: 20px;
+.edit-form .btn-cancel {
+    background-color: #6c757d;
+}
+
+.edit-form .btn-cancel:hover {
+    background-color: #5a6268;
 }

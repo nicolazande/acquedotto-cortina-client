@@ -3,8 +3,10 @@ import fasciaApi from '../../api/fasciaApi';
 import listinoApi from '../../api/listinoApi';
 import '../../styles/Fascia/FasciaForm.css';
 
-const FasciaForm = ({ onSuccess }) => {
-    const [formData, setFormData] = useState({
+const FasciaForm = ({ onSuccess }) =>
+{
+    const [formData, setFormData] = useState(
+    {
         tipo: '',
         min: '',
         max: '',
@@ -17,17 +19,21 @@ const FasciaForm = ({ onSuccess }) => {
     const [listini, setListini] = useState([]);
     const [showListinoModal, setShowListinoModal] = useState(false);
 
-    const handleChange = (e) => {
+    const handleChange = (e) =>
+    {
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) =>
+    {
         e.preventDefault();
-        try {
+        try 
+        {
             await fasciaApi.createFascia(formData);
             alert('Fascia registrata con successo');
-            setFormData({
+            setFormData(
+            {
                 tipo: '',
                 min: '',
                 max: '',
@@ -36,25 +42,35 @@ const FasciaForm = ({ onSuccess }) => {
                 fisso: '',
                 listino: null
             });
-            if (onSuccess) onSuccess();
-        } catch (error) {
+            if (onSuccess)
+            {
+                onSuccess();
+            }
+        }
+        catch (error) 
+        {
             alert('Errore durante la registrazione della fascia');
             console.error(error);
         }
     };
 
-    const handleOpenListinoModal = async () => {
-        try {
+    const handleOpenListinoModal = async () => 
+    {
+        try 
+        {
             const response = await listinoApi.getListini();
             setListini(response.data);
             setShowListinoModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero dei listini');
             console.error(error);
         }
     };
 
-    const handleSelectListino = (listinoId) => {
+    const handleSelectListino = (listinoId) => 
+    {
         setFormData((prevData) => ({ ...prevData, listino: listinoId }));
         setShowListinoModal(false);
     };

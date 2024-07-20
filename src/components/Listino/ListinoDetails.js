@@ -4,7 +4,8 @@ import contatoreApi from '../../api/contatoreApi';
 import fasciaApi from '../../api/fasciaApi';
 import '../../styles/Listino/ListinoDetails.css';
 
-const ListinoDetails = ({ listinoId, onDeselectListino }) => {
+const ListinoDetails = ({ listinoId, onDeselectListino }) =>
+{
     const [listino, setListino] = useState(null);
     const [fasce, setFasce] = useState([]);
     const [contatori, setContatori] = useState([]);
@@ -15,14 +16,20 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editFormData, setEditFormData] = useState({});
 
-    useEffect(() => {
-        if (listinoId) {
-            const fetchListino = async () => {
-                try {
+    useEffect(() => 
+    {
+        if (listinoId) 
+        {
+            const fetchListino = async () => 
+            {
+                try 
+                {
                     const response = await listinoApi.getListino(listinoId);
                     setListino(response.data);
                     setEditFormData(response.data);
-                } catch (error) {
+                } 
+                catch (error) 
+                {
                     alert('Errore durante il recupero del listino');
                     console.error(error);
                 }
@@ -37,103 +44,133 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) => {
         setShowContatori(false);
     }, [listinoId]);
 
-    const handleOpenFasceModal = async () => {
-        try {
+    const handleOpenFasceModal = async () => 
+    {
+        try 
+        {
             const response = await fasciaApi.getFasce();
             setFasce(response.data);
             setShowFasceModal(true);
             setShowFasce(false);
             setShowContatoreModal(false);
             setShowContatori(false);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero delle fasce');
             console.error(error);
         }
     };
 
-    const handleOpenContatoreModal = async () => {
-        try {
+    const handleOpenContatoreModal = async () => 
+    {
+        try
+        {
             const response = await contatoreApi.getContatori();
             setContatori(response.data);
             setShowContatoreModal(true);
             setShowContatori(false);
             setShowFasce(false);
             setShowFasceModal(false);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero dei contatori');
             console.error(error);
         }
     };
 
-    const handleSelectFascia = async (fasciaId) => {
-        try {
+    const handleSelectFascia = async (fasciaId) => 
+    {
+        try 
+        {
             await listinoApi.associateFascia(listinoId, fasciaId);
             setShowFasceModal(false);
             fetchFasceAssociati();
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'associazione della fascia');
             console.error(error);
         }
     };
 
-    const handleSelectContatore = async (contatoreId) => {
-        try {
+    const handleSelectContatore = async (contatoreId) => 
+    {
+        try 
+        {
             await listinoApi.associateContatore(listinoId, contatoreId);
             setShowContatoreModal(false);
             fetchContatoriAssociati();
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'associazione del contatore');
             console.error(error);
         }
     };
 
-    const fetchFasceAssociati = async () => {
-        try {
+    const fetchFasceAssociati = async () => 
+    {
+        try 
+        {
             const response = await listinoApi.getFasce(listinoId);
             setFasce(response.data);
             setShowFasce(true);
             setShowFasceModal(false);
             setShowContatoreModal(false);
             setShowContatori(false);
-        } catch (error) {
+        } 
+        catch (error)
+        {
             alert('Errore durante il recupero delle fasce');
             console.error(error);
         }
     };
 
-    const fetchContatoriAssociati = async () => {
-        try {
+    const fetchContatoriAssociati = async () => 
+    {
+        try 
+        {
             const response = await listinoApi.getContatori(listinoId);
             setContatori(response.data);
             setShowContatoreModal(false);
             setShowContatori(true);
             setShowFasce(false);
             setShowFasceModal(false);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero dei contatori');
             console.error(error);
         }
     };
 
-    const handleEditChange = (e) => {
+    const handleEditChange = (e) => 
+    {
         const { name, value, type, checked } = e.target;
         setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleEditSubmit = async (e) => {
+    const handleEditSubmit = async (e) => 
+    {
         e.preventDefault();
-        try {
+        try 
+        {
             await listinoApi.updateListino(listinoId, editFormData);
             setListino(editFormData);
             setIsEditing(false);
             alert('Listino aggiornato con successo');
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'aggiornamento del listino');
             console.error(error);
         }
     };
 
-    if (!listino) {
+    if (!listino) 
+    {
         return <div>Caricamento...</div>;
     }
 
@@ -232,7 +269,12 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {contatori.map((contatore) => (
+                            {contatori.length === 0 ? (
+                                <tr>
+                                    <td colSpan="3">Nessun contatore associata</td>
+                                </tr>
+                            ) : (
+                                contatori.map((contatore) => (
                                 <tr key={contatore._id}>
                                     <td>{contatore.seriale}</td>
                                     <td>{contatore.serialeInterno}</td>
@@ -241,8 +283,8 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) => {
                                     <td><input type="checkbox" checked={contatore.condominiale} readOnly /></td>
                                     <td><input type="checkbox" checked={contatore.sostituzione} readOnly /></td>
                                     <td><input type="checkbox" checked={contatore.subentro} readOnly /></td>
-                                </tr>
-                            ))}
+                                </tr>))
+                            )}
                         </tbody>
                     </table>
                 </div>

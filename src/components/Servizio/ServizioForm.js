@@ -5,8 +5,10 @@ import articoloApi from '../../api/articoloApi';
 import fatturaApi from '../../api/fatturaApi';
 import '../../styles/Servizio/ServizioForm.css';
 
-const ServizioForm = ({ onSuccess }) => {
-    const [formData, setFormData] = useState({
+const ServizioForm = ({ onSuccess }) => 
+{
+    const [formData, setFormData] = useState(
+    {
         descrizione: '',
         valore: '',
         tariffa: '',
@@ -25,17 +27,21 @@ const ServizioForm = ({ onSuccess }) => {
     const [showArticoloModal, setShowArticoloModal] = useState(false);
     const [showFatturaModal, setShowFatturaModal] = useState(false);
 
-    const handleChange = (e) => {
+    const handleChange = (e) => 
+    {
         const { name, value, type, checked } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => 
+    {
         e.preventDefault();
-        try {
+        try 
+        {
             await servizioApi.createServizio(formData);
             alert('Servizio registrato con successo');
-            setFormData({
+            setFormData(
+            {
                 descrizione: '',
                 valore: '',
                 tariffa: '',
@@ -46,59 +52,79 @@ const ServizioForm = ({ onSuccess }) => {
                 articolo: null,
                 fattura: null
             });
-            if (onSuccess) onSuccess();
-        } catch (error) {
+            if (onSuccess)
+            {
+                onSuccess();
+            }
+        }
+        catch (error)
+        {
             alert('Errore durante la registrazione del servizio');
             console.error(error);
         }
     };
 
-    const handleOpenLetturaModal = async () => {
-        try {
+    const handleOpenLetturaModal = async () => 
+    {
+        try 
+        {
             const response = await letturaApi.getLetture();
             setLetture(response.data);
             setShowLetturaModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero delle letture');
             console.error(error);
         }
     };
 
-    const handleOpenArticoloModal = async () => {
-        try {
+    const handleOpenArticoloModal = async () => 
+    {
+        try
+        {
             const response = await articoloApi.getArticoli();
             setArticoli(response.data);
             setShowArticoloModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero degli articoli');
             console.error(error);
         }
     };
 
-    const handleOpenFatturaModal = async () => {
-        try {
+    const handleOpenFatturaModal = async () => 
+    {
+        try 
+        {
             const response = await fatturaApi.getFatture();
             setFatture(response.data);
             setShowFatturaModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero delle fatture');
             console.error(error);
         }
     };
 
-    const handleSelectLettura = (letturaId) => {
+    const handleSelectLettura = (letturaId) => 
+    {
         const selectedLettura = letture.find(l => l._id === letturaId);
         setFormData((prevData) => ({ ...prevData, lettura: selectedLettura }));
         setShowLetturaModal(false);
     };
 
-    const handleSelectArticolo = (articoloId) => {
+    const handleSelectArticolo = (articoloId) => 
+    {
         const selectedArticolo = articoli.find(a => a._id === articoloId);
         setFormData((prevData) => ({ ...prevData, articolo: selectedArticolo }));
         setShowArticoloModal(false);
     };
 
-    const handleSelectFattura = (fatturaId) => {
+    const handleSelectFattura = (fatturaId) => 
+    {
         const selectedFattura = fatture.find(f => f._id === fatturaId);
         setFormData((prevData) => ({ ...prevData, fattura: selectedFattura }));
         setShowFatturaModal(false);

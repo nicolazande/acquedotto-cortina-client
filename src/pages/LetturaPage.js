@@ -8,11 +8,13 @@ import '../styles/Lettura/LetturaPage.css';
 const LetturaPage = () => {
     const [selectedLetturaId, setSelectedLetturaId] = useState(null);
 
-    const handleLetturaSelect = (letturaId) => {
+    const handleLetturaSelect = (letturaId) => 
+    {
         setSelectedLetturaId(letturaId);
     };
 
-    const handleLetturaDeselect = () => {
+    const handleLetturaDeselect = () => 
+    {
         setSelectedLetturaId(null);
     };
 
@@ -20,15 +22,14 @@ const LetturaPage = () => {
         <div className="lettura-page">
             <Tabs>
                 <TabList>
-                    <Tab>Registra Lettura</Tab>
                     <Tab>Lista Letture</Tab>
+                    <Tab>Registra Lettura</Tab>  
                 </TabList>
-
-                <TabPanel>
-                    <LetturaForm onSuccess={handleLetturaDeselect} />
-                </TabPanel>
                 <TabPanel>
                     <LetturaList onSelectLettura={handleLetturaSelect} selectedLetturaId={selectedLetturaId} onDeselectLettura={handleLetturaDeselect} />
+                </TabPanel>
+                <TabPanel>
+                    <LetturaForm onSuccess={handleLetturaDeselect} />
                 </TabPanel>
             </Tabs>
         </div>

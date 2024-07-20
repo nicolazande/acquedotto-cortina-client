@@ -5,14 +5,17 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import '../styles/Edificio/EdificioPage.css';
 
-const EdificioPage = () => {
+const EdificioPage = () => 
+{
     const [selectedEdificioId, setSelectedEdificioId] = useState(null);
 
-    const handleEdificioSelect = (edificioId) => {
+    const handleEdificioSelect = (edificioId) => 
+    {
         setSelectedEdificioId(edificioId);
     };
 
-    const handleEdificioDeselect = () => {
+    const handleEdificioDeselect = () => 
+    {
         setSelectedEdificioId(null);
     };
 
@@ -20,15 +23,14 @@ const EdificioPage = () => {
         <div className="edificio-page">
             <Tabs>
                 <TabList>
-                    <Tab>Registra Edificio</Tab>
                     <Tab>Lista Edifici</Tab>
+                    <Tab>Registra Edificio</Tab>
                 </TabList>
-
-                <TabPanel>
-                    <EdificioForm onSuccess={handleEdificioDeselect} />
-                </TabPanel>
                 <TabPanel>
                     <EdificioList onSelectEdificio={handleEdificioSelect} selectedEdificioId={selectedEdificioId} onDeselectEdificio={handleEdificioDeselect} />
+                </TabPanel>
+                <TabPanel>
+                    <EdificioForm onSuccess={handleEdificioDeselect} />
                 </TabPanel>
             </Tabs>
         </div>

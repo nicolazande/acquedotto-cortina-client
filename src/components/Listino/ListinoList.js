@@ -3,15 +3,21 @@ import listinoApi from '../../api/listinoApi';
 import ListinoDetails from './ListinoDetails';
 import '../../styles/Listino/ListinoList.css';
 
-const ListinoList = ({ onSelectListino, selectedListinoId, onDeselectListino }) => {
+const ListinoList = ({ onSelectListino, selectedListinoId, onDeselectListino }) => 
+{
     const [listini, setListini] = useState([]);
 
-    useEffect(() => {
-        const fetchListini = async () => {
-            try {
+    useEffect(() => 
+    {
+        const fetchListini = async () => 
+        {
+            try 
+            {
                 const response = await listinoApi.getListini();
                 setListini(response.data);
-            } catch (error) {
+            } 
+            catch (error) 
+            {
                 alert('Errore durante il recupero dei listini');
                 console.error(error);
             }
@@ -20,14 +26,19 @@ const ListinoList = ({ onSelectListino, selectedListinoId, onDeselectListino }) 
         fetchListini();
     }, []);
 
-    const handleDelete = async (id) => {
-        try {
+    const handleDelete = async (id) => 
+    {
+        try 
+        {
             await listinoApi.deleteListino(id);
             setListini(listini.filter(listino => listino._id !== id));
-            if (selectedListinoId === id) {
+            if (selectedListinoId === id) 
+            {
                 onDeselectListino();
             }
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante la cancellazione del listino');
             console.error(error);
         }

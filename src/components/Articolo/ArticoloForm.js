@@ -2,30 +2,41 @@ import React, { useState } from 'react';
 import articoloApi from '../../api/articoloApi';
 import '../../styles/Articolo/ArticoloForm.css';
 
-const ArticoloForm = ({ onSuccess }) => {
-    const [formData, setFormData] = useState({
+const ArticoloForm = ({ onSuccess }) =>
+{
+    const [formData, setFormData] = useState(
+    {
         codice: '',
         descrizione: '',
         iva: ''
     });
 
-    const handleChange = (e) => {
+    const handleChange = (e) =>
+    {
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) =>
+    {
         e.preventDefault();
-        try {
+        try
+        {
             await articoloApi.createArticolo(formData);
             alert('Articolo registrato con successo');
-            setFormData({
+            setFormData(
+            {
                 codice: '',
                 descrizione: '',
                 iva: ''
             });
-            if (onSuccess) onSuccess();
-        } catch (error) {
+            if (onSuccess)
+            {
+                onSuccess();
+            }
+        }
+        catch (error)
+        {
             alert('Errore durante la registrazione dell\'articolo');
             console.error(error);
         }

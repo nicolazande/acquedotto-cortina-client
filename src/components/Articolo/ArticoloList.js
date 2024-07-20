@@ -3,15 +3,21 @@ import articoloApi from '../../api/articoloApi';
 import ArticoloDetails from './ArticoloDetails';
 import '../../styles/Articolo/ArticoloList.css';
 
-const ArticoloList = ({ onSelectArticolo, selectedArticoloId, onDeselectArticolo }) => {
+const ArticoloList = ({ onSelectArticolo, selectedArticoloId, onDeselectArticolo }) =>
+{
     const [articoli, setArticoli] = useState([]);
 
-    useEffect(() => {
-        const fetchArticoli = async () => {
-            try {
+    useEffect(() =>
+    {
+        const fetchArticoli = async () =>
+        {
+            try
+            {
                 const response = await articoloApi.getArticoli();
                 setArticoli(response.data);
-            } catch (error) {
+            }
+            catch (error)
+            {
                 alert('Errore durante il recupero degli articoli');
                 console.error(error);
             }
@@ -20,14 +26,19 @@ const ArticoloList = ({ onSelectArticolo, selectedArticoloId, onDeselectArticolo
         fetchArticoli();
     }, []);
 
-    const handleDelete = async (id) => {
-        try {
+    const handleDelete = async (id) =>
+    {
+        try
+        {
             await articoloApi.deleteArticolo(id);
             setArticoli(articoli.filter(articolo => articolo._id !== id));
-            if (selectedArticoloId === id) {
+            if (selectedArticoloId === id)
+            {
                 onDeselectArticolo();
             }
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante la cancellazione dell\'articolo');
             console.error(error);
         }

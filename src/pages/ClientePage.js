@@ -5,14 +5,17 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import '../styles/Cliente/ClientePage.css';
 
-const ClientePage = () => {
+const ClientePage = () => 
+{
     const [selectedClienteId, setSelectedClienteId] = useState(null);
 
-    const handleClienteSelect = (clienteId) => {
+    const handleClienteSelect = (clienteId) => 
+    {
         setSelectedClienteId(clienteId);
     };
 
-    const handleClienteDeselect = () => {
+    const handleClienteDeselect = () => 
+    {
         setSelectedClienteId(null);
     };
 
@@ -20,14 +23,14 @@ const ClientePage = () => {
         <div className="cliente-page">
             <Tabs>
                 <TabList>
-                    <Tab>Registra Cliente</Tab>
                     <Tab>Lista Clienti</Tab>
+                    <Tab>Registra Cliente</Tab>
                 </TabList>
                 <TabPanel>
-                    <ClienteForm onSuccess={handleClienteDeselect} />
+                    <ClienteList onSelectCliente={handleClienteSelect} selectedClienteId={selectedClienteId} onDeselectCliente={handleClienteDeselect} />
                 </TabPanel>
                 <TabPanel>
-                    <ClienteList onSelectCliente={handleClienteSelect} selectedClienteId={selectedClienteId} onDeselectCliente={handleClienteDeselect} />
+                    <ClienteForm onSuccess={handleClienteDeselect} />
                 </TabPanel>
             </Tabs>
         </div>

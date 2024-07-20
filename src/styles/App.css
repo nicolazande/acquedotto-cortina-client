@@ -1,4 +1,8 @@
-/* App.css */
 .App {
+    text-align: center;
+}
+
+.content {
     padding: 20px;
+    margin-top: 60px; /* Assicurati che il contenuto non si sovrapponga alla navbar */
 }

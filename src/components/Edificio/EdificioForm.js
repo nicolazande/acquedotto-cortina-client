@@ -4,8 +4,10 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../../styles/Edificio/EdificioForm.css';
 
-const EdificioForm = ({ onSuccess }) => {
-    const [formData, setFormData] = useState({
+const EdificioForm = ({ onSuccess }) =>
+{
+    const [formData, setFormData] = useState(
+    {
         descrizione: '',
         indirizzo: '',
         numero: '',
@@ -29,41 +31,46 @@ const EdificioForm = ({ onSuccess }) => {
     const mapRef = useRef(null);
     const markerRef = useRef(null);
 
-    useEffect(() => {
-        if (!mapRef.current) {
-            const mapInstance = L.map('map', { zoomControl: false }).setView([46.5396, 12.1357], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(mapInstance);
+    useEffect(() =>
+    {
+        const mapInstance = L.map('map', { zoomControl: false }).setView([46.5396, 12.1357], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(mapInstance);
 
-            L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
+        L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
 
-            mapInstance.on('click', handleMapClick);
+        mapInstance.on('click', handleMapClick);
 
-            mapRef.current = mapInstance;
-        }
+        mapRef.current = mapInstance;
 
-        return () => {
-            if (mapRef.current) {
-                mapRef.current.remove();
-            }
+        return () =>
+        {
+            mapInstance.off();
+            mapInstance.remove();
+            mapRef.current = null;
         };
     }, []);
 
-    const handleMapClick = (e) => {
+    const handleMapClick = (e) =>
+    {
         const clickedPosition = e.latlng;
-        setFormData((prevData) => ({
+        setFormData((prevData) => (
+        {
             ...prevData,
             latitudine: clickedPosition.lat,
             longitudine: clickedPosition.lng
         }));
 
-        if (markerRef.current) {
+        if (markerRef.current)
+        {
             mapRef.current.removeLayer(markerRef.current);
         }
 
-        const newMarker = L.marker(clickedPosition, {
-            icon: L.icon({
+        const newMarker = L.marker(clickedPosition, 
+        {
+            icon: L.icon(
+            {
                 iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
             })
         }).addTo(mapRef.current);
@@ -71,17 +78,21 @@ const EdificioForm = ({ onSuccess }) => {
         markerRef.current = newMarker;
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e) =>
+    {
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => 
+    {
         e.preventDefault();
-        try {
+        try 
+        {
             await edificioApi.createEdificio(formData);
             alert('Edificio registrato con successo');
-            setFormData({
+            setFormData(
+            {
                 descrizione: '',
                 indirizzo: '',
                 numero: '',
@@ -101,12 +112,18 @@ const EdificioForm = ({ onSuccess }) => {
                 tipo: '',
                 note: ''
             });
-            if (onSuccess) onSuccess();
-            if (markerRef.current) {
+            if (onSuccess)
+            {
+                onSuccess();
+            }
+            if (markerRef.current) 
+            {
                 mapRef.current.removeLayer(markerRef.current);
                 markerRef.current = null;
             }
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante la registrazione dell\'edificio');
             console.error(error);
         }

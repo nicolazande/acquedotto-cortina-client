@@ -5,14 +5,17 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import '../styles/Fascia/FasciaPage.css';
 
-const FasciaPage = () => {
+const FasciaPage = () => 
+{
     const [selectedFasciaId, setSelectedFasciaId] = useState(null);
 
-    const handleFasciaSelect = (fasciaId) => {
+    const handleFasciaSelect = (fasciaId) => 
+    {
         setSelectedFasciaId(fasciaId);
     };
 
-    const handleFasciaDeselect = () => {
+    const handleFasciaDeselect = () => 
+    {
         setSelectedFasciaId(null);
     };
 
@@ -20,15 +23,14 @@ const FasciaPage = () => {
         <div className="fascia-page">
             <Tabs>
                 <TabList>
-                    <Tab>Registra Fascia</Tab>
                     <Tab>Lista Fasce</Tab>
+                    <Tab>Registra Fascia</Tab>
                 </TabList>
-
-                <TabPanel>
-                    <FasciaForm onSuccess={handleFasciaDeselect} />
-                </TabPanel>
                 <TabPanel>
                     <FasciaList onSelectFascia={handleFasciaSelect} selectedFasciaId={selectedFasciaId} onDeselectFascia={handleFasciaDeselect} />
+                </TabPanel>
+                <TabPanel>
+                    <FasciaForm onSuccess={handleFasciaDeselect} />
                 </TabPanel>
             </Tabs>
         </div>

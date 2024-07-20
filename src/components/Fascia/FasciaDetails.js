@@ -3,7 +3,8 @@ import fasciaApi from '../../api/fasciaApi';
 import listinoApi from '../../api/listinoApi';
 import '../../styles/Fascia/FasciaDetails.css';
 
-const FasciaDetails = ({ fasciaId }) => {
+const FasciaDetails = ({ fasciaId }) =>
+{
     const [fascia, setFascia] = useState(null);
     const [listino, setListino] = useState(null);
     const [showListinoModal, setShowListinoModal] = useState(false);
@@ -11,79 +12,104 @@ const FasciaDetails = ({ fasciaId }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editFormData, setEditFormData] = useState({});
 
-    useEffect(() => {
-        const fetchFascia = async () => {
-            try {
+    useEffect(() =>
+    {
+        const fetchFascia = async () =>
+        {
+            try
+            {
                 const response = await fasciaApi.getFascia(fasciaId);
                 setFascia(response.data);
                 setEditFormData(response.data);
 
-                if (response.data.listino) {
+                if (response.data.listino)
+                {
                     fetchListino(response.data.listino);
                 }
-            } catch (error) {
+            }
+            catch (error)
+            {
                 alert('Errore durante il recupero della fascia');
                 console.error(error);
             }
         };
 
-        const fetchListino = async (listinoId) => {
-            try {
+        const fetchListino = async (listinoId) => 
+        {
+            try 
+            {
                 const response = await listinoApi.getListino(listinoId);
                 setListino(response.data);
-            } catch (error) {
+            } 
+            catch (error) 
+            {
                 alert('Errore durante il recupero del listino');
                 console.error(error);
             }
         };
 
-        if (fasciaId) {
+        if (fasciaId) 
+        {
             fetchFascia();
         }
     }, [fasciaId]);
 
-    const handleOpenListinoModal = async () => {
-        try {
+    const handleOpenListinoModal = async () => 
+    {
+        try 
+        {
             const response = await listinoApi.getListini(); // Aggiungi una funzione getListini() in listinoApi se non esiste
             setListini(response.data);
             setShowListinoModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero dei listini');
             console.error(error);
         }
     };
 
-    const handleSelectListino = async (listinoId) => {
-        try {
+    const handleSelectListino = async (listinoId) => 
+    {
+        try 
+        {
             await fasciaApi.associateListino(fasciaId, listinoId);
             setShowListinoModal(false);
             const response = await listinoApi.getListino(listinoId);
             setListino(response.data);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'associazione del listino');
             console.error(error);
         }
     };
 
-    const handleEditChange = (e) => {
+    const handleEditChange = (e) =>
+    {
         const { name, value, type, checked } = e.target;
         setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleEditSubmit = async (e) => {
+    const handleEditSubmit = async (e) => 
+    {
         e.preventDefault();
-        try {
+        try 
+        {
             await fasciaApi.updateFascia(fasciaId, editFormData);
             setFascia(editFormData);
             setIsEditing(false);
             alert('Fascia aggiornata con successo');
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'aggiornamento della fascia');
             console.error(error);
         }
     };
 
-    if (!fascia) {
+    if (!fascia)
+    {
         return <div>Seleziona una fascia per vedere i dettagli</div>;
     }
 

@@ -3,16 +3,22 @@ import fatturaApi from '../../api/fatturaApi';
 import FatturaDetails from './FatturaDetails';
 import '../../styles/Fattura/FatturaList.css';
 
-const FatturaList = ({ onSelectFattura, selectedFatturaId, onDeselectFattura }) => {
+const FatturaList = ({ onSelectFattura, selectedFatturaId, onDeselectFattura }) =>
+{
     const [fatture, setFatture] = useState([]);
     const [showDetails, setShowDetails] = useState(false);
 
-    useEffect(() => {
-        const fetchFatture = async () => {
-            try {
+    useEffect(() => 
+    {
+        const fetchFatture = async () => 
+        {
+            try 
+            {
                 const response = await fatturaApi.getFatture();
                 setFatture(response.data);
-            } catch (error) {
+            } 
+            catch (error) 
+            {
                 alert('Errore durante il recupero delle fatture');
                 console.error(error);
             }
@@ -21,22 +27,29 @@ const FatturaList = ({ onSelectFattura, selectedFatturaId, onDeselectFattura }) 
         fetchFatture();
     }, []);
 
-    const handleSelectFattura = (fatturaId) => {
+    const handleSelectFattura = (fatturaId) => 
+    {
         setShowDetails(false); // Nascondi i dettagli correnti
-        setTimeout(() => {
+        setTimeout(() => 
+        {
             onSelectFattura(fatturaId);
             setShowDetails(true); // Mostra i nuovi dettagli dopo una piccola pausa per garantire che i vecchi dettagli siano chiusi
         }, 0);
     };
 
-    const handleDelete = async (id) => {
-        try {
+    const handleDelete = async (id) => 
+    {
+        try 
+        {
             await fatturaApi.deleteFattura(id);
             setFatture(fatture.filter(fattura => fattura._id !== id));
-            if (selectedFatturaId === id) {
+            if (selectedFatturaId === id) 
+            {
                 onDeselectFattura();
             }
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante la cancellazione della fattura');
             console.error(error);
         }

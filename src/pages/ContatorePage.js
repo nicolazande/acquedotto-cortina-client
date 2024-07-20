@@ -5,14 +5,17 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import '../styles/Contatore/ContatorePage.css';
 
-const ContatorePage = () => {
+const ContatorePage = () => 
+{
     const [selectedContatoreId, setSelectedContatoreId] = useState(null);
 
-    const handleContatoreSelect = (contatoreId) => {
+    const handleContatoreSelect = (contatoreId) => 
+    {
         setSelectedContatoreId(contatoreId);
     };
 
-    const handleContatoreDeselect = () => {
+    const handleContatoreDeselect = () => 
+    {
         setSelectedContatoreId(null);
     };
 
@@ -20,15 +23,14 @@ const ContatorePage = () => {
         <div className="contatore-page">
             <Tabs>
                 <TabList>
-                    <Tab>Registra Contatore</Tab>
                     <Tab>Lista Contatori</Tab>
+                    <Tab>Registra Contatore</Tab>
                 </TabList>
-
-                <TabPanel>
-                    <ContatoreForm onSuccess={handleContatoreDeselect} />
-                </TabPanel>
                 <TabPanel>
                     <ContatoreList onSelectContatore={handleContatoreSelect} selectedContatoreId={selectedContatoreId} onDeselectContatore={handleContatoreDeselect} />
+                </TabPanel>
+                <TabPanel>
+                    <ContatoreForm onSuccess={handleContatoreDeselect} />
                 </TabPanel>
             </Tabs>
         </div>

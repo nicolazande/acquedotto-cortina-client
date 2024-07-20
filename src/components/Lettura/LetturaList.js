@@ -3,15 +3,21 @@ import letturaApi from '../../api/letturaApi';
 import LetturaDetails from './LetturaDetails';
 import '../../styles/Lettura/LetturaList.css';
 
-const LetturaList = ({ onSelectLettura, selectedLetturaId, onDeselectLettura }) => {
+const LetturaList = ({ onSelectLettura, selectedLetturaId, onDeselectLettura }) => 
+{
     const [letture, setLetture] = useState([]);
 
-    useEffect(() => {
-        const fetchLetture = async () => {
-            try {
+    useEffect(() => 
+    {
+        const fetchLetture = async () => 
+        {
+            try 
+            {
                 const response = await letturaApi.getLetture();
                 setLetture(response.data);
-            } catch (error) {
+            } 
+            catch (error) 
+            {
                 alert('Errore durante il recupero delle letture');
                 console.error(error);
             }
@@ -20,14 +26,19 @@ const LetturaList = ({ onSelectLettura, selectedLetturaId, onDeselectLettura }) 
         fetchLetture();
     }, []);
 
-    const handleDelete = async (id) => {
-        try {
+    const handleDelete = async (id) => 
+    {
+        try 
+        {
             await letturaApi.deleteLettura(id);
             setLetture(letture.filter(lettura => lettura._id !== id));
-            if (selectedLetturaId === id) {
+            if (selectedLetturaId === id) 
+            {
                 onDeselectLettura();
             }
-        } catch (error) {
+        } 
+        catch (error)
+        {
             alert('Errore durante la cancellazione della lettura');
             console.error(error);
         }

@@ -3,8 +3,10 @@ import fatturaApi from '../../api/fatturaApi';
 import clienteApi from '../../api/clienteApi';
 import '../../styles/Fattura/FatturaForm.css';
 
-const FatturaForm = ({ onSuccess }) => {
-    const [formData, setFormData] = useState({
+const FatturaForm = ({ onSuccess }) =>
+{
+    const [formData, setFormData] = useState(
+    {
         tipo: '',
         ragioneSociale: '',
         anno: '',
@@ -18,17 +20,21 @@ const FatturaForm = ({ onSuccess }) => {
     const [clienti, setClienti] = useState([]);
     const [showClienteModal, setShowClienteModal] = useState(false);
 
-    const handleChange = (e) => {
+    const handleChange = (e) => 
+    {
         const { name, value, type, checked } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => 
+    {
         e.preventDefault();
-        try {
+        try 
+        {
             await fatturaApi.createFattura(formData);
             alert('Fattura registrata con successo');
-            setFormData({
+            setFormData(
+            {
                 tipo: '',
                 ragioneSociale: '',
                 anno: '',
@@ -38,25 +44,35 @@ const FatturaForm = ({ onSuccess }) => {
                 codice: '',
                 cliente: null
             });
-            if (onSuccess) onSuccess();
-        } catch (error) {
+            if (onSuccess)
+            {
+                onSuccess();
+            }
+        }
+        catch (error) 
+        {
             alert('Errore durante la registrazione della fattura');
             console.error(error);
         }
     };
 
-    const handleOpenClienteModal = async () => {
-        try {
+    const handleOpenClienteModal = async () => 
+    {
+        try 
+        {
             const response = await clienteApi.getClienti();
             setClienti(response.data);
             setShowClienteModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero dei clienti');
             console.error(error);
         }
     };
 
-    const handleSelectCliente = (clienteId) => {
+    const handleSelectCliente = (clienteId) => 
+    {
         setFormData((prevData) => ({ ...prevData, cliente: clienteId }));
         setShowClienteModal(false);
     };

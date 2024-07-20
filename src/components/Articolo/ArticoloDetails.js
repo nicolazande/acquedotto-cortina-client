@@ -3,7 +3,8 @@ import articoloApi from '../../api/articoloApi';
 import servizioApi from '../../api/servizioApi';
 import '../../styles/Articolo/ArticoloDetails.css';
 
-const ArticoloDetails = ({ articoloId, onDeselectArticolo }) => {
+const ArticoloDetails = ({ articoloId, onDeselectArticolo }) =>
+{
     const [articolo, setArticolo] = useState(null);
     const [servizi, setServizi] = useState([]);
     const [showServizi, setShowServizi] = useState(false);
@@ -11,79 +12,102 @@ const ArticoloDetails = ({ articoloId, onDeselectArticolo }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editFormData, setEditFormData] = useState({});
 
-    useEffect(() => {
-        const fetchArticolo = async () => {
-            try {
+    useEffect(() =>
+    {
+        const fetchArticolo = async () =>
+        {
+            try
+            {
                 const response = await articoloApi.getArticolo(articoloId);
                 setArticolo(response.data);
                 setEditFormData(response.data);
                 setShowServizi(false);
-            } catch (error) {
+            }
+            catch (error)
+            {
                 alert('Errore durante il recupero dell\'articolo');
                 console.error(error);
             }
         };
 
-        if (articoloId) {
+        if (articoloId)
+        {
             fetchArticolo();
         }
 
-        // Chiudi le modali quando cambia l'articolo selezionato
         setShowServizioModal(false);
     }, [articoloId]);
 
-    const handleOpenServizioModal = async () => {
-        try {
+    const handleOpenServizioModal = async () =>
+    {
+        try
+        {
             const response = await servizioApi.getServizi();
             setServizi(response.data);
             setShowServizioModal(true);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero dei servizi');
             console.error(error);
         }
     };
 
-    const handleSelectServizio = async (servizioId) => {
-        try {
+    const handleSelectServizio = async (servizioId) =>
+    {
+        try
+        {
             await articoloApi.associateServizio(articoloId, servizioId);
             setShowServizioModal(false);
             fetchServiziAssociati();
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante l\'associazione del servizio');
             console.error(error);
         }
     };
 
-    const fetchServiziAssociati = async () => {
-        try {
+    const fetchServiziAssociati = async () =>
+    {
+        try
+        {
             const response = await articoloApi.getServizi(articoloId);
             setServizi(response.data);
             setShowServizi(true);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero dei servizi');
             console.error(error);
         }
     };
 
-    const handleEditChange = (e) => {
+    const handleEditChange = (e) =>
+    {
         const { name, value } = e.target;
         setEditFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleEditSubmit = async (e) => {
+    const handleEditSubmit = async (e) =>
+    {
         e.preventDefault();
-        try {
+        try
+        {
             await articoloApi.updateArticolo(articoloId, editFormData);
             setArticolo(editFormData);
             setIsEditing(false);
             alert('Articolo aggiornato con successo');
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante l\'aggiornamento dell\'articolo');
             console.error(error);
         }
     };
 
-    if (!articolo) {
+    if (!articolo)
+    {
         return <div>Seleziona un articolo per vedere i dettagli</div>;
     }
 
