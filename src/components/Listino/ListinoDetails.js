@@ -42,7 +42,9 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) => {
             const response = await fasciaApi.getFasce();
             setFasce(response.data);
             setShowFasceModal(true);
+            setShowFasce(false);
             setShowContatoreModal(false);
+            setShowContatori(false);
         } catch (error) {
             alert('Errore durante il recupero delle fasce');
             console.error(error);
@@ -54,7 +56,9 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) => {
             const response = await contatoreApi.getContatori();
             setContatori(response.data);
             setShowContatoreModal(true);
+            setShowContatori(false);
             setShowFasce(false);
+            setShowFasceModal(false);
         } catch (error) {
             alert('Errore durante il recupero dei contatori');
             console.error(error);
@@ -88,6 +92,9 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) => {
             const response = await listinoApi.getFasce(listinoId);
             setFasce(response.data);
             setShowFasce(true);
+            setShowFasceModal(false);
+            setShowContatoreModal(false);
+            setShowContatori(false);
         } catch (error) {
             alert('Errore durante il recupero delle fasce');
             console.error(error);
@@ -98,7 +105,10 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) => {
         try {
             const response = await listinoApi.getContatori(listinoId);
             setContatori(response.data);
+            setShowContatoreModal(false);
             setShowContatori(true);
+            setShowFasce(false);
+            setShowFasceModal(false);
         } catch (error) {
             alert('Errore durante il recupero dei contatori');
             console.error(error);

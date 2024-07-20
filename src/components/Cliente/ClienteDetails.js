@@ -4,7 +4,8 @@ import contatoreApi from '../../api/contatoreApi';
 import fatturaApi from '../../api/fatturaApi';
 import '../../styles/Cliente/ClienteDetails.css';
 
-const ClienteDetails = ({ clienteId, onDeselectCliente }) => {
+const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
+{
     const [cliente, setCliente] = useState(null);
     const [contatori, setContatori] = useState([]);
     const [fatture, setFatture] = useState([]);
@@ -15,118 +16,153 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editFormData, setEditFormData] = useState({});
 
-    useEffect(() => {
-        const fetchCliente = async () => {
-            try {
+    useEffect(() =>
+    {
+        const fetchCliente = async () =>
+        {
+            try
+            {
                 const response = await clienteApi.getCliente(clienteId);
                 setCliente(response.data);
                 setEditFormData(response.data);
                 setShowContatori(false);
                 setShowFatture(false);
-            } catch (error) {
+            }
+            catch (error)
+            {
                 alert('Errore durante il recupero del cliente');
                 console.error(error);
             }
         };
 
-        if (clienteId) {
+        if (clienteId)
+        {
             fetchCliente();
         }
 
-        // Chiudi le modali quando cambia il cliente selezionato
         setShowContatoreModal(false);
         setShowFatturaModal(false);
     }, [clienteId]);
 
-    const fetchContatori = async () => {
-        try {
+    const fetchContatori = async () =>
+    {
+        try
+        {
             const response = await clienteApi.getContatori(clienteId);
             setContatori(response.data);
             setShowContatori(true);
             setShowFatture(false);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero dei contatori');
             console.error(error);
         }
     };
 
-    const fetchFatture = async () => {
-        try {
+    const fetchFatture = async () =>
+    {
+        try
+        {
             const response = await clienteApi.getFatture(clienteId);
             setFatture(response.data);
             setShowFatture(true);
             setShowContatori(false);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero delle fatture');
             console.error(error);
         }
     };
 
-    const handleOpenContatoreModal = async () => {
-        try {
+    const handleOpenContatoreModal = async () =>
+    {
+        try
+        {
             const response = await contatoreApi.getContatori();
             setContatori(response.data);
             setShowContatoreModal(true);
             setShowFatturaModal(false);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero dei contatori');
             console.error(error);
         }
     };
 
-    const handleOpenFatturaModal = async () => {
-        try {
+    const handleOpenFatturaModal = async () =>
+    {
+        try
+        {
             const response = await fatturaApi.getFatture();
             setFatture(response.data);
             setShowFatturaModal(true);
             setShowContatoreModal(false);
-        } catch (error) {
+        } 
+        catch (error)
+        {
             alert('Errore durante il recupero delle fatture');
             console.error(error);
         }
     };
 
-    const handleSelectContatore = async (contatoreId) => {
-        try {
+    const handleSelectContatore = async (contatoreId) =>
+    {
+        try
+        {
             await clienteApi.associateContatore(clienteId, contatoreId);
             setShowContatoreModal(false);
             fetchContatori();
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante l\'associazione del contatore');
             console.error(error);
         }
     };
 
-    const handleSelectFattura = async (fatturaId) => {
-        try {
+    const handleSelectFattura = async (fatturaId) =>
+    {
+        try
+        {
             await clienteApi.associateFattura(clienteId, fatturaId);
             setShowFatturaModal(false);
             fetchFatture();
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante l\'associazione della fattura');
             console.error(error);
         }
     };
 
-    const handleEditChange = (e) => {
+    const handleEditChange = (e) =>
+    {
         const { name, value, type, checked } = e.target;
         setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleEditSubmit = async (e) => {
+    const handleEditSubmit = async (e) =>
+    {
         e.preventDefault();
-        try {
+        try
+        {
             await clienteApi.updateCliente(clienteId, editFormData);
             setCliente(editFormData);
             setIsEditing(false);
             alert('Cliente aggiornato con successo');
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante l\'aggiornamento del cliente');
             console.error(error);
         }
     };
 
-    if (!cliente) {
+    if (!cliente)
+    {
         return <div>Seleziona un cliente per vedere i dettagli</div>;
     }
 
@@ -259,8 +295,10 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) => {
                         <label>Quote:</label>
                         <input type="number" name="quote" value={editFormData.quote} onChange={handleEditChange} />
                     </div>
-                    <button type="submit" className="btn btn-save">Salva</button>
-                    <button type="button" onClick={() => setIsEditing(false)} className="btn btn-cancel">Annulla</button>
+                    <div className="btn-container">
+                        <button type="submit" className="btn btn-save">Salva</button>
+                        <button type="button" onClick={() => setIsEditing(false)} className="btn btn-cancel">Annulla</button>
+                    </div>
                 </form>
             ) : (
                 <>
@@ -420,7 +458,12 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {contatori.map((contatore) => (
+                            {contatori.length === 0 ? (
+                                <tr>
+                                    <td colSpan="8">Nessun contatore associata</td>
+                                </tr>
+                            ) : (
+                                contatori.map((contatore) => (
                                 <tr key={contatore._id}>
                                     <td>{contatore.seriale}</td>
                                     <td>{contatore.serialeInterno}</td>
@@ -429,8 +472,8 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) => {
                                     <td><input type="checkbox" checked={contatore.condominiale} readOnly /></td>
                                     <td><input type="checkbox" checked={contatore.sostituzione} readOnly /></td>
                                     <td><input type="checkbox" checked={contatore.subentro} readOnly /></td>
-                                </tr>
-                            ))}
+                                </tr>))
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -451,7 +494,12 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {fatture.map((fattura) => (
+                            {fatture.length === 0 ? (
+                                <tr>
+                                    <td colSpan="8">Nessuna fattura associata</td>
+                                </tr>
+                            ) : (
+                                fatture.map((fattura) => (
                                 <tr key={fattura._id}>
                                     <td>{fattura.tipo}</td>
                                     <td>{fattura.ragioneSociale}</td>
@@ -460,8 +508,8 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) => {
                                     <td>{new Date(fattura.data).toLocaleDateString()}</td>
                                     <td><input type="checkbox" checked={fattura.confermata} readOnly /></td>
                                     <td>{fattura.codice}</td>
-                                </tr>
-                            ))}
+                                </tr>))
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -477,7 +525,6 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) => {
                                 </li>
                             ))}
                         </ul>
-                        <button onClick={() => setShowContatoreModal(false)}>Chiudi</button>
                     </div>
                 </div>
             )}
@@ -492,7 +539,6 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) => {
                                 </li>
                             ))}
                         </ul>
-                        <button onClick={() => setShowFatturaModal(false)}>Chiudi</button>
                     </div>
                 </div>
             )}

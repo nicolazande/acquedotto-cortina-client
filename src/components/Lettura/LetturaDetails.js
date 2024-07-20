@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import letturaApi from '../../api/letturaApi';
 import contatoreApi from '../../api/contatoreApi';
 import servizioApi from '../../api/servizioApi';
 import '../../styles/Lettura/LetturaDetails.css';
 
-const LetturaDetails = ({ letturaId, onDeselectLettura }) => {
+const LetturaDetails = ({ letturaId, onDeselectLettura }) =>
+{
     const [lettura, setLettura] = useState(null);
     const [contatori, setContatori] = useState([]);
     const [servizi, setServizi] = useState([]);
+    const [showServizi, setShowServizi] = useState(false);
     const [showContatoreModal, setShowContatoreModal] = useState(false);
     const [showServizioModal, setShowServizioModal] = useState(false);
-    const [showServizi, setShowServizi] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [editFormData, setEditFormData] = useState({
+    const [contatoriList, setContatoriList] = useState([]);
+    const [serviziList, setServiziList] = useState([]);
+    const [editFormData, setEditFormData] = useState(
+    {
         cliente: '',
         tipo: '',
         data: '',
@@ -22,118 +26,151 @@ const LetturaDetails = ({ letturaId, onDeselectLettura }) => {
         note: ''
     });
 
-    useEffect(() => {
-        const fetchLettura = async () => {
-            try {
-                const response = await letturaApi.getLettura(letturaId);
-                setLettura(response.data);
-                setEditFormData({
-                    cliente: response.data.cliente,
-                    tipo: response.data.tipo,
-                    data: response.data.data,
-                    valore: response.data.valore,
-                    UdM: response.data.UdM,
-                    fatturata: response.data.fatturata,
-                    note: response.data.note
-                });
-                const contatoreResponse = response.data.contatore;
-                if (contatoreResponse) {
-                    setContatori([contatoreResponse]);
-                }
-                const serviziResponse = await letturaApi.getServizi(letturaId);
-                setServizi(serviziResponse.data);
-            } catch (error) {
-                alert('Errore durante il recupero della lettura');
-                console.error(error);
+    const fetchLettura = useCallback(async () =>
+    {
+        try
+        {
+            const response = await letturaApi.getLettura(letturaId);
+            setLettura(response.data);
+            setEditFormData(
+            {
+                cliente: response.data.cliente,
+                tipo: response.data.tipo,
+                data: response.data.data,
+                valore: response.data.valore,
+                UdM: response.data.UdM,
+                fatturata: response.data.fatturata,
+                note: response.data.note
+            });
+            const contatoreResponse = response.data.contatore;
+            if (contatoreResponse)
+            {
+                setContatori([contatoreResponse]);
             }
-        };
+            const serviziResponse = await letturaApi.getServizi(letturaId);
+            setServizi(serviziResponse.data);
+        }
+        catch (error)
+        {
+            alert('Errore durante il recupero della lettura');
+            console.error(error);
+        }
+    }, [letturaId]);
 
-        if (letturaId) {
+    useEffect(() =>
+    {
+        if (letturaId)
+        {
             fetchLettura();
         }
-
         setShowContatoreModal(false);
         setShowServizioModal(false);
         setShowServizi(false);
-    }, [letturaId]);
+    }, [letturaId, fetchLettura]);
 
-    const handleOpenContatoreModal = async () => {
-        try {
+    const fetchServiziAssociati = async () =>
+    {
+        try
+        {
+            const response = await letturaApi.getServizi(letturaId);
+            setServizi(response.data);
+            setShowServizi(true);
+        } 
+        catch (error)
+        {
+            alert('Errore durante il recupero dei servizi');
+            console.error(error);
+            setServizi([]); // Imposta servizi come array vuoto in caso di errore
+            setShowServizi(true); // Mostra la sezione dei servizi anche in caso di errore
+        }
+    };
+
+    const handleOpenContatoreModal = async () =>
+    {
+        try
+        {
             const response = await contatoreApi.getContatori();
-            setContatori(response.data);
+            setContatoriList(response.data);
             setShowContatoreModal(true);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero dei contatori');
             console.error(error);
         }
     };
 
-    const handleOpenServizioModal = async () => {
-        try {
+    const handleOpenServizioModal = async () =>
+    {
+        try
+        {
             const response = await servizioApi.getServizi();
-            setServizi(response.data);
+            setServiziList(response.data);
             setShowServizioModal(true);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero dei servizi');
             console.error(error);
         }
     };
 
-    const handleSelectContatore = async (contatoreId) => {
-        try {
+    const handleSelectContatore = async (contatoreId) =>
+    {
+        try
+        {
             await letturaApi.associateContatore(letturaId, contatoreId);
             setShowContatoreModal(false);
             const response = await contatoreApi.getContatore(contatoreId);
             setContatori([response.data]);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante l\'associazione del contatore');
             console.error(error);
         }
     };
 
-    const handleSelectServizio = async (servizioId) => {
-        try {
+    const handleSelectServizio = async (servizioId) =>
+    {
+        try
+        {
             await letturaApi.associateServizio(letturaId, servizioId);
             setShowServizioModal(false);
-            const response = await letturaApi.getServizi(letturaId);
-            setServizi(response.data);
-        } catch (error) {
+            fetchServiziAssociati();
+        }
+        catch (error)
+        {
             alert('Errore durante l\'associazione del servizio');
             console.error(error);
         }
     };
 
-    const fetchServiziAssociati = async () => {
-        try {
-            const response = await letturaApi.getServizi(letturaId);
-            setServizi(response.data);
-            setShowServizi(true);
-        } catch (error) {
-            alert('Errore durante il recupero dei servizi');
-            console.error(error);
-        }
-    };
-
-    const handleEditChange = (e) => {
+    const handleEditChange = (e) =>
+    {
         const { name, value, type, checked } = e.target;
         setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleUpdateLettura = async (e) => {
+    const handleUpdateLettura = async (e) =>
+    {
         e.preventDefault();
-        try {
+        try
+        {
             await letturaApi.updateLettura(letturaId, editFormData);
             alert('Lettura aggiornata con successo');
             setIsEditing(false);
-            const updatedLettura = await letturaApi.getLettura(letturaId);
-            setLettura(updatedLettura.data);
-        } catch (error) {
+            fetchLettura();
+        }
+        catch (error)
+        {
             alert('Errore durante l\'aggiornamento della lettura');
             console.error(error);
         }
     };
 
-    if (!lettura) {
+    if (!lettura)
+    {
         return <div>Caricamento...</div>;
     }
 
@@ -170,8 +207,10 @@ const LetturaDetails = ({ letturaId, onDeselectLettura }) => {
                         <label>Note:</label>
                         <textarea name="note" value={editFormData.note} onChange={handleEditChange}></textarea>
                     </div>
-                    <button type="submit" className="btn btn-save">Salva</button>
-                    <button type="button" className="btn btn-cancel" onClick={() => setIsEditing(false)}>Annulla</button>
+                    <div className="btn-container">
+                        <button type="submit" className="btn btn-save">Salva</button>
+                        <button type="button" className="btn btn-cancel" onClick={() => setIsEditing(false)}>Annulla</button>
+                    </div>
                 </form>
             ) : (
                 <>
@@ -264,7 +303,7 @@ const LetturaDetails = ({ letturaId, onDeselectLettura }) => {
                     <div className="modal-content">
                         <h3>Seleziona Contatore</h3>
                         <ul>
-                            {contatori.map((contatore) => (
+                            {contatoriList.map((contatore) => (
                                 <li key={contatore._id} onClick={() => handleSelectContatore(contatore._id)}>
                                     {contatore.seriale}
                                 </li>
@@ -279,7 +318,7 @@ const LetturaDetails = ({ letturaId, onDeselectLettura }) => {
                     <div className="modal-content">
                         <h3>Seleziona Servizio</h3>
                         <ul>
-                            {servizi.map((servizio) => (
+                            {serviziList.map((servizio) => (
                                 <li key={servizio._id} onClick={() => handleSelectServizio(servizio._id)}>
                                     {servizio.descrizione}
                                 </li>

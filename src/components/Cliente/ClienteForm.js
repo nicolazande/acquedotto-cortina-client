@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import clienteApi from '../../api/clienteApi';
 import '../../styles/Cliente/ClienteForm.css';
 
-const ClienteForm = ({ onSuccess }) => {
-    const [formData, setFormData] = useState({
+const ClienteForm = ({ onSuccess }) =>
+{
+    const [formData, setFormData] = useState(
+    {
         ragioneSociale: '',
         nome: '',
         cognome: '',
@@ -37,14 +39,17 @@ const ClienteForm = ({ onSuccess }) => {
         quote: ''
     });
 
-    const handleChange = (e) => {
+    const handleChange = (e) =>
+    {
         const { name, value, type, checked } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) =>
+    {
         e.preventDefault();
-        try {
+        try
+        {
             await clienteApi.createCliente(formData);
             alert('Cliente registrato con successo');
             setFormData({
@@ -80,8 +85,13 @@ const ClienteForm = ({ onSuccess }) => {
                 note: '',
                 quote: ''
             });
-            if (onSuccess) onSuccess();
-        } catch (error) {
+            if (onSuccess)
+            {
+                onSuccess();
+            }
+        }
+        catch (error)
+        {
             alert('Errore durante la registrazione del cliente');
             console.error(error);
         }

@@ -221,7 +221,7 @@ const ContatoreForm = ({ onSuccess }) => {
                         <ul>
                             {listini.map((listino) => (
                                 <li key={listino._id} onClick={() => handleSelectListino(listino._id)}>
-                                    {listino.nome}
+                                    {listino.descrizione}
                                 </li>
                             ))}
                         </ul>

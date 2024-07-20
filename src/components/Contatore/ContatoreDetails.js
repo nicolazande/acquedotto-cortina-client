@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import contatoreApi from '../../api/contatoreApi';
 import clienteApi from '../../api/clienteApi';
 import edificioApi from '../../api/edificioApi';
@@ -6,7 +6,8 @@ import listinoApi from '../../api/listinoApi';
 import letturaApi from '../../api/letturaApi';
 import '../../styles/Contatore/ContatoreDetails.css';
 
-const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
+const ContatoreDetails = ({ contatoreId, onDeselectContatore }) =>
+{
     const [contatore, setContatore] = useState(null);
     const [letture, setLetture] = useState([]);
     const [showLetture, setShowLetture] = useState(false);
@@ -34,159 +35,206 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
     const [listini, setListini] = useState([]);
     const [lettureList, setLettureList] = useState([]);
 
-    useEffect(() => {
-        const fetchContatore = async () => {
-            try {
-                const response = await contatoreApi.getContatore(contatoreId);
-                setContatore(response.data);
-                setEditFormData({
-                    seriale: response.data.seriale,
-                    serialeInterno: response.data.serialeInterno,
-                    ultimaLettura: response.data.ultimaLettura,
-                    attivo: response.data.attivo,
-                    condominiale: response.data.condominiale,
-                    sostituzione: response.data.sostituzione,
-                    subentro: response.data.subentro,
-                    dataInstallazione: response.data.dataInstallazione,
-                    dataScadenza: response.data.dataScadenza,
-                    foto: response.data.foto,
-                    note: response.data.note,
-                });
-            } catch (error) {
-                alert('Errore durante il recupero del contatore');
-                console.error(error);
-            }
-        };
+    const fetchContatore = useCallback(async () =>
+    {
+        try
+        {
+            const response = await contatoreApi.getContatore(contatoreId);
+            setContatore(response.data);
+            setEditFormData(
+            {
+                seriale: response.data.seriale,
+                serialeInterno: response.data.serialeInterno,
+                ultimaLettura: response.data.ultimaLettura,
+                attivo: response.data.attivo,
+                condominiale: response.data.condominiale,
+                sostituzione: response.data.sostituzione,
+                subentro: response.data.subentro,
+                dataInstallazione: response.data.dataInstallazione,
+                dataScadenza: response.data.dataScadenza,
+                foto: response.data.foto,
+                note: response.data.note,
+            });
+        }
+        catch (error)
+        {
+            alert('Errore durante il recupero del contatore');
+            console.error(error);
+        }
+    }, [contatoreId]);
 
-        if (contatoreId) {
+    useEffect(() =>
+    {
+        if (contatoreId)
+        {
             fetchContatore();
         }
-
         setShowClienteModal(false);
         setShowEdificioModal(false);
         setShowListinoModal(false);
         setShowLetturaModal(false);
-    }, [contatoreId]);
+    }, [contatoreId, fetchContatore]);
 
-    const fetchLetture = async () => {
-        try {
+    const fetchLetture = async () =>
+    {
+        try
+        {
             const response = await contatoreApi.getLetture(contatoreId);
             setLetture(response.data);
             setShowLetture(true);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero delle letture');
             console.error(error);
         }
     };
 
-    const handleOpenClienteModal = async () => {
-        try {
+    const handleOpenClienteModal = async () =>
+    {
+        try
+        {
             const response = await clienteApi.getClienti();
             setClienti(response.data);
             setShowClienteModal(true);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero dei clienti');
             console.error(error);
         }
     };
 
-    const handleOpenEdificioModal = async () => {
-        try {
+    const handleOpenEdificioModal = async () =>
+    {
+        try
+        {
             const response = await edificioApi.getEdifici();
             setEdifici(response.data);
             setShowEdificioModal(true);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero degli edifici');
             console.error(error);
         }
     };
 
-    const handleOpenListinoModal = async () => {
-        try {
+    const handleOpenListinoModal = async () =>
+    {
+        try
+        {
             const response = await listinoApi.getListini();
             setListini(response.data);
             setShowListinoModal(true);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero dei listini');
             console.error(error);
         }
     };
 
-    const handleOpenLetturaModal = async () => {
-        try {
+    const handleOpenLetturaModal = async () =>
+    {
+        try 
+        {
             const response = await letturaApi.getLetture();
             setLettureList(response.data);
             setShowLetturaModal(true);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante il recupero delle letture');
             console.error(error);
         }
     };
 
-    const handleSelectCliente = async (clienteId) => {
-        try {
+    const handleSelectCliente = async (clienteId) => 
+    {
+        try 
+        {
             await contatoreApi.associateCliente(contatoreId, clienteId);
             setShowClienteModal(false);
-            setContatore((prevData) => ({ ...prevData, cliente: { _id: clienteId } }));
-        } catch (error) {
+            fetchContatore(); // Aggiorna i dettagli del contatore
+        } 
+        catch (error)
+        {
             alert('Errore durante l\'associazione del cliente');
             console.error(error);
         }
     };
 
-    const handleSelectEdificio = async (edificioId) => {
-        try {
+    const handleSelectEdificio = async (edificioId) => 
+    {
+        try 
+        {
             await contatoreApi.associateEdificio(contatoreId, edificioId);
             setShowEdificioModal(false);
-            setContatore((prevData) => ({ ...prevData, edificio: { _id: edificioId } }));
-        } catch (error) {
+            fetchContatore(); // Aggiorna i dettagli del contatore
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'associazione dell\'edificio');
             console.error(error);
         }
     };
 
-    const handleSelectListino = async (listinoId) => {
-        try {
+    const handleSelectListino = async (listinoId) => 
+    {
+        try 
+        {
             await contatoreApi.associateListino(contatoreId, listinoId);
             setShowListinoModal(false);
-            setContatore((prevData) => ({ ...prevData, listino: { _id: listinoId } }));
-        } catch (error) {
+            fetchContatore(); // Aggiorna i dettagli del contatore
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'associazione del listino');
             console.error(error);
         }
     };
 
-    const handleSelectLettura = async (letturaId) => {
-        try {
+    const handleSelectLettura = async (letturaId) => 
+    {
+        try 
+        {
             await contatoreApi.associateLettura(contatoreId, letturaId);
             setShowLetturaModal(false);
             fetchLetture();
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'associazione della lettura');
             console.error(error);
         }
     };
 
-    const handleEditChange = (e) => {
+    const handleEditChange = (e) => 
+    {
         const { name, value, type, checked } = e.target;
         setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleUpdateContatore = async (e) => {
+    const handleUpdateContatore = async (e) => 
+    {
         e.preventDefault();
-        try {
+        try 
+        {
             await contatoreApi.updateContatore(contatoreId, editFormData);
             alert('Contatore aggiornato con successo');
             setIsEditing(false);
-            const updatedContatore = await contatoreApi.getContatore(contatoreId);
-            setContatore(updatedContatore.data);
-        } catch (error) {
+            fetchContatore(); // Aggiorna i dettagli del contatore
+        } 
+        catch (error) 
+        {
             alert('Errore durante l\'aggiornamento del contatore');
             console.error(error);
         }
     };
 
-    if (!contatore) {
+    if (!contatore) 
+    {
         return <div>Seleziona un contatore per vedere i dettagli</div>;
     }
 
@@ -239,8 +287,10 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
                         <label>Note:</label>
                         <textarea name="note" value={editFormData.note} onChange={handleEditChange} />
                     </div>
-                    <button type="submit" className="btn btn-save">Salva</button>
-                    <button type="button" className="btn btn-cancel" onClick={() => setIsEditing(false)}>Annulla</button>
+                    <div className="btn-container">
+                        <button type="submit" className="btn btn-save">Salva</button>
+                        <button type="button" className="btn btn-cancel" onClick={() => setIsEditing(false)}>Annulla</button>
+                    </div>
                 </form>
             ) : (
                 <>
@@ -293,6 +343,10 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
                             <tr>
                                 <th>Edificio</th>
                                 <td>{contatore.edificio ? contatore.edificio.descrizione : 'N/A'}</td>
+                            </tr>
+                            <tr>
+                                <th>Listino</th>
+                                <td>{contatore.listino ? contatore.listino.descrizione : 'N/A'}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -353,7 +407,6 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
                                 </li>
                             ))}
                         </ul>
-                        <button onClick={() => setShowClienteModal(false)}>Chiudi</button>
                     </div>
                 </div>
             )}
@@ -368,7 +421,6 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
                                 </li>
                             ))}
                         </ul>
-                        <button onClick={() => setShowEdificioModal(false)}>Chiudi</button>
                     </div>
                 </div>
             )}
@@ -383,7 +435,6 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
                                 </li>
                             ))}
                         </ul>
-                        <button onClick={() => setShowListinoModal(false)}>Chiudi</button>
                     </div>
                 </div>
             )}
@@ -398,7 +449,6 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) => {
                                 </li>
                             ))}
                         </ul>
-                        <button onClick={() => setShowLetturaModal(false)}>Chiudi</button>
                     </div>
                 </div>
             )}

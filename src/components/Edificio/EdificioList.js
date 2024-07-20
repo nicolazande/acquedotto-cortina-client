@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import edificioApi from '../../api/edificioApi';
 import EdificioDetails from './EdificioDetails';
 import L from 'leaflet';
@@ -26,24 +26,15 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
         fetchEdifici();
     }, []);
 
-    useEffect(() => {
-        if (mapRef.current === null) {
-            const mapInstance = L.map('map', {
-                center: [46.5396, 12.1357],
-                zoom: 10,
-                zoomControl: false,
-            });
+    const handleMarkerClick = useCallback((marker) => {
+        const { _id } = marker.edificio;
+        scrollToEdificioRow(_id);
+        mapRef.current.setView(marker.getLatLng(), 12);
+        highlightMarker(marker);
+        setHighlightedEdificioId(_id); // Evidenzia la riga corrispondente
+    }, []);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(mapInstance);
-            mapRef.current = mapInstance;
-        }
-
-        initializeMap();
-    }, [edifici]);
-
-    const initializeMap = () => {
+    const initializeMap = useCallback(() => {
         const map = mapRef.current;
         if (map) {
             markersRef.current.forEach((marker) => {
@@ -75,7 +66,24 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
                 map.fitBounds(group.getBounds());
             }
         }
-    };
+    }, [edifici, handleMarkerClick]);
+
+    useEffect(() => {
+        if (mapRef.current === null) {
+            const mapInstance = L.map('map', {
+                center: [46.5396, 12.1357],
+                zoom: 10,
+                zoomControl: false,
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(mapInstance);
+            mapRef.current = mapInstance;
+        }
+
+        initializeMap();
+    }, [edifici, initializeMap]);
 
     const handleDelete = async (id, e) => {
         e.preventDefault();
@@ -90,14 +98,6 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
             alert('Errore durante la cancellazione dell\'edificio');
             console.error(error);
         }
-    };
-
-    const handleMarkerClick = (marker) => {
-        const { _id } = marker.edificio;
-        scrollToEdificioRow(_id);
-        mapRef.current.setView(marker.getLatLng(), 12);
-        highlightMarker(marker);
-        setHighlightedEdificioId(_id); // Evidenzia la riga corrispondente
     };
 
     const scrollToEdificioRow = (edificioId) => {

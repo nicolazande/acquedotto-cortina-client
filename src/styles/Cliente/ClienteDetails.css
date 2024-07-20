@@ -4,9 +4,9 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px;
+    margin: 20px auto;
     max-width: 800px;
-    margin: 0 auto;
+    overflow: auto;
 }
 
 .info-table {
@@ -30,6 +30,7 @@
 .btn-container {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
     margin-top: 20px;
 }
 
@@ -43,6 +44,8 @@
     font-size: 16px;
     margin: 5px;
     transition: background-color 0.3s;
+    flex: 1;
+    max-width: 200px;
 }
 
 .btn-container button:hover {
@@ -183,18 +186,25 @@
     box-sizing: border-box;
 }
 
-.btn-save {
-    background-color: #28a745;
-}
-
 .btn-save:hover {
     background-color: #218838;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333;
+}
+
+.btn-save {
+    background-color: #28a745;
 }
 
 .btn-cancel {
     background-color: #dc3545;
 }
 
-.btn-cancel:hover {
-    background-color: #c82333;
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
 }

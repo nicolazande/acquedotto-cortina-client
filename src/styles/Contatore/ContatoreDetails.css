@@ -32,7 +32,7 @@
     font-weight: bold;
 }
 
-.btn-show-letture {
+.btn-show-letture, .btn-associate-cliente, .btn-associate-edificio, .btn-associate-listino, .btn-associate-lettura, .btn-edit, .btn-save, .btn-cancel {
     background-color: #007bff;
     color: white;
     border: none;
@@ -40,12 +40,33 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
+    margin: 5px;
     display: block;
-    margin: 20px auto;
+    margin: 10px auto;
 }
 
-.btn-show-letture:hover {
+.btn-show-letture:hover, .btn-associate-cliente:hover, .btn-associate-edificio:hover, .btn-associate-listino:hover, .btn-associate-lettura:hover, .btn-edit:hover, .btn-save:hover {
     background-color: #0056b3;
+}
+
+.btn-delete {
+    background-color: #ff3b30;
+}
+
+.btn-delete:hover {
+    background-color: #c4302b;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-back-container {
+    text-align: center;
+    margin-top: 20px;
 }
 
 .letture-section {
@@ -73,59 +94,6 @@
     font-weight: bold;
 }
 
-.btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    margin: 5px;
-}
-
-.btn:hover {
-    background-color: #0056b3;
-}
-
-.btn-delete {
-    background-color: #ff3b30;
-}
-
-.btn-delete:hover {
-    background-color: #c4302b;
-}
-
-.btn-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    flex-wrap: wrap;
-}
-
-.associated-info .cliente-info, .associated-info .edificio-info {
-    background-color: #ffffff;
-    padding: 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
-.associated-info h3 {
-    margin-top: 0;
-    font-size: 1.2em;
-    margin-bottom: 10px;
-}
-
-.associated-info p {
-    margin: 5px 0;
-}
-
-.btn-back-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
 .edit-form {
     display: flex;
     flex-direction: column;
@@ -143,6 +111,8 @@
 
 .edit-form input[type="text"],
 .edit-form input[type="date"],
+.edit-form input[type="email"],
+.edit-form input[type="number"],
 .edit-form textarea {
     width: 100%;
     padding: 8px;
@@ -171,4 +141,61 @@
 
 .edit-form .btn-cancel:hover {
     background-color: #c82333;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 100%;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.modal-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.modal-content li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.modal-content li:hover {
+    background-color: #f1f1f1;
+}
+
+.modal-content button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto;
+}
+
+.modal-content button:hover {
+    background-color: #0056b3;
 }

@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import edificioApi from '../../api/edificioApi';
 import contatoreApi from '../../api/contatoreApi';
 import '../../styles/Edificio/EdificioDetails.css';
 
-const EdificioDetails = ({ edificioId, onDeselectEdificio }) => {
+const EdificioDetails = ({ edificioId, onDeselectEdificio }) =>
+{
     const [edificio, setEdificio] = useState(null);
     const [contatori, setContatori] = useState([]);
+    const [contatoriList, setContatoriList] = useState([]);
     const [showContatori, setShowContatori] = useState(false);
     const [showContatoreModal, setShowContatoreModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -30,96 +32,121 @@ const EdificioDetails = ({ edificioId, onDeselectEdificio }) => {
         note: ''
     });
 
-    useEffect(() => {
-        const fetchEdificio = async () => {
-            try {
-                const response = await edificioApi.getEdificio(edificioId);
-                setEdificio(response.data);
-                setEditFormData({
-                    descrizione: response.data.descrizione,
-                    indirizzo: response.data.indirizzo,
-                    numero: response.data.numero,
-                    CAP: response.data.CAP,
-                    localita: response.data.localita,
-                    provincia: response.data.provincia,
-                    nazione: response.data.nazione,
-                    attivita: response.data.attivita,
-                    postiLetto: response.data.postiLetto,
-                    latitudine: response.data.latitudine,
-                    longitudine: response.data.longitudine,
-                    unitaAbitative: response.data.unitaAbitative,
-                    catasto: response.data.catasto,
-                    foglio: response.data.foglio,
-                    PED: response.data.PED,
-                    estensione: response.data.estensione,
-                    tipo: response.data.tipo,
-                    note: response.data.note
-                });
-                setShowContatori(false); // Chiude i contatori ogni volta che l'edificioId cambia
-            } catch (error) {
-                alert('Errore durante il recupero dell\'edificio');
-                console.error(error);
-            }
-        };
-
-        if (edificioId) {
-            fetchEdificio();
+    const fetchEdificio = useCallback(async () =>
+    {
+        try
+        {
+            const response = await edificioApi.getEdificio(edificioId);
+            setEdificio(response.data);
+            setEditFormData(
+            {
+                descrizione: response.data.descrizione,
+                indirizzo: response.data.indirizzo,
+                numero: response.data.numero,
+                CAP: response.data.CAP,
+                localita: response.data.localita,
+                provincia: response.data.provincia,
+                nazione: response.data.nazione,
+                attivita: response.data.attivita,
+                postiLetto: response.data.postiLetto,
+                latitudine: response.data.latitudine,
+                longitudine: response.data.longitudine,
+                unitaAbitative: response.data.unitaAbitative,
+                catasto: response.data.catasto,
+                foglio: response.data.foglio,
+                PED: response.data.PED,
+                estensione: response.data.estensione,
+                tipo: response.data.tipo,
+                note: response.data.note
+            });
+            setShowContatori(false); // Chiude i contatori ogni volta che l'edificioId cambia
+        }
+        catch (error)
+        {
+            alert('Errore durante il recupero dell\'edificio');
+            console.error(error);
         }
     }, [edificioId]);
 
-    const fetchContatori = async () => {
-        try {
+    useEffect(() =>
+    {
+        if (edificioId)
+        {
+            fetchEdificio();
+        }
+    }, [edificioId, fetchEdificio]);
+
+    const fetchContatori = async () =>
+    {
+        try
+        {
             const response = await edificioApi.getContatori(edificioId);
             setContatori(response.data);
             setShowContatori(true);
-        } catch (error) {
-            alert('Errore durante il recupero dei contatori');
+        }
+        catch (error)
+        {
             console.error(error);
+            setContatori([]); // Imposta contatori come array vuoto in caso di errore
+            setShowContatori(true); // Mostra la sezione dei contatori anche in caso di errore
         }
     };
 
-    const handleOpenContatoreModal = async () => {
-        try {
+    const handleOpenContatoreModal = async () =>
+    {
+        try
+        {
             const response = await contatoreApi.getContatori();
-            setContatori(response.data);
+            setContatoriList(response.data);
             setShowContatoreModal(true);
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante il recupero dei contatori');
             console.error(error);
         }
     };
 
-    const handleSelectContatore = async (contatoreId) => {
-        try {
+    const handleSelectContatore = async (contatoreId) =>
+    {
+        try
+        {
             await edificioApi.associateContatore(edificioId, contatoreId);
             setShowContatoreModal(false);
             fetchContatori();
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante l\'associazione del contatore');
             console.error(error);
         }
     };
 
-    const handleEditChange = (e) => {
+    const handleEditChange = (e) =>
+    {
         const { name, value } = e.target;
         setEditFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleUpdateEdificio = async (e) => {
+    const handleUpdateEdificio = async (e) =>
+    {
         e.preventDefault();
-        try {
+        try
+        {
             await edificioApi.updateEdificio(edificioId, editFormData);
             alert('Edificio aggiornato con successo');
             setIsEditing(false);
-            const updatedEdificio = await edificioApi.getEdificio(edificioId);
-            setEdificio(updatedEdificio.data);
-        } catch (error) {
+            fetchEdificio();
+        }
+        catch (error)
+        {
             alert('Errore durante l\'aggiornamento dell\'edificio');
             console.error(error);
         }
     };
 
-    if (!edificio) {
+    if (!edificio)
+    {
         return <div>Seleziona un edificio per vedere i dettagli</div>;
     }
 
@@ -200,8 +227,10 @@ const EdificioDetails = ({ edificioId, onDeselectEdificio }) => {
                         <label>Note:</label>
                         <textarea name="note" value={editFormData.note} onChange={handleEditChange}></textarea>
                     </div>
-                    <button type="submit" className="btn btn-save">Salva</button>
-                    <button type="button" className="btn btn-cancel" onClick={() => setIsEditing(false)}>Annulla</button>
+                    <div className="form-actions">
+                        <button type="submit" className="btn btn-save">Salva</button>
+                        <button type="button" className="btn btn-cancel" onClick={() => setIsEditing(false)}>Annulla</button>
+                    </div>
                 </form>
             ) : (
                 <>
@@ -335,7 +364,7 @@ const EdificioDetails = ({ edificioId, onDeselectEdificio }) => {
                     <div className="modal-content">
                         <h3>Seleziona Contatore</h3>
                         <ul>
-                            {contatori.map((contatore) => (
+                            {contatoriList.map((contatore) => (
                                 <li key={contatore._id} onClick={() => handleSelectContatore(contatore._id)}>
                                     {contatore.seriale}
                                 </li>

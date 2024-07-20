@@ -3,39 +3,51 @@ import clienteApi from '../../api/clienteApi';
 import ClienteDetails from './ClienteDetails';
 import '../../styles/Cliente/ClienteList.css';
 
-const ClienteList = ({ onSelectCliente, selectedClienteId, onDeselectCliente }) => {
+const ClienteList = ({ onSelectCliente, selectedClienteId, onDeselectCliente }) =>
+{
     const [clienti, setClienti] = useState([]);
 
-    useEffect(() => {
-        const fetchClienti = async () => {
-            try {
+    useEffect(() =>
+    {
+        const fetchClienti = async () =>
+        {
+            try
+            {
                 const response = await clienteApi.getClienti();
                 setClienti(response.data);
-            } catch (error) {
+            }
+            catch (error)
+            {
                 alert('Errore durante il recupero dei clienti');
                 console.error(error);
             }
         };
-
         fetchClienti();
     }, []);
 
-    const handleDelete = async (id) => {
-        try {
+    const handleDelete = async (id) =>
+    {
+        try
+        {
             await clienteApi.deleteCliente(id);
             setClienti(clienti.filter(cliente => cliente._id !== id));
-            if (selectedClienteId === id) {
+            if (selectedClienteId === id)
+            {
                 onDeselectCliente();
             }
-        } catch (error) {
+        }
+        catch (error)
+        {
             alert('Errore durante la cancellazione del cliente');
             console.error(error);
         }
     };
 
-    const handleSelectCliente = (clienteId) => {
+    const handleSelectCliente = (clienteId) =>
+    {
         onDeselectCliente(); // Chiudi i dettagli del cliente precedente
-        setTimeout(() => { // Aspetta un breve istante per permettere la chiusura dei dettagli precedenti
+        setTimeout(() =>
+        { // Aspetta un breve istante per permettere la chiusura dei dettagli precedenti
             onSelectCliente(clienteId); // Seleziona il nuovo cliente
         }, 0);
     };
