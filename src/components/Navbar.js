@@ -40,6 +40,9 @@ const Navbar = () =>
                 <li className="nav-item">
                     <Link to="/fasce" className="nav-link">Fasce</Link>
                 </li>
+                <li className="nav-item">
+                    <Link to="/scadenze" className="nav-link">Scadenze</Link>
+                </li>
             </ul>
         </nav>
     );

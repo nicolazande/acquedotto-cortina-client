@@ -9,6 +9,7 @@ import ServizioPage from './pages/ServizioPage';
 import ArticoloPage from './pages/ArticoloPage';
 import ListinoPage from './pages/ListinoPage';
 import FasciaPage from './pages/FasciaPage';
+import ScadenzaPage from './pages/ScadenzaPage';
 import HomePage from './pages/HomePage';
 import Navbar from './components/Navbar';
 import './styles/App.css';
@@ -30,6 +31,7 @@ const App = () =>
                         <Route path="/articoli" component={ArticoloPage} />
                         <Route path="/listini" component={ListinoPage} />
                         <Route path="/fasce" component={FasciaPage} />
+                        <Route path="/scadenze" component={ScadenzaPage} />
                         <Route path="/" component={HomePage} />
                     </Switch>
                 </div>
