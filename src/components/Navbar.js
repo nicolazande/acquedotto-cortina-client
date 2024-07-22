@@ -1,47 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/Navbar.css'
+import '../styles/Navbar.css';
 
-const Navbar = () => 
-{
+const Navbar = () => {
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setMenuOpen(!menuOpen);
+    };
+
     return (
         <nav className="navbar">
             <div className="navbar-brand">
                 <Link to="/">Acquedotto Zuel</Link>
             </div>
-            <ul className="navbar-nav">
+            <div className="menu-toggle" onClick={toggleMenu}>
+                &#9776;
+            </div>
+            <ul className={`navbar-nav ${menuOpen ? 'active' : ''}`}>
                 <li className="nav-item">
-                    <Link to="/" className="nav-link">Home</Link>
+                    <Link to="/" className="nav-link" onClick={toggleMenu}>Home</Link>
                 </li>
                 <li className="nav-item">
-                    <Link to="/clienti" className="nav-link">Clienti</Link>
+                    <Link to="/clienti" className="nav-link" onClick={toggleMenu}>Clienti</Link>
                 </li>
                 <li className="nav-item">
-                    <Link to="/contatori" className="nav-link">Contatori</Link>
+                    <Link to="/contatori" className="nav-link" onClick={toggleMenu}>Contatori</Link>
                 </li>
                 <li className="nav-item">
-                    <Link to="/edifici" className="nav-link">Edifici</Link>
+                    <Link to="/edifici" className="nav-link" onClick={toggleMenu}>Edifici</Link>
                 </li>
                 <li className="nav-item">
-                    <Link to="/letture" className="nav-link">Letture</Link>
+                    <Link to="/letture" className="nav-link" onClick={toggleMenu}>Letture</Link>
                 </li>
                 <li className="nav-item">
-                    <Link to="/fatture" className="nav-link">Fatture</Link>
+                    <Link to="/fatture" className="nav-link" onClick={toggleMenu}>Fatture</Link>
                 </li>
                 <li className="nav-item">
-                    <Link to="/servizi" className="nav-link">Servizi</Link>
+                    <Link to="/servizi" className="nav-link" onClick={toggleMenu}>Servizi</Link>
                 </li>
                 <li className="nav-item">
-                    <Link to="/articoli" className="nav-link">Articoli</Link>
+                    <Link to="/articoli" className="nav-link" onClick={toggleMenu}>Articoli</Link>
                 </li>
                 <li className="nav-item">
-                    <Link to="/listini" className="nav-link">Listini</Link>
+                    <Link to="/listini" className="nav-link" onClick={toggleMenu}>Listini</Link>
                 </li>
                 <li className="nav-item">
-                    <Link to="/fasce" className="nav-link">Fasce</Link>
+                    <Link to="/fasce" className="nav-link" onClick={toggleMenu}>Fasce</Link>
                 </li>
                 <li className="nav-item">
-                    <Link to="/scadenze" className="nav-link">Scadenze</Link>
+                    <Link to="/scadenze" className="nav-link" onClick={toggleMenu}>Scadenze</Link>
                 </li>
             </ul>
         </nav>
