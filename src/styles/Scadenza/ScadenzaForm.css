@@ -1,0 +1,53 @@
+/* Styles for ScadenzaForm */
+
+.scadenza-form {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.scadenza-form .form-group {
+    margin-bottom: 15px;
+}
+
+.scadenza-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.scadenza-form input[type="text"],
+.scadenza-form input[type="date"],
+.scadenza-form input[type="email"],
+.scadenza-form input[type="number"],
+.scadenza-form textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.scadenza-form input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.scadenza-form .submit-button {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.scadenza-form .submit-button:hover {
+    background-color: #005bb5;
+}
