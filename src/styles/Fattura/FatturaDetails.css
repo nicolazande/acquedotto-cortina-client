@@ -7,6 +7,7 @@
     margin: 20px;
     max-width: 800px;
     margin: 0 auto;
+    overflow-x: auto; /* Ensure the container can scroll horizontally if needed */
 }
 
 .info-table {
@@ -31,6 +32,7 @@
     display: flex;
     justify-content: space-around;
     margin-top: 20px;
+    flex-wrap: wrap; /* Ensure buttons wrap on smaller screens */
 }
 
 .btn-container button {
@@ -43,6 +45,8 @@
     font-size: 16px;
     margin: 5px;
     transition: background-color 0.3s;
+    flex: 1; /* Allow buttons to grow and fill available space */
+    max-width: 200px; /* Ensure buttons don't become too wide */
 }
 
 .btn-container button:hover {
@@ -172,4 +176,27 @@
 
 .btn-cancel:hover {
     background-color: #c82333;
+}
+
+.servizi-section {
+    margin-top: 20px;
+    overflow-x: auto; /* Ensure the section can scroll horizontally if needed */
+}
+
+.servizi-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.servizi-table th,
+.servizi-table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.servizi-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
 }

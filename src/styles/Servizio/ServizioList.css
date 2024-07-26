@@ -16,9 +16,14 @@
     margin-bottom: 20px;
 }
 
+.servizio-list-scrollable {
+    overflow-x: auto; /* Enable horizontal scrolling if needed */
+}
+
 .servizio-list ul {
     list-style: none;
     padding: 0;
+    min-width: 600px; /* Minimum width to trigger scrolling if needed */
 }
 
 .servizio-list-item {
@@ -37,18 +42,23 @@
     flex-grow: 1;
 }
 
+.btn-container {
+    display: flex;
+    gap: 10px;
+}
+
 .servizio-list-item .btn {
-    background-color: #007aff;
+    background-color: #007bff;
     color: white;
     border: none;
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 10px;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
 }
 
 .servizio-list-item .btn:hover {
-    background-color: #005bb5;
+    background-color: #0056b3;
 }
 
 .servizio-list-item .btn-delete {
