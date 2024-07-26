@@ -1,12 +1,19 @@
 /* Styles for EdificioDetails */
+
 .edificio-detail {
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px;
-    max-width: 800px;
-    margin: 0 auto;
+    margin: 20px auto;
+    max-width: 1200px;
+    overflow-x: auto; /* Ensure horizontal scrolling if needed */
+}
+
+.edificio-detail h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .edificio-table, .contatori-table {
@@ -30,10 +37,12 @@
 .btn-container {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap; /* Ensure buttons wrap on smaller screens */
+    gap: 10px; /* Space between buttons */
     margin-top: 20px;
 }
 
-.btn-container button {
+.btn-container .btn {
     background-color: #007bff;
     color: white;
     border: none;
@@ -41,13 +50,12 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    margin: 5px;
-    transition: background-color 0.3s;
-    flex: 1;
-    max-width: 200px;
+    transition: background-color 0.3s ease;
+    flex: 1; /* Allow buttons to grow and fill available space */
+    max-width: 200px; /* Ensure buttons don't become too wide */
 }
 
-.btn-container button:hover {
+.btn-container .btn:hover {
     background-color: #0056b3;
 }
 
@@ -64,7 +72,7 @@
     margin-top: 20px;
 }
 
-.btn-back-container button {
+.btn-back-container .btn-back {
     background-color: #6c757d;
     color: white;
     border: none;
@@ -72,15 +80,16 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease;
 }
 
-.btn-back-container button:hover {
+.btn-back-container .btn-back:hover {
     background-color: #5a6268;
 }
 
 .contatori-section {
     margin-top: 20px;
+    overflow-x: auto; /* Ensure horizontal scrolling if needed */
 }
 
 .modal {

@@ -15,6 +15,15 @@
     margin-bottom: 20px;
 }
 
+.edificio-map {
+    height: 400px;
+    margin-bottom: 20px; /* Add margin to separate map and table */
+}
+
+.table-container {
+    overflow-x: auto; /* Ensure horizontal scrolling for the table if needed */
+}
+
 .edificio-table {
     width: 100%;
     border-collapse: collapse;

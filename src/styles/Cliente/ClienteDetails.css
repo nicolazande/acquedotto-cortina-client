@@ -5,8 +5,14 @@
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
-    max-width: 800px;
-    overflow: auto;
+    max-width: 1200px;
+    overflow: auto; /* Ensure the container can scroll horizontally if needed */
+}
+
+.cliente-details h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .info-table {
@@ -15,26 +21,25 @@
     margin-bottom: 20px;
 }
 
-.info-table th,
-.info-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+.info-table th, .info-table td {
     text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
 }
 
 .info-table th {
     background-color: #f2f2f2;
-    color: #333;
 }
 
 .btn-container {
     display: flex;
     justify-content: space-around;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Ensure buttons wrap on smaller screens */
+    gap: 10px; /* Space between buttons */
     margin-top: 20px;
 }
 
-.btn-container button {
+.btn-container .btn {
     background-color: #007bff;
     color: white;
     border: none;
@@ -42,13 +47,12 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    margin: 5px;
-    transition: background-color 0.3s;
-    flex: 1;
-    max-width: 200px;
+    transition: background-color 0.3s ease;
+    flex: 1; /* Allow buttons to grow and fill available space */
+    max-width: 200px; /* Ensure buttons don't become too wide */
 }
 
-.btn-container button:hover {
+.btn-container .btn:hover {
     background-color: #0056b3;
 }
 
@@ -65,7 +69,7 @@
     margin-top: 20px;
 }
 
-.btn-back-container button {
+.btn-back-container .btn-back {
     background-color: #6c757d;
     color: white;
     border: none;
@@ -73,16 +77,17 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease;
 }
 
-.btn-back-container button:hover {
+.btn-back-container .btn-back:hover {
     background-color: #5a6268;
 }
 
 .contatori-section,
 .fatture-section {
     margin-top: 20px;
+    overflow-x: auto; /* Ensure the section can scroll horizontally if needed */
 }
 
 .contatori-table,
@@ -186,20 +191,20 @@
     box-sizing: border-box;
 }
 
-.btn-save:hover {
-    background-color: #218838;
-}
-
-.btn-cancel:hover {
-    background-color: #c82333;
-}
-
 .btn-save {
     background-color: #28a745;
 }
 
+.btn-save:hover {
+    background-color: #218838;
+}
+
 .btn-cancel {
     background-color: #dc3545;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333;
 }
 
 .form-actions {
@@ -207,4 +212,56 @@
     justify-content: flex-end;
     gap: 10px;
     margin-top: 20px;
+}
+
+/* Additional styles to align the buttons */
+.cliente-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.cliente-list-item span {
+    flex-grow: 1;
+}
+
+.cliente-list-item .btn-container {
+    display: flex;
+    gap: 10px;
+}
+
+.cliente-list-item .btn {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+.cliente-list-item .btn:hover {
+    background-color: #005bb5;
+}
+
+.cliente-list-item .btn-delete {
+    background-color: #ff3b30;
+}
+
+.cliente-list-item .btn-delete:hover {
+    background-color: #c4302b;
+}
+
+.cliente-list-item .btn-back {
+    background-color: #6c757d;
+}
+
+.cliente-list-item .btn-back:hover {
+    background-color: #5a6268;
+}
+
+.cliente-list-item.highlight {
+    background-color: #ffffcc;
 }
