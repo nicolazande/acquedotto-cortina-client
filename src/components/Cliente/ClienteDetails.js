@@ -302,134 +302,136 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
                 </form>
             ) : (
                 <>
-                    <table className="info-table">
-                        <tbody>
-                            <tr>
-                                <th>Ragione Sociale</th>
-                                <td>{cliente.ragioneSociale}</td>
-                            </tr>
-                            <tr>
-                                <th>Nome</th>
-                                <td>{cliente.nome}</td>
-                            </tr>
-                            <tr>
-                                <th>Cognome</th>
-                                <td>{cliente.cognome}</td>
-                            </tr>
-                            <tr>
-                                <th>Sesso</th>
-                                <td>{cliente.sesso}</td>
-                            </tr>
-                            <tr>
-                                <th>Socio</th>
-                                <td>{cliente.socio ? 'Sì' : 'No'}</td>
-                            </tr>
-                            <tr>
-                                <th>Data di Nascita</th>
-                                <td>{new Date(cliente.dataNascita).toLocaleDateString()}</td>
-                            </tr>
-                            <tr>
-                                <th>Comune di Nascita</th>
-                                <td>{cliente.comuneNascita}</td>
-                            </tr>
-                            <tr>
-                                <th>Provincia di Nascita</th>
-                                <td>{cliente.provinciaNascita}</td>
-                            </tr>
-                            <tr>
-                                <th>Indirizzo di Residenza</th>
-                                <td>{cliente.indirizzoResidenza}</td>
-                            </tr>
-                            <tr>
-                                <th>Numero di Residenza</th>
-                                <td>{cliente.numeroResidenza}</td>
-                            </tr>
-                            <tr>
-                                <th>CAP di Residenza</th>
-                                <td>{cliente.capResidenza}</td>
-                            </tr>
-                            <tr>
-                                <th>Località di Residenza</th>
-                                <td>{cliente.localitaResidenza}</td>
-                            </tr>
-                            <tr>
-                                <th>Provincia di Residenza</th>
-                                <td>{cliente.provinciaResidenza}</td>
-                            </tr>
-                            <tr>
-                                <th>Nazione di Residenza</th>
-                                <td>{cliente.nazioneResidenza}</td>
-                            </tr>
-                            <tr>
-                                <th>Destinazione di Fatturazione</th>
-                                <td>{cliente.destinazioneFatturazione}</td>
-                            </tr>
-                            <tr>
-                                <th>Indirizzo di Fatturazione</th>
-                                <td>{cliente.indirizzoFatturazione}</td>
-                            </tr>
-                            <tr>
-                                <th>Numero di Fatturazione</th>
-                                <td>{cliente.numeroFatturazione}</td>
-                            </tr>
-                            <tr>
-                                <th>CAP di Fatturazione</th>
-                                <td>{cliente.capFatturazione}</td>
-                            </tr>
-                            <tr>
-                                <th>Località di Fatturazione</th>
-                                <td>{cliente.localitaFatturazione}</td>
-                            </tr>
-                            <tr>
-                                <th>Provincia di Fatturazione</th>
-                                <td>{cliente.provinciaFatturazione}</td>
-                            </tr>
-                            <tr>
-                                <th>Nazione di Fatturazione</th>
-                                <td>{cliente.nazioneFatturazione}</td>
-                            </tr>
-                            <tr>
-                                <th>Codice Fiscale</th>
-                                <td>{cliente.codiceFiscale}</td>
-                            </tr>
-                            <tr>
-                                <th>Telefono</th>
-                                <td>{cliente.telefono}</td>
-                            </tr>
-                            <tr>
-                                <th>Email</th>
-                                <td>{cliente.email}</td>
-                            </tr>
-                            <tr>
-                                <th>Pagamento</th>
-                                <td>{cliente.pagamento}</td>
-                            </tr>
-                            <tr>
-                                <th>Codice Destinatario</th>
-                                <td>{cliente.codiceDestinatario}</td>
-                            </tr>
-                            <tr>
-                                <th>Fattura Elettronica</th>
-                                <td>{cliente.fatturaElettronica}</td>
-                            </tr>
-                            <tr>
-                                <th>Codice ERP</th>
-                                <td>{cliente.codiceERP}</td>
-                            </tr>
-                            <tr>
-                                <th>IBAN</th>
-                                <td>{cliente.IBAN}</td>
-                            </tr>
-                            <tr>
-                                <th>Note</th>
-                                <td>{cliente.note}</td>
-                            </tr>
-                            <tr>
-                                <th>Quote</th>
-                                <td>{cliente.quote}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="table-container">
+                        <table className="info-table">
+                            <tbody>
+                                <tr>
+                                    <th>Ragione Sociale</th>
+                                    <td>{cliente.ragioneSociale}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nome</th>
+                                    <td>{cliente.nome}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cognome</th>
+                                    <td>{cliente.cognome}</td>
+                                </tr>
+                                <tr>
+                                    <th>Sesso</th>
+                                    <td>{cliente.sesso}</td>
+                                </tr>
+                                <tr>
+                                    <th>Socio</th>
+                                    <td>{cliente.socio ? 'Sì' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data di Nascita</th>
+                                    <td>{new Date(cliente.dataNascita).toLocaleDateString()}</td>
+                                </tr>
+                                <tr>
+                                    <th>Comune di Nascita</th>
+                                    <td>{cliente.comuneNascita}</td>
+                                </tr>
+                                <tr>
+                                    <th>Provincia di Nascita</th>
+                                    <td>{cliente.provinciaNascita}</td>
+                                </tr>
+                                <tr>
+                                    <th>Indirizzo di Residenza</th>
+                                    <td>{cliente.indirizzoResidenza}</td>
+                                </tr>
+                                <tr>
+                                    <th>Numero di Residenza</th>
+                                    <td>{cliente.numeroResidenza}</td>
+                                </tr>
+                                <tr>
+                                    <th>CAP di Residenza</th>
+                                    <td>{cliente.capResidenza}</td>
+                                </tr>
+                                <tr>
+                                    <th>Località di Residenza</th>
+                                    <td>{cliente.localitaResidenza}</td>
+                                </tr>
+                                <tr>
+                                    <th>Provincia di Residenza</th>
+                                    <td>{cliente.provinciaResidenza}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nazione di Residenza</th>
+                                    <td>{cliente.nazioneResidenza}</td>
+                                </tr>
+                                <tr>
+                                    <th>Destinazione di Fatturazione</th>
+                                    <td>{cliente.destinazioneFatturazione}</td>
+                                </tr>
+                                <tr>
+                                    <th>Indirizzo di Fatturazione</th>
+                                    <td>{cliente.indirizzoFatturazione}</td>
+                                </tr>
+                                <tr>
+                                    <th>Numero di Fatturazione</th>
+                                    <td>{cliente.numeroFatturazione}</td>
+                                </tr>
+                                <tr>
+                                    <th>CAP di Fatturazione</th>
+                                    <td>{cliente.capFatturazione}</td>
+                                </tr>
+                                <tr>
+                                    <th>Località di Fatturazione</th>
+                                    <td>{cliente.localitaFatturazione}</td>
+                                </tr>
+                                <tr>
+                                    <th>Provincia di Fatturazione</th>
+                                    <td>{cliente.provinciaFatturazione}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nazione di Fatturazione</th>
+                                    <td>{cliente.nazioneFatturazione}</td>
+                                </tr>
+                                <tr>
+                                    <th>Codice Fiscale</th>
+                                    <td>{cliente.codiceFiscale}</td>
+                                </tr>
+                                <tr>
+                                    <th>Telefono</th>
+                                    <td>{cliente.telefono}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>{cliente.email}</td>
+                                </tr>
+                                <tr>
+                                    <th>Pagamento</th>
+                                    <td>{cliente.pagamento}</td>
+                                </tr>
+                                <tr>
+                                    <th>Codice Destinatario</th>
+                                    <td>{cliente.codiceDestinatario}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fattura Elettronica</th>
+                                    <td>{cliente.fatturaElettronica}</td>
+                                </tr>
+                                <tr>
+                                    <th>Codice ERP</th>
+                                    <td>{cliente.codiceERP}</td>
+                                </tr>
+                                <tr>
+                                    <th>IBAN</th>
+                                    <td>{cliente.IBAN}</td>
+                                </tr>
+                                <tr>
+                                    <th>Note</th>
+                                    <td>{cliente.note}</td>
+                                </tr>
+                                <tr>
+                                    <th>Quote</th>
+                                    <td>{cliente.quote}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div className="btn-container">
                         <button onClick={fetchContatori} className="btn btn-show-contatori">Visualizza Contatori</button>
                         <button onClick={fetchFatture} className="btn btn-show-fatture">Visualizza Fatture</button>

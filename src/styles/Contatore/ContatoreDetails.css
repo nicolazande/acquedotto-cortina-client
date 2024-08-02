@@ -1,19 +1,21 @@
 /* Styles for ContatoreDetails */
-
-.contatore-detail {
+.contatore-details {
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
     max-width: 1200px;
-    overflow-x: auto; /* Ensure horizontal scrolling if needed */
 }
 
-.contatore-detail h2 {
+.contatore-details h2 {
     font-size: 1.5em;
     margin-bottom: 20px;
     text-align: center;
+}
+
+.table-container {
+    overflow-x: auto; /* Horizontal scroll if needed */
 }
 
 .info-table {

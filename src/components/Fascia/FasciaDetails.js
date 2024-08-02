@@ -3,7 +3,7 @@ import fasciaApi from '../../api/fasciaApi';
 import listinoApi from '../../api/listinoApi';
 import '../../styles/Fascia/FasciaDetails.css';
 
-const FasciaDetails = ({ fasciaId }) =>
+const FasciaDetails = ({ fasciaId, onDeselectFascia }) =>
 {
     const [fascia, setFascia] = useState(null);
     const [listino, setListino] = useState(null);
@@ -149,44 +149,49 @@ const FasciaDetails = ({ fasciaId }) =>
                 </form>
             ) : (
                 <>
-                    <table className="info-table">
-                        <tbody>
-                            <tr>
-                                <th>Tipo</th>
-                                <td>{fascia.tipo}</td>
-                            </tr>
-                            <tr>
-                                <th>Min</th>
-                                <td>{fascia.min}</td>
-                            </tr>
-                            <tr>
-                                <th>Max</th>
-                                <td>{fascia.max}</td>
-                            </tr>
-                            <tr>
-                                <th>Prezzo</th>
-                                <td>{fascia.prezzo}</td>
-                            </tr>
-                            <tr>
-                                <th>Scadenza</th>
-                                <td>{fascia.scadenza ? new Date(fascia.scadenza).toLocaleDateString() : 'N/A'}</td>
-                            </tr>
-                            <tr>
-                                <th>Fisso</th>
-                                <td>{fascia.fisso ? 'Sì' : 'No'}</td>
-                            </tr>
-                            <tr>
-                                <th>Listino</th>
-                                <td>{listino ? `${listino.categoria} - ${listino.descrizione}` : 'N/A'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="table-container">
+                        <table className="info-table">
+                            <tbody>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <td>{fascia.tipo}</td>
+                                </tr>
+                                <tr>
+                                    <th>Min</th>
+                                    <td>{fascia.min}</td>
+                                </tr>
+                                <tr>
+                                    <th>Max</th>
+                                    <td>{fascia.max}</td>
+                                </tr>
+                                <tr>
+                                    <th>Prezzo</th>
+                                    <td>{fascia.prezzo}</td>
+                                </tr>
+                                <tr>
+                                    <th>Scadenza</th>
+                                    <td>{fascia.scadenza ? new Date(fascia.scadenza).toLocaleDateString() : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fisso</th>
+                                    <td>{fascia.fisso ? 'Sì' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Listino</th>
+                                    <td>{listino ? `${listino.categoria} - ${listino.descrizione}` : 'N/A'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div className="btn-container">
                         <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>
                         <button onClick={handleOpenListinoModal} className="btn btn-associate-listino">Associa Listino</button>
                     </div>
                 </>
             )}
+            <div className="btn-back-container">
+                <button onClick={onDeselectFascia} className="btn btn-back">Indietro</button>
+            </div>
             {showListinoModal && (
                 <div className="modal">
                     <div className="modal-content">

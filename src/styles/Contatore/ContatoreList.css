@@ -15,25 +15,34 @@
     margin-bottom: 20px;
 }
 
-.contatore-list ul {
-    list-style: none;
-    padding: 0;
+.table-container {
+    overflow-x: auto; /* Ensure horizontal scrolling for the table if needed */
 }
 
-.contatore-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+.contatore-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.contatore-table th,
+.contatore-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.contatore-table th {
+    background-color: #f2f2f2;
+    color: #333;
 }
 
 .contatore-list-item:hover {
     background-color: #f1f1f1;
 }
 
-.contatore-list-item span {
-    flex-grow: 1;
+.contatore-list-item.highlight {
+    background-color: #ffffcc;
 }
 
 .contatore-list-item .btn {
@@ -43,7 +52,8 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 5px;
+    transition: background-color 0.3s;
 }
 
 .contatore-list-item .btn:hover {
@@ -56,16 +66,4 @@
 
 .contatore-list-item .btn-delete:hover {
     background-color: #c4302b;
-}
-
-.contatore-list-item .btn-back {
-    background-color: #6c757d;
-}
-
-.contatore-list-item .btn-back:hover {
-    background-color: #5a6268;
-}
-
-.contatore-list-item.highlight {
-    background-color: #ffffcc;
 }

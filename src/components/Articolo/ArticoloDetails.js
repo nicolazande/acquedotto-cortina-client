@@ -135,22 +135,24 @@ const ArticoloDetails = ({ articoloId, onDeselectArticolo }) =>
                 </form>
             ) : (
                 <>
-                    <table className="info-table">
-                        <tbody>
-                            <tr>
-                                <th>Codice</th>
-                                <td>{articolo.codice}</td>
-                            </tr>
-                            <tr>
-                                <th>Descrizione</th>
-                                <td>{articolo.descrizione}</td>
-                            </tr>
-                            <tr>
-                                <th>IVA</th>
-                                <td>{articolo.iva}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="table-container">
+                        <table className="info-table">
+                            <tbody>
+                                <tr>
+                                    <th>Codice</th>
+                                    <td>{articolo.codice}</td>
+                                </tr>
+                                <tr>
+                                    <th>Descrizione</th>
+                                    <td>{articolo.descrizione}</td>
+                                </tr>
+                                <tr>
+                                    <th>IVA</th>
+                                    <td>{articolo.iva}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div className="btn-container">
                         <button onClick={handleOpenServizioModal} className="btn btn-associate-servizio">Associa Servizio</button>
                         <button onClick={fetchServiziAssociati} className="btn btn-show-servizi">Visualizza Servizi</button>

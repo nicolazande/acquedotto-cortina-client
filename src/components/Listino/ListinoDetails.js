@@ -194,18 +194,20 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) =>
                 </form>
             ) : (
                 <>
-                    <table className="info-table">
-                        <tbody>
-                            <tr>
-                                <th>Categoria</th>
-                                <td>{listino.categoria}</td>
-                            </tr>
-                            <tr>
-                                <th>Descrizione</th>
-                                <td>{listino.descrizione}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="table-container">
+                        <table className="info-table">
+                            <tbody>
+                                <tr>
+                                    <th>Categoria</th>
+                                    <td>{listino.categoria}</td>
+                                </tr>
+                                <tr>
+                                    <th>Descrizione</th>
+                                    <td>{listino.descrizione}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div className="btn-container">
                         <button onClick={handleOpenFasceModal} className="btn btn-associate-fascia">Associa Fascia</button>
                         <button onClick={handleOpenContatoreModal} className="btn btn-associate-contatore">Associa Contatore</button>

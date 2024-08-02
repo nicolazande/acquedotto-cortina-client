@@ -214,42 +214,44 @@ const LetturaDetails = ({ letturaId, onDeselectLettura }) =>
                 </form>
             ) : (
                 <>
-                    <table className="info-table">
-                        <tbody>
-                            <tr>
-                                <th>Cliente</th>
-                                <td>{lettura.cliente}</td>
-                            </tr>
-                            <tr>
-                                <th>Tipo</th>
-                                <td>{lettura.tipo}</td>
-                            </tr>
-                            <tr>
-                                <th>Data</th>
-                                <td>{new Date(lettura.data).toLocaleDateString()}</td>
-                            </tr>
-                            <tr>
-                                <th>Valore</th>
-                                <td>{lettura.valore}</td>
-                            </tr>
-                            <tr>
-                                <th>UdM</th>
-                                <td>{lettura.UdM}</td>
-                            </tr>
-                            <tr>
-                                <th>Fatturata</th>
-                                <td>{lettura.fatturata ? 'Si' : 'No'}</td>
-                            </tr>
-                            <tr>
-                                <th>Note</th>
-                                <td>{lettura.note}</td>
-                            </tr>
-                            <tr>
-                                <th>Contatore</th>
-                                <td>{contatori.length > 0 ? contatori[0].seriale : 'N/A'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="table-container">
+                        <table className="info-table">
+                            <tbody>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <td>{lettura.cliente}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <td>{lettura.tipo}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data</th>
+                                    <td>{new Date(lettura.data).toLocaleDateString()}</td>
+                                </tr>
+                                <tr>
+                                    <th>Valore</th>
+                                    <td>{lettura.valore}</td>
+                                </tr>
+                                <tr>
+                                    <th>UdM</th>
+                                    <td>{lettura.UdM}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fatturata</th>
+                                    <td>{lettura.fatturata ? 'Si' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Note</th>
+                                    <td>{lettura.note}</td>
+                                </tr>
+                                <tr>
+                                    <th>Contatore</th>
+                                    <td>{contatori.length > 0 ? contatori[0].seriale : 'N/A'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div className="btn-container">
                         <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>
                         <button onClick={fetchServiziAssociati} className="btn btn-show-servizi">Visualizza Servizi</button>

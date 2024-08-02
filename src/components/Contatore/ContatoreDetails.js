@@ -239,7 +239,7 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) =>
     }
 
     return (
-        <div className="contatore-detail">
+        <div className="contatore-details">
             <h2>Dettagli Contatore</h2>
             {isEditing ? (
                 <form onSubmit={handleUpdateContatore} className="edit-form">
@@ -294,62 +294,64 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) =>
                 </form>
             ) : (
                 <>
-                    <table className="info-table">
-                        <tbody>
-                            <tr>
-                                <th>Seriale</th>
-                                <td>{contatore.seriale}</td>
-                            </tr>
-                            <tr>
-                                <th>Seriale Interno</th>
-                                <td>{contatore.serialeInterno}</td>
-                            </tr>
-                            <tr>
-                                <th>Ultima Lettura</th>
-                                <td>{new Date(contatore.ultimaLettura).toLocaleDateString()}</td>
-                            </tr>
-                            <tr>
-                                <th>Attivo</th>
-                                <td>{contatore.attivo ? 'Sì' : 'No'}</td>
-                            </tr>
-                            <tr>
-                                <th>Condominiale</th>
-                                <td>{contatore.condominiale ? 'Sì' : 'No'}</td>
-                            </tr>
-                            <tr>
-                                <th>Sostituzione</th>
-                                <td>{contatore.sostituzione ? 'Sì' : 'No'}</td>
-                            </tr>
-                            <tr>
-                                <th>Subentro</th>
-                                <td>{contatore.subentro ? 'Sì' : 'No'}</td>
-                            </tr>
-                            <tr>
-                                <th>Data Installazione</th>
-                                <td>{new Date(contatore.dataInstallazione).toLocaleDateString()}</td>
-                            </tr>
-                            <tr>
-                                <th>Data Scadenza</th>
-                                <td>{new Date(contatore.dataScadenza).toLocaleDateString()}</td>
-                            </tr>
-                            <tr>
-                                <th>Note</th>
-                                <td>{contatore.note}</td>
-                            </tr>
-                            <tr>
-                                <th>Cliente</th>
-                                <td>{contatore.cliente ? `${contatore.cliente.nome} ${contatore.cliente.cognome}` : 'N/A'}</td>
-                            </tr>
-                            <tr>
-                                <th>Edificio</th>
-                                <td>{contatore.edificio ? contatore.edificio.descrizione : 'N/A'}</td>
-                            </tr>
-                            <tr>
-                                <th>Listino</th>
-                                <td>{contatore.listino ? contatore.listino.descrizione : 'N/A'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="table-container">
+                        <table className="info-table">
+                            <tbody>
+                                <tr>
+                                    <th>Seriale</th>
+                                    <td>{contatore.seriale}</td>
+                                </tr>
+                                <tr>
+                                    <th>Seriale Interno</th>
+                                    <td>{contatore.serialeInterno}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ultima Lettura</th>
+                                    <td>{new Date(contatore.ultimaLettura).toLocaleDateString()}</td>
+                                </tr>
+                                <tr>
+                                    <th>Attivo</th>
+                                    <td>{contatore.attivo ? 'Sì' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Condominiale</th>
+                                    <td>{contatore.condominiale ? 'Sì' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Sostituzione</th>
+                                    <td>{contatore.sostituzione ? 'Sì' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Subentro</th>
+                                    <td>{contatore.subentro ? 'Sì' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data Installazione</th>
+                                    <td>{new Date(contatore.dataInstallazione).toLocaleDateString()}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data Scadenza</th>
+                                    <td>{new Date(contatore.dataScadenza).toLocaleDateString()}</td>
+                                </tr>
+                                <tr>
+                                    <th>Note</th>
+                                    <td>{contatore.note}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <td>{contatore.cliente ? `${contatore.cliente.nome} ${contatore.cliente.cognome}` : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Edificio</th>
+                                    <td>{contatore.edificio ? contatore.edificio.descrizione : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Listino</th>
+                                    <td>{contatore.listino ? contatore.listino.descrizione : 'N/A'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div className="btn-container">
                         <button onClick={fetchLetture} className="btn btn-show-letture">Visualizza Letture</button>
                         <button onClick={handleOpenClienteModal} className="btn btn-associate-cliente">Associa Cliente</button>

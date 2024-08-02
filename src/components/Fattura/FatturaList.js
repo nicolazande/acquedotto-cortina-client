@@ -59,19 +59,33 @@ const FatturaList = ({ onSelectFattura, selectedFatturaId, onDeselectFattura }) 
         <div className="fattura-list-container">
             <div className="fattura-list">
                 <h2>Lista Fatture</h2>
-                <ul>
-                    {fatture.map((fattura) => (
-                        <li
-                            key={fattura._id}
-                            id={fattura._id}
-                            className={`fattura-list-item ${fattura._id === selectedFatturaId ? 'highlight' : ''}`}
-                        >
-                            <span>{fattura.tipo} - {fattura.ragioneSociale}</span>
-                            <button className="btn" onClick={() => handleSelectFattura(fattura._id)}>Dettagli</button>
-                            <button className="btn btn-delete" onClick={() => handleDelete(fattura._id)}>Cancella</button>
-                        </li>
-                    ))}
-                </ul>
+                <div className="table-container">
+                    <table className="fattura-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Ragione Sociale</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {fatture.map((fattura) => (
+                                <tr
+                                    key={fattura._id}
+                                    id={fattura._id}
+                                    className={`fattura-list-item ${fattura._id === selectedFatturaId ? 'highlight' : ''}`}
+                                >
+                                    <td>{fattura.tipo}</td>
+                                    <td>{fattura.ragioneSociale}</td>
+                                    <td>
+                                        <button className="btn" onClick={() => handleSelectFattura(fattura._id)}>Dettagli</button>
+                                        <button className="btn btn-delete" onClick={() => handleDelete(fattura._id)}>Cancella</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {showDetails && selectedFatturaId && (
                 <div className="fattura-detail">
