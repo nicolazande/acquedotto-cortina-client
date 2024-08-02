@@ -1,3 +1,5 @@
+/* Styles for ListinoList */
+
 .listino-list {
     background-color: #f9f9f9;
     padding: 20px;
@@ -13,25 +15,29 @@
     margin-bottom: 20px;
 }
 
-.listino-list ul {
-    list-style: none;
-    padding: 0;
+.table-container {
+    overflow-x: auto;
 }
 
-.listino-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+.listino-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.listino-table th, .listino-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.listino-table th {
+    background-color: #f2f2f2;
+    color: #333;
 }
 
 .listino-list-item:hover {
     background-color: #f1f1f1;
-}
-
-.listino-list-item span {
-    flex-grow: 1;
 }
 
 .listino-list-item .btn {
@@ -41,7 +47,8 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 5px;
+    transition: background-color 0.3s;
 }
 
 .listino-list-item .btn:hover {
@@ -54,16 +61,4 @@
 
 .listino-list-item .btn-delete:hover {
     background-color: #c4302b;
-}
-
-.listino-list-item .btn-back {
-    background-color: #6c757d;
-}
-
-.listino-list-item .btn-back:hover {
-    background-color: #5a6268;
-}
-
-.listino-list-item.highlight {
-    background-color: #ffffcc;
 }

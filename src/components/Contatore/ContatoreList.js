@@ -59,22 +59,34 @@ const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectConta
         <div className="contatore-list-container">
             <div className="contatore-list">
                 <h2>Lista Contatori</h2>
-                <ul>
-                    {contatori.map((contatore) => (
-                        <li
-                            key={contatore._id}
-                            id={contatore._id}
-                            className={`contatore-list-item ${contatore._id === selectedContatoreId ? 'highlight' : ''}`}
-                        >
-                            <span>{contatore.seriale}</span>
-                            <button className="btn" onClick={() => handleSelectContatore(contatore._id)}>Dettagli</button>
-                            <button className="btn btn-delete" onClick={() => handleDelete(contatore._id)}>Cancella</button>
-                        </li>
-                    ))}
-                </ul>
+                <div className="table-container">
+                    <table className="contatore-table">
+                        <thead>
+                            <tr>
+                                <th>Seriale</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {contatori.map((contatore) => (
+                                <tr
+                                    key={contatore._id}
+                                    id={contatore._id}
+                                    className={`contatore-list-item ${contatore._id === selectedContatoreId ? 'highlight' : ''}`}
+                                >
+                                    <td>{contatore.seriale}</td>
+                                    <td>
+                                        <button className="btn" onClick={() => handleSelectContatore(contatore._id)}>Dettagli</button>
+                                        <button className="btn btn-delete" onClick={() => handleDelete(contatore._id)}>Cancella</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {showDetails && selectedContatoreId && (
-                <div className="contatore-detail">
+                <div className="contatore-details">
                     <ContatoreDetails contatoreId={selectedContatoreId} onDeselectContatore={onDeselectContatore} />
                 </div>
             )}

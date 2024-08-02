@@ -190,42 +190,44 @@ const FatturaDetails = ({ fatturaId, onDeselectFattura }) =>
                 </form>
             ) : (
                 <>
-                    <table className="info-table">
-                        <tbody>
-                            <tr>
-                                <th>Tipo</th>
-                                <td>{fattura.tipo}</td>
-                            </tr>
-                            <tr>
-                                <th>Ragione Sociale</th>
-                                <td>{fattura.ragioneSociale}</td>
-                            </tr>
-                            <tr>
-                                <th>Anno</th>
-                                <td>{fattura.anno}</td>
-                            </tr>
-                            <tr>
-                                <th>Numero</th>
-                                <td>{fattura.numero}</td>
-                            </tr>
-                            <tr>
-                                <th>Data</th>
-                                <td>{new Date(fattura.data).toLocaleDateString()}</td>
-                            </tr>
-                            <tr>
-                                <th>Confermata</th>
-                                <td>{fattura.confermata ? 'Sì' : 'No'}</td>
-                            </tr>
-                            <tr>
-                                <th>Codice</th>
-                                <td>{fattura.codice}</td>
-                            </tr>
-                            <tr>
-                                <th>Cliente</th>
-                                <td>{fattura.cliente.nome} {fattura.cliente.cognome}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="table-container">
+                        <table className="info-table">
+                            <tbody>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <td>{fattura.tipo}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ragione Sociale</th>
+                                    <td>{fattura.ragioneSociale}</td>
+                                </tr>
+                                <tr>
+                                    <th>Anno</th>
+                                    <td>{fattura.anno}</td>
+                                </tr>
+                                <tr>
+                                    <th>Numero</th>
+                                    <td>{fattura.numero}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data</th>
+                                    <td>{new Date(fattura.data).toLocaleDateString()}</td>
+                                </tr>
+                                <tr>
+                                    <th>Confermata</th>
+                                    <td>{fattura.confermata ? 'Sì' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Codice</th>
+                                    <td>{fattura.codice}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <td>{fattura.cliente.nome} {fattura.cliente.cognome}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div className="btn-container">
                         <button onClick={handleOpenClienteModal} className="btn btn-associate-cliente">Associa Cliente</button>
                         <button onClick={handleOpenServizioModal} className="btn btn-associate-servizio">Associa Servizio</button>

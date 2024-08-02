@@ -37,15 +37,29 @@ const ScadenzaList = ({ onSelectScadenza, selectedScadenzaId, onDeselectScadenza
         <div className="scadenza-list-container">
             <div className="scadenza-list">
                 <h2>Lista Scadenze</h2>
-                <ul>
-                    {scadenze.map((scadenza) => (
-                        <li key={scadenza._id} className="scadenza-list-item">
-                            <span>{new Date(scadenza.dataScadenza).toLocaleDateString()} - €{scadenza.importo}</span>
-                            <button onClick={() => onSelectScadenza(scadenza._id)} className="btn btn-details">Dettagli</button>
-                            <button onClick={() => handleDelete(scadenza._id)} className="btn btn-delete">Cancella</button>
-                        </li>
-                    ))}
-                </ul>
+                <div className="table-container">
+                    <table className="scadenza-table">
+                        <thead>
+                            <tr>
+                                <th>Data Scadenza</th>
+                                <th>Importo</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {scadenze.map((scadenza) => (
+                                <tr key={scadenza._id} className="scadenza-list-item">
+                                    <td>{new Date(scadenza.dataScadenza).toLocaleDateString()}</td>
+                                    <td>€{scadenza.importo}</td>
+                                    <td>
+                                        <button onClick={() => onSelectScadenza(scadenza._id)} className="btn btn-details">Dettagli</button>
+                                        <button onClick={() => handleDelete(scadenza._id)} className="btn btn-delete">Cancella</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {selectedScadenzaId && (
                 <div className="scadenza-detail">

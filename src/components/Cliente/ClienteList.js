@@ -56,19 +56,34 @@ const ClienteList = ({ onSelectCliente, selectedClienteId, onDeselectCliente }) 
         <div className="cliente-list-container">
             <div className="cliente-list">
                 <h2>Lista Clienti</h2>
-                <ul>
-                    {clienti.map((cliente) => (
-                        <li
-                            key={cliente._id}
-                            id={cliente._id}
-                            className={`cliente-list-item ${cliente._id === selectedClienteId ? 'highlight' : ''}`}
-                        >
-                            <span>{cliente.nome} {cliente.cognome}</span>
-                            <button className="btn" onClick={(e) => { e.stopPropagation(); handleSelectCliente(cliente._id); }}>Dettagli</button>
-                            <button className="btn btn-delete" onClick={(e) => { e.stopPropagation(); handleDelete(cliente._id); }}>Cancella</button>
-                        </li>
-                    ))}
-                </ul>
+                <div className="table-container">
+                    <table className="cliente-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Cognome</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {clienti.map((cliente) => (
+                                <tr
+                                    key={cliente._id}
+                                    id={cliente._id}
+                                    className={`cliente-list-item ${cliente._id === selectedClienteId ? 'highlight' : ''}`}
+                                    onClick={() => handleSelectCliente(cliente._id)}
+                                >
+                                    <td>{cliente.nome}</td>
+                                    <td>{cliente.cognome}</td>
+                                    <td>
+                                        <button className="btn" onClick={(e) => { e.stopPropagation(); handleSelectCliente(cliente._id); }}>Dettagli</button>
+                                        <button className="btn btn-delete" onClick={(e) => { e.stopPropagation(); handleDelete(cliente._id); }}>Cancella</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {selectedClienteId && (
                 <div className="cliente-detail">

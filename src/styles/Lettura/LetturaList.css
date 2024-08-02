@@ -15,25 +15,34 @@
     margin-bottom: 20px;
 }
 
-.lettura-list ul {
-    list-style: none;
-    padding: 0;
+.table-container {
+    overflow-x: auto; /* Ensure horizontal scrolling for the table if needed */
 }
 
-.lettura-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+.lettura-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.lettura-table th,
+.lettura-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.lettura-table th {
+    background-color: #f2f2f2;
+    color: #333;
 }
 
 .lettura-list-item:hover {
     background-color: #f1f1f1;
 }
 
-.lettura-list-item span {
-    flex-grow: 1;
+.lettura-list-item.highlight {
+    background-color: #ffffcc;
 }
 
 .lettura-list-item .btn {
@@ -43,7 +52,8 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 5px;
+    transition: background-color 0.3s;
 }
 
 .lettura-list-item .btn:hover {
@@ -56,16 +66,4 @@
 
 .lettura-list-item .btn-delete:hover {
     background-color: #c4302b;
-}
-
-.lettura-list-item .btn-back {
-    background-color: #6c757d;
-}
-
-.lettura-list-item .btn-back:hover {
-    background-color: #5a6268;
-}
-
-.lettura-list-item.highlight {
-    background-color: #ffffcc;
 }

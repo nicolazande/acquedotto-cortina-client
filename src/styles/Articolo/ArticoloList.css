@@ -1,3 +1,5 @@
+/* Styles for ArticoloList */
+
 .articolo-list {
     background-color: #f9f9f9;
     padding: 20px;
@@ -13,25 +15,30 @@
     margin-bottom: 20px;
 }
 
-.articolo-list ul {
-    list-style: none;
-    padding: 0;
+.table-container {
+    overflow-x: auto; /* Ensure horizontal scrolling for the table if needed */
 }
 
-.articolo-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+.articolo-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.articolo-table th,
+.articolo-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.articolo-table th {
+    background-color: #f2f2f2;
+    color: #333;
 }
 
 .articolo-list-item:hover {
     background-color: #f1f1f1;
-}
-
-.articolo-list-item span {
-    flex-grow: 1;
 }
 
 .articolo-list-item .btn {
@@ -41,7 +48,8 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 5px;
+    transition: background-color 0.3s;
 }
 
 .articolo-list-item .btn:hover {
@@ -54,16 +62,4 @@
 
 .articolo-list-item .btn-delete:hover {
     background-color: #c4302b;
-}
-
-.articolo-list-item .btn-back {
-    background-color: #6c757d;
-}
-
-.articolo-list-item .btn-back:hover {
-    background-color: #5a6268;
-}
-
-.articolo-list-item.highlight {
-    background-color: #ffffcc;
 }

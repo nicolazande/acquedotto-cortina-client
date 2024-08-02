@@ -8,7 +8,6 @@
     margin: 20px;
     max-width: 1200px;
     margin: 0 auto;
-    overflow-x: auto;
 }
 
 .cliente-list h2 {
@@ -16,25 +15,34 @@
     margin-bottom: 20px;
 }
 
-.cliente-list ul {
-    list-style: none;
-    padding: 0;
+.table-container {
+    overflow-x: auto; /* Ensure horizontal scrolling for the table if needed */
 }
 
-.cliente-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+.cliente-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.cliente-table th,
+.cliente-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.cliente-table th {
+    background-color: #f2f2f2;
+    color: #333;
 }
 
 .cliente-list-item:hover {
     background-color: #f1f1f1;
 }
 
-.cliente-list-item span {
-    flex-grow: 1;
+.cliente-list-item.highlight {
+    background-color: #ffffcc;
 }
 
 .cliente-list-item .btn {
@@ -44,7 +52,8 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 5px;
+    transition: background-color 0.3s;
 }
 
 .cliente-list-item .btn:hover {
@@ -57,16 +66,4 @@
 
 .cliente-list-item .btn-delete:hover {
     background-color: #c4302b;
-}
-
-.cliente-list-item .btn-back {
-    background-color: #6c757d;
-}
-
-.cliente-list-item .btn-back:hover {
-    background-color: #5a6268;
-}
-
-.cliente-list-item.highlight {
-    background-color: #ffffcc;
 }

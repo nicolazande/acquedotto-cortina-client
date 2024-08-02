@@ -1,3 +1,5 @@
+/* Styles for FasciaList */
+
 .fascia-list {
     background-color: #f9f9f9;
     padding: 20px;
@@ -13,25 +15,30 @@
     margin-bottom: 20px;
 }
 
-.fascia-list ul {
-    list-style: none;
-    padding: 0;
+.table-container {
+    overflow-x: auto; /* Ensure horizontal scrolling for the table if needed */
 }
 
-.fascia-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+.fascia-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.fascia-table th,
+.fascia-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.fascia-table th {
+    background-color: #f2f2f2;
+    color: #333;
 }
 
 .fascia-list-item:hover {
     background-color: #f1f1f1;
-}
-
-.fascia-list-item span {
-    flex-grow: 1;
 }
 
 .fascia-list-item .btn {
@@ -41,7 +48,8 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 5px;
+    transition: background-color 0.3s;
 }
 
 .fascia-list-item .btn:hover {
@@ -56,14 +64,19 @@
     background-color: #c4302b;
 }
 
-.fascia-list-item .btn-back {
+.fascia-detail .btn-back {
     background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+    display: block;
 }
 
-.fascia-list-item .btn-back:hover {
+.fascia-detail .btn-back:hover {
     background-color: #5a6268;
-}
-
-.fascia-list-item.highlight {
-    background-color: #ffffcc;
 }

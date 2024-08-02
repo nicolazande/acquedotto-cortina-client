@@ -1,7 +1,4 @@
-.servizio-list-container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
+/* Styles for ServizioList */
 
 .servizio-list {
     background-color: #f9f9f9;
@@ -9,6 +6,8 @@
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .servizio-list h2 {
@@ -16,49 +15,45 @@
     margin-bottom: 20px;
 }
 
-.servizio-list-scrollable {
-    overflow-x: auto; /* Enable horizontal scrolling if needed */
+.table-container {
+    overflow-x: auto; /* Ensure horizontal scrolling for the table if needed */
 }
 
-.servizio-list ul {
-    list-style: none;
-    padding: 0;
-    min-width: 600px; /* Minimum width to trigger scrolling if needed */
+.servizio-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
-.servizio-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+.servizio-table th,
+.servizio-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.servizio-table th {
+    background-color: #f2f2f2;
+    color: #333;
 }
 
 .servizio-list-item:hover {
     background-color: #f1f1f1;
 }
 
-.servizio-list-item span {
-    flex-grow: 1;
-}
-
-.btn-container {
-    display: flex;
-    gap: 10px;
-}
-
 .servizio-list-item .btn {
-    background-color: #007bff;
+    background-color: #007aff;
     color: white;
     border: none;
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    flex-shrink: 0; /* Prevent buttons from shrinking */
+    margin-left: 5px;
+    transition: background-color 0.3s;
 }
 
 .servizio-list-item .btn:hover {
-    background-color: #0056b3;
+    background-color: #005bb5;
 }
 
 .servizio-list-item .btn-delete {
@@ -67,12 +62,4 @@
 
 .servizio-list-item .btn-delete:hover {
     background-color: #c4302b;
-}
-
-.servizio-list-item .btn-back {
-    background-color: #6c757d;
-}
-
-.servizio-list-item .btn-back:hover {
-    background-color: #5a6268;
 }

@@ -1,11 +1,5 @@
 /* Styles for FatturaList */
 
-.fattura-list-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 .fattura-list {
     background-color: #f9f9f9;
     padding: 20px;
@@ -13,7 +7,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 20px;
     max-width: 1200px;
-    width: 100%;
+    margin: 0 auto;
 }
 
 .fattura-list h2 {
@@ -21,25 +15,34 @@
     margin-bottom: 20px;
 }
 
-.fattura-list ul {
-    list-style: none;
-    padding: 0;
+.table-container {
+    overflow-x: auto; /* Ensure horizontal scrolling for the table if needed */
 }
 
-.fattura-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+.fattura-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.fattura-table th,
+.fattura-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.fattura-table th {
+    background-color: #f2f2f2;
+    color: #333;
 }
 
 .fattura-list-item:hover {
     background-color: #f1f1f1;
 }
 
-.fattura-list-item span {
-    flex-grow: 1;
+.fattura-list-item.highlight {
+    background-color: #ffffcc;
 }
 
 .fattura-list-item .btn {
@@ -49,7 +52,7 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 5px;
     transition: background-color 0.3s;
 }
 
@@ -63,13 +66,4 @@
 
 .fattura-list-item .btn-delete:hover {
     background-color: #c4302b;
-}
-
-.fattura-list-item.highlight {
-    background-color: #ffffcc;
-}
-
-.fattura-detail {
-    margin-top: 20px;
-    width: 100%;
 }

@@ -48,15 +48,29 @@ const ArticoloList = ({ onSelectArticolo, selectedArticoloId, onDeselectArticolo
         <div className="articolo-list-container">
             <div className="articolo-list">
                 <h2>Lista Articoli</h2>
-                <ul>
-                    {articoli.map((articolo) => (
-                        <li key={articolo._id} className="articolo-list-item">
-                            <span>{articolo.codice} - {articolo.descrizione}</span>
-                            <button onClick={() => onSelectArticolo(articolo._id)} className="btn btn-details">Dettagli</button>
-                            <button onClick={() => handleDelete(articolo._id)} className="btn btn-delete">Cancella</button>
-                        </li>
-                    ))}
-                </ul>
+                <div className="table-container">
+                    <table className="articolo-table">
+                        <thead>
+                            <tr>
+                                <th>Codice</th>
+                                <th>Descrizione</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {articoli.map((articolo) => (
+                                <tr key={articolo._id} className="articolo-list-item">
+                                    <td>{articolo.codice}</td>
+                                    <td>{articolo.descrizione}</td>
+                                    <td>
+                                        <button onClick={() => onSelectArticolo(articolo._id)} className="btn btn-details">Dettagli</button>
+                                        <button onClick={() => handleDelete(articolo._id)} className="btn btn-delete">Cancella</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {selectedArticoloId && (
                 <div className="articolo-detail">

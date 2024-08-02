@@ -48,15 +48,29 @@ const ListinoList = ({ onSelectListino, selectedListinoId, onDeselectListino }) 
         <div className="listino-list-container">
             <div className="listino-list">
                 <h2>Lista Listini</h2>
-                <ul>
-                    {listini.map((listino) => (
-                        <li key={listino._id} className="listino-list-item">
-                            <span>{listino.categoria} - {listino.descrizione}</span>
-                            <button onClick={() => onSelectListino(listino._id)} className="btn btn-details">Dettagli</button>
-                            <button onClick={() => handleDelete(listino._id)} className="btn btn-delete">Cancella</button>
-                        </li>
-                    ))}
-                </ul>
+                <div className="table-container">
+                    <table className="listino-table">
+                        <thead>
+                            <tr>
+                                <th>Categoria</th>
+                                <th>Descrizione</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {listini.map((listino) => (
+                                <tr key={listino._id} className="listino-list-item">
+                                    <td>{listino.categoria}</td>
+                                    <td>{listino.descrizione}</td>
+                                    <td>
+                                        <button onClick={() => onSelectListino(listino._id)} className="btn btn-details">Dettagli</button>
+                                        <button onClick={() => handleDelete(listino._id)} className="btn btn-delete">Cancella</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {selectedListinoId && (
                 <div className="listino-detail">

@@ -48,20 +48,33 @@ const FasciaList = ({ onSelectFascia, selectedFasciaId, onDeselectFascia }) =>
         <div className="fascia-list-container">
             <div className="fascia-list">
                 <h2>Lista Fasce</h2>
-                <ul>
-                    {fasce.map((fascia) => (
-                        <li key={fascia._id} className="fascia-list-item">
-                            <span>{fascia.tipo} - {fascia.descrizione}</span>
-                            <button onClick={() => onSelectFascia(fascia._id)} className="btn btn-details">Dettagli</button>
-                            <button onClick={() => handleDelete(fascia._id)} className="btn btn-delete">Cancella</button>
-                        </li>
-                    ))}
-                </ul>
+                <div className="table-container">
+                    <table className="fascia-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Descrizione</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {fasce.map((fascia) => (
+                                <tr key={fascia._id} className="fascia-list-item">
+                                    <td>{fascia.tipo}</td>
+                                    <td>{fascia.descrizione}</td>
+                                    <td>
+                                        <button onClick={() => onSelectFascia(fascia._id)} className="btn btn-details">Dettagli</button>
+                                        <button onClick={() => handleDelete(fascia._id)} className="btn btn-delete">Cancella</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {selectedFasciaId && (
                 <div className="fascia-detail">
-                    <FasciaDetails fasciaId={selectedFasciaId} />
-                    <button onClick={onDeselectFascia} className="btn btn-back">Indietro</button>
+                    <FasciaDetails fasciaId={selectedFasciaId} onDeselectFascia={onDeselectFascia} />
                 </div>
             )}
         </div>

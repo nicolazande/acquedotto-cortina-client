@@ -201,46 +201,48 @@ const ServizioDetails = ({ servizioId, onDeselectServizio }) =>
                 </form>
             ) : (
                 <>
-                    <table className="info-table">
-                        <tbody>
-                            <tr>
-                                <th>Descrizione</th>
-                                <td>{servizio.descrizione}</td>
-                            </tr>
-                            <tr>
-                                <th>Valore</th>
-                                <td>{servizio.valore}</td>
-                            </tr>
-                            <tr>
-                                <th>Tariffa</th>
-                                <td>{servizio.tariffa}</td>
-                            </tr>
-                            <tr>
-                                <th>m3</th>
-                                <td>{servizio.m3}</td>
-                            </tr>
-                            <tr>
-                                <th>Prezzo</th>
-                                <td>{servizio.prezzo}</td>
-                            </tr>
-                            <tr>
-                                <th>Seriale</th>
-                                <td>{servizio.seriale}</td>
-                            </tr>
-                            <tr>
-                                <th>Lettura</th>
-                                <td>{servizio.lettura ? `${servizio.lettura.cliente} - ${new Date(servizio.lettura.data).toLocaleDateString()}` : 'N/A'}</td>
-                            </tr>
-                            <tr>
-                                <th>Articolo</th>
-                                <td>{servizio.articolo ? servizio.articolo.descrizione : 'N/A'}</td>
-                            </tr>
-                            <tr>
-                                <th>Fattura</th>
-                                <td>{servizio.fattura ? servizio.fattura.codice : 'N/A'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="table-container">
+                        <table className="info-table">
+                            <tbody>
+                                <tr>
+                                    <th>Descrizione</th>
+                                    <td>{servizio.descrizione}</td>
+                                </tr>
+                                <tr>
+                                    <th>Valore</th>
+                                    <td>{servizio.valore}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tariffa</th>
+                                    <td>{servizio.tariffa}</td>
+                                </tr>
+                                <tr>
+                                    <th>m3</th>
+                                    <td>{servizio.m3}</td>
+                                </tr>
+                                <tr>
+                                    <th>Prezzo</th>
+                                    <td>{servizio.prezzo}</td>
+                                </tr>
+                                <tr>
+                                    <th>Seriale</th>
+                                    <td>{servizio.seriale}</td>
+                                </tr>
+                                <tr>
+                                    <th>Lettura</th>
+                                    <td>{servizio.lettura ? `${servizio.lettura.cliente} - ${new Date(servizio.lettura.data).toLocaleDateString()}` : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Articolo</th>
+                                    <td>{servizio.articolo ? servizio.articolo.descrizione : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fattura</th>
+                                    <td>{servizio.fattura ? servizio.fattura.codice : 'N/A'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div className="btn-container">
                         <button onClick={handleOpenLetturaModal} className="btn btn-associate-lettura">Associa Lettura</button>
                         <button onClick={handleOpenArticoloModal} className="btn btn-associate-articolo">Associa Articolo</button>

@@ -113,34 +113,36 @@ const ScadenzaDetails = ({ scadenzaId, onDeselectScadenza }) => {
                 </form>
             ) : (
                 <>
-                    <table className="info-table">
-                        <tbody>
-                            <tr>
-                                <th>Data Scadenza</th>
-                                <td>{new Date(scadenza.dataScadenza).toLocaleDateString()}</td>
-                            </tr>
-                            <tr>
-                                <th>Importo</th>
-                                <td>€{scadenza.importo}</td>
-                            </tr>
-                            <tr>
-                                <th>Saldo</th>
-                                <td>{scadenza.saldo ? 'Sì' : 'No'}</td>
-                            </tr>
-                            <tr>
-                                <th>Data Pagamento</th>
-                                <td>{scadenza.dataPagamento ? new Date(scadenza.dataPagamento).toLocaleDateString() : 'N/A'}</td>
-                            </tr>
-                            <tr>
-                                <th>Ritardo</th>
-                                <td>{scadenza.ritardo ? 'Sì' : 'No'}</td>
-                            </tr>
-                            <tr>
-                                <th>Fattura</th>
-                                <td>{scadenza.fattura ? scadenza.fattura.codice : 'N/A'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="table-container">
+                        <table className="info-table">
+                            <tbody>
+                                <tr>
+                                    <th>Data Scadenza</th>
+                                    <td>{new Date(scadenza.dataScadenza).toLocaleDateString()}</td>
+                                </tr>
+                                <tr>
+                                    <th>Importo</th>
+                                    <td>€{scadenza.importo}</td>
+                                </tr>
+                                <tr>
+                                    <th>Saldo</th>
+                                    <td>{scadenza.saldo ? 'Sì' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data Pagamento</th>
+                                    <td>{scadenza.dataPagamento ? new Date(scadenza.dataPagamento).toLocaleDateString() : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ritardo</th>
+                                    <td>{scadenza.ritardo ? 'Sì' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fattura</th>
+                                    <td>{scadenza.fattura ? scadenza.fattura.codice : 'N/A'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div className="btn-container">
                         <button onClick={handleOpenFatturaModal} className="btn btn-associate-fattura">Associa Fattura</button>
                         <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>

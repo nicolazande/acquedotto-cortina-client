@@ -6,13 +6,19 @@
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
-    max-width: 800px;
+    max-width: 1200px;
 }
 
 .lettura-detail h2 {
     font-size: 1.5em;
     margin-bottom: 20px;
     text-align: center;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scrolling only for the table container */
+    margin-bottom: 20px;
 }
 
 .info-table {
