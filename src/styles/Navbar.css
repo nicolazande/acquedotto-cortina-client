@@ -5,17 +5,20 @@
     background-color: #007aff;
     padding: 10px 20px;
     color: white;
-    position: fixed; /* Make the navbar fixed */
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000; /* Ensure it's on top of other elements */
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    white-space: nowrap; /* Impedisce la rottura della linea dei link */
 }
 
 .navbar-brand a {
     color: white;
-    font-size: 1.5em;
+    font-size: 1.8em;
     text-decoration: none;
+    font-weight: bold;
 }
 
 .menu-toggle {
@@ -27,47 +30,47 @@
 
 .navbar-nav {
     display: flex;
-    align-items: center; /* Ensure items are centered vertically */
+    align-items: center;
     list-style: none;
     padding: 0;
     margin: 0;
+    overflow-x: auto;
 }
 
 .navbar-nav .nav-item {
-    margin-left: 20px;
+    margin-left: 15px;
+    position: relative;
+    padding: 5px 10px;
 }
 
 .navbar-nav .nav-link {
     color: white;
     text-decoration: none;
     padding: 8px 16px;
-    transition: background-color 0.3s ease;
-    display: flex; /* Ensure consistent flex behavior */
-    align-items: center; /* Center text vertically */
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .navbar-nav .nav-link:hover {
     background-color: #005bb5;
-    border-radius: 5px;
+    transform: scale(1.02);
 }
 
 .btn-logout {
     background: none;
     border: none;
-    color: inherit;
+    color: white;
     cursor: pointer;
-    font-size: inherit;
+    font-size: 16px;
     padding: 8px 16px;
-    text-decoration: none;
-    display: flex; /* Ensure consistent flex behavior */
-    align-items: center; /* Center text vertically */
-    margin-left: 20px; /* Space between other nav items */
+    margin-left: 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .btn-logout:hover {
-    background-color: #005bb5;
-    border-radius: 5px;
-    text-decoration: none;
+    background-color: #ff3b30;
+    transform: scale(1.02);
 }
 
 @media (max-width: 768px) {
@@ -86,11 +89,11 @@
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.3s ease;
-        z-index: 999; /* Ensure dropdown is on top of other elements */
+        z-index: 999;
     }
 
     .navbar-nav.active {
-        max-height: 500px; /* You can adjust this value based on the number of items */
+        max-height: 500px;
     }
 
     .navbar-nav .nav-item {
@@ -98,9 +101,14 @@
         width: 100%;
         text-align: center;
         padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
 
+    .navbar-nav .nav-link,
     .btn-logout {
-        margin-left: 0; /* Remove margin for consistency in mobile view */
+        width: 100%;
+        padding: 15px 0;
+        margin: 0;
+        border-radius: 0;
     }
 }
