@@ -5,6 +5,7 @@ import edificioApi from '../../api/edificioApi';
 import listinoApi from '../../api/listinoApi';
 import letturaApi from '../../api/letturaApi';
 import '../../styles/Contatore/ContatoreDetails.css';
+import ContatoreEditor from '../shared/ContatoreEditor'
 
 const ContatoreDetails = ({ contatoreId, onDeselectContatore }) =>
 {
@@ -216,18 +217,13 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) =>
         setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleUpdateContatore = async (e) => 
-    {
-        e.preventDefault();
-        try 
-        {
-            await contatoreApi.updateContatore(contatoreId, editFormData);
+    const handleSaveContatore = async (updatedContatore) => {
+        try {
+            await contatoreApi.updateContatore(contatoreId, updatedContatore);
+            setContatore(updatedContatore);
             alert('Contatore aggiornato con successo');
             setIsEditing(false);
-            fetchContatore(); // Aggiorna i dettagli del contatore
-        } 
-        catch (error) 
-        {
+        } catch (error) {
             alert('Errore durante l\'aggiornamento del contatore');
             console.error(error);
         }
@@ -241,57 +237,13 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) =>
     return (
         <div className="contatore-details">
             <h2>Dettagli Contatore</h2>
-            {isEditing ? (
-                <form onSubmit={handleUpdateContatore} className="edit-form">
-                    <div className="form-group">
-                        <label>Seriale:</label>
-                        <input type="text" name="seriale" value={editFormData.seriale} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Seriale Interno:</label>
-                        <input type="text" name="serialeInterno" value={editFormData.serialeInterno} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Ultima Lettura:</label>
-                        <input type="date" name="ultimaLettura" value={editFormData.ultimaLettura} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Attivo:</label>
-                        <input type="checkbox" name="attivo" checked={editFormData.attivo} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Condominiale:</label>
-                        <input type="checkbox" name="condominiale" checked={editFormData.condominiale} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Sostituzione:</label>
-                        <input type="checkbox" name="sostituzione" checked={editFormData.sostituzione} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Subentro:</label>
-                        <input type="checkbox" name="subentro" checked={editFormData.subentro} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Data Installazione:</label>
-                        <input type="date" name="dataInstallazione" value={editFormData.dataInstallazione} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Data Scadenza:</label>
-                        <input type="date" name="dataScadenza" value={editFormData.dataScadenza} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Foto:</label>
-                        <input type="text" name="foto" value={editFormData.foto} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Note:</label>
-                        <textarea name="note" value={editFormData.note} onChange={handleEditChange} />
-                    </div>
-                    <div className="btn-container">
-                        <button type="submit" className="btn btn-save">Salva</button>
-                        <button type="button" className="btn btn-cancel" onClick={() => setIsEditing(false)}>Annulla</button>
-                    </div>
-                </form>
+            {isEditing ? 
+            (
+                <ContatoreEditor
+                    contatore={contatore}
+                    onSave={handleSaveContatore}
+                    onCancel={() => setIsEditing(false)}
+                />
             ) : (
                 <>
                     <div className="table-container">

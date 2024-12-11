@@ -3,6 +3,8 @@ import clienteApi from '../../api/clienteApi';
 import contatoreApi from '../../api/contatoreApi';
 import fatturaApi from '../../api/fatturaApi';
 import '../../styles/Cliente/ClienteDetails.css';
+import ContatoreEditor from '../shared/ContatoreEditor'
+
 
 const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
 {
@@ -15,6 +17,7 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
     const [showFatturaModal, setShowFatturaModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editFormData, setEditFormData] = useState({});
+    const [editingContatore, setEditingContatore] = useState(null);
 
     useEffect(() =>
     {
@@ -56,6 +59,22 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
         catch (error)
         {
             alert('Errore durante il recupero dei contatori');
+            console.error(error);
+        }
+    };
+
+    const handleEditContatore = (contatore) => {
+        setEditingContatore(contatore);
+    };
+
+    const handleSaveContatore = async (updatedContatore) => {
+        try {
+            await contatoreApi.updateContatore(updatedContatore._id, updatedContatore);
+            alert('Contatore aggiornato con successo');
+            setEditingContatore(null);
+            fetchContatori();
+        } catch (error) {
+            alert('Errore durante l\'aggiornamento del contatore');
             console.error(error);
         }
     };
@@ -173,127 +192,127 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
                 <form onSubmit={handleEditSubmit} className="edit-form">
                     <div className="form-group">
                         <label>Ragione Sociale:</label>
-                        <input type="text" name="ragioneSociale" value={editFormData.ragioneSociale} onChange={handleEditChange} />
+                        <input type="text" name="ragione_sociale" value={editFormData.ragione_sociale || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Nome:</label>
-                        <input type="text" name="nome" value={editFormData.nome} onChange={handleEditChange} />
+                        <input type="text" name="nome" value={editFormData.nome || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Cognome:</label>
-                        <input type="text" name="cognome" value={editFormData.cognome} onChange={handleEditChange} />
+                        <input type="text" name="cognome" value={editFormData.cognome || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Sesso:</label>
-                        <input type="text" name="sesso" value={editFormData.sesso} onChange={handleEditChange} />
+                        <input type="text" name="sesso" value={editFormData.sesso || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Socio:</label>
-                        <input type="checkbox" name="socio" checked={editFormData.socio} onChange={handleEditChange} />
+                        <input type="checkbox" name="socio" checked={editFormData.socio || false} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Data di Nascita:</label>
-                        <input type="date" name="dataNascita" value={editFormData.dataNascita} onChange={handleEditChange} />
+                        <input type="date" name="data_nascita" value={editFormData.data_nascita ? editFormData.data_nascita.split('T')[0] : ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Comune di Nascita:</label>
-                        <input type="text" name="comuneNascita" value={editFormData.comuneNascita} onChange={handleEditChange} />
+                        <input type="text" name="comune_nascita" value={editFormData.comune_nascita || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Provincia di Nascita:</label>
-                        <input type="text" name="provinciaNascita" value={editFormData.provinciaNascita} onChange={handleEditChange} />
+                        <input type="text" name="provincia_nascita" value={editFormData.provincia_nascita || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Indirizzo di Residenza:</label>
-                        <input type="text" name="indirizzoResidenza" value={editFormData.indirizzoResidenza} onChange={handleEditChange} />
+                        <input type="text" name="indirizzo_residenza" value={editFormData.indirizzo_residenza || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Numero di Residenza:</label>
-                        <input type="text" name="numeroResidenza" value={editFormData.numeroResidenza} onChange={handleEditChange} />
+                        <input type="text" name="numero_residenza" value={editFormData.numero_residenza || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>CAP di Residenza:</label>
-                        <input type="text" name="capResidenza" value={editFormData.capResidenza} onChange={handleEditChange} />
+                        <input type="text" name="cap_residenza" value={editFormData.cap_residenza || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Località di Residenza:</label>
-                        <input type="text" name="localitaResidenza" value={editFormData.localitaResidenza} onChange={handleEditChange} />
+                        <input type="text" name="localita_residenza" value={editFormData.localita_residenza || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Provincia di Residenza:</label>
-                        <input type="text" name="provinciaResidenza" value={editFormData.provinciaResidenza} onChange={handleEditChange} />
+                        <input type="text" name="provincia_residenza" value={editFormData.provincia_residenza || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Nazione di Residenza:</label>
-                        <input type="text" name="nazioneResidenza" value={editFormData.nazioneResidenza} onChange={handleEditChange} />
+                        <input type="text" name="nazione_residenza" value={editFormData.nazione_residenza || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Destinazione di Fatturazione:</label>
-                        <input type="text" name="destinazioneFatturazione" value={editFormData.destinazioneFatturazione} onChange={handleEditChange} />
+                        <input type="text" name="destinazione_fatturazione" value={editFormData.destinazione_fatturazione || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Indirizzo di Fatturazione:</label>
-                        <input type="text" name="indirizzoFatturazione" value={editFormData.indirizzoFatturazione} onChange={handleEditChange} />
+                        <input type="text" name="indirizzo_fatturazione" value={editFormData.indirizzo_fatturazione || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Numero di Fatturazione:</label>
-                        <input type="text" name="numeroFatturazione" value={editFormData.numeroFatturazione} onChange={handleEditChange} />
+                        <input type="text" name="numero_fatturazione" value={editFormData.numero_fatturazione || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>CAP di Fatturazione:</label>
-                        <input type="text" name="capFatturazione" value={editFormData.capFatturazione} onChange={handleEditChange} />
+                        <input type="text" name="cap_fatturazione" value={editFormData.cap_fatturazione || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Località di Fatturazione:</label>
-                        <input type="text" name="localitaFatturazione" value={editFormData.localitaFatturazione} onChange={handleEditChange} />
+                        <input type="text" name="localita_fatturazione" value={editFormData.localita_fatturazione || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Provincia di Fatturazione:</label>
-                        <input type="text" name="provinciaFatturazione" value={editFormData.provinciaFatturazione} onChange={handleEditChange} />
+                        <input type="text" name="provincia_fatturazione" value={editFormData.provincia_fatturazione || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Nazione di Fatturazione:</label>
-                        <input type="text" name="nazioneFatturazione" value={editFormData.nazioneFatturazione} onChange={handleEditChange} />
+                        <input type="text" name="nazione_fatturazione" value={editFormData.nazione_fatturazione || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Codice Fiscale:</label>
-                        <input type="text" name="codiceFiscale" value={editFormData.codiceFiscale} onChange={handleEditChange} />
+                        <input type="text" name="codice_fiscale" value={editFormData.codice_fiscale || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Telefono:</label>
-                        <input type="text" name="telefono" value={editFormData.telefono} onChange={handleEditChange} />
+                        <input type="text" name="telefono" value={editFormData.telefono || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Email:</label>
-                        <input type="email" name="email" value={editFormData.email} onChange={handleEditChange} />
+                        <input type="email" name="email" value={editFormData.email || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Pagamento:</label>
-                        <input type="text" name="pagamento" value={editFormData.pagamento} onChange={handleEditChange} />
+                        <input type="text" name="pagamento" value={editFormData.pagamento || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Codice Destinatario:</label>
-                        <input type="text" name="codiceDestinatario" value={editFormData.codiceDestinatario} onChange={handleEditChange} />
+                        <input type="text" name="codice_destinatario" value={editFormData.codice_destinatario || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Fattura Elettronica:</label>
-                        <input type="text" name="fatturaElettronica" value={editFormData.fatturaElettronica} onChange={handleEditChange} />
+                        <input type="checkbox" name="fattura_elettronica" checked={editFormData.fattura_elettronica || false} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Codice ERP:</label>
-                        <input type="text" name="codiceERP" value={editFormData.codiceERP} onChange={handleEditChange} />
+                        <input type="text" name="codice_cliente_erp" value={editFormData.codice_cliente_erp || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>IBAN:</label>
-                        <input type="text" name="IBAN" value={editFormData.IBAN} onChange={handleEditChange} />
+                        <input type="text" name="iban" value={editFormData.iban || ''} onChange={handleEditChange} />
                     </div>
                     <div className="form-group">
                         <label>Note:</label>
-                        <textarea name="note" value={editFormData.note} onChange={handleEditChange}></textarea>
+                        <textarea name="note" value={editFormData.note || ''} onChange={handleEditChange}></textarea>
                     </div>
                     <div className="form-group">
                         <label>Quote:</label>
-                        <input type="number" name="quote" value={editFormData.quote} onChange={handleEditChange} />
+                        <input type="number" name="quote" value={editFormData.quote || ''} onChange={handleEditChange} />
                     </div>
                     <div className="btn-container">
                         <button type="submit" className="btn btn-save">Salva</button>
@@ -307,127 +326,147 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
                             <tbody>
                                 <tr>
                                     <th>Ragione Sociale</th>
-                                    <td>{cliente.ragioneSociale}</td>
+                                    <td>{cliente.ragione_sociale || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Nome</th>
-                                    <td>{cliente.nome}</td>
+                                    <td>{cliente.nome || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Cognome</th>
-                                    <td>{cliente.cognome}</td>
+                                    <td>{cliente.cognome || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Sesso</th>
-                                    <td>{cliente.sesso}</td>
+                                    <td>{cliente.sesso || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Socio</th>
                                     <td>{cliente.socio ? 'Sì' : 'No'}</td>
                                 </tr>
                                 <tr>
+                                    <th>Quote</th>
+                                    <td>{cliente.quote || '-'}</td>
+                                </tr>
+                                <tr>
                                     <th>Data di Nascita</th>
-                                    <td>{new Date(cliente.dataNascita).toLocaleDateString()}</td>
+                                    <td>{cliente.data_nascita ? new Date(cliente.data_nascita).toLocaleDateString() : '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Comune di Nascita</th>
-                                    <td>{cliente.comuneNascita}</td>
+                                    <td>{cliente.comune_nascita || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Provincia di Nascita</th>
-                                    <td>{cliente.provinciaNascita}</td>
+                                    <td>{cliente.provincia_nascita || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Indirizzo di Residenza</th>
-                                    <td>{cliente.indirizzoResidenza}</td>
+                                    <td>{cliente.indirizzo_residenza || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Numero di Residenza</th>
-                                    <td>{cliente.numeroResidenza}</td>
+                                    <td>{cliente.numero_residenza || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>CAP di Residenza</th>
-                                    <td>{cliente.capResidenza}</td>
+                                    <td>{cliente.cap_residenza || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Località di Residenza</th>
-                                    <td>{cliente.localitaResidenza}</td>
+                                    <td>{cliente.localita_residenza || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Provincia di Residenza</th>
-                                    <td>{cliente.provinciaResidenza}</td>
+                                    <td>{cliente.provincia_residenza || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Nazione di Residenza</th>
-                                    <td>{cliente.nazioneResidenza}</td>
+                                    <td>{cliente.nazione_residenza || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Destinazione di Fatturazione</th>
-                                    <td>{cliente.destinazioneFatturazione}</td>
+                                    <td>{cliente.destinazione_fatturazione || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Indirizzo di Fatturazione</th>
-                                    <td>{cliente.indirizzoFatturazione}</td>
+                                    <td>{cliente.indirizzo_fatturazione || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Numero di Fatturazione</th>
-                                    <td>{cliente.numeroFatturazione}</td>
+                                    <td>{cliente.numero_fatturazione || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>CAP di Fatturazione</th>
-                                    <td>{cliente.capFatturazione}</td>
+                                    <td>{cliente.cap_fatturazione || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Località di Fatturazione</th>
-                                    <td>{cliente.localitaFatturazione}</td>
+                                    <td>{cliente.localita_fatturazione || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Provincia di Fatturazione</th>
-                                    <td>{cliente.provinciaFatturazione}</td>
+                                    <td>{cliente.provincia_fatturazione || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Nazione di Fatturazione</th>
-                                    <td>{cliente.nazioneFatturazione}</td>
+                                    <td>{cliente.nazione_fatturazione || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Codice Fiscale</th>
-                                    <td>{cliente.codiceFiscale}</td>
+                                    <td>{cliente.codice_fiscale || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Partita IVA</th>
+                                    <td>{cliente.partita_iva || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Telefono</th>
-                                    <td>{cliente.telefono}</td>
+                                    <td>{cliente.telefono || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cellulare</th>
+                                    <td>{cliente.cellulare || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cellulare 2</th>
+                                    <td>{cliente.cellulare2 || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Email</th>
-                                    <td>{cliente.email}</td>
+                                    <td>{cliente.email || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Pagamento</th>
-                                    <td>{cliente.pagamento}</td>
+                                    <td>{cliente.pagamento || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data Mandato SDD</th>
+                                    <td>{cliente.data_mandato_sdd ? new Date(cliente.data_mandato_sdd).toLocaleDateString() : '-'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email PEC</th>
+                                    <td>{cliente.email_pec || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Codice Destinatario</th>
-                                    <td>{cliente.codiceDestinatario}</td>
+                                    <td>{cliente.codice_destinatario || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Fattura Elettronica</th>
-                                    <td>{cliente.fatturaElettronica}</td>
+                                    <td>{cliente.fattura_elettronica ? 'Sì' : 'No'}</td>
                                 </tr>
                                 <tr>
                                     <th>Codice ERP</th>
-                                    <td>{cliente.codiceERP}</td>
+                                    <td>{cliente.codice_cliente_erp || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>IBAN</th>
-                                    <td>{cliente.IBAN}</td>
+                                    <td>{cliente.iban || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Note</th>
-                                    <td>{cliente.note}</td>
-                                </tr>
-                                <tr>
-                                    <th>Quote</th>
-                                    <td>{cliente.quote}</td>
+                                    <td>{cliente.note || '-'}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -452,7 +491,7 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
                             <tr>
                                 <th>Seriale</th>
                                 <th>Seriale Interno</th>
-                                <th>Ultima Lettura</th>
+                                <th>Edificio</th>
                                 <th>Inattivo</th>
                                 <th>Condominiale</th>
                                 <th>Sostituzione</th>
@@ -462,18 +501,26 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
                         <tbody>
                             {contatori.length === 0 ? (
                                 <tr>
-                                    <td colSpan="8">Nessun contatore associata</td>
+                                    <td colSpan="8">Nessun contatore associato</td>
                                 </tr>
                             ) : (
                                 contatori.map((contatore) => (
                                 <tr key={contatore._id}>
                                     <td>{contatore.seriale}</td>
-                                    <td>{contatore.serialeInterno}</td>
-                                    <td>{new Date(contatore.ultimaLettura).toLocaleDateString()}</td>
-                                    <td><input type="checkbox" checked={!contatore.attivo} readOnly /></td>
+                                    <td>{contatore.seriale_interno}</td>
+                                    <td>{contatore.nome_edificio}</td>
+                                    <td><input type="checkbox" checked={contatore.inattivo} readOnly /></td>
                                     <td><input type="checkbox" checked={contatore.condominiale} readOnly /></td>
                                     <td><input type="checkbox" checked={contatore.sostituzione} readOnly /></td>
                                     <td><input type="checkbox" checked={contatore.subentro} readOnly /></td>
+                                    <td>
+                                        <button
+                                            className="btn btn-edit"
+                                            onClick={() => handleEditContatore(contatore)}
+                                        >
+                                            Modifica
+                                        </button>
+                                    </td>
                                 </tr>))
                             )}
                         </tbody>
@@ -486,7 +533,6 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
                     <table className="fatture-table">
                         <thead>
                             <tr>
-                                <th>Tipo</th>
                                 <th>Ragione Sociale</th>
                                 <th>Anno</th>
                                 <th>Numero</th>
@@ -503,11 +549,10 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
                             ) : (
                                 fatture.map((fattura) => (
                                 <tr key={fattura._id}>
-                                    <td>{fattura.tipo}</td>
-                                    <td>{fattura.ragioneSociale}</td>
+                                    <td>{fattura.ragione_sociale}</td>
                                     <td>{fattura.anno}</td>
                                     <td>{fattura.numero}</td>
-                                    <td>{new Date(fattura.data).toLocaleDateString()}</td>
+                                    <td>{new Date(fattura.data_fattura).toLocaleDateString()}</td>
                                     <td><input type="checkbox" checked={fattura.confermata} readOnly /></td>
                                     <td>{fattura.codice}</td>
                                 </tr>))
@@ -529,6 +574,13 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
                         </ul>
                     </div>
                 </div>
+            )}
+            {editingContatore && (
+                <ContatoreEditor
+                    contatore={editingContatore}
+                    onSave={handleSaveContatore}
+                    onCancel={() => setEditingContatore(null)}
+                />
             )}
             {showFatturaModal && (
                 <div className="modal">
