@@ -16,11 +16,14 @@ import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import './styles/App.css';
 
+import ClienteDetails from './components/Cliente/ClienteDetails';
+import ContatoreDetails from './components/Contatore/ContatoreDetails';
+
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        // Controlla se il token esiste nel localStorage
+        // Check if the token exists in localStorage
         const token = localStorage.getItem('token');
         if (token) {
             setIsAuthenticated(true);
@@ -42,14 +45,28 @@ const App = () => {
                 {isAuthenticated && <Navbar onLogout={handleLogout} />}
                 <div className="content">
                     <Switch>
+                        {/* Public Routes */}
                         <Route path="/login">
                             {isAuthenticated ? <Redirect to="/" /> : <LoginPage onLogin={handleLogin} />}
                         </Route>
                         <Route path="/register" component={RegisterPage} />
+
+                        {/* Protected Routes */}
                         {isAuthenticated ? (
                             <>
-                                <Route path="/clienti" component={ClientePage} />
-                                <Route path="/contatori" component={ContatorePage} />
+                                {/* Routes for Contatori */}
+                                <Switch>
+                                    <Route path="/contatori/:id" render={(props) => <ContatoreDetails {...props} />} />
+                                    <Route path="/contatori" component={ContatorePage} />
+                                </Switch>
+
+                                {/* Routes for Clienti */}
+                                <Switch>
+                                    <Route path="/clienti/:id" render={(props) => <ClienteDetails {...props} />} />
+                                    <Route path="/clienti" component={ClientePage} />
+                                </Switch>
+
+                                {/* Other Routes */}
                                 <Route path="/edifici" component={EdificioPage} />
                                 <Route path="/letture" component={LetturaPage} />
                                 <Route path="/fatture" component={FatturaPage} />

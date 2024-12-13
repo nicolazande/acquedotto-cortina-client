@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import contatoreApi from '../../api/contatoreApi';
 import clienteApi from '../../api/clienteApi';
 import edificioApi from '../../api/edificioApi';
@@ -7,8 +8,10 @@ import letturaApi from '../../api/letturaApi';
 import '../../styles/Contatore/ContatoreDetails.css';
 import ContatoreEditor from '../shared/ContatoreEditor'
 
-const ContatoreDetails = ({ contatoreId, onDeselectContatore }) =>
+const ContatoreDetails = () =>
 {
+    const { id: contatoreId } = useParams();
+    const history = useHistory();
     const [contatore, setContatore] = useState(null);
     const [letture, setLetture] = useState([]);
     const [showLetture, setShowLetture] = useState(false);
@@ -17,50 +20,22 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) =>
     const [showListinoModal, setShowListinoModal] = useState(false);
     const [showLetturaModal, setShowLetturaModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [editFormData, setEditFormData] = useState({
-        seriale: '',
-        serialeInterno: '',
-        ultimaLettura: '',
-        attivo: true,
-        condominiale: false,
-        sostituzione: false,
-        subentro: false,
-        dataInstallazione: '',
-        dataScadenza: '',
-        foto: '',
-        note: '',
-    });
+    const [editFormData, setEditFormData] = useState(false);
 
     const [clienti, setClienti] = useState([]);
     const [edifici, setEdifici] = useState([]);
     const [listini, setListini] = useState([]);
     const [lettureList, setLettureList] = useState([]);
 
-    const fetchContatore = useCallback(async () =>
-    {
-        try
-        {
+    const fetchContatore = useCallback(async () => {
+        console.log("fetchContatore called with ID:", contatoreId);
+        try {
             const response = await contatoreApi.getContatore(contatoreId);
+            console.log("API response:", response.data);
             setContatore(response.data);
-            setEditFormData(
-            {
-                seriale: response.data.seriale,
-                serialeInterno: response.data.serialeInterno,
-                ultimaLettura: response.data.ultimaLettura,
-                attivo: response.data.attivo,
-                condominiale: response.data.condominiale,
-                sostituzione: response.data.sostituzione,
-                subentro: response.data.subentro,
-                dataInstallazione: response.data.dataInstallazione,
-                dataScadenza: response.data.dataScadenza,
-                foto: response.data.foto,
-                note: response.data.note,
-            });
-        }
-        catch (error)
-        {
-            alert('Errore durante il recupero del contatore');
-            console.error(error);
+            setEditFormData(response.data);
+        } catch (error) {
+            console.error("Error in fetchContatore:", error);
         }
     }, [contatoreId]);
 
@@ -89,6 +64,10 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) =>
             alert('Errore durante il recupero delle letture');
             console.error(error);
         }
+    };
+
+    const handleBackClick = () => {
+        history.goBack(); // Adjust the route as per your Clienti list URL
     };
 
     const handleOpenClienteModal = async () =>
@@ -316,7 +295,7 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) =>
                 </>
             )}
             <div className="btn-back-container">
-                <button onClick={onDeselectContatore} className="btn btn-back">Indietro</button>
+                <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
             {showLetture && (
                 <div className="letture-section">

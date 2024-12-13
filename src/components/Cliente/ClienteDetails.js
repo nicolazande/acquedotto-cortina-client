@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import clienteApi from '../../api/clienteApi';
 import contatoreApi from '../../api/contatoreApi';
 import fatturaApi from '../../api/fatturaApi';
@@ -6,8 +7,10 @@ import '../../styles/Cliente/ClienteDetails.css';
 import ContatoreEditor from '../shared/ContatoreEditor'
 
 
-const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
+const ClienteDetails= () => 
 {
+    const { id: clienteId } = useParams(); // Dynamically fetch clienteId from route params
+    const history = useHistory();
     const [cliente, setCliente] = useState(null);
     const [contatori, setContatori] = useState([]);
     const [fatture, setFatture] = useState([]);
@@ -66,6 +69,10 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
 
     const handleEditContatore = (contatore) => {
         setEditingContatore(contatore);
+    };
+
+    const handleBackClick = () => {
+        history.goBack(); // Adjust the route as per your Clienti list URL
     };
 
     const handleCreateContatore = async (newContatore) => {
@@ -500,7 +507,7 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
                 </>
             )}
             <div className="btn-back-container">
-                <button onClick={onDeselectCliente} className="btn btn-back">Indietro</button>
+                <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
             {showContatori && (
                 <div className="contatori-section">

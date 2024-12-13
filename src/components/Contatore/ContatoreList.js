@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import contatoreApi from '../../api/contatoreApi';
-import ContatoreDetails from './ContatoreDetails';
 import '../../styles/Contatore/ContatoreList.css';
 
-const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectContatore }) => {
+const ContatoreList = () => {
     const [contatori, setContatori] = useState([]);
     const [filteredContatori, setFilteredContatori] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [showDetails, setShowDetails] = useState(false);
     const [searchSeriale, setSearchSeriale] = useState('');
     const itemsPerPage = 50;
+
+    const history = useHistory();
+    const location = useLocation();
+
+    // Extract current page from query parameters
+    const queryParams = new URLSearchParams(location.search);
+    const currentPage = parseInt(queryParams.get('page') || '1', 10);
 
     useEffect(() => {
         const fetchContatori = async () => {
@@ -29,13 +34,9 @@ const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectConta
     const handleDelete = async (id) => {
         try {
             await contatoreApi.deleteContatore(id);
-            const updatedContatori = contatori.filter(contatore => contatore._id !== id);
+            const updatedContatori = contatori.filter((contatore) => contatore._id !== id);
             setContatori(updatedContatori);
             setFilteredContatori(updatedContatori);
-            if (selectedContatoreId === id) {
-                onDeselectContatore();
-                setShowDetails(false);
-            }
         } catch (error) {
             alert('Errore durante la cancellazione del contatore');
             console.error(error);
@@ -43,19 +44,15 @@ const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectConta
     };
 
     const handleSelectContatore = (contatoreId) => {
-        onDeselectContatore();
-        setTimeout(() => {
-            onSelectContatore(contatoreId);
-            setShowDetails(true);
-        }, 0);
+        history.push(`/contatori/${contatoreId}`); // Navigate to ContatoreDetails page
     };
 
     const handleSearch = () => {
-        const filtered = contatori.filter(contatore =>
+        const filtered = contatori.filter((contatore) =>
             contatore.seriale?.toLowerCase().includes(searchSeriale.toLowerCase())
         );
         setFilteredContatori(filtered);
-        setCurrentPage(1); // Reset to the first page
+        handlePageChange(1); // Reset to the first page
     };
 
     // Pagination logic
@@ -65,87 +62,71 @@ const ContatoreList = ({ onSelectContatore, selectedContatoreId, onDeselectConta
     const currentContatori = filteredContatori.slice(indexOfFirstItem, indexOfLastItem);
 
     const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
+        history.push(`?page=${pageNumber}`); // Update URL with the new page number
     };
 
     return (
         <div className="contatore-list-container">
-            {showDetails && selectedContatoreId ? (
-                <div className="contatore-detail">
-                    <ContatoreDetails contatoreId={selectedContatoreId} onDeselectContatore={onDeselectContatore} />
-                </div>
-            ) : (
-                <div className="contatore-list">
-                    <h2>Lista Contatori</h2>
-                    <div className="search-container">
-                        <div className="search-bar">
-                            <span className="search-icon">🔍</span>
-                            <input
-                                type="text"
-                                placeholder="Seriale"
-                                value={searchSeriale}
-                                onChange={(e) => setSearchSeriale(e.target.value)}
-                            />
-                            <button onClick={handleSearch} className="btn btn-search">
-                                Cerca
-                            </button>
-                        </div>
+            <div className="contatore-list">
+                <h2>Lista Contatori</h2>
+                <div className="search-container">
+                    <div className="search-bar">
+                        <span className="search-icon">🔍</span>
+                        <input
+                            type="text"
+                            placeholder="Seriale"
+                            value={searchSeriale}
+                            onChange={(e) => setSearchSeriale(e.target.value)}
+                        />
+                        <button onClick={handleSearch} className="btn btn-search">
+                            Cerca
+                        </button>
                     </div>
-                    <div className="table-container">
-                        <table className="contatore-table">
-                            <thead>
-                                <tr>
-                                    <th>Seriale</th>
-                                    <th>Azioni</th>
+                </div>
+                <div className="table-container">
+                    <table className="contatore-table">
+                        <thead>
+                            <tr>
+                                <th>Seriale</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentContatori.map((contatore) => (
+                                <tr key={contatore._id} className="contatore-list-item">
+                                    <td>{contatore.seriale}</td>
+                                    <td>
+                                        <button
+                                            className="btn"
+                                            onClick={() => handleSelectContatore(contatore._id)}
+                                        >
+                                            Dettagli
+                                        </button>
+                                        <button
+                                            className="btn btn-delete"
+                                            onClick={() => handleDelete(contatore._id)}
+                                        >
+                                            Cancella
+                                        </button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {currentContatori.map((contatore) => (
-                                    <tr
-                                        key={contatore._id}
-                                        id={contatore._id}
-                                        className={`contatore-list-item ${contatore._id === selectedContatoreId ? 'highlight' : ''}`}
-                                    >
-                                        <td>{contatore.seriale}</td>
-                                        <td>
-                                            <button
-                                                className="btn"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleSelectContatore(contatore._id);
-                                                }}
-                                            >
-                                                Dettagli
-                                            </button>
-                                            <button
-                                                className="btn btn-delete"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDelete(contatore._id);
-                                                }}
-                                            >
-                                                Cancella
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    {/* Pagination Menu */}
-                    <div className="pagination">
-                        {Array.from({ length: totalPages }, (_, index) => (
-                            <button
-                                key={index + 1}
-                                className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
-                                onClick={() => handlePageChange(index + 1)}
-                            >
-                                {index + 1}
-                            </button>
-                        ))}
-                    </div>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-            )}
+                {/* Pagination Menu */}
+                <div className="pagination">
+                    {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                            key={index + 1}
+                            className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
+                            onClick={() => handlePageChange(index + 1)}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };
