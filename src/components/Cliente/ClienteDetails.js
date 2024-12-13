@@ -18,6 +18,7 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
     const [isEditing, setIsEditing] = useState(false);
     const [editFormData, setEditFormData] = useState({});
     const [editingContatore, setEditingContatore] = useState(null);
+    const [creatingContatore, setCreatingContatore] = useState(false);
 
     useEffect(() =>
     {
@@ -65,6 +66,23 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
 
     const handleEditContatore = (contatore) => {
         setEditingContatore(contatore);
+    };
+
+    const handleCreateContatore = async (newContatore) => {
+        try {
+            // Create the new contatore
+            const response = await contatoreApi.createContatore(newContatore);
+
+            // Associate the new contatore with the current cliente
+            await clienteApi.associateContatore(clienteId, response.data._id);
+
+            alert('Contatore creato e associato con successo');
+            setCreatingContatore(false);
+            fetchContatori();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione del contatore');
+            console.error(error);
+        }
     };
 
     const handleSaveContatore = async (updatedContatore) => {
@@ -473,6 +491,7 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
                     </div>
                     <div className="btn-container">
                         <button onClick={fetchContatori} className="btn btn-show-contatori">Visualizza Contatori</button>
+                        <button onClick={() => setCreatingContatore(true)} className="btn btn-create-contatore">Crea Contatore</button>
                         <button onClick={fetchFatture} className="btn btn-show-fatture">Visualizza Fatture</button>
                         <button onClick={handleOpenContatoreModal} className="btn btn-associate-contatore">Associa Contatore</button>
                         <button onClick={handleOpenFatturaModal} className="btn btn-associate-fattura">Associa Fattura</button>
@@ -580,6 +599,15 @@ const ClienteDetails = ({ clienteId, onDeselectCliente }) =>
                     contatore={editingContatore}
                     onSave={handleSaveContatore}
                     onCancel={() => setEditingContatore(null)}
+                    mode="Modifica" // "Nuovo", "Visualizza", or "Modifica"
+                />
+            )}
+            {creatingContatore && (
+                <ContatoreEditor
+                    contatore={{}}
+                    onSave={handleCreateContatore}
+                    onCancel={() => setCreatingContatore(false)}
+                    mode="Nuovo"
                 />
             )}
             {showFatturaModal && (

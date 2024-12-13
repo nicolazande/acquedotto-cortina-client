@@ -243,6 +243,7 @@ const ContatoreDetails = ({ contatoreId, onDeselectContatore }) =>
                     contatore={contatore}
                     onSave={handleSaveContatore}
                     onCancel={() => setIsEditing(false)}
+                    mode="Modifica" // "Nuovo", "Visualizza", or "Modifica"
                 />
             ) : (
                 <>
