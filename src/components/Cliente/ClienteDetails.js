@@ -3,13 +3,14 @@ import { useParams, useHistory } from 'react-router-dom';
 import clienteApi from '../../api/clienteApi';
 import contatoreApi from '../../api/contatoreApi';
 import fatturaApi from '../../api/fatturaApi';
-import '../../styles/Cliente/ClienteDetails.css';
 import ContatoreEditor from '../shared/ContatoreEditor'
+import ClienteEditor from '../shared/ClienteEditor'
+import '../../styles/Cliente/ClienteDetails.css';
 
 
 const ClienteDetails= () => 
 {
-    const { id: clienteId } = useParams(); // Dynamically fetch clienteId from route params
+    const { id: clienteId } = useParams();
     const history = useHistory();
     const [cliente, setCliente] = useState(null);
     const [contatori, setContatori] = useState([]);
@@ -22,6 +23,7 @@ const ClienteDetails= () =>
     const [editFormData, setEditFormData] = useState({});
     const [editingContatore, setEditingContatore] = useState(null);
     const [creatingContatore, setCreatingContatore] = useState(false);
+    const [activeTab, setActiveTab] = useState('modifica');
 
     useEffect(() =>
     {
@@ -67,8 +69,16 @@ const ClienteDetails= () =>
         }
     };
 
-    const handleEditContatore = (contatore) => {
-        setEditingContatore(contatore);
+    const handleSaveCliente = async (updatedCliente) => {
+        try {
+            await clienteApi.updateCliente(clienteId, updatedCliente);
+            setCliente(updatedCliente);
+            setIsEditing(false);
+            alert('Cliente aggiornato con successo');
+        } catch (error) {
+            alert('Errore durante l\'aggiornamento del cliente');
+            console.error(error);
+        }
     };
 
     const handleBackClick = () => {
@@ -182,29 +192,6 @@ const ClienteDetails= () =>
         }
     };
 
-    const handleEditChange = (e) =>
-    {
-        const { name, value, type, checked } = e.target;
-        setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
-    };
-
-    const handleEditSubmit = async (e) =>
-    {
-        e.preventDefault();
-        try
-        {
-            await clienteApi.updateCliente(clienteId, editFormData);
-            setCliente(editFormData);
-            setIsEditing(false);
-            alert('Cliente aggiornato con successo');
-        }
-        catch (error)
-        {
-            alert('Errore durante l\'aggiornamento del cliente');
-            console.error(error);
-        }
-    };
-
     if (!cliente)
     {
         return <div>Seleziona un cliente per vedere i dettagli</div>;
@@ -214,139 +201,20 @@ const ClienteDetails= () =>
         <div className="cliente-details">
             <h2>Dettagli Cliente</h2>
             {isEditing ? (
-                <form onSubmit={handleEditSubmit} className="edit-form">
-                    <div className="form-group">
-                        <label>Ragione Sociale:</label>
-                        <input type="text" name="ragione_sociale" value={editFormData.ragione_sociale || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Nome:</label>
-                        <input type="text" name="nome" value={editFormData.nome || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Cognome:</label>
-                        <input type="text" name="cognome" value={editFormData.cognome || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Sesso:</label>
-                        <input type="text" name="sesso" value={editFormData.sesso || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Socio:</label>
-                        <input type="checkbox" name="socio" checked={editFormData.socio || false} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Data di Nascita:</label>
-                        <input type="date" name="data_nascita" value={editFormData.data_nascita ? editFormData.data_nascita.split('T')[0] : ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Comune di Nascita:</label>
-                        <input type="text" name="comune_nascita" value={editFormData.comune_nascita || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Provincia di Nascita:</label>
-                        <input type="text" name="provincia_nascita" value={editFormData.provincia_nascita || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Indirizzo di Residenza:</label>
-                        <input type="text" name="indirizzo_residenza" value={editFormData.indirizzo_residenza || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Numero di Residenza:</label>
-                        <input type="text" name="numero_residenza" value={editFormData.numero_residenza || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>CAP di Residenza:</label>
-                        <input type="text" name="cap_residenza" value={editFormData.cap_residenza || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Località di Residenza:</label>
-                        <input type="text" name="localita_residenza" value={editFormData.localita_residenza || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Provincia di Residenza:</label>
-                        <input type="text" name="provincia_residenza" value={editFormData.provincia_residenza || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Nazione di Residenza:</label>
-                        <input type="text" name="nazione_residenza" value={editFormData.nazione_residenza || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Destinazione di Fatturazione:</label>
-                        <input type="text" name="destinazione_fatturazione" value={editFormData.destinazione_fatturazione || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Indirizzo di Fatturazione:</label>
-                        <input type="text" name="indirizzo_fatturazione" value={editFormData.indirizzo_fatturazione || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Numero di Fatturazione:</label>
-                        <input type="text" name="numero_fatturazione" value={editFormData.numero_fatturazione || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>CAP di Fatturazione:</label>
-                        <input type="text" name="cap_fatturazione" value={editFormData.cap_fatturazione || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Località di Fatturazione:</label>
-                        <input type="text" name="localita_fatturazione" value={editFormData.localita_fatturazione || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Provincia di Fatturazione:</label>
-                        <input type="text" name="provincia_fatturazione" value={editFormData.provincia_fatturazione || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Nazione di Fatturazione:</label>
-                        <input type="text" name="nazione_fatturazione" value={editFormData.nazione_fatturazione || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Codice Fiscale:</label>
-                        <input type="text" name="codice_fiscale" value={editFormData.codice_fiscale || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Telefono:</label>
-                        <input type="text" name="telefono" value={editFormData.telefono || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Email:</label>
-                        <input type="email" name="email" value={editFormData.email || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Pagamento:</label>
-                        <input type="text" name="pagamento" value={editFormData.pagamento || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Codice Destinatario:</label>
-                        <input type="text" name="codice_destinatario" value={editFormData.codice_destinatario || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Fattura Elettronica:</label>
-                        <input type="checkbox" name="fattura_elettronica" checked={editFormData.fattura_elettronica || false} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Codice ERP:</label>
-                        <input type="text" name="codice_cliente_erp" value={editFormData.codice_cliente_erp || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>IBAN:</label>
-                        <input type="text" name="iban" value={editFormData.iban || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Note:</label>
-                        <textarea name="note" value={editFormData.note || ''} onChange={handleEditChange}></textarea>
-                    </div>
-                    <div className="form-group">
-                        <label>Quote:</label>
-                        <input type="number" name="quote" value={editFormData.quote || ''} onChange={handleEditChange} />
-                    </div>
-                    <div className="btn-container">
-                        <button type="submit" className="btn btn-save">Salva</button>
-                        <button type="button" onClick={() => setIsEditing(false)} className="btn btn-cancel">Annulla</button>
-                    </div>
-                </form>
+                <ClienteEditor
+                    cliente={cliente}
+                    onSave={handleSaveCliente}
+                    onCancel={() => setIsEditing(false)}
+                    mode="Modifica"
+                />
             ) : (
                 <>
                     <div className="table-container">
+                        <div className="search-container">
+                            <button onClick={() => setIsEditing(true)} className="btn btn-edit">
+                                Modifica
+                            </button>
+                        </div>
                         <table className="info-table">
                             <tbody>
                                 <tr>
@@ -496,19 +364,59 @@ const ClienteDetails= () =>
                             </tbody>
                         </table>
                     </div>
-                    <div className="btn-container">
-                        <button onClick={fetchContatori} className="btn btn-show-contatori">Visualizza Contatori</button>
-                        <button onClick={() => setCreatingContatore(true)} className="btn btn-create-contatore">Crea Contatore</button>
-                        <button onClick={fetchFatture} className="btn btn-show-fatture">Visualizza Fatture</button>
-                        <button onClick={handleOpenContatoreModal} className="btn btn-associate-contatore">Associa Contatore</button>
-                        <button onClick={handleOpenFatturaModal} className="btn btn-associate-fattura">Associa Fattura</button>
-                        <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>
+                    <div className="tabs-container">
+                        {/* Tab Navigation */}
+                        <div className="tabs">
+                            {[
+                                { id: 'contatori', label: 'Contatori' },
+                                { id: 'fatture', label: 'Fatture' },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                    onClick={() => setActiveTab(tab.id)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Tab Content */}
+                        <div className={`tab-content ${activeTab === 'contatori' ? 'show' : ''}`}>
+                            {activeTab === 'contatori' && (
+                                <div className="contatori-box">
+                                    <button onClick={fetchContatori} className="btn btn-show-contatori">
+                                        Visualizza Contatori
+                                    </button>
+                                    <button onClick={() => setCreatingContatore(true)} className="btn btn-create-contatore">
+                                        Crea Contatore
+                                    </button>
+                                    <button onClick={handleOpenContatoreModal} className="btn btn-associate-contatore">
+                                        Associa Contatore
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className={`tab-content ${activeTab === 'fatture' ? 'show' : ''}`}>
+                            {activeTab === 'fatture' && (
+                                <div className="fatture-box">
+                                    <button onClick={fetchFatture} className="btn btn-show-fatture">
+                                        Visualizza Fatture
+                                    </button>
+                                    <button onClick={handleOpenFatturaModal} className="btn btn-associate-fattura">
+                                        Associa Fattura
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
+
                 </>
             )}
             <div className="btn-back-container">
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
+            
             {showContatori && (
                 <div className="contatori-section">
                     <h3>Contatori Associati</h3>
@@ -522,6 +430,7 @@ const ClienteDetails= () =>
                                 <th>Condominiale</th>
                                 <th>Sostituzione</th>
                                 <th>Subentro</th>
+                                <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -542,9 +451,9 @@ const ClienteDetails= () =>
                                     <td>
                                         <button
                                             className="btn btn-edit"
-                                            onClick={() => handleEditContatore(contatore)}
+                                            onClick={() => history.push(`/contatori/${contatore._id}`)}
                                         >
-                                            Modifica
+                                        Apri
                                         </button>
                                     </td>
                                 </tr>))
@@ -606,12 +515,14 @@ const ClienteDetails= () =>
                     contatore={editingContatore}
                     onSave={handleSaveContatore}
                     onCancel={() => setEditingContatore(null)}
-                    mode="Modifica" // "Nuovo", "Visualizza", or "Modifica"
+                    mode="Modifica"
                 />
             )}
             {creatingContatore && (
                 <ContatoreEditor
-                    contatore={{}}
+                    contatore={{
+                        nome_cliente: `${cliente.nome || ''} ${cliente.cognome || ''}`.trim(),
+                    }}
                     onSave={handleCreateContatore}
                     onCancel={() => setCreatingContatore(false)}
                     mode="Nuovo"

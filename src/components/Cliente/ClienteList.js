@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import clienteApi from '../../api/clienteApi';
+import ClienteEditor from '../shared/ClienteEditor'
 import '../../styles/Cliente/ClienteList.css';
 
 const ClienteList = () => {
@@ -8,6 +9,7 @@ const ClienteList = () => {
     const [filteredClienti, setFilteredClienti] = useState([]);
     const [searchName, setSearchName] = useState('');
     const [searchSurname, setSearchSurname] = useState('');
+    const [creatingCliente, setCreatingCliente] = useState(false);
     const itemsPerPage = 50;
 
     const history = useHistory();
@@ -57,6 +59,20 @@ const ClienteList = () => {
         handlePageChange(1); // Reset to the first page
     };
 
+    const handleCreateCliente = async (newCliente) => {
+        try {
+            await clienteApi.createCliente(newCliente);
+            alert('Cliente creato con successo');
+            setCreatingCliente(false);
+            const response = await clienteApi.getClienti();
+            setClienti(response.data);
+            setFilteredClienti(response.data);
+        } catch (error) {
+            alert('Errore durante la creazione del cliente');
+            console.error(error);
+        }
+    };
+
     // Pagination logic
     const totalPages = Math.ceil(filteredClienti.length / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -88,6 +104,12 @@ const ClienteList = () => {
                         />
                         <button onClick={handleSearch} className="btn btn-search">
                             Cerca
+                        </button>
+                        <button
+                            className="btn btn-new-cliente"
+                            onClick={() => setCreatingCliente(true)}
+                        >
+                            Nuovo Cliente
                         </button>
                     </div>
                 </div>
@@ -137,6 +159,14 @@ const ClienteList = () => {
                     ))}
                 </div>
             </div>
+            {creatingCliente && (
+                <ClienteEditor
+                    cliente={{}} // Empty cliente object for creating a new one
+                    onSave={handleCreateCliente}
+                    onCancel={() => setCreatingCliente(false)}
+                    mode="Nuovo"
+                />
+            )}
         </div>
     );
 };

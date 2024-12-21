@@ -1,65 +1,134 @@
 /* Styles for EdificioDetails */
-
-.edificio-detail {
+.edificio-details {
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
-    max-width: 1200px;
+    max-width: 800px; /* Reduced max-width for better focus */
 }
 
-.edificio-detail h2 {
+.edificio-details h2 {
     font-size: 1.5em;
     margin-bottom: 20px;
     text-align: center;
 }
 
+/* Table Styles */
 .table-container {
-    width: 100%;
-    overflow-x: auto; /* Enable horizontal scrolling only for the table container */
+    overflow-x: auto;
     margin-bottom: 20px;
 }
 
-.edificio-table, .contatori-table {
+.info-table, .contatori-table {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
-.edificio-table th, .edificio-table td, 
+.info-table th, .info-table td,
 .contatori-table th, .contatori-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
     text-align: left;
+    padding: 10px;
+    border: 1px solid #ccc; /* Unified border style */
 }
 
-.edificio-table th, .contatori-table th {
+.info-table th, .contatori-table th {
     background-color: #f2f2f2;
-    color: #333;
+    font-weight: bold;
 }
 
-.btn-container {
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap; /* Ensure buttons wrap on smaller screens */
-    gap: 10px; /* Space between buttons */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px; /* Adjusted for smaller viewports */
+    width: 100%;
+    position: relative;
+}
+
+.modal-content h3 {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.btn-close {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-close:hover {
+    background-color: #c82333;
+}
+
+/* Tabs */
+.tabs-container {
     margin-top: 20px;
 }
 
-.btn-container .btn {
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab:hover, .tab.active {
+    color: #007bff;
+    font-weight: bold;
+    border-bottom: 3px solid #007bff;
+}
+
+/* Buttons */
+.btn {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 15px;
     border-radius: 5px;
+    font-size: 14px;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    flex: 1; /* Allow buttons to grow and fill available space */
-    max-width: 200px; /* Ensure buttons don't become too wide */
+    transition: background-color 0.3s;
+    text-align: center;
 }
 
-.btn-container .btn:hover {
+.btn:hover {
     background-color: #0056b3;
 }
 
@@ -71,130 +140,61 @@
     background-color: #218838;
 }
 
-.btn-back-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.btn-back-container .btn-back {
+.btn-back {
     background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
 }
 
-.btn-back-container .btn-back:hover {
+.btn-back:hover {
     background-color: #5a6268;
-}
-
-.contatori-section {
-    margin-top: 20px;
-    overflow-x: auto; /* Ensure horizontal scrolling if needed */
-}
-
-.modal {
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 80%;
-    max-width: 600px;
-}
-
-.modal-content h3 {
-    margin-top: 0;
-}
-
-.modal-content ul {
-    list-style: none;
-    padding: 0;
-}
-
-.modal-content ul li {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-}
-
-.modal-content ul li:hover {
-    background-color: #f2f2f2;
-}
-
-.modal-content button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 20px;
-    transition: background-color 0.3s;
-}
-
-.modal-content button:hover {
-    background-color: #0056b3;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group input[type="date"],
-.form-group textarea {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-.btn-save:hover {
-    background-color: #218838;
-}
-
-.btn-cancel:hover {
-    background-color: #c82333;
 }
 
 .btn-save {
     background-color: #28a745;
 }
 
+.btn-save:hover {
+    background-color: #218838;
+}
+
 .btn-cancel {
     background-color: #dc3545;
 }
 
-.form-actions {
+.btn-cancel:hover {
+    background-color: #c82333;
+}
+
+/* Utility Containers */
+.btn-container {
     display: flex;
-    justify-content: center; /* Centrato orizzontalmente */
-    gap: 10px;
+    justify-content: center;
+    gap: 15px;
     margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-back-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.contatori-box {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    .tabs {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
 }

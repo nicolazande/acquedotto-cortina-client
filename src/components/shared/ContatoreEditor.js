@@ -4,7 +4,17 @@ const ContatoreEditor = ({ contatore, onSave, onCancel, mode }) => {
     const [editFormData, setEditFormData] = useState({ ...contatore });
 
     useEffect(() => {
-        setEditFormData({ ...contatore });
+        // Format date fields as 'YYYY-MM-DD' for proper input compatibility
+        const formattedContatore = {
+            ...contatore,
+            inizio: contatore?.inizio
+                ? new Date(contatore.inizio).toISOString().split('T')[0]
+                : '',
+            scadenza: contatore?.scadenza
+                ? new Date(contatore.scadenza).toISOString().split('T')[0]
+                : '',
+        };
+        setEditFormData(formattedContatore);
     }, [contatore]);
 
     const isReadOnly = mode === 'Visualizza';
@@ -32,6 +42,66 @@ const ContatoreEditor = ({ contatore, onSave, onCancel, mode }) => {
                 </h3>
                 <form onSubmit={handleSave}>
                     <div className="form-group">
+                        <label>Tipo Contatore:</label>
+                        <input
+                            type="text"
+                            name="tipo_contatore"
+                            value={editFormData.tipo_contatore || ''}
+                            onChange={handleEditChange}
+                            readOnly={isReadOnly}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Codice:</label>
+                        <input
+                            type="text"
+                            name="codice"
+                            value={editFormData.codice || ''}
+                            onChange={handleEditChange}
+                            readOnly={isReadOnly}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Nome Cliente:</label>
+                        <input
+                            type="text"
+                            name="nome_cliente"
+                            value={editFormData.nome_cliente || ''}
+                            onChange={handleEditChange}
+                            readOnly={isReadOnly}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Seriale Interno:</label>
+                        <input
+                            type="text"
+                            name="seriale_interno"
+                            value={editFormData.seriale_interno || ''}
+                            onChange={handleEditChange}
+                            readOnly={isReadOnly}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Nome Edificio:</label>
+                        <input
+                            type="text"
+                            name="nome_edificio"
+                            value={editFormData.nome_edificio || ''}
+                            onChange={handleEditChange}
+                            readOnly={isReadOnly}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Tipo Attività:</label>
+                        <input
+                            type="text"
+                            name="tipo_attivita"
+                            value={editFormData.tipo_attivita || ''}
+                            onChange={handleEditChange}
+                            readOnly={isReadOnly}
+                        />
+                    </div>
+                    <div className="form-group">
                         <label>Seriale:</label>
                         <input
                             type="text"
@@ -42,41 +112,31 @@ const ContatoreEditor = ({ contatore, onSave, onCancel, mode }) => {
                         />
                     </div>
                     <div className="form-group">
-                        <label>Seriale Interno:</label>
-                        <input
-                            type="text"
-                            name="serialeInterno"
-                            value={editFormData.serialeInterno || ''}
-                            onChange={handleEditChange}
-                            readOnly={isReadOnly}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Ultima Lettura:</label>
-                        <input
-                            type="date"
-                            name="ultimaLettura"
-                            value={editFormData.ultimaLettura || ''}
-                            onChange={handleEditChange}
-                            readOnly={isReadOnly}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Attivo:</label>
+                        <label>Inattivo:</label>
                         <input
                             type="checkbox"
-                            name="attivo"
-                            checked={editFormData.attivo || false}
+                            name="inattivo"
+                            checked={editFormData.inattivo || false}
                             onChange={handleEditChange}
                             disabled={isReadOnly}
                         />
                     </div>
                     <div className="form-group">
-                        <label>Condominiale:</label>
+                        <label>Consumo:</label>
+                        <input
+                            type="number"
+                            name="consumo"
+                            value={editFormData.consumo || ''}
+                            onChange={handleEditChange}
+                            readOnly={isReadOnly}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Subentro:</label>
                         <input
                             type="checkbox"
-                            name="condominiale"
-                            checked={editFormData.condominiale || false}
+                            name="subentro"
+                            checked={editFormData.subentro || false}
                             onChange={handleEditChange}
                             disabled={isReadOnly}
                         />
@@ -92,31 +152,50 @@ const ContatoreEditor = ({ contatore, onSave, onCancel, mode }) => {
                         />
                     </div>
                     <div className="form-group">
-                        <label>Subentro:</label>
+                        <label>Condominiale:</label>
                         <input
                             type="checkbox"
-                            name="subentro"
-                            checked={editFormData.subentro || false}
+                            name="condominiale"
+                            checked={editFormData.condominiale || false}
                             onChange={handleEditChange}
                             disabled={isReadOnly}
                         />
                     </div>
                     <div className="form-group">
-                        <label>Data Installazione:</label>
+                        <label>Inizio:</label>
                         <input
                             type="date"
-                            name="dataInstallazione"
-                            value={editFormData.dataInstallazione || ''}
+                            name="inizio"
+                            value={editFormData.inizio || ''}
                             onChange={handleEditChange}
                             readOnly={isReadOnly}
                         />
                     </div>
                     <div className="form-group">
-                        <label>Data Scadenza:</label>
+                        <label>Scadenza:</label>
                         <input
                             type="date"
-                            name="dataScadenza"
-                            value={editFormData.dataScadenza || ''}
+                            name="scadenza"
+                            value={editFormData.scadenza || ''}
+                            onChange={handleEditChange}
+                            readOnly={isReadOnly}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Causale:</label>
+                        <input
+                            type="text"
+                            name="causale"
+                            value={editFormData.causale || ''}
+                            onChange={handleEditChange}
+                            readOnly={isReadOnly}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Note:</label>
+                        <textarea
+                            name="note"
+                            value={editFormData.note || ''}
                             onChange={handleEditChange}
                             readOnly={isReadOnly}
                         />
@@ -127,15 +206,6 @@ const ContatoreEditor = ({ contatore, onSave, onCancel, mode }) => {
                             type="text"
                             name="foto"
                             value={editFormData.foto || ''}
-                            onChange={handleEditChange}
-                            readOnly={isReadOnly}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Note:</label>
-                        <textarea
-                            name="note"
-                            value={editFormData.note || ''}
                             onChange={handleEditChange}
                             readOnly={isReadOnly}
                         />
@@ -151,6 +221,7 @@ const ContatoreEditor = ({ contatore, onSave, onCancel, mode }) => {
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
     );

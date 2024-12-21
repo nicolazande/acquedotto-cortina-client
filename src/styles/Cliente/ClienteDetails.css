@@ -18,83 +18,28 @@
     overflow-x: auto; /* Horizontal scroll if needed */
 }
 
-.info-table {
+.info-table, .contatori-table, .fatture-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-.info-table th, .info-table td {
+.info-table th, .info-table td,
+.contatori-table th, .contatori-table td,
+.fatture-table th, .fatture-table td {
     text-align: left;
     padding: 10px;
     border-bottom: 1px solid #ccc;
 }
 
-.info-table th {
+.info-table th, .contatori-table th, .fatture-table th {
     background-color: #f2f2f2;
     font-weight: bold;
 }
 
-.btn-container {
-    display: flex;
-    justify-content: space-between;
+.contatori-section, .fatture-section {
     margin-top: 20px;
-    flex-wrap: wrap;
-}
-
-.btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    margin: 5px;
-}
-
-.btn:hover {
-    background-color: #0056b3;
-}
-
-.btn-delete {
-    background-color: #ff3b30;
-}
-
-.btn-delete:hover {
-    background-color: #c4302b;
-}
-
-.btn-back-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.contatori-section,
-.fatture-section {
-    margin-top: 20px;
-    overflow-x: auto; /* Ensure horizontal scrolling if needed */
-}
-
-.contatori-table,
-.fatture-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.contatori-table th,
-.fatture-table th,
-.contatori-table td,
-.fatture-table td {
-    text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-}
-
-.contatori-table th,
-.fatture-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
+    overflow-x: auto;
 }
 
 .modal {
@@ -115,13 +60,13 @@
     border-radius: 10px;
     max-width: 500px;
     width: 100%;
+    text-align: center;
 }
 
 .modal-content h3 {
     margin-top: 0;
     font-size: 1.5em;
     margin-bottom: 20px;
-    text-align: center;
 }
 
 .modal-content ul {
@@ -139,17 +84,96 @@
     background-color: #f1f1f1;
 }
 
-.modal-content button {
+.tabs-container {
+    margin-top: 20px;
+    border-bottom: 2px solid #ddd;
+}
+
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+.tab:hover, .tab.active {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.tab.active {
+    border-bottom: 3px solid #007bff;
+}
+
+.tab-content {
+    display: none;
+    margin-top: 20px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.tab-content.show {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.btn-container {
+    display: flex;
+    justify-content: center; /* Center align buttons horizontally */
+    gap: 15px; /* Add spacing between buttons */
+    margin-top: 20px;
+    flex-wrap: wrap; /* Ensure responsiveness */
+}
+
+.tabs-container .tabs {
+    display: flex;
+    justify-content: center; /* Center the tab buttons */
+    gap: 15px; /* Add spacing between tabs */
+}
+
+.btn-back-container {
+    display: flex;
+    justify-content: center; /* Center align the back button */
+    margin-top: 20px;
+}
+
+.contatori-box, .fatture-box {
+    display: flex;
+    justify-content: center; /* Center align the buttons */
+    gap: 15px; /* Add spacing between buttons */
+    flex-wrap: wrap;
+}
+
+.btn {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
-    display: block;
-    margin: 20px auto;
+    font-size: 14px;
+    margin: 0; /* Remove margin for consistency */
+    transition: background-color 0.3s ease;
+    text-align: center;
 }
 
-.modal-content button:hover {
+.btn:hover {
     background-color: #0056b3;
 }
+

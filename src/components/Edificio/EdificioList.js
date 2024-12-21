@@ -1,22 +1,36 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import edificioApi from '../../api/edificioApi';
-import EdificioDetails from './EdificioDetails';
+import EdificioEditor from '../shared/EdificioEditor';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../../styles/Edificio/EdificioList.css';
 
-const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio }) => {
+const EdificioList = () => {
     const [edifici, setEdifici] = useState([]);
-    const [highlightedEdificioId, setHighlightedEdificioId] = useState(null);
+    const [filteredEdifici, setFilteredEdifici] = useState([]);
+    const [searchDescrizione, setSearchDescrizione] = useState('');
+    const [searchLocalita, setSearchLocalita] = useState('');
+    const [creatingEdificio, setCreatingEdificio] = useState(false);
+    const [highlightedRowId, setHighlightedRowId] = useState(null);
+    const itemsPerPage = 50;
+
     const mapRef = useRef(null);
-    const markersRef = useRef([]);
+    const markersRef = useRef({});
     const highlightedMarkerRef = useRef(null);
+
+    const history = useHistory();
+    const location = useLocation();
+
+    const queryParams = new URLSearchParams(location.search);
+    const currentPage = parseInt(queryParams.get('page') || '1', 10);
 
     useEffect(() => {
         const fetchEdifici = async () => {
             try {
                 const response = await edificioApi.getEdifici();
                 setEdifici(response.data);
+                setFilteredEdifici(response.data);
             } catch (error) {
                 alert('Errore durante il recupero degli edifici');
                 console.error(error);
@@ -26,50 +40,53 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
         fetchEdifici();
     }, []);
 
-    const handleMarkerClick = useCallback((marker) => {
-        const { _id } = marker.edificio;
-        scrollToEdificioRow(_id);
-        mapRef.current.setView(marker.getLatLng(), 12);
-        highlightMarker(marker);
-        setHighlightedEdificioId(_id);
-    }, []);
+    const handleSearch = () => {
+        const filtered = edifici.filter(
+            (edificio) =>
+                edificio.descrizione?.toLowerCase().includes(searchDescrizione.toLowerCase()) &&
+                edificio.localita?.toLowerCase().includes(searchLocalita.toLowerCase())
+        );
+        setFilteredEdifici(filtered);
+        handlePageChange(1);
+    };
+
+    const handleCreateEdificio = async (newEdificio) => {
+        try {
+            await edificioApi.createEdificio(newEdificio);
+            alert('Edificio creato con successo');
+            setCreatingEdificio(false);
+            const response = await edificioApi.getEdifici();
+            setEdifici(response.data);
+            setFilteredEdifici(response.data);
+        } catch (error) {
+            alert('Errore durante la creazione dell\'edificio');
+            console.error(error);
+        }
+    };
+
+    const totalPages = Math.ceil(filteredEdifici.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentEdifici = filteredEdifici.slice(indexOfFirstItem, indexOfLastItem);
+
+    const handlePageChange = (pageNumber) => {
+        history.push(`?page=${pageNumber}`);
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            await edificioApi.deleteEdificio(id);
+            const updatedEdifici = edifici.filter((edificio) => edificio._id !== id);
+            setEdifici(updatedEdifici);
+            setFilteredEdifici(updatedEdifici);
+        } catch (error) {
+            alert('Errore durante la cancellazione dell\'edificio');
+            console.error(error);
+        }
+    };
 
     const initializeMap = useCallback(() => {
-        const map = mapRef.current;
-        if (map) {
-            markersRef.current.forEach((marker) => {
-                map.removeLayer(marker);
-            });
-
-            const newMarkers = edifici.map((edificio) => {
-                if (edificio.latitudine && edificio.longitudine) {
-                    const marker = L.marker([edificio.latitudine, edificio.longitudine], {
-                        icon: L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' })
-                    }).addTo(map)
-                      .bindPopup(`${edificio.descrizione}`);
-
-                    marker.edificio = edificio;
-
-                    marker.on('click', () => {
-                        handleMarkerClick(marker);
-                    });
-
-                    return marker;
-                }
-                return null;
-            });
-
-            markersRef.current = newMarkers.filter((marker) => marker !== null);
-
-            if (newMarkers.length > 0) {
-                const group = new L.featureGroup(newMarkers);
-                map.fitBounds(group.getBounds());
-            }
-        }
-    }, [edifici, handleMarkerClick]);
-
-    useEffect(() => {
-        if (mapRef.current === null) {
+        if (!mapRef.current) {
             const mapInstance = L.map('map', {
                 center: [46.5396, 12.1357],
                 zoom: 10,
@@ -77,67 +94,106 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
             });
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
+                attribution: '&copy; OpenStreetMap contributors',
             }).addTo(mapInstance);
             mapRef.current = mapInstance;
         }
 
+        Object.values(markersRef.current).forEach((marker) => {
+            mapRef.current.removeLayer(marker);
+        });
+
+        edifici.forEach((edificio) => {
+            if (edificio.latitudine && edificio.longitudine) {
+                const marker = L.marker([edificio.latitudine, edificio.longitudine], {
+                    icon: L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' }),
+                }).addTo(mapRef.current).bindPopup(`${edificio.descrizione}`);
+
+                marker.on('click', () => handleMarkerClick(edificio._id));
+
+                markersRef.current[edificio._id] = marker;
+            }
+        });
+    }, [edifici]);
+
+    useEffect(() => {
         initializeMap();
     }, [edifici, initializeMap]);
 
-    const handleDelete = async (id, e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        try {
-            await edificioApi.deleteEdificio(id);
-            setEdifici(edifici.filter(edificio => edificio._id !== id));
-            if (selectedEdificioId === id) {
-                onDeselectEdificio();
-            }
-        } catch (error) {
-            alert('Errore durante la cancellazione dell\'edificio');
-            console.error(error);
-        }
-    };
-
-    const scrollToEdificioRow = (edificioId) => {
-        const edificioRow = document.getElementById(edificioId);
-        if (edificioRow) {
-            edificioRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    };
-
-    const handleTableRowClick = (edificioId, e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        markersRef.current.forEach((marker) => {
-            if (marker.edificio._id === edificioId) {
-                handleMarkerClick(marker);
-            }
-        });
-    };
-
-    const highlightMarker = (marker) => {
+    const highlightMarker = (edificioId) => {
         if (highlightedMarkerRef.current) {
             highlightedMarkerRef.current.setIcon(L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' }));
         }
 
-        marker.setIcon(L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png' }));
-        highlightedMarkerRef.current = marker;
+        const marker = markersRef.current[edificioId];
+        if (marker) {
+            marker.setIcon(L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png' }));
+            mapRef.current.setView(marker.getLatLng(), 16);
+            highlightedMarkerRef.current = marker;
+        }
     };
 
-    const handleSelectEdificio = (edificioId) => {
-        if (selectedEdificioId === edificioId) {
-            onDeselectEdificio();
-        } else {
-            onSelectEdificio(edificioId);
+    const scrollToEdificioRow = (edificioId) => {
+        const row = document.getElementById(`row-${edificioId}`);
+        if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+    };
+
+    const handleMarkerClick = (edificioId) => {
+        const edificioIndex = filteredEdifici.findIndex((e) => e._id === edificioId);
+        if (edificioIndex !== -1) {
+            const pageNumber = Math.floor(edificioIndex / itemsPerPage) + 1;
+            if (currentPage !== pageNumber) {
+                handlePageChange(pageNumber);
+            }
+
+            setTimeout(() => {
+                setHighlightedRowId(edificioId);
+                scrollToEdificioRow(edificioId);
+            }, 100);
+        }
+        highlightMarker(edificioId);
+    };
+
+    const handleRowClick = (edificioId) => {
+        setHighlightedRowId(edificioId);
+        highlightMarker(edificioId);
+    };
+
+    const handleDettagliClick = (edificioId) => {
+        history.push(`/edifici/${edificioId}`);
     };
 
     return (
         <div className="edificio-list-container">
             <div className="edificio-list">
                 <h2>Lista Edifici</h2>
+                <div className="search-container">
+                    <div className="search-bar">
+                        <input
+                            type="text"
+                            placeholder="Descrizione..."
+                            value={searchDescrizione}
+                            onChange={(e) => setSearchDescrizione(e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Località..."
+                            value={searchLocalita}
+                            onChange={(e) => setSearchLocalita(e.target.value)}
+                        />
+                        <button onClick={handleSearch} className="btn btn-search">
+                            Cerca
+                        </button>
+                        <button
+                            className="btn btn-new-edificio"
+                            onClick={() => setCreatingEdificio(true)}
+                        >
+                            Crea Edificio
+                        </button>
+                    </div>
+                </div>
                 <div id="map" className="edificio-map"></div>
                 <div className="table-container">
                     <table className="edificio-table">
@@ -148,40 +204,66 @@ const EdificioList = ({ onSelectEdificio, selectedEdificioId, onDeselectEdificio
                                 <th>Numero</th>
                                 <th>CAP</th>
                                 <th>Località</th>
-                                <th>Longitudine</th>
-                                <th>Latitudine</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {edifici.map((edificio) => (
+                            {currentEdifici.map((edificio) => (
                                 <tr
                                     key={edificio._id}
-                                    id={edificio._id}
-                                    className={`edificio-list-item ${edificio._id === highlightedEdificioId ? 'highlight' : ''}`}
-                                    onClick={(e) => handleTableRowClick(edificio._id, e)}
+                                    id={`row-${edificio._id}`}
+                                    className={`edificio-list-item ${highlightedRowId === edificio._id ? 'highlight' : ''}`}
+                                    onClick={() => handleRowClick(edificio._id)}
                                 >
                                     <td>{edificio.descrizione}</td>
                                     <td>{edificio.indirizzo}</td>
                                     <td>{edificio.numero}</td>
-                                    <td>{edificio.CAP}</td>
+                                    <td>{edificio.cap}</td>
                                     <td>{edificio.localita}</td>
-                                    <td>{edificio.longitudine}</td>
-                                    <td>{edificio.latitudine}</td>
                                     <td>
-                                        <button className="btn" onClick={(e) => { e.stopPropagation(); handleSelectEdificio(edificio._id); }}>Dettagli</button>
-                                        <button className="btn btn-delete" onClick={(e) => handleDelete(edificio._id, e)}>Cancella</button>
+                                        <button
+                                            className="btn btn-dettagli"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDettagliClick(edificio._id);
+                                            }}
+                                        >
+                                            Dettagli
+                                        </button>
+                                        <button
+                                            className="btn btn-delete"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDelete(edificio._id);
+                                            }}
+                                        >
+                                            Cancella
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
-            </div>
-            {selectedEdificioId && (
-                <div className="edificio-detail">
-                    <EdificioDetails edificioId={selectedEdificioId} onDeselectEdificio={onDeselectEdificio} />
+                <div className="pagination">
+                    {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                            key={index + 1}
+                            className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
+                            onClick={() => handlePageChange(index + 1)}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
                 </div>
+            </div>
+            {creatingEdificio && (
+                <EdificioEditor
+                    edificio={{}} // Empty edificio object for creating a new one
+                    onSave={handleCreateEdificio}
+                    onCancel={() => setCreatingEdificio(false)}
+                    mode="Nuovo"
+                />
             )}
         </div>
     );

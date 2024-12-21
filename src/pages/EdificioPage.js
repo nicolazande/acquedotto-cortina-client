@@ -1,38 +1,25 @@
 import React, { useState } from 'react';
-import EdificioForm from '../components/Edificio/EdificioForm';
 import EdificioList from '../components/Edificio/EdificioList';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
 import '../styles/Edificio/EdificioPage.css';
 
-const EdificioPage = () => 
-{
+const EdificioPage = () => {
     const [selectedEdificioId, setSelectedEdificioId] = useState(null);
 
-    const handleEdificioSelect = (edificioId) => 
-    {
+    const handleEdificioSelect = (edificioId) => {
         setSelectedEdificioId(edificioId);
     };
 
-    const handleEdificioDeselect = () => 
-    {
+    const handleEdificioDeselect = () => {
         setSelectedEdificioId(null);
     };
 
     return (
         <div className="edificio-page">
-            <Tabs>
-                <TabList>
-                    <Tab>Lista Edifici</Tab>
-                    <Tab>Registra Edificio</Tab>
-                </TabList>
-                <TabPanel>
-                    <EdificioList onSelectEdificio={handleEdificioSelect} selectedEdificioId={selectedEdificioId} onDeselectEdificio={handleEdificioDeselect} />
-                </TabPanel>
-                <TabPanel>
-                    <EdificioForm onSuccess={handleEdificioDeselect} />
-                </TabPanel>
-            </Tabs>
+            <EdificioList
+                onSelectEdificio={handleEdificioSelect}
+                selectedEdificioId={selectedEdificioId}
+                onDeselectEdificio={handleEdificioDeselect}
+            />
         </div>
     );
 };

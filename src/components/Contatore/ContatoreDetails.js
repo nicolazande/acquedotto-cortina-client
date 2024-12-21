@@ -21,7 +21,7 @@ const ContatoreDetails = () =>
     const [showLetturaModal, setShowLetturaModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editFormData, setEditFormData] = useState(false);
-
+    const [activeTab, setActiveTab] = useState('modifica');
     const [clienti, setClienti] = useState([]);
     const [edifici, setEdifici] = useState([]);
     const [listini, setListini] = useState([]);
@@ -227,47 +227,84 @@ const ContatoreDetails = () =>
             ) : (
                 <>
                     <div className="table-container">
+                        <div className="search-container">
+                            <button onClick={() => setIsEditing(true)} className="btn btn-edit">
+                                Modifica
+                            </button>
+                        </div>
                         <table className="info-table">
                             <tbody>
                                 <tr>
-                                    <th>Seriale</th>
-                                    <td>{contatore.seriale}</td>
+                                    <th>Tipo Contatore</th>
+                                    <td>{contatore.tipo_contatore || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Codice</th>
+                                    <td>{contatore.codice || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nome Cliente</th>
+                                    <td>{contatore.nome_cliente || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Seriale Interno</th>
-                                    <td>{contatore.serialeInterno}</td>
+                                    <td>{contatore.seriale_interno || 'N/A'}</td>
                                 </tr>
                                 <tr>
-                                    <th>Ultima Lettura</th>
-                                    <td>{new Date(contatore.ultimaLettura).toLocaleDateString()}</td>
+                                    <th>Nome Edificio</th>
+                                    <td>{contatore.nome_edificio || 'N/A'}</td>
                                 </tr>
                                 <tr>
-                                    <th>Attivo</th>
-                                    <td>{contatore.attivo ? 'Sì' : 'No'}</td>
+                                    <th>Tipo Attività</th>
+                                    <td>{contatore.tipo_attivita || 'N/A'}</td>
                                 </tr>
                                 <tr>
-                                    <th>Condominiale</th>
-                                    <td>{contatore.condominiale ? 'Sì' : 'No'}</td>
+                                    <th>Seriale</th>
+                                    <td>{contatore.seriale || 'N/A'}</td>
                                 </tr>
                                 <tr>
-                                    <th>Sostituzione</th>
-                                    <td>{contatore.sostituzione ? 'Sì' : 'No'}</td>
+                                    <th>Inattivo</th>
+                                    <td>{contatore.inattivo ? 'Sì' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Consumo</th>
+                                    <td>{contatore.consumo || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Subentro</th>
                                     <td>{contatore.subentro ? 'Sì' : 'No'}</td>
                                 </tr>
                                 <tr>
-                                    <th>Data Installazione</th>
-                                    <td>{new Date(contatore.dataInstallazione).toLocaleDateString()}</td>
+                                    <th>Sostituzione</th>
+                                    <td>{contatore.sostituzione ? 'Sì' : 'No'}</td>
                                 </tr>
                                 <tr>
-                                    <th>Data Scadenza</th>
-                                    <td>{new Date(contatore.dataScadenza).toLocaleDateString()}</td>
+                                    <th>Condominiale</th>
+                                    <td>{contatore.condominiale ? 'Sì' : 'No'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Inizio</th>
+                                    <td>{contatore.inizio ? new Date(contatore.inizio).toLocaleDateString() : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Scadenza</th>
+                                    <td>{contatore.scadenza ? new Date(contatore.scadenza).toLocaleDateString() : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Causale</th>
+                                    <td>{contatore.causale || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Note</th>
-                                    <td>{contatore.note}</td>
+                                    <td>{contatore.note || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Foto</th>
+                                    <td>{contatore.foto || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Listino</th>
+                                    <td>{contatore.listino ? contatore.listino.descrizione || 'N/A' : 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Cliente</th>
@@ -275,22 +312,80 @@ const ContatoreDetails = () =>
                                 </tr>
                                 <tr>
                                     <th>Edificio</th>
-                                    <td>{contatore.edificio ? contatore.edificio.descrizione : 'N/A'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Listino</th>
-                                    <td>{contatore.listino ? contatore.listino.descrizione : 'N/A'}</td>
+                                    <td>{contatore.edificio ? contatore.edificio.descrizione || 'N/A' : 'N/A'}</td>
                                 </tr>
                             </tbody>
                         </table>
+
                     </div>
-                    <div className="btn-container">
-                        <button onClick={fetchLetture} className="btn btn-show-letture">Visualizza Letture</button>
-                        <button onClick={handleOpenClienteModal} className="btn btn-associate-cliente">Associa Cliente</button>
-                        <button onClick={handleOpenEdificioModal} className="btn btn-associate-edificio">Associa Edificio</button>
-                        <button onClick={handleOpenListinoModal} className="btn btn-associate-listino">Associa Listino</button>
-                        <button onClick={handleOpenLetturaModal} className="btn btn-associate-lettura">Associa Lettura</button>
-                        <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>
+                    <div className="tabs-container">
+                        {/* Tab Navigation */}
+                        <div className="tabs">
+                            {[
+                                { id: 'cliente', label: 'Cliente' },
+                                { id: 'letture', label: 'Letture' },
+                                { id: 'edificio', label: 'Edificio' },
+                                { id: 'listino', label: 'Listino' },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                    onClick={() => setActiveTab(tab.id)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                        {/* Tab Content */}
+                        <div className={`tab-content ${activeTab === 'cliente' ? 'show' : ''}`}>
+                            {activeTab === 'cliente' && (
+                                <div className="cliente-box">
+                                    {contatore.cliente && contatore.cliente._id ? (
+                                        <button
+                                            className="btn btn-edit"
+                                            onClick={() => history.push(`/clienti/${contatore.cliente._id}`)}
+                                        >
+                                            Apri
+                                        </button>
+                                    ) : (
+                                        <p>Cliente non associato</p>
+                                    )}
+                                    <button onClick={handleOpenClienteModal} className="btn btn-associate-cliente">
+                                        Associa Cliente
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className={`tab-content ${activeTab === 'letture' ? 'show' : ''}`}>
+                            {activeTab === 'letture' && (
+                                <div className="letture-box">
+                                    <button onClick={fetchLetture} className="btn btn-show-letture">
+                                        Visualizza Letture
+                                    </button>
+                                    <button onClick={handleOpenLetturaModal} className="btn btn-associate-lettura">
+                                        Associa Lettura
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className={`tab-content ${activeTab === 'edificio' ? 'show' : ''}`}>
+                            {activeTab === 'edificio' && (
+                                <div className="edificio-box">
+                                    <button onClick={handleOpenEdificioModal} className="btn btn-associate-edificio">
+                                        Associa Edificio
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className={`tab-content ${activeTab === 'listino' ? 'show' : ''}`}>
+                            {activeTab === 'listino' && (
+                                <div className="listino-box">
+                                    <button onClick={handleOpenListinoModal} className="btn btn-associate-listino">
+                                        Associa Listino
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </>
             )}
