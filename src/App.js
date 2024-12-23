@@ -20,6 +20,7 @@ import ClienteDetails from './components/Cliente/ClienteDetails';
 import ContatoreDetails from './components/Contatore/ContatoreDetails';
 import EdificioDetails from './components/Edificio/EdificioDetails';
 import LetturaDetails from './components/Lettura/LetturaDetails';
+import FatturaDetails from './components/Fattura/FatturaDetails';
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -80,8 +81,13 @@ const App = () => {
                                     <Route path="/letture" component={LetturaPage} />
                                 </Switch>
 
+                                {/* Routes for Clienti */}
+                                <Switch>
+                                    <Route path="/fatture/:id" render={(props) => <FatturaDetails {...props} />} />
+                                    <Route path="/fatture" component={FatturaPage} />
+                                </Switch>
+
                                 {/* Other Routes */}
-                                <Route path="/fatture" component={FatturaPage} />
                                 <Route path="/servizi" component={ServizioPage} />
                                 <Route path="/articoli" component={ArticoloPage} />
                                 <Route path="/listini" component={ListinoPage} />

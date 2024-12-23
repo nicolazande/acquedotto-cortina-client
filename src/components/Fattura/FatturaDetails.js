@@ -1,217 +1,149 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import fatturaApi from '../../api/fatturaApi';
 import clienteApi from '../../api/clienteApi';
 import servizioApi from '../../api/servizioApi';
 import '../../styles/Fattura/FatturaDetails.css';
+import FatturaEditor from '../shared/FatturaEditor';
 
-const FatturaDetails = ({ fatturaId, onDeselectFattura }) =>
-{
+const FatturaDetails = () => {
+    const { id: fatturaId } = useParams(); // Extract `fatturaId` from the route
+    const history = useHistory();
     const [fattura, setFattura] = useState(null);
-    const [cliente, setCliente] = useState(null);
     const [servizi, setServizi] = useState([]);
+    const [clienti, setClienti] = useState([]);
     const [showClienteModal, setShowClienteModal] = useState(false);
     const [showServizioModal, setShowServizioModal] = useState(false);
     const [showServizi, setShowServizi] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [editFormData, setEditFormData] = useState({});
+    const [activeTab, setActiveTab] = useState('modifica');
 
-    useEffect(() =>
-    {
-        const fetchFattura = async () =>
-        {
-            try 
-            {
-                const response = await fatturaApi.getFattura(fatturaId);
-                setFattura(response.data);
-                setEditFormData(response.data);
-                if (response.data.cliente) 
-                {
-                    setCliente(response.data);
-                }
-            } 
-            catch (error) 
-            {
-                alert('Errore durante il recupero della fattura');
-                console.error(error);
-            }
-        };
+    const fetchFattura = useCallback(async () => {
+        try {
+            const response = await fatturaApi.getFattura(fatturaId);
+            setFattura(response.data);
+        } catch (error) {
+            console.error('Errore durante il recupero della fattura', error);
+        }
+    }, [fatturaId]);
 
-        if (fatturaId) 
-        {
+    useEffect(() => {
+        if (fatturaId) {
             fetchFattura();
         }
-
         setShowClienteModal(false);
         setShowServizioModal(false);
         setShowServizi(false);
-    }, [fatturaId]);
+    }, [fatturaId, fetchFattura]);
 
-    const handleOpenClienteModal = async () => 
-    {
-        try 
-        {
-            const response = await clienteApi.getClienti();
-            setCliente(response.data);
-            setShowClienteModal(true);
-        } 
-        catch (error) 
-        {
-            alert('Errore durante il recupero dei clienti');
-            console.error(error);
-        }
-    };
-
-    const handleOpenServizioModal = async () => 
-    {
-        try 
-        {
-            const response = await servizioApi.getServizi();
-            setServizi(response.data);
-            setShowServizioModal(true);
-        } 
-        catch (error) 
-        {
-            alert('Errore durante il recupero dei servizi');
-            console.error(error);
-        }
-    };
-
-    const handleSelectCliente = async (clienteId) => 
-    {
-        try 
-        {
-            await fatturaApi.associateCliente(fatturaId, clienteId);
-            setShowClienteModal(false);
-            const response = await fatturaApi.getFattura(fatturaId);
-            setFattura(response.data);
-        } 
-        catch (error) 
-        {
-            alert('Errore durante l\'associazione del cliente');
-            console.error(error);
-        }
-    };
-
-    const handleSelectServizio = async (servizioId) => 
-    {
-        try 
-        {
-            await fatturaApi.associateServizio(fatturaId, servizioId);
-            setShowServizioModal(false);
-            fetchServiziAssociati();
-        } 
-        catch (error) 
-        {
-            alert('Errore durante l\'associazione del servizio');
-            console.error(error);
-        }
-    };
-
-    const fetchServiziAssociati = async () => 
-    {
-        try 
-        {
+    const fetchServiziAssociati = async () => {
+        try {
             const response = await fatturaApi.getServizi(fatturaId);
             setServizi(response.data);
             setShowServizi(true);
-        } 
-        catch (error) 
-        {
-            alert('Errore durante il recupero dei servizi');
-            console.error(error);
+        } catch (error) {
+            console.error('Errore durante il recupero dei servizi', error);
         }
     };
 
-    const handleEditChange = (e) =>
-    {
-        const { name, value, type, checked } = e.target;
-        setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
+    const handleOpenClienteModal = async () => {
+        try {
+            const response = await clienteApi.getClienti();
+            setClienti(response.data);
+            setShowClienteModal(true);
+        } catch (error) {
+            console.error('Errore durante il recupero dei clienti', error);
+        }
     };
 
-    const handleEditSubmit = async (e) =>
-    {
-        e.preventDefault();
-        try 
-        {
-            await fatturaApi.updateFattura(fatturaId, editFormData);
-            setFattura(editFormData);
+    const handleOpenServizioModal = async () => {
+        try {
+            const response = await servizioApi.getServizi();
+            setServizi(response.data);
+            setShowServizioModal(true);
+        } catch (error) {
+            console.error('Errore durante il recupero dei servizi', error);
+        }
+    };
+
+    const handleSelectCliente = async (clienteId) => {
+        try {
+            await fatturaApi.associateCliente(fatturaId, clienteId);
+            setShowClienteModal(false);
+            fetchFattura();
+        } catch (error) {
+            console.error('Errore durante l\'associazione del cliente', error);
+        }
+    };
+
+    const handleSelectServizio = async (servizioId) => {
+        try {
+            await fatturaApi.associateServizio(fatturaId, servizioId);
+            setShowServizioModal(false);
+            fetchServiziAssociati();
+        } catch (error) {
+            console.error('Errore durante l\'associazione del servizio', error);
+        }
+    };
+
+    const handleSaveFattura = async (updatedFattura) => {
+        try {
+            await fatturaApi.updateFattura(fatturaId, updatedFattura);
+            setFattura(updatedFattura);
             setIsEditing(false);
             alert('Fattura aggiornata con successo');
-        } 
-        catch (error) 
-        {
-            alert('Errore durante l\'aggiornamento della fattura');
-            console.error(error);
+        } catch (error) {
+            console.error('Errore durante l\'aggiornamento della fattura', error);
         }
     };
 
-    if (!fattura) 
-    {
-        return <div>Caricamento...</div>;
+    const handleBackClick = () => {
+        history.goBack(); // Navigate back to the previous route
+    };
+
+    if (!fattura) {
+        return <div>Seleziona una fattura per vedere i dettagli</div>;
     }
 
     return (
         <div className="fattura-details">
             <h2>Dettagli Fattura</h2>
             {isEditing ? (
-                <form onSubmit={handleEditSubmit} className="edit-form">
-                    <div className="form-group">
-                        <label>Tipo:</label>
-                        <input type="text" name="tipo" value={editFormData.tipo} onChange={handleEditChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Ragione Sociale:</label>
-                        <input type="text" name="ragioneSociale" value={editFormData.ragioneSociale} onChange={handleEditChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Anno:</label>
-                        <input type="number" name="anno" value={editFormData.anno} onChange={handleEditChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Numero:</label>
-                        <input type="number" name="numero" value={editFormData.numero} onChange={handleEditChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Data:</label>
-                        <input type="date" name="data" value={editFormData.data} onChange={handleEditChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Confermata:</label>
-                        <input type="checkbox" name="confermata" checked={editFormData.confermata} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Codice:</label>
-                        <input type="text" name="codice" value={editFormData.codice} onChange={handleEditChange} required />
-                    </div>
-                    <div className="btn-container">
-                        <button type="submit" className="btn btn-save">Salva</button>
-                        <button type="button" onClick={() => setIsEditing(false)} className="btn btn-cancel">Annulla</button>
-                    </div>
-                </form>
+                <FatturaEditor
+                    fattura={fattura}
+                    onSave={handleSaveFattura}
+                    onCancel={() => setIsEditing(false)}
+                    mode="Modifica"
+                />
             ) : (
                 <>
                     <div className="table-container">
+                        <div className="search-container">
+                            <button onClick={() => setIsEditing(true)} className="btn btn-edit">
+                                Modifica
+                            </button>
+                        </div>
                         <table className="info-table">
                             <tbody>
                                 <tr>
-                                    <th>Tipo</th>
-                                    <td>{fattura.tipo}</td>
+                                    <th>Tipo Documento</th>
+                                    <td>{fattura.tipo_documento || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Ragione Sociale</th>
-                                    <td>{fattura.ragioneSociale}</td>
+                                    <td>{fattura.ragione_sociale || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Anno</th>
-                                    <td>{fattura.anno}</td>
+                                    <td>{fattura.anno || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Numero</th>
-                                    <td>{fattura.numero}</td>
+                                    <td>{fattura.numero || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Data</th>
-                                    <td>{new Date(fattura.data).toLocaleDateString()}</td>
+                                    <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString() : 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Confermata</th>
@@ -219,25 +151,56 @@ const FatturaDetails = ({ fatturaId, onDeselectFattura }) =>
                                 </tr>
                                 <tr>
                                     <th>Codice</th>
-                                    <td>{fattura.codice}</td>
+                                    <td>{fattura.codice || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Cliente</th>
-                                    <td>{fattura.cliente.nome} {fattura.cliente.cognome}</td>
+                                    <td>{fattura.cliente ? `${fattura.cliente.nome} ${fattura.cliente.cognome}` : 'N/A'}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div className="btn-container">
-                        <button onClick={handleOpenClienteModal} className="btn btn-associate-cliente">Associa Cliente</button>
-                        <button onClick={handleOpenServizioModal} className="btn btn-associate-servizio">Associa Servizio</button>
-                        <button onClick={fetchServiziAssociati} className="btn btn-show-servizi">Visualizza Servizi</button>
-                        <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>
+                    <div className="tabs-container">
+                        <div className="tabs">
+                            {[
+                                { id: 'cliente', label: 'Cliente' },
+                                { id: 'servizi', label: 'Servizi' },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                    onClick={() => setActiveTab(tab.id)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                        <div className={`tab-content ${activeTab === 'cliente' ? 'show' : ''}`}>
+                            {activeTab === 'cliente' && (
+                                <div className="cliente-box">
+                                    <button onClick={handleOpenClienteModal} className="btn btn-associate-cliente">
+                                        Associa Cliente
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className={`tab-content ${activeTab === 'servizi' ? 'show' : ''}`}>
+                            {activeTab === 'servizi' && (
+                                <div className="servizi-box">
+                                    <button onClick={fetchServiziAssociati} className="btn btn-show-servizi">
+                                        Visualizza Servizi
+                                    </button>
+                                    <button onClick={handleOpenServizioModal} className="btn btn-associate-servizio">
+                                        Associa Servizio
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </>
             )}
             <div className="btn-back-container">
-                <button onClick={onDeselectFattura} className="btn btn-back">Indietro</button>
+                <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
             {showServizi && (
                 <div className="servizi-section">
@@ -248,15 +211,13 @@ const FatturaDetails = ({ fatturaId, onDeselectFattura }) =>
                                 <th>Descrizione</th>
                                 <th>Valore</th>
                                 <th>Tariffa</th>
-                                <th>m3</th>
                                 <th>Prezzo</th>
-                                <th>Seriale</th>
                             </tr>
                         </thead>
                         <tbody>
                             {servizi.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6">Nessun servizio associato</td>
+                                    <td colSpan="4">Nessun servizio associato</td>
                                 </tr>
                             ) : (
                                 servizi.map((servizio) => (
@@ -264,9 +225,7 @@ const FatturaDetails = ({ fatturaId, onDeselectFattura }) =>
                                         <td>{servizio.descrizione}</td>
                                         <td>{servizio.valore}</td>
                                         <td>{servizio.tariffa}</td>
-                                        <td>{servizio.m3}</td>
                                         <td>{servizio.prezzo}</td>
-                                        <td>{servizio.seriale}</td>
                                     </tr>
                                 ))
                             )}
@@ -279,7 +238,7 @@ const FatturaDetails = ({ fatturaId, onDeselectFattura }) =>
                     <div className="modal-content">
                         <h3>Seleziona Cliente</h3>
                         <ul>
-                            {cliente.map((cliente) => (
+                            {clienti.map((cliente) => (
                                 <li key={cliente._id} onClick={() => handleSelectCliente(cliente._id)}>
                                     {cliente.nome} {cliente.cognome}
                                 </li>
