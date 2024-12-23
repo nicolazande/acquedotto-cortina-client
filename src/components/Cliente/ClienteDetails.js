@@ -20,7 +20,6 @@ const ClienteDetails= () =>
     const [showContatoreModal, setShowContatoreModal] = useState(false);
     const [showFatturaModal, setShowFatturaModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [editFormData, setEditFormData] = useState({});
     const [editingContatore, setEditingContatore] = useState(null);
     const [creatingContatore, setCreatingContatore] = useState(false);
     const [activeTab, setActiveTab] = useState('modifica');
@@ -33,7 +32,6 @@ const ClienteDetails= () =>
             {
                 const response = await clienteApi.getCliente(clienteId);
                 setCliente(response.data);
-                setEditFormData(response.data);
                 setShowContatori(false);
                 setShowFatture(false);
             }

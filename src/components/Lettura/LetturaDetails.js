@@ -1,334 +1,379 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import letturaApi from '../../api/letturaApi';
 import contatoreApi from '../../api/contatoreApi';
 import servizioApi from '../../api/servizioApi';
 import '../../styles/Lettura/LetturaDetails.css';
+import LetturaEditor from '../shared/LetturaEditor';
+import ContatoreEditor from '../shared/ContatoreEditor';
+import ServizioEditor from '../shared/ServizioEditor';
+import ContatoreList from '../Contatore/ContatoreList';
 
-const LetturaDetails = ({ letturaId, onDeselectLettura }) =>
-{
+const LetturaDetails = () => {
+    const { id: letturaId } = useParams();
+    const history = useHistory();
+
     const [lettura, setLettura] = useState(null);
-    const [contatori, setContatori] = useState([]);
     const [servizi, setServizi] = useState([]);
-    const [showServizi, setShowServizi] = useState(false);
-    const [showContatoreModal, setShowContatoreModal] = useState(false);
-    const [showServizioModal, setShowServizioModal] = useState(false);
+    const [contatore, setContatore] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [contatoriList, setContatoriList] = useState([]);
+    const [editFormData, setEditFormData] = useState(null);
+    const [activeTab, setActiveTab] = useState('servizi');
+    const [showAssociatedServizi, setShowAssociatedServizi] = useState(false);
+    const [showAssociatedContatore, setShowAssociatedContatore] = useState(false);
+    const [creatingContatore, setCreatingContatore] = useState(false);
+    const [creatingServizio, setCreatingServizio] = useState(false);
     const [serviziList, setServiziList] = useState([]);
-    const [editFormData, setEditFormData] = useState(
-    {
-        cliente: '',
-        tipo: '',
-        data: '',
-        valore: '',
-        UdM: '',
-        fatturata: false,
-        note: ''
-    });
+    const [showServizioModal, setShowServizioModal] = useState(false);
+    const [showContatoreModal, setShowContatoreModal] = useState(false);
 
-    const fetchLettura = useCallback(async () =>
-    {
-        try
-        {
+    const fetchLettura = useCallback(async () => {
+        try {
             const response = await letturaApi.getLettura(letturaId);
             setLettura(response.data);
-            setEditFormData(
-            {
-                cliente: response.data.cliente,
-                tipo: response.data.tipo,
-                data: response.data.data,
-                valore: response.data.valore,
-                UdM: response.data.UdM,
-                fatturata: response.data.fatturata,
-                note: response.data.note
-            });
-            const contatoreResponse = response.data.contatore;
-            if (contatoreResponse)
-            {
-                setContatori([contatoreResponse]);
-            }
-            const serviziResponse = await letturaApi.getServizi(letturaId);
-            setServizi(serviziResponse.data);
-        }
-        catch (error)
-        {
-            alert('Errore durante il recupero della lettura');
-            console.error(error);
+            setEditFormData(response.data);
+            setServizi(response.data.servizi || []);
+            setContatore(response.data.contatore || null);
+        } catch (error) {
+            console.error('Errore durante il recupero della lettura:', error);
+            alert('Errore durante il recupero della lettura.');
         }
     }, [letturaId]);
 
-    useEffect(() =>
-    {
-        if (letturaId)
-        {
-            fetchLettura();
-        }
-        setShowContatoreModal(false);
-        setShowServizioModal(false);
-        setShowServizi(false);
-    }, [letturaId, fetchLettura]);
-
-    const fetchServiziAssociati = async () =>
-    {
-        try
-        {
+    const fetchAssociatedServizi = async () => {
+        try {
             const response = await letturaApi.getServizi(letturaId);
             setServizi(response.data);
-            setShowServizi(true);
-        } 
-        catch (error)
-        {
-            alert('Errore durante il recupero dei servizi');
-            console.error(error);
-            setServizi([]); // Imposta servizi come array vuoto in caso di errore
-            setShowServizi(true); // Mostra la sezione dei servizi anche in caso di errore
+            setShowAssociatedServizi(true);
+        } catch (error) {
+            console.error('Errore durante il recupero dei servizi associati:', error);
+            alert('Errore durante il recupero dei servizi associati.');
         }
     };
 
-    const handleOpenContatoreModal = async () =>
-    {
-        try
-        {
-            const response = await contatoreApi.getContatori();
-            setContatoriList(response.data);
-            setShowContatoreModal(true);
+    const fetchServiziList = async () => {
+        try {
+            const response = await servizioApi.getServizi();
+            setServiziList(response.data);
+            setShowServizioModal(true);
+        } catch (error) {
+            alert('Errore durante il recupero dei servizi');
+            console.error(error);
         }
-        catch (error)
-        {
+    };
+
+    const fetchContatoriList = async () => {
+        try {
+            setShowContatoreModal(true);
+        } catch (error) {
             alert('Errore durante il recupero dei contatori');
             console.error(error);
         }
     };
 
-    const handleOpenServizioModal = async () =>
-    {
-        try
-        {
-            const response = await servizioApi.getServizi();
-            setServiziList(response.data);
-            setShowServizioModal(true);
-        }
-        catch (error)
-        {
-            alert('Errore durante il recupero dei servizi');
+    const handleCreateServizio = async (newServizio) => {
+        try {
+            const response = await servizioApi.createServizio(newServizio);
+            await letturaApi.associateServizio(letturaId, response.data._id);
+            alert('Servizio creato e associato con successo');
+            setCreatingServizio(false);
+            fetchLettura();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione del servizio');
             console.error(error);
         }
     };
 
-    const handleSelectContatore = async (contatoreId) =>
-    {
-        try
-        {
-            await letturaApi.associateContatore(letturaId, contatoreId);
-            setShowContatoreModal(false);
-            const response = await contatoreApi.getContatore(contatoreId);
-            setContatori([response.data]);
-        }
-        catch (error)
-        {
-            alert('Errore durante l\'associazione del contatore');
+    const handleCreateContatore = async (newContatore) => {
+        try {
+            const response = await contatoreApi.createContatore(newContatore);
+            await letturaApi.associateContatore(letturaId, response.data._id);
+            alert('Contatore creato e associato con successo');
+            setCreatingContatore(false);
+            fetchLettura();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione del contatore');
             console.error(error);
         }
     };
 
-    const handleSelectServizio = async (servizioId) =>
-    {
-        try
-        {
+    const handleSelectServizio = async (servizioId) => {
+        try {
             await letturaApi.associateServizio(letturaId, servizioId);
             setShowServizioModal(false);
-            fetchServiziAssociati();
-        }
-        catch (error)
-        {
-            alert('Errore durante l\'associazione del servizio');
-            console.error(error);
-        }
-    };
-
-    const handleEditChange = (e) =>
-    {
-        const { name, value, type, checked } = e.target;
-        setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
-    };
-
-    const handleUpdateLettura = async (e) =>
-    {
-        e.preventDefault();
-        try
-        {
-            await letturaApi.updateLettura(letturaId, editFormData);
-            alert('Lettura aggiornata con successo');
-            setIsEditing(false);
             fetchLettura();
+        } catch (error) {
+            alert("Errore durante l'associazione del servizio");
+            console.error(error);
         }
-        catch (error)
-        {
-            alert('Errore durante l\'aggiornamento della lettura');
+    };
+    
+    const handleSelectContatore = async (contatoreId) => {
+        try {
+            await letturaApi.associateContatore(letturaId, contatoreId);
+            setShowContatoreModal(false);
+            fetchLettura();
+        } catch (error) {
+            alert("Errore durante l'associazione del contatore");
             console.error(error);
         }
     };
 
-    if (!lettura)
-    {
-        return <div>Caricamento...</div>;
-    }
+    const handleAssociateContatore = async (contatoreId) => {
+        try {
+            await letturaApi.associateContatore(letturaId, contatoreId);
+            alert('Contatore associato con successo');
+            setShowContatoreModal(false); // Close the ContatoreList view
+            fetchLettura();
+        } catch (error) {
+            alert("Errore durante l'associazione del contatore");
+            console.error(error);
+        }
+    };
+
+    const handleNavigateToServizio = (servizioId) => {
+        history.push(`/servizi/${servizioId}`);
+    };
+    
+    const handleNavigateToContatore = (contatoreId) => {
+        history.push(`/contatori/${contatoreId}`);
+    };
+
+    useEffect(() => {
+        if (letturaId) fetchLettura();
+    }, [letturaId, fetchLettura]);
+
+    if (!lettura) return <div>Caricamento...</div>;
 
     return (
-        <div className="lettura-detail">
+        <div className="lettura-details">
             <h2>Dettagli Lettura</h2>
             {isEditing ? (
-                <form onSubmit={handleUpdateLettura} className="edit-form">
-                    <div className="form-group">
-                        <label>Cliente:</label>
-                        <input type="text" name="cliente" value={editFormData.cliente} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Tipo:</label>
-                        <input type="text" name="tipo" value={editFormData.tipo} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Data:</label>
-                        <input type="date" name="data" value={editFormData.data} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Valore:</label>
-                        <input type="number" name="valore" value={editFormData.valore} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>UdM:</label>
-                        <input type="text" name="UdM" value={editFormData.UdM} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Fatturata:</label>
-                        <input type="checkbox" name="fatturata" checked={editFormData.fatturata} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Note:</label>
-                        <textarea name="note" value={editFormData.note} onChange={handleEditChange}></textarea>
-                    </div>
-                    <div className="btn-container">
-                        <button type="submit" className="btn btn-save">Salva</button>
-                        <button type="button" className="btn btn-cancel" onClick={() => setIsEditing(false)}>Annulla</button>
-                    </div>
-                </form>
+                <LetturaEditor
+                    lettura={editFormData}
+                    onSave={(updatedLettura) => {
+                        setIsEditing(false);
+                        setLettura(updatedLettura);
+                    }}
+                    onCancel={() => setIsEditing(false)}
+                    mode="Modifica"
+                />
             ) : (
                 <>
                     <div className="table-container">
+                        <div className="search-container">
+                            <button onClick={() => setIsEditing(true)} className="btn btn-edit">
+                                Modifica
+                            </button>
+                        </div>
                         <table className="info-table">
                             <tbody>
                                 <tr>
-                                    <th>Cliente</th>
-                                    <td>{lettura.cliente}</td>
-                                </tr>
-                                <tr>
                                     <th>Tipo</th>
-                                    <td>{lettura.tipo}</td>
+                                    <td>{lettura.tipo || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Data</th>
-                                    <td>{new Date(lettura.data).toLocaleDateString()}</td>
+                                    <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
                                 </tr>
                                 <tr>
-                                    <th>Valore</th>
-                                    <td>{lettura.valore}</td>
+                                    <th>Consumo</th>
+                                    <td>{lettura.consumo || '-'}</td>
                                 </tr>
                                 <tr>
-                                    <th>UdM</th>
-                                    <td>{lettura.UdM}</td>
+                                    <th>Unita' di misura</th>
+                                    <td>{lettura.unita_misura || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Fatturata</th>
-                                    <td>{lettura.fatturata ? 'Si' : 'No'}</td>
+                                    <td>{lettura.fatturata ? 'Sì' : 'No'}</td>
                                 </tr>
                                 <tr>
                                     <th>Note</th>
-                                    <td>{lettura.note}</td>
+                                    <td>{lettura.note || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Contatore</th>
-                                    <td>{contatori.length > 0 ? contatori[0].seriale : 'N/A'}</td>
+                                    <td>{contatore ? contatore.seriale : 'N/A'}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div className="btn-container">
-                        <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>
-                        <button onClick={fetchServiziAssociati} className="btn btn-show-servizi">Visualizza Servizi</button>
-                        <button onClick={handleOpenContatoreModal} className="btn btn-associate-contatore">Associa Contatore</button>
-                        <button onClick={handleOpenServizioModal} className="btn btn-associate-servizio">Associa Servizio</button>
+
+                    <div className="tabs-container">
+                        <div className="tabs">
+                            <button
+                                className={`tab ${activeTab === 'servizi' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('servizi')}
+                            >
+                                Servizi
+                            </button>
+                            <button
+                                className={`tab ${activeTab === 'contatori' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('contatori')}
+                            >
+                                Contatori
+                            </button>
+                        </div>
+
+                        <div className={`tab-content ${activeTab === 'servizi' ? 'show' : ''}`}>
+                            {activeTab === 'servizi' && (
+                                <div className="servizi-box">
+                                    <button onClick={fetchServiziList} className="btn btn-associate-servizio">
+                                        Associa Servizio
+                                    </button>
+                                    <button onClick={() => setCreatingServizio(true)} className="btn btn-create-servizio">
+                                        Nuovo Servizio
+                                    </button>
+                                    <button
+                                        onClick={fetchAssociatedServizi}
+                                        className="btn btn-view-servizi"
+                                    >
+                                        Visualizza Servizi
+                                    </button>
+                                    {showAssociatedServizi && servizi.length > 0 ? (
+                                        <table className="servizi-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Descrizione</th>
+                                                    <th>Valore</th>
+                                                    <th>Azioni</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {servizi.map((servizio) => (
+                                                    <tr key={servizio._id}>
+                                                        <td>{servizio.descrizione}</td>
+                                                        <td>{servizio.valore_unitario}</td>
+                                                        <td>
+                                                            <button
+                                                                onClick={() => handleNavigateToServizio(servizio._id)}
+                                                                className="btn btn-open"
+                                                            >
+                                                                Apri
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    ) : (
+                                        showAssociatedServizi && <p>Nessun servizio associato</p>
+                                    )}
+                                    {creatingServizio && (
+                                        <ServizioEditor
+                                            onSave={handleCreateServizio}
+                                            onCancel={() => setCreatingServizio(false)}
+                                            mode="Nuovo"
+                                        />
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className={`tab-content ${activeTab === 'contatori' ? 'show' : ''}`}>
+                            {activeTab === 'contatori' && (
+                                <div className="contatori-box">
+                                    <button onClick={fetchContatoriList} className="btn btn-associate-contatore">
+                                        Associa Contatore
+                                    </button>
+                                    <button onClick={() => setCreatingContatore(true)} className="btn btn-create-contatore">
+                                        Nuovo Contatore
+                                    </button>
+                                    <button
+                                        onClick={() => setShowAssociatedContatore(!showAssociatedContatore)}
+                                        className="btn btn-view-contatori"
+                                    >
+                                        Visualizza Contatore
+                                    </button>
+                                    {showAssociatedContatore && contatore ? (
+                                        <table className="contatori-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Seriale</th>
+                                                    <th>Azioni</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>{contatore.seriale}</td>
+                                                    <td>
+                                                        <button
+                                                            onClick={() => handleNavigateToContatore(contatore._id)}
+                                                            className="btn btn-open"
+                                                        >
+                                                            Apri
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    ) : (
+                                        showAssociatedContatore && <p>Nessun contatore associato</p>
+                                    )}
+                                    {creatingContatore && (
+                                        <ContatoreEditor
+                                            onSave={handleCreateContatore}
+                                            onCancel={() => setCreatingContatore(false)}
+                                            mode="Nuovo"
+                                        />
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </>
             )}
+
             <div className="btn-back-container">
-                <button onClick={onDeselectLettura} className="btn btn-back">Indietro</button>
+                <button onClick={() => history.goBack()} className="btn btn-back">
+                    Indietro
+                </button>
             </div>
 
-            {showServizi && (
-                <div className="servizi-section">
-                    <h3>Servizi Associati</h3>
-                    <table className="servizi-table">
-                        <thead>
-                            <tr>
-                                <th>Descrizione</th>
-                                <th>Valore</th>
-                                <th>Tariffa</th>
-                                <th>m3</th>
-                                <th>Prezzo</th>
-                                <th>Seriale</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {servizi.length === 0 ? (
+            {showServizioModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h3>Seleziona Servizio</h3>
+                            <button className="btn btn-close" onClick={() => setShowServizioModal(false)}>
+                                Chiudi
+                            </button>
+                        </div>
+                        <table className="servizi-table">
+                            <thead>
                                 <tr>
-                                    <td colSpan="6">Nessun servizio associato</td>
+                                    <th>Descrizione</th>
+                                    <th>Valore</th>
+                                    <th>Azioni</th>
                                 </tr>
-                            ) : (
-                                servizi.map((servizio) => (
+                            </thead>
+                            <tbody>
+                                {serviziList.map((servizio) => (
                                     <tr key={servizio._id}>
                                         <td>{servizio.descrizione}</td>
-                                        <td>{servizio.valore}</td>
-                                        <td>{servizio.tariffa}</td>
-                                        <td>{servizio.m3}</td>
-                                        <td>{servizio.prezzo}</td>
-                                        <td>{servizio.seriale}</td>
+                                        <td>{servizio.valore_unitario}</td>
+                                        <td>
+                                            <button
+                                                className="btn btn-select"
+                                                onClick={() => handleSelectServizio(servizio._id)}
+                                            >
+                                                Seleziona
+                                            </button>
+                                        </td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 
             {showContatoreModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Contatore</h3>
-                        <ul>
-                            {contatoriList.map((contatore) => (
-                                <li key={contatore._id} onClick={() => handleSelectContatore(contatore._id)}>
-                                    {contatore.seriale}
-                                </li>
-                            ))}
-                        </ul>
-                        <button onClick={() => setShowContatoreModal(false)}>Chiudi</button>
-                    </div>
-                </div>
-            )}
-            {showServizioModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Servizio</h3>
-                        <ul>
-                            {serviziList.map((servizio) => (
-                                <li key={servizio._id} onClick={() => handleSelectServizio(servizio._id)}>
-                                    {servizio.descrizione}
-                                </li>
-                            ))}
-                        </ul>
-                        <button onClick={() => setShowServizioModal(false)}>Chiudi</button>
-                    </div>
-                </div>
+                <ContatoreList
+                    onSelectContatore={handleAssociateContatore}
+                />
+                
             )}
         </div>
     );

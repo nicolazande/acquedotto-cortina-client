@@ -20,7 +20,6 @@ const ContatoreDetails = () =>
     const [showListinoModal, setShowListinoModal] = useState(false);
     const [showLetturaModal, setShowLetturaModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [editFormData, setEditFormData] = useState(false);
     const [activeTab, setActiveTab] = useState('modifica');
     const [clienti, setClienti] = useState([]);
     const [edifici, setEdifici] = useState([]);
@@ -33,7 +32,6 @@ const ContatoreDetails = () =>
             const response = await contatoreApi.getContatore(contatoreId);
             console.log("API response:", response.data);
             setContatore(response.data);
-            setEditFormData(response.data);
         } catch (error) {
             console.error("Error in fetchContatore:", error);
         }
@@ -188,12 +186,6 @@ const ContatoreDetails = () =>
             alert('Errore durante l\'associazione della lettura');
             console.error(error);
         }
-    };
-
-    const handleEditChange = (e) => 
-    {
-        const { name, value, type, checked } = e.target;
-        setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
     };
 
     const handleSaveContatore = async (updatedContatore) => {

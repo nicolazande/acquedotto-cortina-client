@@ -4,7 +4,7 @@ import contatoreApi from '../../api/contatoreApi';
 import ContatoreEditor from '../shared/ContatoreEditor';
 import '../../styles/Contatore/ContatoreList.css';
 
-const ContatoreList = () => {
+const ContatoreList = ({ onSelectContatore }) => {
     const [contatori, setContatori] = useState([]);
     const [filteredContatori, setFilteredContatori] = useState([]);
     const [searchSeriale, setSearchSeriale] = useState('');
@@ -15,7 +15,6 @@ const ContatoreList = () => {
     const history = useHistory();
     const location = useLocation();
 
-    // Extract current page from query parameters
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
 
@@ -46,41 +45,21 @@ const ContatoreList = () => {
         }
     };
 
-    const handleCreateContatore = async (newContatore) => {
-        try {
-            await contatoreApi.createContatore(newContatore);
-            alert('Contatore creato con successo');
-            setCreatingContatore(false);
-            const response = await contatoreApi.getContatori();
-            setContatori(response.data);
-            setFilteredContatori(response.data);
-        } catch (error) {
-            alert('Errore durante la creazione del contatore');
-            console.error(error);
-        }
-    };
-
-    const handleSelectContatore = (contatoreId) => {
-        history.push(`/contatori/${contatoreId}`); // Navigate to ContatoreDetails page
-    };
-
     const handleSearch = () => {
         const filtered = contatori.filter((contatore) =>
             contatore.seriale?.toLowerCase().includes(searchSeriale.toLowerCase()) &&
             contatore.nome_cliente?.toLowerCase().includes(searchNomeCliente.toLowerCase())
         );
         setFilteredContatori(filtered);
-        handlePageChange(1); // Reset to the first page
     };
 
-    // Pagination logic
     const totalPages = Math.ceil(filteredContatori.length / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentContatori = filteredContatori.slice(indexOfFirstItem, indexOfLastItem);
 
     const handlePageChange = (pageNumber) => {
-        history.push(`?page=${pageNumber}`); // Update URL with the new page number
+        history.push(`?page=${pageNumber}`);
     };
 
     return (
@@ -89,7 +68,6 @@ const ContatoreList = () => {
                 <h2>Lista Contatori</h2>
                 <div className="search-container">
                     <div className="search-bar">
-                        <span className="search-icon">🔍</span>
                         <input
                             type="text"
                             placeholder="Seriale..."
@@ -119,22 +97,26 @@ const ContatoreList = () => {
                             <tr>
                                 <th>Seriale</th>
                                 <th>Cliente</th>
-                                <th>Edificio</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             {currentContatori.map((contatore) => (
-                                <tr key={contatore._id} className="contatore-list-item">
+                                <tr key={contatore._id}>
                                     <td>{contatore.seriale}</td>
                                     <td>{contatore.nome_cliente}</td>
-                                    <td>{contatore.nome_edificio}</td>
                                     <td>
                                         <button
                                             className="btn"
-                                            onClick={() => handleSelectContatore(contatore._id)}
+                                            onClick={() => history.push(`/contatori/${contatore._id}`)}
                                         >
                                             Dettagli
+                                        </button>
+                                        <button
+                                            className="btn btn-select"
+                                            onClick={() => onSelectContatore && onSelectContatore(contatore._id)}
+                                        >
+                                            Seleziona
                                         </button>
                                         <button
                                             className="btn btn-delete"
@@ -148,7 +130,6 @@ const ContatoreList = () => {
                         </tbody>
                     </table>
                 </div>
-                {/* Pagination Menu */}
                 <div className="pagination">
                     {Array.from({ length: totalPages }, (_, index) => (
                         <button
@@ -163,10 +144,12 @@ const ContatoreList = () => {
             </div>
             {creatingContatore && (
                 <ContatoreEditor
-                    contatore={{}} // Empty contatore object for creating a new one
-                    onSave={handleCreateContatore}
+                    onSave={(newContatore) => {
+                        setCreatingContatore(false);
+                        setContatori([...contatori, newContatore]);
+                        setFilteredContatori([...contatori, newContatore]);
+                    }}
                     onCancel={() => setCreatingContatore(false)}
-                    mode="Nuovo"
                 />
             )}
         </div>

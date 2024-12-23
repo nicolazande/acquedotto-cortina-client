@@ -9,16 +9,10 @@ const ContatorePage = () => {
         setSelectedContatoreId(contatoreId);
     };
 
-    const handleContatoreDeselect = () => {
-        setSelectedContatoreId(null);
-    };
-
     return (
         <div className="contatore-page">
             <ContatoreList
                 onSelectContatore={handleContatoreSelect}
-                selectedContatoreId={selectedContatoreId}
-                onDeselectContatore={handleContatoreDeselect}
             />
         </div>
     );

@@ -19,6 +19,7 @@ import './styles/App.css';
 import ClienteDetails from './components/Cliente/ClienteDetails';
 import ContatoreDetails from './components/Contatore/ContatoreDetails';
 import EdificioDetails from './components/Edificio/EdificioDetails';
+import LetturaDetails from './components/Lettura/LetturaDetails';
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -73,8 +74,13 @@ const App = () => {
                                     <Route path="/edifici" component={EdificioPage} />
                                 </Switch>
 
+                                {/* Routes for Clienti */}
+                                <Switch>
+                                    <Route path="/letture/:id" render={(props) => <LetturaDetails {...props} />} />
+                                    <Route path="/letture" component={LetturaPage} />
+                                </Switch>
+
                                 {/* Other Routes */}
-                                <Route path="/letture" component={LetturaPage} />
                                 <Route path="/fatture" component={FatturaPage} />
                                 <Route path="/servizi" component={ServizioPage} />
                                 <Route path="/articoli" component={ArticoloPage} />
