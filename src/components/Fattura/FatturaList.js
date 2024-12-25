@@ -110,16 +110,22 @@ const FatturaList = ({ onSelectFattura }) => {
                     <table className="fattura-table">
                         <thead>
                             <tr>
+                                <th>Cliente</th>
                                 <th>Tipo Documento</th>
-                                <th>Ragione Sociale</th>
+                                <th>Data</th>
+                                <th>Confermata</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             {currentFatture.map((fattura) => (
                                 <tr key={fattura._id}>
+                                    <td>{fattura.cliente ? `${fattura.cliente.nome} ${fattura.cliente.cognome}` : 'N/A'}</td>
                                     <td>{fattura.tipo_documento}</td>
-                                    <td>{fattura.ragione_sociale}</td>
+                                    <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString() : 'N/A'}</td>
+                                    <td>
+                                        <input type="checkbox" checked={fattura.confermata} readOnly />
+                                    </td>
                                     <td>
                                         <button
                                             className="btn"

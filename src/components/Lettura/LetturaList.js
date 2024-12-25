@@ -131,7 +131,7 @@ const LetturaList = ({ onSelectLettura }) => {
                                         </button>
                                         <button
                                             className="btn btn-select"
-                                            onClick={() => onSelectLettura && onSelectLettura(lettura)}
+                                            onClick={() => onSelectLettura && onSelectLettura(lettura._id)}
                                         >
                                             Seleziona
                                         </button>

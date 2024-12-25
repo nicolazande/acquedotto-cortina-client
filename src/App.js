@@ -21,6 +21,7 @@ import ContatoreDetails from './components/Contatore/ContatoreDetails';
 import EdificioDetails from './components/Edificio/EdificioDetails';
 import LetturaDetails from './components/Lettura/LetturaDetails';
 import FatturaDetails from './components/Fattura/FatturaDetails';
+import ServizioDetails from './components/Servizio/ServizioDetails';
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -87,8 +88,13 @@ const App = () => {
                                     <Route path="/fatture" component={FatturaPage} />
                                 </Switch>
 
+                                {/* Routes for Clienti */}
+                                <Switch>
+                                    <Route path="/servizi/:id" render={(props) => <ServizioDetails {...props} />} />
+                                    <Route path="/servizi" component={ServizioPage} />
+                                </Switch>
+
                                 {/* Other Routes */}
-                                <Route path="/servizi" component={ServizioPage} />
                                 <Route path="/articoli" component={ArticoloPage} />
                                 <Route path="/listini" component={ListinoPage} />
                                 <Route path="/fasce" component={FasciaPage} />
