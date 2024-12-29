@@ -1,224 +1,175 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import listinoApi from '../../api/listinoApi';
-import contatoreApi from '../../api/contatoreApi';
 import fasciaApi from '../../api/fasciaApi';
+import contatoreApi from '../../api/contatoreApi';
 import '../../styles/Listino/ListinoDetails.css';
+import ListinoEditor from '../shared/ListinoEditor';
+import FasciaList from '../Fascia/FasciaList';
+import ContatoreList from '../Contatore/ContatoreList';
 
-const ListinoDetails = ({ listinoId, onDeselectListino }) =>
-{
+const ListinoDetails = () => {
+    const { id: listinoId } = useParams();
+    const history = useHistory();
     const [listino, setListino] = useState(null);
     const [fasce, setFasce] = useState([]);
     const [contatori, setContatori] = useState([]);
-    const [showFasceModal, setShowFasceModal] = useState(false);
-    const [showContatoreModal, setShowContatoreModal] = useState(false);
     const [showFasce, setShowFasce] = useState(false);
+    const [showFasceModal, setShowFasceModal] = useState(false);
     const [showContatori, setShowContatori] = useState(false);
+    const [showContatoriModal, setShowContatoriModal] = useState(false);
+    const [activeTab, setActiveTab] = useState('modifica');
     const [isEditing, setIsEditing] = useState(false);
-    const [editFormData, setEditFormData] = useState({});
 
-    useEffect(() => 
-    {
-        if (listinoId) 
-        {
-            const fetchListino = async () => 
-            {
-                try 
-                {
-                    const response = await listinoApi.getListino(listinoId);
-                    setListino(response.data);
-                    setEditFormData(response.data);
-                } 
-                catch (error) 
-                {
-                    alert('Errore durante il recupero del listino');
-                    console.error(error);
-                }
-            };
-
-            fetchListino();
+    const fetchListino = useCallback(async () => {
+        try {
+            const response = await listinoApi.getListino(listinoId);
+            setListino(response.data);
+        } catch (error) {
+            console.error('Errore durante il recupero del listino:', error);
+            alert('Errore durante il recupero del listino.');
         }
-
-        setShowFasceModal(false);
-        setShowContatoreModal(false);
-        setShowFasce(false);
-        setShowContatori(false);
     }, [listinoId]);
 
-    const handleOpenFasceModal = async () => 
-    {
-        try 
-        {
-            const response = await fasciaApi.getFasce();
-            setFasce(response.data);
-            setShowFasceModal(true);
-            setShowFasce(false);
-            setShowContatoreModal(false);
-            setShowContatori(false);
-        } 
-        catch (error) 
-        {
-            alert('Errore durante il recupero delle fasce');
-            console.error(error);
-        }
-    };
+    useEffect(() => {
+        if (listinoId) fetchListino();
+    }, [listinoId, fetchListino]);
 
-    const handleOpenContatoreModal = async () => 
-    {
-        try
-        {
-            const response = await contatoreApi.getContatori();
-            setContatori(response.data);
-            setShowContatoreModal(true);
-            setShowContatori(false);
-            setShowFasce(false);
-            setShowFasceModal(false);
-        } 
-        catch (error) 
-        {
-            alert('Errore durante il recupero dei contatori');
-            console.error(error);
-        }
-    };
-
-    const handleSelectFascia = async (fasciaId) => 
-    {
-        try 
-        {
-            await listinoApi.associateFascia(listinoId, fasciaId);
-            setShowFasceModal(false);
-            fetchFasceAssociati();
-        } 
-        catch (error) 
-        {
-            alert('Errore durante l\'associazione della fascia');
-            console.error(error);
-        }
-    };
-
-    const handleSelectContatore = async (contatoreId) => 
-    {
-        try 
-        {
-            await listinoApi.associateContatore(listinoId, contatoreId);
-            setShowContatoreModal(false);
-            fetchContatoriAssociati();
-        } 
-        catch (error) 
-        {
-            alert('Errore durante l\'associazione del contatore');
-            console.error(error);
-        }
-    };
-
-    const fetchFasceAssociati = async () => 
-    {
-        try 
-        {
+    const fetchFasceAssociati = async () => {
+        try {
             const response = await listinoApi.getFasce(listinoId);
             setFasce(response.data);
             setShowFasce(true);
-            setShowFasceModal(false);
-            setShowContatoreModal(false);
-            setShowContatori(false);
-        } 
-        catch (error)
-        {
-            alert('Errore durante il recupero delle fasce');
-            console.error(error);
+        } catch (error) {
+            console.error('Errore durante il recupero delle fasce:', error);
+            alert('Errore durante il recupero delle fasce.');
         }
     };
 
-    const fetchContatoriAssociati = async () => 
-    {
-        try 
-        {
+    const fetchContatoriAssociati = async () => {
+        try {
             const response = await listinoApi.getContatori(listinoId);
             setContatori(response.data);
-            setShowContatoreModal(false);
             setShowContatori(true);
-            setShowFasce(false);
+        } catch (error) {
+            console.error('Errore durante il recupero dei contatori:', error);
+            alert('Errore durante il recupero dei contatori.');
+        }
+    };
+
+    const handleAssociaFascia = async (fasciaId) => {
+        try {
+            await listinoApi.associateFascia(listinoId, fasciaId);
+            alert('Fascia associata con successo.');
             setShowFasceModal(false);
-        } 
-        catch (error) 
-        {
-            alert('Errore durante il recupero dei contatori');
-            console.error(error);
+        } catch (error) {
+            console.error('Errore durante l\'associazione della fascia:', error);
+            alert('Errore durante l\'associazione della fascia.');
         }
     };
 
-    const handleEditChange = (e) => 
-    {
-        const { name, value, type, checked } = e.target;
-        setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
+    const handleAssociaContatore = async (contatoreId) => {
+        try {
+            await listinoApi.associateContatore(listinoId, contatoreId);
+            alert('Contatore associato con successo.');
+            setShowContatoriModal(false);
+        } catch (error) {
+            console.error('Errore durante l\'associazione del contatore:', error);
+            alert('Errore durante l\'associazione del contatore.');
+        }
     };
 
-    const handleEditSubmit = async (e) => 
-    {
-        e.preventDefault();
-        try 
-        {
-            await listinoApi.updateListino(listinoId, editFormData);
-            setListino(editFormData);
+    const handleSaveListino = async (updatedListino) => {
+        try {
+            await listinoApi.updateListino(listinoId, updatedListino);
+            setListino(updatedListino);
             setIsEditing(false);
-            alert('Listino aggiornato con successo');
-        } 
-        catch (error) 
-        {
-            alert('Errore durante l\'aggiornamento del listino');
-            console.error(error);
+            alert('Listino aggiornato con successo.');
+        } catch (error) {
+            console.error('Errore durante l\'aggiornamento del listino:', error);
+            alert('Errore durante l\'aggiornamento del listino.');
         }
     };
 
-    if (!listino) 
-    {
-        return <div>Caricamento...</div>;
+    const handleBackClick = () => {
+        history.goBack();
+    };
+
+    if (!listino) {
+        return <div>Seleziona un listino per vedere i dettagli...</div>;
     }
 
     return (
-        <div className="listino-detail">
+        <div className="listino-details">
             <h2>Dettagli Listino</h2>
             {isEditing ? (
-                <form onSubmit={handleEditSubmit} className="edit-form">
-                    <div className="form-group">
-                        <label>Categoria:</label>
-                        <input type="text" name="categoria" value={editFormData.categoria} onChange={handleEditChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Descrizione:</label>
-                        <input type="text" name="descrizione" value={editFormData.descrizione} onChange={handleEditChange} required />
-                    </div>
-                    <div className="btn-container">
-                        <button type="submit" className="btn btn-save">Salva</button>
-                        <button type="button" onClick={() => setIsEditing(false)} className="btn btn-cancel">Annulla</button>
-                    </div>
-                </form>
+                <ListinoEditor
+                    listino={listino}
+                    onSave={handleSaveListino}
+                    onCancel={() => setIsEditing(false)}
+                    mode="Modifica"
+                />
             ) : (
                 <>
                     <div className="table-container">
+                        <div className="search-container">
+                            <button onClick={() => setIsEditing(true)} className="btn btn-edit">
+                                Modifica
+                            </button>
+                        </div>
                         <table className="info-table">
                             <tbody>
                                 <tr>
                                     <th>Categoria</th>
-                                    <td>{listino.categoria}</td>
+                                    <td>{listino.categoria || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Descrizione</th>
-                                    <td>{listino.descrizione}</td>
+                                    <td>{listino.descrizione || 'N/A'}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div className="btn-container">
-                        <button onClick={handleOpenFasceModal} className="btn btn-associate-fascia">Associa Fascia</button>
-                        <button onClick={handleOpenContatoreModal} className="btn btn-associate-contatore">Associa Contatore</button>
-                        <button onClick={fetchFasceAssociati} className="btn btn-show-fasce">Visualizza Fasce</button>
-                        <button onClick={fetchContatoriAssociati} className="btn btn-show-contatori">Visualizza Contatori</button>
-                        <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>
+                    <div className="tabs-container">
+                        <div className="tabs">
+                            {[
+                                { id: 'fasce', label: 'Fasce' },
+                                { id: 'contatori', label: 'Contatori' },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                    onClick={() => setActiveTab(tab.id)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                        {activeTab === 'fasce' && (
+                            <div className="fasce-box">
+                                <button onClick={fetchFasceAssociati} className="btn btn-show-fasce">
+                                    Visualizza Fasce
+                                </button>
+                                <button onClick={() => setShowFasceModal(true)} className="btn btn-associate-fascia">
+                                    Associa Fascia
+                                </button>
+                            </div>
+                        )}
+                        {activeTab === 'contatori' && (
+                            <div className="contatori-box">
+                                <button onClick={fetchContatoriAssociati} className="btn btn-show-contatori">
+                                    Visualizza Contatori
+                                </button>
+                                <button onClick={() => setShowContatoriModal(true)} className="btn btn-associate-contatore">
+                                    Associa Contatore
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </>
             )}
             <div className="btn-back-container">
-                <button onClick={onDeselectListino} className="btn btn-back">Indietro</button>
+                <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
             {showFasce && (
                 <div className="fasce-section">
@@ -226,18 +177,19 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) =>
                     <table className="fasce-table">
                         <thead>
                             <tr>
-                                <th>tipo</th>
-                                <th>min</th>
-                                <th>max</th>
-                                <th>prezzo</th>
-                                <th>scadenza</th>
-                                <th>fisso</th>
+                                <th>Tipo</th>
+                                <th>Min</th>
+                                <th>Max</th>
+                                <th>Prezzo</th>
+                                <th>Scadenza</th>
+                                <th>Fisso</th>
+                                <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             {fasce.length === 0 ? (
                                 <tr>
-                                    <td colSpan="3">Nessuna fascia associata</td>
+                                    <td colSpan="6">Nessuna fascia associata</td>
                                 </tr>
                             ) : (
                                 fasce.map((fascia) => (
@@ -247,7 +199,17 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) =>
                                         <td>{fascia.max}</td>
                                         <td>{fascia.prezzo}</td>
                                         <td>{new Date(fascia.scadenza).toLocaleDateString()}</td>
-                                        <td>{fascia.fisso}</td>
+                                        <td>
+                                            <input type="checkbox" checked={fascia.fisso} readOnly />
+                                        </td>
+                                        <td>
+                                            <button
+                                                className="btn btn-edit"
+                                                onClick={() => history.push(`/fasce/${fascia._id}`)}
+                                            >
+                                                Apri
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             )}
@@ -273,53 +235,34 @@ const ListinoDetails = ({ listinoId, onDeselectListino }) =>
                         <tbody>
                             {contatori.length === 0 ? (
                                 <tr>
-                                    <td colSpan="3">Nessun contatore associata</td>
+                                    <td colSpan="7">Nessun contatore associato</td>
                                 </tr>
                             ) : (
                                 contatori.map((contatore) => (
-                                <tr key={contatore._id}>
-                                    <td>{contatore.seriale}</td>
-                                    <td>{contatore.serialeInterno}</td>
-                                    <td>{new Date(contatore.ultimaLettura).toLocaleDateString()}</td>
-                                    <td><input type="checkbox" checked={!contatore.attivo} readOnly /></td>
-                                    <td><input type="checkbox" checked={contatore.condominiale} readOnly /></td>
-                                    <td><input type="checkbox" checked={contatore.sostituzione} readOnly /></td>
-                                    <td><input type="checkbox" checked={contatore.subentro} readOnly /></td>
-                                </tr>))
+                                    <tr key={contatore._id}>
+                                        <td>{contatore.seriale}</td>
+                                        <td>{contatore.serialeInterno}</td>
+                                        <td>{new Date(contatore.ultimaLettura).toLocaleDateString()}</td>
+                                        <td>{contatore.attivo ? 'No' : 'Sì'}</td>
+                                        <td>{contatore.condominiale ? 'Sì' : 'No'}</td>
+                                        <td>{contatore.sostituzione ? 'Sì' : 'No'}</td>
+                                        <td>{contatore.subentro ? 'Sì' : 'No'}</td>
+                                    </tr>
+                                ))
                             )}
                         </tbody>
                     </table>
                 </div>
             )}
             {showFasceModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Fascia</h3>
-                        <ul>
-                            {fasce.map((fascia) => (
-                                <li key={fascia._id} onClick={() => handleSelectFascia(fascia._id)}>
-                                    {fascia.tipo}
-                                </li>
-                            ))}
-                        </ul>
-                        <button onClick={() => setShowFasceModal(false)}>Chiudi</button>
-                    </div>
-                </div>
+                <FasciaList
+                    onSelectFascia={handleAssociaFascia}
+                />
             )}
-            {showContatoreModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Contatore</h3>
-                        <ul>
-                            {contatori.map((contatore) => (
-                                <li key={contatore._id} onClick={() => handleSelectContatore(contatore._id)}>
-                                    {contatore.seriale}
-                                </li>
-                            ))}
-                        </ul>
-                        <button onClick={() => setShowContatoreModal(false)}>Chiudi</button>
-                    </div>
-                </div>
+            {showContatoriModal && (
+                <ContatoreList
+                    onSelectContatore={handleAssociaContatore}
+                />
             )}
         </div>
     );

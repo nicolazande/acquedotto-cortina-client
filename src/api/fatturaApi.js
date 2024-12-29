@@ -11,8 +11,10 @@ const fatturaApi =
     deleteFattura: (id) => axios.delete(`${API_URL}/${id}`),
     associateCliente: (fatturaId, clienteId) => axios.post(`${API_URL}/${fatturaId}/cliente/${clienteId}`),
     associateServizio: (fatturaId, servizioId) => axios.post(`${API_URL}/${fatturaId}/servizio/${servizioId}`),
+    associateScadenza: (fatturaId, scadenzaId) => axios.post(`${API_URL}/${fatturaId}/scadenza/${scadenzaId}`),
     getCliente: (id) => axios.get(`${API_URL}/${id}/cliente`),
-    getServizi: (id) => axios.get(`${API_URL}/${id}/servizi`)
+    getServizi: (id) => axios.get(`${API_URL}/${id}/servizi`),
+    getScadenza: (id) => axios.get(`${API_URL}/${id}/scadenza`),
 };
 
 export default fatturaApi;

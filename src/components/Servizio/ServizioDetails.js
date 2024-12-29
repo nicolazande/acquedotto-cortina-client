@@ -307,7 +307,7 @@ const ServizioDetails = () => {
                             <tr>
                                 <td>{fattura.codice || 'N/A'}</td>
                                 <td>{fattura.totale_fattura?.toFixed(2) || '0.00'}</td>
-                                <td>{fattura.data_fattura ? new Date(fattura.data).toLocaleDateString() : 'N/A'}</td>
+                                <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString() : 'N/A'}</td>
                                 <td>
                                     <button
                                         className="btn btn-edit"

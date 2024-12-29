@@ -1,167 +1,143 @@
-import React, { useEffect, useState } from 'react';
-import articoloApi from '../../api/articoloApi';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import servizioApi from '../../api/servizioApi';
+import articoloApi from '../../api/articoloApi';
 import '../../styles/Articolo/ArticoloDetails.css';
+import ServizioEditor from '../shared/ServizioEditor';
+import ArticoloList from '../Articolo/ArticoloList';
+import ServizioList from '../Servizio/ServizioList';
 
-const ArticoloDetails = ({ articoloId, onDeselectArticolo }) =>
-{
+
+const ArticoloDetails = () => {
+    const { id: articoloId } = useParams();
+    const history = useHistory();
     const [articolo, setArticolo] = useState(null);
     const [servizi, setServizi] = useState([]);
     const [showServizi, setShowServizi] = useState(false);
-    const [showServizioModal, setShowServizioModal] = useState(false);
+    const [showServiziModal, setShowServizioModal] = useState(false);
+    const [activeTab, setActiveTab] = useState('modifica');
     const [isEditing, setIsEditing] = useState(false);
-    const [editFormData, setEditFormData] = useState({});
 
-    useEffect(() =>
-    {
-        const fetchArticolo = async () =>
-        {
-            try
-            {
-                const response = await articoloApi.getArticolo(articoloId);
-                setArticolo(response.data);
-                setEditFormData(response.data);
-                setShowServizi(false);
-            }
-            catch (error)
-            {
-                alert('Errore durante il recupero dell\'articolo');
-                console.error(error);
-            }
-        };
-
-        if (articoloId)
-        {
-            fetchArticolo();
+    const fetchArticolo = useCallback(async () => {
+        try {
+            const response = await articoloApi.getArticolo(articoloId);
+            setArticolo(response.data);
+        } catch (error) {
+            console.error('Errore durante il recupero dell\'articolo:', error);
+            alert('Errore durante il recupero dell\'articolo.');
         }
-
-        setShowServizioModal(false);
     }, [articoloId]);
 
-    const handleOpenServizioModal = async () =>
-    {
-        try
-        {
-            const response = await servizioApi.getServizi();
-            setServizi(response.data);
-            setShowServizioModal(true);
-        }
-        catch (error)
-        {
-            alert('Errore durante il recupero dei servizi');
-            console.error(error);
-        }
-    };
+    useEffect(() => {
+        if (articoloId) fetchArticolo();
+    }, [articoloId, fetchArticolo]);
 
-    const handleSelectServizio = async (servizioId) =>
-    {
-        try
-        {
-            await articoloApi.associateServizio(articoloId, servizioId);
-            setShowServizioModal(false);
-            fetchServiziAssociati();
-        }
-        catch (error)
-        {
-            alert('Errore durante l\'associazione del servizio');
-            console.error(error);
-        }
-    };
-
-    const fetchServiziAssociati = async () =>
-    {
-        try
-        {
+    const fetchServiziAssociati = async () => {
+        try {
             const response = await articoloApi.getServizi(articoloId);
             setServizi(response.data);
             setShowServizi(true);
-        }
-        catch (error)
-        {
-            alert('Errore durante il recupero dei servizi');
-            console.error(error);
+        } catch (error) {
+            console.error('Errore durante il recupero dei servizi:', error);
+            alert('Errore durante il recupero dei servizi.');
         }
     };
 
-    const handleEditChange = (e) =>
-    {
-        const { name, value } = e.target;
-        setEditFormData((prevData) => ({ ...prevData, [name]: value }));
+    const handleAssociaServizio = async (servizioId) => {
+        try {
+            await articoloApi.associateServizio(articoloId, servizioId);
+            alert('Servizio associato con successo.');
+            setShowServizioModal(false);
+        } catch (error) {
+            console.error('Errore durante l\'associazione del servizio:', error);
+            alert('Errore durante l\'associazione del servizio.');
+        }
     };
 
-    const handleEditSubmit = async (e) =>
-    {
-        e.preventDefault();
-        try
-        {
-            await articoloApi.updateArticolo(articoloId, editFormData);
-            setArticolo(editFormData);
+    const handleSaveArticolo = async (updatedArticolo) => {
+        try {
+            await articoloApi.updateArticolo(articoloId, updatedArticolo);
+            setArticolo(updatedArticolo);
             setIsEditing(false);
-            alert('Articolo aggiornato con successo');
-        }
-        catch (error)
-        {
-            alert('Errore durante l\'aggiornamento dell\'articolo');
-            console.error(error);
+            alert('Articolo aggiornato con successo.');
+        } catch (error) {
+            console.error('Errore durante l\'aggiornamento dell\'articolo:', error);
+            alert('Errore durante l\'aggiornamento dell\'articolo.');
         }
     };
 
-    if (!articolo)
-    {
-        return <div>Seleziona un articolo per vedere i dettagli</div>;
+    const handleBackClick = () => {
+        history.goBack();
+    };
+
+    if (!articolo) {
+        return <div>Seleziona un articolo per vedere i dettagli...</div>;
     }
 
     return (
         <div className="articolo-details">
             <h2>Dettagli Articolo</h2>
             {isEditing ? (
-                <form onSubmit={handleEditSubmit} className="edit-form">
-                    <div className="form-group">
-                        <label>Codice:</label>
-                        <input type="text" name="codice" value={editFormData.codice} onChange={handleEditChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Descrizione:</label>
-                        <input type="text" name="descrizione" value={editFormData.descrizione} onChange={handleEditChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label>IVA:</label>
-                        <input type="number" name="iva" value={editFormData.iva} onChange={handleEditChange} required />
-                    </div>
-                    <div className="btn-container">
-                        <button type="submit" className="btn btn-save">Salva</button>
-                        <button type="button" onClick={() => setIsEditing(false)} className="btn btn-cancel">Annulla</button>
-                    </div>
-                </form>
+                <ServizioEditor
+                    servizio={articolo}
+                    onSave={handleSaveArticolo}
+                    onCancel={() => setIsEditing(false)}
+                    mode="Modifica"
+                />
             ) : (
                 <>
                     <div className="table-container">
+                        <div className="search-container">
+                            <button onClick={() => setIsEditing(true)} className="btn btn-edit">
+                                Modifica
+                            </button>
+                        </div>
                         <table className="info-table">
                             <tbody>
                                 <tr>
                                     <th>Codice</th>
-                                    <td>{articolo.codice}</td>
+                                    <td>{articolo.codice || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Descrizione</th>
-                                    <td>{articolo.descrizione}</td>
+                                    <td>{articolo.descrizione || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>IVA</th>
-                                    <td>{articolo.iva}</td>
+                                    <td>{articolo.iva || 'N/A'}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div className="btn-container">
-                        <button onClick={handleOpenServizioModal} className="btn btn-associate-servizio">Associa Servizio</button>
-                        <button onClick={fetchServiziAssociati} className="btn btn-show-servizi">Visualizza Servizi</button>
-                        <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>
+                    <div className="tabs-container">
+                        <div className="tabs">
+                            {[
+                                { id: 'servizi', label: 'Servizi' },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                    onClick={() => setActiveTab(tab.id)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                        {activeTab === 'servizi' && (
+                            <div className="servizi-box">
+                                <button onClick={fetchServiziAssociati} className="btn btn-show-servizi">
+                                    Visualizza Servizi
+                                </button>
+                                <button onClick={() => setShowServizioModal(true)} className="btn btn-associate-servizio">
+                                    Associa Servizio
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </>
             )}
             <div className="btn-back-container">
-                <button onClick={onDeselectArticolo} className="btn btn-back">Indietro</button>
+                <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
             {showServizi && (
                 <div className="servizi-section">
@@ -171,26 +147,31 @@ const ArticoloDetails = ({ articoloId, onDeselectArticolo }) =>
                             <tr>
                                 <th>Descrizione</th>
                                 <th>Valore</th>
-                                <th>Tariffa</th>
-                                <th>m3</th>
-                                <th>Prezzo</th>
-                                <th>Seriale</th>
+                                <th>Data</th>
+                                <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             {servizi.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6">Nessun servizio associato</td>
+                                    <td colSpan="3">Nessun servizio associato</td>
                                 </tr>
                             ) : (
                                 servizi.map((servizio) => (
                                     <tr key={servizio._id}>
                                         <td>{servizio.descrizione}</td>
-                                        <td>{servizio.valore}</td>
-                                        <td>{servizio.tariffa}</td>
-                                        <td>{servizio.m3}</td>
-                                        <td>{servizio.prezzo}</td>
-                                        <td>{servizio.seriale}</td>
+                                        <td>{servizio.valore_unitario}</td>
+                                        <td>{new Date(servizio.data_lettura).toLocaleDateString()}</td>
+                                        <td>
+                                            <button
+                                                className="btn btn-view"
+                                                onClick={() =>
+                                                    history.push(`/servizi/${servizio._id}`)
+                                                }
+                                            >
+                                                Apri
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             )}
@@ -198,20 +179,10 @@ const ArticoloDetails = ({ articoloId, onDeselectArticolo }) =>
                     </table>
                 </div>
             )}
-            {showServizioModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Servizio</h3>
-                        <ul>
-                            {servizi.map((servizio) => (
-                                <li key={servizio._id} onClick={() => handleSelectServizio(servizio._id)}>
-                                    {servizio.descrizione}
-                                </li>
-                            ))}
-                        </ul>
-                        <button onClick={() => setShowServizioModal(false)}>Chiudi</button>
-                    </div>
-                </div>
+            {showServiziModal && (
+                <ServizioList
+                    onSelectServizio={handleAssociaServizio}
+                />
             )}
         </div>
     );

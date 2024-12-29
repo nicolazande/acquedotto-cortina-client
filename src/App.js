@@ -22,6 +22,11 @@ import EdificioDetails from './components/Edificio/EdificioDetails';
 import LetturaDetails from './components/Lettura/LetturaDetails';
 import FatturaDetails from './components/Fattura/FatturaDetails';
 import ServizioDetails from './components/Servizio/ServizioDetails';
+import ArticoloDetails from './components/Articolo/ArticoloDetails';
+import ListinoDetails from './components/Listino/ListinoDetails';
+import FasciaDetails from './components/Fascia/FasciaDetails';
+import ScadenzaDetails from './components/Scadenza/ScadenzaDetails';
+
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -94,11 +99,31 @@ const App = () => {
                                     <Route path="/servizi" component={ServizioPage} />
                                 </Switch>
 
+                                {/* Routes for Clienti */}
+                                <Switch>
+                                    <Route path="/articoli/:id" render={(props) => <ArticoloDetails {...props} />} />
+                                    <Route path="/articoli" component={ArticoloPage} />
+                                </Switch>
+
+                                {/* Routes for Clienti */}
+                                <Switch>
+                                    <Route path="/listini/:id" render={(props) => <ListinoDetails {...props} />} />
+                                    <Route path="/listini" component={ListinoPage} />
+                                </Switch>
+
+                                {/* Routes for Clienti */}
+                                <Switch>
+                                    <Route path="/fasce/:id" render={(props) => <FasciaDetails {...props} />} />
+                                    <Route path="/fasce" component={FasciaPage} />
+                                </Switch>
+
+                                {/* Routes for Clienti */}
+                                <Switch>
+                                    <Route path="/scadenze/:id" render={(props) => <ScadenzaDetails {...props} />} />
+                                    <Route path="/scadenze" component={ScadenzaPage} />
+                                </Switch>
+
                                 {/* Other Routes */}
-                                <Route path="/articoli" component={ArticoloPage} />
-                                <Route path="/listini" component={ListinoPage} />
-                                <Route path="/fasce" component={FasciaPage} />
-                                <Route path="/scadenze" component={ScadenzaPage} />
                                 <Route exact path="/" component={HomePage} />
                             </>
                         ) : (

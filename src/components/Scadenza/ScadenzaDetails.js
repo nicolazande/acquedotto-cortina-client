@@ -1,171 +1,195 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import scadenzaApi from '../../api/scadenzaApi';
 import fatturaApi from '../../api/fatturaApi';
 import '../../styles/Scadenza/ScadenzaDetails.css';
+import ScadenzaEditor from '../shared/ScadenzaEditor';
+import FatturaList from '../Fattura/FatturaList';
 
-const ScadenzaDetails = ({ scadenzaId, onDeselectScadenza }) => {
+const ScadenzaDetails = () => {
+    const { id: scadenzaId } = useParams();
+    const history = useHistory();
+
     const [scadenza, setScadenza] = useState(null);
-    const [fatture, setFatture] = useState([]);
-    const [showFatturaModal, setShowFatturaModal] = useState(false);
+    const [fattura, setFattura] = useState([]);
+    const [activeTab, setActiveTab] = useState('modifica');
     const [isEditing, setIsEditing] = useState(false);
-    const [editFormData, setEditFormData] = useState({});
+    const [showFattura, setShowFattura] = useState(false);
+    const [showFatturaModal, setShowFatturaModal] = useState(false);
 
-    useEffect(() => {
-        const fetchScadenza = async () => {
-            try {
-                const response = await scadenzaApi.getScadenza(scadenzaId);
-                setScadenza(response.data);
-                setEditFormData(response.data);
-            } catch (error) {
-                alert('Errore durante il recupero della scadenza');
-                console.error(error);
-            }
-        };
-
-        if (scadenzaId) {
-            fetchScadenza();
-        }
-
-        setShowFatturaModal(false);
-    }, [scadenzaId]);
-
-    const handleOpenFatturaModal = async () => {
+    const fetchScadenza = useCallback(async () => {
         try {
-            const response = await fatturaApi.getFatture();
-            setFatture(response.data);
-            setShowFatturaModal(true);
-        } catch (error) {
-            alert('Errore durante il recupero delle fatture');
-            console.error(error);
-        }
-    };
-
-    const handleSelectFattura = async (fatturaId) => {
-        try {
-            await scadenzaApi.associateFattura(scadenzaId, fatturaId);
-            setShowFatturaModal(false);
             const response = await scadenzaApi.getScadenza(scadenzaId);
             setScadenza(response.data);
         } catch (error) {
-            alert('Errore durante l\'associazione della fattura');
-            console.error(error);
+            console.error('Errore durante il recupero della scadenza:', error);
+            alert('Errore durante il recupero della scadenza.');
         }
-    };
+    }, [scadenzaId]);
 
-    const handleEditChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setEditFormData((prevData) => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
-    };
+    useEffect(() => {
+        if (scadenzaId) fetchScadenza();
+    }, [scadenzaId, fetchScadenza]);
 
-    const handleEditSubmit = async (e) => {
-        e.preventDefault();
+    const fetchFatturaAssociata = async () => {
         try {
-            await scadenzaApi.updateScadenza(scadenzaId, editFormData);
-            setScadenza(editFormData);
-            setIsEditing(false);
-            alert('Scadenza aggiornata con successo');
+            const response = await scadenzaApi.getFattura(scadenzaId);
+            setFattura(response.data);
+            setShowFattura(true);
         } catch (error) {
-            alert('Errore durante l\'aggiornamento della scadenza');
-            console.error(error);
+            console.error('Errore durante il recupero delle fattura:', error);
+            alert('Errore durante il recupero delle fattura.');
         }
+    };
+
+    const handleAssociaFattura = async (fatturaId) => {
+        try {
+            await scadenzaApi.associateFattura(scadenzaId, fatturaId);
+            alert('Fattura associata con successo.');
+            setShowFatturaModal(false);
+            fetchScadenza();
+        } catch (error) {
+            console.error("Errore durante l'associazione della fattura:", error);
+            alert("Errore durante l'associazione della fattura.");
+        }
+    };
+
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        setShowFatturaModal(false);
+    };
+
+    const handleSaveScadenza = async (updatedScadenza) => {
+        try {
+            await scadenzaApi.updateScadenza(scadenzaId, updatedScadenza);
+            setScadenza(updatedScadenza);
+            setIsEditing(false);
+            alert('Scadenza aggiornata con successo.');
+        } catch (error) {
+            console.error('Errore durante l\'aggiornamento della scadenza:', error);
+            alert('Errore durante l\'aggiornamento della scadenza.');
+        }
+    };
+
+    const handleBackClick = () => {
+        history.goBack();
     };
 
     if (!scadenza) {
-        return <div>Seleziona una scadenza per vedere i dettagli</div>;
+        return <div>Seleziona una scadenza per vedere i dettagli...</div>;
     }
 
     return (
         <div className="scadenza-details">
             <h2>Dettagli Scadenza</h2>
             {isEditing ? (
-                <form onSubmit={handleEditSubmit} className="edit-form">
-                    <div className="form-group">
-                        <label>Data Scadenza:</label>
-                        <input type="date" name="dataScadenza" value={editFormData.dataScadenza} onChange={handleEditChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Importo:</label>
-                        <input type="number" name="importo" value={editFormData.importo} onChange={handleEditChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Saldo:</label>
-                        <input type="checkbox" name="saldo" checked={editFormData.saldo} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Data Pagamento:</label>
-                        <input type="date" name="dataPagamento" value={editFormData.dataPagamento} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Ritardo:</label>
-                        <input type="checkbox" name="ritardo" checked={editFormData.ritardo} onChange={handleEditChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Fattura:</label>
-                        <div className="input-group">
-                            <input type="text" name="fattura" value={editFormData.fattura ? editFormData.fattura.codice : ''} readOnly />
-                            <button type="button" onClick={handleOpenFatturaModal}>Associa Fattura</button>
-                        </div>
-                    </div>
-                    <div className="btn-container">
-                        <button type="submit" className="btn btn-save">Salva</button>
-                        <button type="button" onClick={() => setIsEditing(false)} className="btn btn-cancel">Annulla</button>
-                    </div>
-                </form>
+                <ScadenzaEditor
+                    scadenza={scadenza}
+                    onSave={handleSaveScadenza}
+                    onCancel={() => setIsEditing(false)}
+                    mode="Modifica"
+                />
             ) : (
                 <>
                     <div className="table-container">
+                        <div className="search-container">
+                            <button onClick={() => setIsEditing(true)} className="btn btn-edit">
+                                Modifica
+                            </button>
+                        </div>
                         <table className="info-table">
                             <tbody>
                                 <tr>
-                                    <th>Data Scadenza</th>
-                                    <td>{new Date(scadenza.dataScadenza).toLocaleDateString()}</td>
+                                    <th>Anno</th>
+                                    <td>{scadenza.anno}</td>
                                 </tr>
                                 <tr>
-                                    <th>Importo</th>
-                                    <td>€{scadenza.importo}</td>
+                                    <th>Numero</th>
+                                    <td>{scadenza.numero}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cognome</th>
+                                    <td>{scadenza.cognome}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nome</th>
+                                    <td>{scadenza.nome}</td>
+                                </tr>
+                                <tr>
+                                    <th>Totale</th>
+                                    <td>€{scadenza.totale.toFixed(2)}</td>
                                 </tr>
                                 <tr>
                                     <th>Saldo</th>
                                     <td>{scadenza.saldo ? 'Sì' : 'No'}</td>
                                 </tr>
-                                <tr>
-                                    <th>Data Pagamento</th>
-                                    <td>{scadenza.dataPagamento ? new Date(scadenza.dataPagamento).toLocaleDateString() : 'N/A'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Ritardo</th>
-                                    <td>{scadenza.ritardo ? 'Sì' : 'No'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Fattura</th>
-                                    <td>{scadenza.fattura ? scadenza.fattura.codice : 'N/A'}</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div className="btn-container">
-                        <button onClick={handleOpenFatturaModal} className="btn btn-associate-fattura">Associa Fattura</button>
-                        <button onClick={() => setIsEditing(true)} className="btn btn-edit">Modifica</button>
+                    <div className="tabs-container">
+                        <div className="tabs">
+                            {[
+                                { id: 'fattura', label: 'Fatture' },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                    onClick={() => handleTabChange(tab.id)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                        {activeTab === 'fattura' && (
+                            <div className="fattura-box">
+                                <button onClick={fetchFatturaAssociata} className="btn btn-show-fattura">
+                                    Visualizza Fattura
+                                </button>
+                                <button onClick={() => setShowFatturaModal(true)} className="btn btn-associate-fattura">
+                                    Associa Fattura
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </>
             )}
             <div className="btn-back-container">
-                <button onClick={onDeselectScadenza} className="btn btn-back">Indietro</button>
+                <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
-            {showFatturaModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Fattura</h3>
-                        <ul>
-                            {fatture.map((fattura) => (
-                                <li key={fattura._id} onClick={() => handleSelectFattura(fattura._id)}>
-                                    {fattura.codice}
-                                </li>
-                            ))}
-                        </ul>
-                        <button onClick={() => setShowFatturaModal(false)}>Chiudi</button>
-                    </div>
+            {showFattura && fattura && (
+                <div className="fattura-section">
+                    <h3>Fattura Associata</h3>
+                    <table className="fattura-table">
+                        <thead>
+                            <tr>
+                                <th>Codice</th>
+                                <th>Importo</th>
+                                <th>Data</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{fattura.codice || 'N/A'}</td>
+                                <td>{fattura.totale_fattura?.toFixed(2) || '0.00'}</td>
+                                <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString() : 'N/A'}</td>
+                                <td>
+                                    <button
+                                        className="btn btn-edit"
+                                        onClick={() => history.push(`/fatture/${fattura._id}`)}
+                                    >
+                                        Apri
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+            )}
+            {showFatturaModal && (
+                <FatturaList
+                    onSelectFattura={handleAssociaFattura}
+                />
             )}
         </div>
     );

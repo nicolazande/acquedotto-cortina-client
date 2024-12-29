@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import listinoApi from '../../api/listinoApi';
-import ListinoDetails from './ListinoDetails';
+import ListinoEditor from '../shared/ListinoEditor';
 import '../../styles/Listino/ListinoList.css';
 
-const ListinoList = ({ onSelectListino, selectedListinoId, onDeselectListino }) => 
-{
+const ListinoList = ({ onSelectListino }) => {
     const [listini, setListini] = useState([]);
+    const [filteredListini, setFilteredListini] = useState([]);
+    const [searchDescrizione, setSearchDescrizione] = useState('');
+    const [creatingListino, setCreatingListino] = useState(false);
+    const [currentSlotStart, setCurrentSlotStart] = useState(1);
+    const itemsPerPage = 50;
+    const slotSize = 10;
 
-    useEffect(() => 
-    {
-        const fetchListini = async () => 
-        {
-            try 
-            {
+    const history = useHistory();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const currentPage = parseInt(queryParams.get('page') || '1', 10);
+
+    useEffect(() => {
+        const fetchListini = async () => {
+            try {
                 const response = await listinoApi.getListini();
                 setListini(response.data);
-            } 
-            catch (error) 
-            {
+                setFilteredListini(response.data);
+            } catch (error) {
                 alert('Errore durante il recupero dei listini');
                 console.error(error);
             }
@@ -26,28 +33,86 @@ const ListinoList = ({ onSelectListino, selectedListinoId, onDeselectListino }) 
         fetchListini();
     }, []);
 
-    const handleDelete = async (id) => 
-    {
-        try 
-        {
+    const handleDelete = async (id) => {
+        try {
             await listinoApi.deleteListino(id);
-            setListini(listini.filter(listino => listino._id !== id));
-            if (selectedListinoId === id) 
-            {
-                onDeselectListino();
-            }
-        } 
-        catch (error) 
-        {
+            const updatedListini = listini.filter((listino) => listino._id !== id);
+            setListini(updatedListini);
+            setFilteredListini(updatedListini);
+        } catch (error) {
             alert('Errore durante la cancellazione del listino');
             console.error(error);
         }
     };
 
+    const handleSearch = () => {
+        const filtered = listini.filter((listino) =>
+            listino.descrizione?.toLowerCase().includes(searchDescrizione.toLowerCase())
+        );
+        setFilteredListini(filtered);
+    };
+
+    const totalPages = Math.ceil(filteredListini.length / itemsPerPage);
+
+    const handlePageChange = (pageNumber) => {
+        history.push(`?page=${pageNumber}`);
+    };
+
+    const handleSlotChange = (direction) => {
+        if (direction === 'next' && currentSlotStart + slotSize <= totalPages) {
+            setCurrentSlotStart((prev) => prev + slotSize);
+        } else if (direction === 'prev' && currentSlotStart > 1) {
+            setCurrentSlotStart((prev) => Math.max(prev - slotSize, 1));
+        }
+    };
+
+    const renderPageButtons = () => {
+        const buttons = [];
+        for (
+            let i = currentSlotStart;
+            i < currentSlotStart + slotSize && i <= totalPages;
+            i++
+        ) {
+            buttons.push(
+                <button
+                    key={i}
+                    className={`page-button ${currentPage === i ? 'active' : ''}`}
+                    onClick={() => handlePageChange(i)}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return buttons;
+    };
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentListini = filteredListini.slice(indexOfFirstItem, indexOfLastItem);
+
     return (
         <div className="listino-list-container">
             <div className="listino-list">
                 <h2>Lista Listini</h2>
+                <div className="search-container">
+                    <div className="search-bar">
+                        <input
+                            type="text"
+                            placeholder="Descrizione..."
+                            value={searchDescrizione}
+                            onChange={(e) => setSearchDescrizione(e.target.value)}
+                        />
+                        <button onClick={handleSearch} className="btn btn-search">
+                            Cerca
+                        </button>
+                        <button
+                            className="btn btn-new-listino"
+                            onClick={() => setCreatingListino(true)}
+                        >
+                            Nuovo Listino
+                        </button>
+                    </div>
+                </div>
                 <div className="table-container">
                     <table className="listino-table">
                         <thead>
@@ -58,24 +123,64 @@ const ListinoList = ({ onSelectListino, selectedListinoId, onDeselectListino }) 
                             </tr>
                         </thead>
                         <tbody>
-                            {listini.map((listino) => (
-                                <tr key={listino._id} className="listino-list-item">
+                            {currentListini.map((listino) => (
+                                <tr key={listino._id}>
                                     <td>{listino.categoria}</td>
                                     <td>{listino.descrizione}</td>
                                     <td>
-                                        <button onClick={() => onSelectListino(listino._id)} className="btn btn-details">Dettagli</button>
-                                        <button onClick={() => handleDelete(listino._id)} className="btn btn-delete">Cancella</button>
+                                        <button
+                                            className="btn"
+                                            onClick={() => history.push(`/listini/${listino._id}`)}
+                                        >
+                                            Dettagli
+                                        </button>
+                                        <button
+                                            className="btn btn-select"
+                                            onClick={() => onSelectListino && onSelectListino(listino._id)}
+                                        >
+                                            Seleziona
+                                        </button>
+                                        <button
+                                            className="btn btn-delete"
+                                            onClick={() => handleDelete(listino._id)}
+                                        >
+                                            Cancella
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
-            </div>
-            {selectedListinoId && (
-                <div className="listino-detail">
-                    <ListinoDetails listinoId={selectedListinoId} onDeselectListino={onDeselectListino} />
+                <div className="pagination">
+                    <button
+                        className="btn btn-prev"
+                        onClick={() => handleSlotChange('prev')}
+                        disabled={currentSlotStart === 1}
+                    >
+                        &larr;
+                    </button>
+                    {renderPageButtons()}
+                    <button
+                        className="btn btn-next"
+                        onClick={() => handleSlotChange('next')}
+                        disabled={currentSlotStart + slotSize > totalPages}
+                    >
+                        &rarr;
+                    </button>
                 </div>
+            </div>
+            {creatingListino && (
+                <ListinoEditor
+                    listino={{}}
+                    onSave={(newListino) => {
+                        setCreatingListino(false);
+                        setListini([...listini, newListino]);
+                        setFilteredListini([...listini, newListino]);
+                    }}
+                    onCancel={() => setCreatingListino(false)}
+                    mode="Nuovo"
+                />
             )}
         </div>
     );

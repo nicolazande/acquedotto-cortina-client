@@ -107,17 +107,6 @@ const LetturaDetails = () => {
             console.error(error);
         }
     };
-    
-    const handleSelectContatore = async (contatoreId) => {
-        try {
-            await letturaApi.associateContatore(letturaId, contatoreId);
-            setShowContatoreModal(false);
-            fetchLettura();
-        } catch (error) {
-            alert("Errore durante l'associazione del contatore");
-            console.error(error);
-        }
-    };
 
     const handleAssociateContatore = async (contatoreId) => {
         try {

@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import ScadenzaForm from '../components/Scadenza/ScadenzaForm';
 import ScadenzaList from '../components/Scadenza/ScadenzaList';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
 import '../styles/Scadenza/ScadenzaPage.css';
 
 const ScadenzaPage = () => {
@@ -18,18 +15,11 @@ const ScadenzaPage = () => {
 
     return (
         <div className="scadenza-page">
-            <Tabs>
-                <TabList>
-                    <Tab>Lista Scadenze</Tab>
-                    <Tab>Registra Scadenza</Tab>
-                </TabList>
-                <TabPanel>
-                    <ScadenzaList onSelectScadenza={handleScadenzaSelect} selectedScadenzaId={selectedScadenzaId} onDeselectScadenza={handleScadenzaDeselect} />
-                </TabPanel>
-                <TabPanel>
-                    <ScadenzaForm onSuccess={handleScadenzaDeselect} />
-                </TabPanel>
-            </Tabs>
+            <ScadenzaList
+                onSelectScadenza={handleScadenzaSelect}
+                selectedScadenzaId={selectedScadenzaId}
+                onDeselectScadenza={handleScadenzaDeselect}
+            />
         </div>
     );
 };

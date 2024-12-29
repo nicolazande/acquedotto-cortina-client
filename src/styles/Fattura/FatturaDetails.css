@@ -1,68 +1,83 @@
 /* Styles for FatturaDetails */
+
 .fattura-details {
-    background-color: #f9f9f9;
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
     margin: 20px auto;
+    max-width: 1200px;
+    font-family: Arial, sans-serif;
+}
+
+.fattura-details h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
 }
 
 .table-container {
     width: 100%;
-    overflow-x: auto; /* Enable horizontal scrolling only for the table container */
+    overflow-x: auto;
     margin-bottom: 20px;
 }
 
-.info-table {
+.info-table, .fatture-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
-}
-
-.info-table th,
-.info-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    font-size: 14px;
     text-align: left;
 }
 
-.info-table th {
-    background-color: #f2f2f2;
-    color: #333;
+.info-table th, .info-table td, 
+.fatture-table th, .fatture-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-.btn-container {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-    flex-wrap: wrap; /* Ensure buttons wrap on smaller screens */
+.info-table th, .fatture-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    color: #555;
 }
 
-.btn-container button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
+.info-table td, .fatture-table td {
+    color: #555;
+}
+
+.btn {
+    padding: 10px 15px;
+    font-size: 14px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    text-align: center;
     margin: 5px;
-    transition: background-color 0.3s;
-    flex: 1; /* Allow buttons to grow and fill available space */
-    max-width: 200px; /* Ensure buttons don't become too wide */
+    text-transform: uppercase;
 }
 
-.btn-container button:hover {
+.btn-edit, .btn-show-fattura, .btn-associate-fattura {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-edit:hover, .btn-show-fattura:hover, 
+.btn-associate-fattura:hover {
     background-color: #0056b3;
 }
 
-.btn-edit {
-    background-color: #28a745;
+.btn-back {
+    background-color: #6c757d;
+    color: #fff;
 }
 
-.btn-edit:hover {
-    background-color: #218838;
+.btn-back:hover {
+    background-color: #5a6268;
 }
 
 .btn-back-container {
@@ -70,77 +85,97 @@
     margin-top: 20px;
 }
 
-.btn-back-container button {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
+.tabs-container {
+    margin-top: 20px;
 }
 
-.btn-back-container button:hover {
-    background-color: #5a6268;
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.tabs .tab {
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    border: 1px solid #007bff;
+    color: #007bff;
+    background-color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.tabs .tab.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.tabs .tab:hover {
+    background-color: #0056b3;
+    color: #fff;
 }
 
 .modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: fixed;
-    z-index: 1000;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
 }
 
 .modal-content {
-    background-color: #fff;
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 80%;
-    max-width: 600px;
+    width: 400px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
 }
 
 .modal-content h3 {
-    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #333;
 }
 
 .modal-content ul {
-    list-style: none;
+    list-style-type: none;
     padding: 0;
 }
 
 .modal-content ul li {
     padding: 10px;
-    border-bottom: 1px solid #ddd;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
     cursor: pointer;
+    text-align: center;
 }
 
 .modal-content ul li:hover {
-    background-color: #f2f2f2;
+    background-color: #f9f9f9;
 }
 
 .modal-content button {
-    background-color: #007bff;
-    color: white;
+    background-color: #dc3545;
+    color: #fff;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
-    margin-top: 20px;
-    transition: background-color 0.3s;
+    margin-top: 15px;
 }
 
 .modal-content button:hover {
-    background-color: #0056b3;
+    background-color: #c82333;
 }
 
 .form-group {
@@ -182,25 +217,25 @@
     background-color: #c82333;
 }
 
-.servizi-section {
+.fatture-section {
     margin-top: 20px;
-    overflow-x: auto; /* Ensure the section can scroll horizontally if needed */
+    overflow-x: auto;
 }
 
-.servizi-table {
+.fatture-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
 
-.servizi-table th,
-.servizi-table td {
+.fatture-table th,
+.fatture-table td {
     text-align: left;
     padding: 10px;
     border-bottom: 1px solid #ccc;
 }
 
-.servizi-table th {
-    background-color: #f2f2f2;
+.fatture-table th {
+    background-color: #f5f5f5;
     font-weight: bold;
 }
