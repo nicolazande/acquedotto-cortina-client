@@ -5,40 +5,40 @@ import FatturaEditor from '../shared/FatturaEditor';
 import '../../styles/Fattura/FatturaList.css';
 
 const FatturaList = ({ onSelectFattura }) => {
-    const [fatture, setFatture] = useState([]);
-    const [filteredFatture, setFilteredFatture] = useState([]);
-    const [searchRagioneSociale, setSearchRagioneSociale] = useState('');
-    const [searchTipoDocumento, setSearchTipoDocumento] = useState('');
+    const [fatture, setFatture] = useState([]); // Stores the current page's fatture
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeSearch, setActiveSearch] = useState('');
     const [creatingFattura, setCreatingFattura] = useState(false);
-    const itemsPerPage = 50;
-
+    const [totalPages, setTotalPages] = useState(1); // Total pages for pagination
+    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Start of current pagination slot
+    const itemsPerPage = 50; // Items displayed per page
+    const slotSize = 10; // Number of pages in each slot
     const history = useHistory();
     const location = useLocation();
-
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
 
+    // Fetch fatture whenever currentPage or activeSearch changes
     useEffect(() => {
-        const fetchFatture = async () => {
-            try {
-                const response = await fatturaApi.getFatture();
-                setFatture(response.data);
-                setFilteredFatture(response.data);
-            } catch (error) {
-                alert('Errore durante il recupero delle fatture');
-                console.error(error);
-            }
-        };
+        fetchFatture(currentPage, activeSearch);
+    }, [currentPage, activeSearch]);
 
-        fetchFatture();
-    }, []);
+    const fetchFatture = async (page = 1, search = '') => {
+        try {
+            const response = await fatturaApi.getFatture(page, itemsPerPage, search);
+            const { data, totalPages: fetchedTotalPages } = response.data;
+            setFatture(data); // Set the current page's fatture
+            setTotalPages(fetchedTotalPages); // Set total pages for pagination
+        } catch (error) {
+            alert('Errore durante il recupero delle fatture');
+            console.error(error);
+        }
+    };
 
     const handleDelete = async (id) => {
         try {
             await fatturaApi.deleteFattura(id);
-            const updatedFatture = fatture.filter((fattura) => fattura._id !== id);
-            setFatture(updatedFatture);
-            setFilteredFatture(updatedFatture);
+            fetchFatture(currentPage, activeSearch); // Refetch current page after deletion
         } catch (error) {
             alert('Errore durante la cancellazione della fattura');
             console.error(error);
@@ -46,35 +46,42 @@ const FatturaList = ({ onSelectFattura }) => {
     };
 
     const handleSearch = () => {
-        const filtered = fatture.filter(
-            (fattura) =>
-                fattura.ragione_sociale?.toLowerCase().includes(searchRagioneSociale.toLowerCase()) &&
-                fattura.tipo_documento?.toLowerCase().includes(searchTipoDocumento.toLowerCase())
-        );
-        setFilteredFatture(filtered);
+        setActiveSearch(searchTerm); // Combine search terms
+        history.push('?page=1'); // Reset to the first page for a new search
     };
 
-    const handleCreateFattura = async (newFattura) => {
-        try {
-            await fatturaApi.createFattura(newFattura);
-            alert('Fattura creata con successo');
-            setCreatingFattura(false);
-            const response = await fatturaApi.getFatture();
-            setFatture(response.data);
-            setFilteredFatture(response.data);
-        } catch (error) {
-            alert('Errore durante la creazione della fattura');
-            console.error(error);
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            history.push(`?page=${pageNumber}`);
         }
     };
 
-    const totalPages = Math.ceil(filteredFatture.length / itemsPerPage);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentFatture = filteredFatture.slice(indexOfFirstItem, indexOfLastItem);
+    const handleSlotChange = (direction) => {
+        if (direction === 'prev' && currentSlotStart > 1) {
+            setCurrentSlotStart((prev) => Math.max(prev - slotSize, 1));
+        } else if (direction === 'next' && currentSlotStart + slotSize <= totalPages) {
+            setCurrentSlotStart((prev) => prev + slotSize);
+        }
+    };
 
-    const handlePageChange = (pageNumber) => {
-        history.push(`?page=${pageNumber}`);
+    const renderPageButtons = () => {
+        const buttons = [];
+        for (
+            let i = currentSlotStart;
+            i < currentSlotStart + slotSize && i <= totalPages;
+            i++
+        ) {
+            buttons.push(
+                <button
+                    key={i}
+                    className={`page-button ${currentPage === i ? 'active' : ''}`}
+                    onClick={() => handlePageChange(i)}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return buttons;
     };
 
     return (
@@ -85,15 +92,9 @@ const FatturaList = ({ onSelectFattura }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="Ragione Sociale..."
-                            value={searchRagioneSociale}
-                            onChange={(e) => setSearchRagioneSociale(e.target.value)}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Tipo Documento..."
-                            value={searchTipoDocumento}
-                            onChange={(e) => setSearchTipoDocumento(e.target.value)}
+                            placeholder="..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <button onClick={handleSearch} className="btn btn-search">
                             Cerca
@@ -118,7 +119,7 @@ const FatturaList = ({ onSelectFattura }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentFatture.map((fattura) => (
+                            {fatture.map((fattura) => (
                                 <tr key={fattura._id}>
                                     <td>{fattura.cliente ? `${fattura.cliente.nome} ${fattura.cliente.cognome}` : 'N/A'}</td>
                                     <td>{fattura.tipo_documento}</td>
@@ -152,23 +153,30 @@ const FatturaList = ({ onSelectFattura }) => {
                     </table>
                 </div>
                 <div className="pagination">
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index + 1}
-                            className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
-                            onClick={() => handlePageChange(index + 1)}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
+                    <button
+                        className="btn btn-prev"
+                        onClick={() => handleSlotChange('prev')}
+                        disabled={currentSlotStart === 1}
+                    >
+                        &larr;
+                    </button>
+                    {renderPageButtons()}
+                    <button
+                        className="btn btn-next"
+                        onClick={() => handleSlotChange('next')}
+                        disabled={currentSlotStart + slotSize > totalPages}
+                    >
+                        &rarr;
+                    </button>
                 </div>
             </div>
             {creatingFattura && (
                 <FatturaEditor
-                    fattura={{}} // Empty fattura object for creating a new one
-                    onSave={handleCreateFattura}
+                    onSave={(newFattura) => {
+                        setCreatingFattura(false);
+                        fetchFatture(currentPage, activeSearch); // Refetch current data
+                    }}
                     onCancel={() => setCreatingFattura(false)}
-                    mode="Nuova"
                 />
             )}
         </div>

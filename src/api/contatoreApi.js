@@ -5,7 +5,8 @@ const API_URL = `${process.env.REACT_APP_API_URL}/api/contatori`;
 const contatoreApi =
 {
     createContatore: (data) => axios.post(API_URL, data),
-    getContatori: () => axios.get(API_URL),
+    getContatori: (page = 1, limit = 50, search = '') =>
+        axios.get(API_URL, { params: { page, limit, search } }),
     getContatore: (id) => axios.get(`${API_URL}/${id}`),
     updateContatore: (id, data) => axios.put(`${API_URL}/${id}`, data),
     deleteContatore: (id) => axios.delete(`${API_URL}/${id}`),

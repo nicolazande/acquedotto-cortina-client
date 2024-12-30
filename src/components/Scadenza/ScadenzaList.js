@@ -6,37 +6,39 @@ import '../../styles/Scadenza/ScadenzaList.css';
 
 const ScadenzaList = ({ onSelectScadenza }) => {
     const [scadenze, setScadenze] = useState([]);
-    const [filteredScadenze, setFilteredScadenze] = useState([]);
-    const [searchAnno, setSearchAnno] = useState('');
+    const [searchTerm, setSearchTerm] = useState(''); // Controlled input value
+    const [activeSearch, setActiveSearch] = useState(''); // Search term currently applied
     const [creatingScadenza, setCreatingScadenza] = useState(false);
+    const [totalPages, setTotalPages] = useState(1); // Total pages fetched from API
+    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Start of the visible pagination slot
     const itemsPerPage = 100;
-
+    const slotSize = 10; // Max number of items in a pagination slot
     const history = useHistory();
     const location = useLocation();
-
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
 
+    // Fetch scadenze whenever currentPage or activeSearch changes
     useEffect(() => {
-        const fetchScadenze = async () => {
-            try {
-                const response = await scadenzaApi.getScadenze();
-                setScadenze(response.data);
-                setFilteredScadenze(response.data);
-            } catch (error) {
-                alert('Errore durante il recupero delle scadenze');
-                console.error(error);
-            }
-        };
-        fetchScadenze();
-    }, []);
+        fetchScadenze(currentPage, activeSearch);
+    }, [currentPage, activeSearch]);
+
+    const fetchScadenze = async (page = 1, search = '') => {
+        try {
+            const response = await scadenzaApi.getScadenze(page, itemsPerPage, search);
+            const { data, totalPages: fetchedTotalPages } = response.data;
+            setScadenze(data); // Update the list with fetched data
+            setTotalPages(fetchedTotalPages); // Update the total number of pages
+        } catch (error) {
+            alert('Errore durante il recupero delle scadenze');
+            console.error(error);
+        }
+    };
 
     const handleDelete = async (id) => {
         try {
             await scadenzaApi.deleteScadenza(id);
-            const updatedScadenze = scadenze.filter((scadenza) => scadenza._id !== id);
-            setScadenze(updatedScadenze);
-            setFilteredScadenze(updatedScadenze);
+            fetchScadenze(currentPage, activeSearch); // Refetch current page after deletion
         } catch (error) {
             alert('Errore durante la cancellazione della scadenza');
             console.error(error);
@@ -44,34 +46,42 @@ const ScadenzaList = ({ onSelectScadenza }) => {
     };
 
     const handleSearch = () => {
-        const filtered = scadenze.filter((scadenza) =>
-            scadenza.anno.toString().includes(searchAnno)
-        );
-        setFilteredScadenze(filtered);
-        handlePageChange(1);
+        setActiveSearch(searchTerm); // Apply the current input as the active search term
+        history.push('?page=1'); // Reset to the first page for a new search
     };
 
-    const handleCreateScadenza = async (newScadenza) => {
-        try {
-            await scadenzaApi.createScadenza(newScadenza);
-            alert('Scadenza creata con successo');
-            setCreatingScadenza(false);
-            const response = await scadenzaApi.getScadenze();
-            setScadenze(response.data);
-            setFilteredScadenze(response.data);
-        } catch (error) {
-            alert('Errore durante la creazione della scadenza');
-            console.error(error);
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            history.push(`?page=${pageNumber}`);
         }
     };
 
-    const totalPages = Math.ceil(filteredScadenze.length / itemsPerPage);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentScadenze = filteredScadenze.slice(indexOfFirstItem, indexOfLastItem);
+    const handleSlotChange = (direction) => {
+        if (direction === 'prev' && currentSlotStart > 1) {
+            setCurrentSlotStart((prev) => Math.max(prev - slotSize, 1));
+        } else if (direction === 'next' && currentSlotStart + slotSize <= totalPages) {
+            setCurrentSlotStart((prev) => prev + slotSize);
+        }
+    };
 
-    const handlePageChange = (pageNumber) => {
-        history.push(`?page=${pageNumber}`);
+    const renderPageButtons = () => {
+        const buttons = [];
+        for (
+            let i = currentSlotStart;
+            i < currentSlotStart + slotSize && i <= totalPages;
+            i++
+        ) {
+            buttons.push(
+                <button
+                    key={i}
+                    className={`page-button ${currentPage === i ? 'active' : ''}`}
+                    onClick={() => handlePageChange(i)}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return buttons;
     };
 
     return (
@@ -82,9 +92,9 @@ const ScadenzaList = ({ onSelectScadenza }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="Anno Scadenza"
-                            value={searchAnno}
-                            onChange={(e) => setSearchAnno(e.target.value)}
+                            placeholder="Nome o Cognome"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <button onClick={handleSearch} className="btn btn-search">
                             Cerca
@@ -111,8 +121,8 @@ const ScadenzaList = ({ onSelectScadenza }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentScadenze.map((scadenza) => (
-                                <tr key={scadenza._id} className="scadenza-list-item">
+                            {scadenze.map((scadenza) => (
+                                <tr key={scadenza._id}>
                                     <td>{scadenza.anno}</td>
                                     <td>{scadenza.numero}</td>
                                     <td>{scadenza.cognome}</td>
@@ -147,21 +157,29 @@ const ScadenzaList = ({ onSelectScadenza }) => {
                     </table>
                 </div>
                 <div className="pagination">
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index + 1}
-                            className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
-                            onClick={() => handlePageChange(index + 1)}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
+                    <button
+                        className="btn btn-prev"
+                        onClick={() => handleSlotChange('prev')}
+                        disabled={currentSlotStart === 1}
+                    >
+                        &larr;
+                    </button>
+                    {renderPageButtons()}
+                    <button
+                        className="btn btn-next"
+                        onClick={() => handleSlotChange('next')}
+                        disabled={currentSlotStart + slotSize > totalPages}
+                    >
+                        &rarr;
+                    </button>
                 </div>
             </div>
             {creatingScadenza && (
                 <ScadenzaEditor
-                    scadenza={{}}
-                    onSave={handleCreateScadenza}
+                    onSave={(newScadenza) => {
+                        setCreatingScadenza(false);
+                        fetchScadenze(currentPage, activeSearch); // Refetch current data
+                    }}
                     onCancel={() => setCreatingScadenza(false)}
                     mode="Nuova"
                 />

@@ -5,7 +5,8 @@ const API_URL = `${process.env.REACT_APP_API_URL}/api/listini`;
 const listinoApi =
 {
     createListino: (data) => axios.post(API_URL, data),
-    getListini: () => axios.get(API_URL),
+    getListini: (page = 1, limit = 50, search = '') =>
+        axios.get(API_URL, { params: { page, limit, search } }),
     getListino: (id) => axios.get(`${API_URL}/${id}`),
     updateListino: (id, data) => axios.put(`${API_URL}/${id}`, data),
     deleteListino: (id) => axios.delete(`${API_URL}/${id}`),

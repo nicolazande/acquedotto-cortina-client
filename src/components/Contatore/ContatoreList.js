@@ -5,40 +5,40 @@ import ContatoreEditor from '../shared/ContatoreEditor';
 import '../../styles/Contatore/ContatoreList.css';
 
 const ContatoreList = ({ onSelectContatore }) => {
-    const [contatori, setContatori] = useState([]);
-    const [filteredContatori, setFilteredContatori] = useState([]);
-    const [searchSeriale, setSearchSeriale] = useState('');
+    const [contatori, setContatori] = useState([]); // Stores the current page's contatori
+    const [searchTerm, setSearchTerm] = useState(''); // Controlled input value
+    const [activeSearch, setActiveSearch] = useState(''); // Search term currently applied
     const [creatingContatore, setCreatingContatore] = useState(false);
-    const [searchNomeCliente, setSearchNomeCliente] = useState('');
-    const itemsPerPage = 50;
-
+    const [totalPages, setTotalPages] = useState(1); // Total pages
+    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Start of current pagination slot
+    const itemsPerPage = 50; // Items displayed per page
+    const slotSize = 10; // Number of pages in each slot
     const history = useHistory();
     const location = useLocation();
-
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
 
+    // Fetch contatori whenever currentPage or activeSearch changes
     useEffect(() => {
-        const fetchContatori = async () => {
-            try {
-                const response = await contatoreApi.getContatori();
-                setContatori(response.data);
-                setFilteredContatori(response.data);
-            } catch (error) {
-                alert('Errore durante il recupero dei contatori');
-                console.error(error);
-            }
-        };
+        fetchContatori(currentPage, activeSearch);
+    }, [currentPage, activeSearch]);
 
-        fetchContatori();
-    }, []);
+    const fetchContatori = async (page = 1, search = '') => {
+        try {
+            const response = await contatoreApi.getContatori(page, itemsPerPage, search);
+            const { data, totalPages: fetchedTotalPages } = response.data;
+            setContatori(data); // Set the current page's data
+            setTotalPages(fetchedTotalPages); // Set total pages for pagination
+        } catch (error) {
+            alert('Errore durante il recupero dei contatori');
+            console.error(error);
+        }
+    };
 
     const handleDelete = async (id) => {
         try {
             await contatoreApi.deleteContatore(id);
-            const updatedContatori = contatori.filter((contatore) => contatore._id !== id);
-            setContatori(updatedContatori);
-            setFilteredContatori(updatedContatori);
+            fetchContatori(currentPage, activeSearch); // Refetch current page after deletion
         } catch (error) {
             alert('Errore durante la cancellazione del contatore');
             console.error(error);
@@ -46,20 +46,42 @@ const ContatoreList = ({ onSelectContatore }) => {
     };
 
     const handleSearch = () => {
-        const filtered = contatori.filter((contatore) =>
-            contatore.seriale?.toLowerCase().includes(searchSeriale.toLowerCase()) &&
-            contatore.nome_cliente?.toLowerCase().includes(searchNomeCliente.toLowerCase())
-        );
-        setFilteredContatori(filtered);
+        setActiveSearch(searchTerm); // Apply the current input as the active search term
+        history.push('?page=1'); // Reset to the first page for a new search
     };
 
-    const totalPages = Math.ceil(filteredContatori.length / itemsPerPage);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentContatori = filteredContatori.slice(indexOfFirstItem, indexOfLastItem);
-
     const handlePageChange = (pageNumber) => {
-        history.push(`?page=${pageNumber}`);
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            history.push(`?page=${pageNumber}`);
+        }
+    };
+
+    const handleSlotChange = (direction) => {
+        if (direction === 'prev' && currentSlotStart > 1) {
+            setCurrentSlotStart((prev) => Math.max(prev - slotSize, 1));
+        } else if (direction === 'next' && currentSlotStart + slotSize <= totalPages) {
+            setCurrentSlotStart((prev) => prev + slotSize);
+        }
+    };
+
+    const renderPageButtons = () => {
+        const buttons = [];
+        for (
+            let i = currentSlotStart;
+            i < currentSlotStart + slotSize && i <= totalPages;
+            i++
+        ) {
+            buttons.push(
+                <button
+                    key={i}
+                    className={`page-button ${currentPage === i ? 'active' : ''}`}
+                    onClick={() => handlePageChange(i)}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return buttons;
     };
 
     return (
@@ -70,15 +92,9 @@ const ContatoreList = ({ onSelectContatore }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="Seriale..."
-                            value={searchSeriale}
-                            onChange={(e) => setSearchSeriale(e.target.value)}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Cliente..."
-                            value={searchNomeCliente}
-                            onChange={(e) => setSearchNomeCliente(e.target.value)}
+                            placeholder="..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <button onClick={handleSearch} className="btn btn-search">
                             Cerca
@@ -96,12 +112,12 @@ const ContatoreList = ({ onSelectContatore }) => {
                         <thead>
                             <tr>
                                 <th>Seriale</th>
-                                <th>Cliente</th>
+                                <th>Nome Cliente</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {currentContatori.map((contatore) => (
+                            {contatori.map((contatore) => (
                                 <tr key={contatore._id}>
                                     <td>{contatore.seriale}</td>
                                     <td>{contatore.nome_cliente}</td>
@@ -131,23 +147,28 @@ const ContatoreList = ({ onSelectContatore }) => {
                     </table>
                 </div>
                 <div className="pagination">
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index + 1}
-                            className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
-                            onClick={() => handlePageChange(index + 1)}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
+                    <button
+                        className="btn btn-prev"
+                        onClick={() => handleSlotChange('prev')}
+                        disabled={currentSlotStart === 1}
+                    >
+                        &larr;
+                    </button>
+                    {renderPageButtons()}
+                    <button
+                        className="btn btn-next"
+                        onClick={() => handleSlotChange('next')}
+                        disabled={currentSlotStart + slotSize > totalPages}
+                    >
+                        &rarr;
+                    </button>
                 </div>
             </div>
             {creatingContatore && (
                 <ContatoreEditor
                     onSave={(newContatore) => {
                         setCreatingContatore(false);
-                        setContatori([...contatori, newContatore]);
-                        setFilteredContatori([...contatori, newContatore]);
+                        fetchContatori(currentPage, activeSearch); // Refetch current data
                     }}
                     onCancel={() => setCreatingContatore(false)}
                 />

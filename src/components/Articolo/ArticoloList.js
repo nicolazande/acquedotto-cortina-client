@@ -6,64 +6,81 @@ import '../../styles/Articolo/ArticoloList.css';
 
 const ArticoloList = ({ onSelectArticolo }) => {
     const [articoli, setArticoli] = useState([]);
-    const [filteredArticoli, setFilteredArticoli] = useState([]);
-    const [searchCodice, setSearchCodice] = useState('');
-    const [searchDescrizione, setSearchDescrizione] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeSearch, setActiveSearch] = useState('');
     const [creatingArticolo, setCreatingArticolo] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentSlotStart, setCurrentSlotStart] = useState(1);
     const itemsPerPage = 50;
-
+    const slotSize = 10;
     const history = useHistory();
     const location = useLocation();
-
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
 
     useEffect(() => {
-        const fetchArticoli = async () => {
-            try {
-                const response = await articoloApi.getArticoli();
-                setArticoli(response.data);
-                setFilteredArticoli(response.data);
-            } catch (error) {
-                alert('Errore durante il recupero degli articoli');
-                console.error(error);
-            }
-        };
-        fetchArticoli();
-    }, []);
+        fetchArticoli(currentPage, activeSearch);
+    }, [currentPage, activeSearch]);
+
+    const fetchArticoli = async (page = 1, search = '') => {
+        try {
+            const response = await articoloApi.getArticoli(page, itemsPerPage, search);
+            const { data, totalPages: fetchedTotalPages } = response.data;
+            setArticoli(data);
+            setTotalPages(fetchedTotalPages);
+        } catch (error) {
+            alert('Errore durante il recupero degli articoli');
+            console.error(error);
+        }
+    };
 
     const handleDelete = async (id) => {
         try {
             await articoloApi.deleteArticolo(id);
-            const updatedArticoli = articoli.filter((articolo) => articolo._id !== id);
-            setArticoli(updatedArticoli);
-            setFilteredArticoli(updatedArticoli);
+            fetchArticoli(currentPage, activeSearch);
         } catch (error) {
             alert('Errore durante la cancellazione dell\'articolo');
             console.error(error);
         }
     };
 
-    const handleSelectArticolo = (articoloId) => {
-        history.push(`/articoli/${articoloId}`);
-    };
-
     const handleSearch = () => {
-        const filtered = articoli.filter((articolo) => {
-            const matchesCodice = articolo.codice?.toLowerCase().includes(searchCodice.toLowerCase());
-            const matchesDescrizione = articolo.descrizione?.toLowerCase().includes(searchDescrizione.toLowerCase());
-            return matchesCodice && matchesDescrizione;
-        });
-        setFilteredArticoli(filtered);
+        setActiveSearch(searchTerm);
+        history.push('?page=1');
     };
-
-    const totalPages = Math.ceil(filteredArticoli.length / itemsPerPage);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentArticoli = filteredArticoli.slice(indexOfFirstItem, indexOfLastItem);
 
     const handlePageChange = (pageNumber) => {
-        history.push(`?page=${pageNumber}`);
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            history.push(`?page=${pageNumber}`);
+        }
+    };
+
+    const handleSlotChange = (direction) => {
+        if (direction === 'prev' && currentSlotStart > 1) {
+            setCurrentSlotStart((prev) => Math.max(prev - slotSize, 1));
+        } else if (direction === 'next' && currentSlotStart + slotSize <= totalPages) {
+            setCurrentSlotStart((prev) => prev + slotSize);
+        }
+    };
+
+    const renderPageButtons = () => {
+        const buttons = [];
+        for (
+            let i = currentSlotStart;
+            i < currentSlotStart + slotSize && i <= totalPages;
+            i++
+        ) {
+            buttons.push(
+                <button
+                    key={i}
+                    className={`page-button ${currentPage === i ? 'active' : ''}`}
+                    onClick={() => handlePageChange(i)}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return buttons;
     };
 
     return (
@@ -74,15 +91,9 @@ const ArticoloList = ({ onSelectArticolo }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="Codice..."
-                            value={searchCodice}
-                            onChange={(e) => setSearchCodice(e.target.value)}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Descrizione..."
-                            value={searchDescrizione}
-                            onChange={(e) => setSearchDescrizione(e.target.value)}
+                            placeholder="Cerca per codice o descrizione..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <button onClick={handleSearch} className="btn btn-search">
                             Cerca
@@ -106,7 +117,7 @@ const ArticoloList = ({ onSelectArticolo }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentArticoli.map((articolo) => (
+                            {articoli.map((articolo) => (
                                 <tr key={articolo._id}>
                                     <td>{articolo.codice}</td>
                                     <td>{articolo.descrizione}</td>
@@ -120,7 +131,7 @@ const ArticoloList = ({ onSelectArticolo }) => {
                                         </button>
                                         <button
                                             className="btn"
-                                            onClick={() => handleSelectArticolo(articolo._id)}
+                                            onClick={() => history.push(`/articoli/${articolo._id}`)}
                                         >
                                             Dettagli
                                         </button>
@@ -137,23 +148,28 @@ const ArticoloList = ({ onSelectArticolo }) => {
                     </table>
                 </div>
                 <div className="pagination">
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index + 1}
-                            className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
-                            onClick={() => handlePageChange(index + 1)}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
+                    <button
+                        className="btn btn-prev"
+                        onClick={() => handleSlotChange('prev')}
+                        disabled={currentSlotStart === 1}
+                    >
+                        &larr;
+                    </button>
+                    {renderPageButtons()}
+                    <button
+                        className="btn btn-next"
+                        onClick={() => handleSlotChange('next')}
+                        disabled={currentSlotStart + slotSize > totalPages}
+                    >
+                        &rarr;
+                    </button>
                 </div>
             </div>
             {creatingArticolo && (
                 <ArticoloEditor
                     onSave={(newArticolo) => {
                         setCreatingArticolo(false);
-                        setArticoli([...articoli, newArticolo]);
-                        setFilteredArticoli([...articoli, newArticolo]);
+                        fetchArticoli(currentPage, activeSearch);
                     }}
                     onCancel={() => setCreatingArticolo(false)}
                 />

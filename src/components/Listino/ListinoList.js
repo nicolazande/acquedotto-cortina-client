@@ -5,40 +5,40 @@ import ListinoEditor from '../shared/ListinoEditor';
 import '../../styles/Listino/ListinoList.css';
 
 const ListinoList = ({ onSelectListino }) => {
-    const [listini, setListini] = useState([]);
-    const [filteredListini, setFilteredListini] = useState([]);
-    const [searchDescrizione, setSearchDescrizione] = useState('');
+    const [listini, setListini] = useState([]); // Stores the current page's listini
+    const [searchTerm, setSearchTerm] = useState(''); // Controlled input value
+    const [activeSearch, setActiveSearch] = useState(''); // Search term currently applied
     const [creatingListino, setCreatingListino] = useState(false);
-    const [currentSlotStart, setCurrentSlotStart] = useState(1);
-    const itemsPerPage = 50;
-    const slotSize = 10;
-
+    const [totalPages, setTotalPages] = useState(1); // Total pages
+    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Start of current pagination slot
+    const itemsPerPage = 50; // Items displayed per page
+    const slotSize = 10; // Number of pages in each slot
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
 
+    // Fetch listini whenever currentPage or activeSearch changes
     useEffect(() => {
-        const fetchListini = async () => {
-            try {
-                const response = await listinoApi.getListini();
-                setListini(response.data);
-                setFilteredListini(response.data);
-            } catch (error) {
-                alert('Errore durante il recupero dei listini');
-                console.error(error);
-            }
-        };
+        fetchListini(currentPage, activeSearch);
+    }, [currentPage, activeSearch]);
 
-        fetchListini();
-    }, []);
+    const fetchListini = async (page = 1, search = '') => {
+        try {
+            const response = await listinoApi.getListini(page, itemsPerPage, search);
+            const { data, totalPages: fetchedTotalPages } = response.data;
+            setListini(data); // Set the current page's data
+            setTotalPages(fetchedTotalPages); // Set total pages for pagination
+        } catch (error) {
+            alert('Errore durante il recupero dei listini');
+            console.error(error);
+        }
+    };
 
     const handleDelete = async (id) => {
         try {
             await listinoApi.deleteListino(id);
-            const updatedListini = listini.filter((listino) => listino._id !== id);
-            setListini(updatedListini);
-            setFilteredListini(updatedListini);
+            fetchListini(currentPage, activeSearch); // Refetch current page after deletion
         } catch (error) {
             alert('Errore durante la cancellazione del listino');
             console.error(error);
@@ -46,23 +46,21 @@ const ListinoList = ({ onSelectListino }) => {
     };
 
     const handleSearch = () => {
-        const filtered = listini.filter((listino) =>
-            listino.descrizione?.toLowerCase().includes(searchDescrizione.toLowerCase())
-        );
-        setFilteredListini(filtered);
+        setActiveSearch(searchTerm); // Apply the current input as the active search term
+        history.push('?page=1'); // Reset to the first page for a new search
     };
 
-    const totalPages = Math.ceil(filteredListini.length / itemsPerPage);
-
     const handlePageChange = (pageNumber) => {
-        history.push(`?page=${pageNumber}`);
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            history.push(`?page=${pageNumber}`);
+        }
     };
 
     const handleSlotChange = (direction) => {
-        if (direction === 'next' && currentSlotStart + slotSize <= totalPages) {
-            setCurrentSlotStart((prev) => prev + slotSize);
-        } else if (direction === 'prev' && currentSlotStart > 1) {
+        if (direction === 'prev' && currentSlotStart > 1) {
             setCurrentSlotStart((prev) => Math.max(prev - slotSize, 1));
+        } else if (direction === 'next' && currentSlotStart + slotSize <= totalPages) {
+            setCurrentSlotStart((prev) => prev + slotSize);
         }
     };
 
@@ -86,10 +84,6 @@ const ListinoList = ({ onSelectListino }) => {
         return buttons;
     };
 
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentListini = filteredListini.slice(indexOfFirstItem, indexOfLastItem);
-
     return (
         <div className="listino-list-container">
             <div className="listino-list">
@@ -99,8 +93,8 @@ const ListinoList = ({ onSelectListino }) => {
                         <input
                             type="text"
                             placeholder="Descrizione..."
-                            value={searchDescrizione}
-                            onChange={(e) => setSearchDescrizione(e.target.value)}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <button onClick={handleSearch} className="btn btn-search">
                             Cerca
@@ -123,7 +117,7 @@ const ListinoList = ({ onSelectListino }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentListini.map((listino) => (
+                            {listini.map((listino) => (
                                 <tr key={listino._id}>
                                     <td>{listino.categoria}</td>
                                     <td>{listino.descrizione}</td>
@@ -172,11 +166,9 @@ const ListinoList = ({ onSelectListino }) => {
             </div>
             {creatingListino && (
                 <ListinoEditor
-                    listino={{}}
                     onSave={(newListino) => {
                         setCreatingListino(false);
-                        setListini([...listini, newListino]);
-                        setFilteredListini([...listini, newListino]);
+                        fetchListini(currentPage, activeSearch); // Refetch current data
                     }}
                     onCancel={() => setCreatingListino(false)}
                     mode="Nuovo"

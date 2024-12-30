@@ -5,38 +5,39 @@ import LetturaEditor from '../shared/LetturaEditor';
 import '../../styles/Lettura/LetturaList.css';
 
 const LetturaList = ({ onSelectLettura }) => {
-    const [letture, setLetture] = useState([]);
-    const [filteredLetture, setFilteredLetture] = useState([]);
-    const [searchDate, setSearchDate] = useState('');
+    const [letture, setLetture] = useState([]); // Current page's letture
+    const [searchTerm, setSearchTerm] = useState(''); // Controlled input for search
+    const [activeSearch, setActiveSearch] = useState(''); // Applied search term
     const [creatingLettura, setCreatingLettura] = useState(false);
-    const itemsPerPage = 100;
-
+    const [totalPages, setTotalPages] = useState(1); // Total number of pages
+    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Pagination slot start
+    const itemsPerPage = 50; // Items displayed per page
+    const slotSize = 10; // Number of pages per slot
     const history = useHistory();
     const location = useLocation();
-
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
 
     useEffect(() => {
-        const fetchLetture = async () => {
-            try {
-                const response = await letturaApi.getLetture();
-                setLetture(response.data);
-                setFilteredLetture(response.data);
-            } catch (error) {
-                alert('Errore durante il recupero delle letture');
-                console.error(error);
-            }
-        };
-        fetchLetture();
-    }, []);
+        fetchLetture(currentPage, activeSearch);
+    }, [currentPage, activeSearch]);
+
+    const fetchLetture = async (page = 1, search = '') => {
+        try {
+            const response = await letturaApi.getLetture(page, itemsPerPage, search);
+            const { data, totalPages: fetchedTotalPages } = response.data;
+            setLetture(data);
+            setTotalPages(fetchedTotalPages);
+        } catch (error) {
+            alert('Errore durante il recupero delle letture');
+            console.error(error);
+        }
+    };
 
     const handleDelete = async (id) => {
         try {
             await letturaApi.deleteLettura(id);
-            const updatedLetture = letture.filter((lettura) => lettura._id !== id);
-            setLetture(updatedLetture);
-            setFilteredLetture(updatedLetture);
+            fetchLetture(currentPage, activeSearch); // Refetch data after deletion
         } catch (error) {
             alert('Errore durante la cancellazione della lettura');
             console.error(error);
@@ -44,37 +45,42 @@ const LetturaList = ({ onSelectLettura }) => {
     };
 
     const handleSearch = () => {
-        const filtered = letture.filter((lettura) => {
-            const matchesDate = new Date(lettura.data_lettura)
-                .toLocaleDateString()
-                .includes(searchDate);
-            return matchesDate;
-        });
-        setFilteredLetture(filtered);
-        handlePageChange(1);
+        setActiveSearch(searchTerm); // Apply the search term
+        history.push('?page=1'); // Reset to the first page
     };
 
-    const handleCreateLettura = async (newLettura) => {
-        try {
-            await letturaApi.createLettura(newLettura);
-            alert('Lettura creata con successo');
-            setCreatingLettura(false);
-            const response = await letturaApi.getLetture();
-            setLetture(response.data);
-            setFilteredLetture(response.data);
-        } catch (error) {
-            alert('Errore durante la creazione della lettura');
-            console.error(error);
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            history.push(`?page=${pageNumber}`);
         }
     };
 
-    const totalPages = Math.ceil(filteredLetture.length / itemsPerPage);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentLetture = filteredLetture.slice(indexOfFirstItem, indexOfLastItem);
+    const handleSlotChange = (direction) => {
+        if (direction === 'prev' && currentSlotStart > 1) {
+            setCurrentSlotStart((prev) => Math.max(prev - slotSize, 1));
+        } else if (direction === 'next' && currentSlotStart + slotSize <= totalPages) {
+            setCurrentSlotStart((prev) => prev + slotSize);
+        }
+    };
 
-    const handlePageChange = (pageNumber) => {
-        history.push(`?page=${pageNumber}`);
+    const renderPageButtons = () => {
+        const buttons = [];
+        for (
+            let i = currentSlotStart;
+            i < currentSlotStart + slotSize && i <= totalPages;
+            i++
+        ) {
+            buttons.push(
+                <button
+                    key={i}
+                    className={`page-button ${currentPage === i ? 'active' : ''}`}
+                    onClick={() => handlePageChange(i)}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return buttons;
     };
 
     return (
@@ -85,9 +91,9 @@ const LetturaList = ({ onSelectLettura }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="Data Lettura (gg/mm/aaaa)"
-                            value={searchDate}
-                            onChange={(e) => setSearchDate(e.target.value)}
+                            placeholder="..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <button onClick={handleSearch} className="btn btn-search">
                             Cerca
@@ -113,8 +119,8 @@ const LetturaList = ({ onSelectLettura }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentLetture.map((lettura) => (
-                                <tr key={lettura._id} className="lettura-list-item">
+                            {letture.map((lettura) => (
+                                <tr key={lettura._id}>
                                     <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
                                     <td>{lettura.consumo}</td>
                                     <td>{lettura.unita_misura}</td>
@@ -148,23 +154,30 @@ const LetturaList = ({ onSelectLettura }) => {
                     </table>
                 </div>
                 <div className="pagination">
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index + 1}
-                            className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
-                            onClick={() => handlePageChange(index + 1)}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
+                    <button
+                        className="btn btn-prev"
+                        onClick={() => handleSlotChange('prev')}
+                        disabled={currentSlotStart === 1}
+                    >
+                        &larr;
+                    </button>
+                    {renderPageButtons()}
+                    <button
+                        className="btn btn-next"
+                        onClick={() => handleSlotChange('next')}
+                        disabled={currentSlotStart + slotSize > totalPages}
+                    >
+                        &rarr;
+                    </button>
                 </div>
             </div>
             {creatingLettura && (
                 <LetturaEditor
-                    lettura={{}}
-                    onSave={handleCreateLettura}
+                    onSave={(newLettura) => {
+                        setCreatingLettura(false);
+                        fetchLetture(currentPage, activeSearch); // Refetch data after creation
+                    }}
                     onCancel={() => setCreatingLettura(false)}
-                    mode="Nuova"
                 />
             )}
         </div>

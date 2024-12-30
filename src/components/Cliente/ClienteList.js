@@ -1,86 +1,87 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import clienteApi from '../../api/clienteApi';
-import ClienteEditor from '../shared/ClienteEditor'
+import ClienteEditor from '../shared/ClienteEditor';
 import '../../styles/Cliente/ClienteList.css';
 
-const ClienteList = () => {
-    const [clienti, setClienti] = useState([]);
-    const [filteredClienti, setFilteredClienti] = useState([]);
-    const [searchName, setSearchName] = useState('');
-    const [searchSurname, setSearchSurname] = useState('');
+const ClienteList = ( { onSelectCliente }) => {
+    const [clienti, setClienti] = useState([]); // Stores the current page's clients
+    const [searchTerm, setSearchTerm] = useState(''); // Controlled input value
+    const [activeSearch, setActiveSearch] = useState(''); // Search term currently applied
     const [creatingCliente, setCreatingCliente] = useState(false);
-    const itemsPerPage = 50;
-
+    const [totalPages, setTotalPages] = useState(1); // Total pages
+    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Start of current pagination slot
+    const itemsPerPage = 50; // Items displayed per page
+    const slotSize = 10; // Number of pages in each slot
     const history = useHistory();
     const location = useLocation();
-
-    // Extract current page from query parameters
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
 
+    // Fetch clients whenever currentPage or activeSearch changes
     useEffect(() => {
-        const fetchClienti = async () => {
-            try {
-                const response = await clienteApi.getClienti();
-                setClienti(response.data);
-                setFilteredClienti(response.data);
-            } catch (error) {
-                alert('Errore durante il recupero dei clienti');
-                console.error(error);
-            }
-        };
-        fetchClienti();
-    }, []);
+        fetchClienti(currentPage, activeSearch);
+    }, [currentPage, activeSearch]);
+
+    const fetchClienti = async (page = 1, search = '') => {
+        try {
+            const response = await clienteApi.getClienti(page, itemsPerPage, search);
+            const { data, totalPages: fetchedTotalPages } = response.data;
+            setClienti(data); // Set the current page's data
+            setTotalPages(fetchedTotalPages); // Set total pages for pagination
+        } catch (error) {
+            alert('Errore durante il recupero dei clienti');
+            console.error(error);
+        }
+    };
 
     const handleDelete = async (id) => {
         try {
             await clienteApi.deleteCliente(id);
-            const updatedClienti = clienti.filter((cliente) => cliente._id !== id);
-            setClienti(updatedClienti);
-            setFilteredClienti(updatedClienti);
+            fetchClienti(currentPage, activeSearch); // Refetch current page after deletion
         } catch (error) {
             alert('Errore durante la cancellazione del cliente');
             console.error(error);
         }
     };
 
-    const handleSelectCliente = (clienteId) => {
-        history.push(`/clienti/${clienteId}`); // Navigate to ClienteDetails page
-    };
-
     const handleSearch = () => {
-        const filtered = clienti.filter((cliente) => {
-            const matchesName = cliente.nome?.toLowerCase().includes(searchName.toLowerCase());
-            const matchesSurname = cliente.cognome?.toLowerCase().includes(searchSurname.toLowerCase());
-            return matchesName && matchesSurname;
-        });
-        setFilteredClienti(filtered);
-        handlePageChange(1); // Reset to the first page
+        setActiveSearch(searchTerm); // Apply the current input as the active search term
+        history.push('?page=1'); // Reset to the first page for a new search
     };
 
-    const handleCreateCliente = async (newCliente) => {
-        try {
-            await clienteApi.createCliente(newCliente);
-            alert('Cliente creato con successo');
-            setCreatingCliente(false);
-            const response = await clienteApi.getClienti();
-            setClienti(response.data);
-            setFilteredClienti(response.data);
-        } catch (error) {
-            alert('Errore durante la creazione del cliente');
-            console.error(error);
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            history.push(`?page=${pageNumber}`);
         }
     };
 
-    // Pagination logic
-    const totalPages = Math.ceil(filteredClienti.length / itemsPerPage);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentClienti = filteredClienti.slice(indexOfFirstItem, indexOfLastItem);
+    const handleSlotChange = (direction) => {
+        if (direction === 'prev' && currentSlotStart > 1) {
+            setCurrentSlotStart((prev) => Math.max(prev - slotSize, 1));
+        } else if (direction === 'next' && currentSlotStart + slotSize <= totalPages) {
+            setCurrentSlotStart((prev) => prev + slotSize);
+        }
+    };
 
-    const handlePageChange = (pageNumber) => {
-        history.push(`?page=${pageNumber}`); // Update URL with the new page number
+    const renderPageButtons = () => {
+        const buttons = [];
+        for (
+            let i = currentSlotStart;
+            i < currentSlotStart + slotSize && i <= totalPages;
+            i++
+        ) {
+            buttons.push(
+                <button
+                    key={i}
+                    className={`page-button ${currentPage === i ? 'active' : ''}`}
+                    onClick={() => handlePageChange(i)}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return buttons;
     };
 
     return (
@@ -89,18 +90,11 @@ const ClienteList = () => {
                 <h2>Lista Clienti</h2>
                 <div className="search-container">
                     <div className="search-bar">
-                        <span className="search-icon">🔍</span>
                         <input
                             type="text"
-                            placeholder="Nome"
-                            value={searchName}
-                            onChange={(e) => setSearchName(e.target.value)}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Cognome"
-                            value={searchSurname}
-                            onChange={(e) => setSearchSurname(e.target.value)}
+                            placeholder="Cerca per nome o cognome"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <button onClick={handleSearch} className="btn btn-search">
                             Cerca
@@ -117,22 +111,30 @@ const ClienteList = () => {
                     <table className="cliente-table">
                         <thead>
                             <tr>
-                                <th>Ragione Sociale</th>
-                                <th>Indirizzo</th>
+                                <th>Nome</th>
+                                <th>Cognome</th>
+                                <th>Email</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {currentClienti.map((cliente) => (
-                                <tr key={cliente._id} className="cliente-list-item">
-                                    <td>{cliente.ragione_sociale || '-'}</td>
-                                    <td>{cliente.indirizzo_residenza || '-'}</td>
+                            {clienti.map((cliente) => (
+                                <tr key={cliente._id}>
+                                    <td>{cliente.nome || '-'}</td>
+                                    <td>{cliente.cognome || '-'}</td>
+                                    <td>{cliente.email || '-'}</td>
                                     <td>
                                         <button
                                             className="btn"
-                                            onClick={() => handleSelectCliente(cliente._id)}
+                                            onClick={() => history.push(`/clienti/${cliente._id}`)}
                                         >
                                             Dettagli
+                                        </button>
+                                        <button
+                                            className="btn btn-select"
+                                            onClick={() => onSelectCliente && onSelectCliente(cliente._id)}
+                                        >
+                                            Seleziona
                                         </button>
                                         <button
                                             className="btn btn-delete"
@@ -146,25 +148,31 @@ const ClienteList = () => {
                         </tbody>
                     </table>
                 </div>
-                {/* Pagination Menu */}
                 <div className="pagination">
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index + 1}
-                            className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
-                            onClick={() => handlePageChange(index + 1)}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
+                    <button
+                        className="btn btn-prev"
+                        onClick={() => handleSlotChange('prev')}
+                        disabled={currentSlotStart === 1}
+                    >
+                        &larr;
+                    </button>
+                    {renderPageButtons()}
+                    <button
+                        className="btn btn-next"
+                        onClick={() => handleSlotChange('next')}
+                        disabled={currentSlotStart + slotSize > totalPages}
+                    >
+                        &rarr;
+                    </button>
                 </div>
             </div>
             {creatingCliente && (
                 <ClienteEditor
-                    cliente={{}} // Empty cliente object for creating a new one
-                    onSave={handleCreateCliente}
+                    onSave={(newCliente) => {
+                        setCreatingCliente(false);
+                        fetchClienti(currentPage, activeSearch); // Refetch current data
+                    }}
                     onCancel={() => setCreatingCliente(false)}
-                    mode="Nuovo"
                 />
             )}
         </div>
