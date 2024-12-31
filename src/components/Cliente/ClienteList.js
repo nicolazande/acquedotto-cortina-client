@@ -92,7 +92,7 @@ const ClienteList = ( { onSelectCliente }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="Cerca per nome o cognome"
+                            placeholder="..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />

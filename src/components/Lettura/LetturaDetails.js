@@ -190,35 +190,35 @@ const LetturaDetails = () => {
                     </div>
 
                     <div className="tabs-container">
+                        {/* Tab Navigation */}
                         <div className="tabs">
-                            <button
-                                className={`tab ${activeTab === 'servizi' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('servizi')}
-                            >
-                                Servizi
-                            </button>
-                            <button
-                                className={`tab ${activeTab === 'contatori' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('contatori')}
-                            >
-                                Contatori
-                            </button>
+                            {[
+                                { id: 'servizi', label: 'Servizi' },
+                                { id: 'contatori', label: 'Contatori' },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                    onClick={() => setActiveTab(tab.id)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
                         </div>
-
                         <div className={`tab-content ${activeTab === 'servizi' ? 'show' : ''}`}>
                             {activeTab === 'servizi' && (
                                 <div className="servizi-box">
-                                    <button onClick={fetchServiziList} className="btn btn-associate-servizio">
-                                        Associa Servizio
-                                    </button>
-                                    <button onClick={() => setCreatingServizio(true)} className="btn btn-create-servizio">
-                                        Nuovo Servizio
-                                    </button>
                                     <button
                                         onClick={fetchAssociatedServizi}
                                         className="btn btn-view-servizi"
                                     >
                                         Visualizza Servizi
+                                    </button>
+                                    <button onClick={fetchServiziList} className="btn btn-associate-servizio">
+                                        Associa Servizio
+                                    </button>
+                                    <button onClick={() => setCreatingServizio(true)} className="btn btn-create-servizio">
+                                        Nuovo Servizio
                                     </button>
                                     {showAssociatedServizi && servizi.length > 0 ? (
                                         <table className="servizi-table">

@@ -25,20 +25,26 @@ const ServizioDetails = () => {
     const [showFatturaModal, setShowFatturaModal] = useState(false);
     const [activeTab, setActiveTab] = useState('modifica');
     const [isEditing, setIsEditing] = useState(false);
-    
-    const fetchServizio = useCallback(async () => {
-        try {
-            const response = await servizioApi.getServizio(servizioId);
-            setServizio(response.data);
-        } catch (error) {
-            console.error('Errore durante il recupero del servizio:', error);
-            alert('Errore durante il recupero del servizio.');
-        }
-    }, [servizioId]);
 
     useEffect(() => {
-        if (servizioId) fetchServizio();
-    }, [servizioId, fetchServizio]);
+        const fetchServizio = async () => {
+            try {
+                const response = await servizioApi.getServizio(servizioId);
+                setServizio(response.data);
+            } catch (error) {
+                alert('Errore durante il recupero del servizio');
+                console.error('Errore durante il recupero del servizio:', error);
+            }
+        };
+    
+        if (servizioId) {
+            fetchServizio();
+        }
+    
+        setShowLetturaModal(false);
+        setShowArticoloModal(false);
+        setShowFatturaModal(false);
+    }, [servizioId]);    
 
     const fetchLettura = async () => {
         try {

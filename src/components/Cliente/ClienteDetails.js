@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import clienteApi from '../../api/clienteApi';
 import contatoreApi from '../../api/contatoreApi';
@@ -6,6 +6,9 @@ import fatturaApi from '../../api/fatturaApi';
 import ContatoreEditor from '../shared/ContatoreEditor'
 import ClienteEditor from '../shared/ClienteEditor'
 import '../../styles/Cliente/ClienteDetails.css';
+import ContatoreList from '../Contatore/ContatoreList';
+import FatturaList from '../Fattura/FatturaList';
+import FatturaEditor from '../shared/FatturaEditor';
 
 
 const ClienteDetails= () => 
@@ -14,60 +17,43 @@ const ClienteDetails= () =>
     const history = useHistory();
     const [cliente, setCliente] = useState(null);
     const [contatori, setContatori] = useState([]);
-    const [fatture, setFatture] = useState([]);
     const [showContatori, setShowContatori] = useState(false);
-    const [showFatture, setShowFatture] = useState(false);
-    const [showContatoreModal, setShowContatoreModal] = useState(false);
-    const [showFatturaModal, setShowFatturaModal] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [editingContatore, setEditingContatore] = useState(null);
+    const [associatingContatore, setAssociatingContatore] = useState(false);
     const [creatingContatore, setCreatingContatore] = useState(false);
+    const [fatture, setFatture] = useState([]);
+    const [showFatture, setShowFatture] = useState(false);
+    const [associatingFattura, setAssociatingFattura] = useState(false);
+    const [creatingFattura, setCreatingFattura] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('modifica');
+    
 
-    useEffect(() =>
-    {
-        const fetchCliente = async () =>
-        {
-            try
-            {
-                const response = await clienteApi.getCliente(clienteId);
-                setCliente(response.data);
-                setShowContatori(false);
-                setShowFatture(false);
-            }
-            catch (error)
-            {
-                alert('Errore durante il recupero del cliente');
-                console.error(error);
-            }
-        };
-
-        if (clienteId)
-        {
-            fetchCliente();
-        }
-
-        setShowContatoreModal(false);
-        setShowFatturaModal(false);
-    }, [clienteId]);
-
-    const fetchContatori = async () =>
-    {
+    const resetViews = () => {
+        setShowContatori(false);
+        setAssociatingContatore(false);
+        setCreatingContatore(false);
+        setShowFatture(false);
+        setAssociatingFattura(false);
+        setCreatingFattura(false);
+        setContatori([]);
+        setFatture([]);
+    };
+    
+    const fetchCliente = useCallback(async () => {
         try
         {
-            const response = await clienteApi.getContatori(clienteId);
-            setContatori(response.data);
-            setShowContatori(true);
-            setShowFatture(false);
+            const response = await clienteApi.getCliente(clienteId);
+            setCliente(response.data);
+            resetViews();
         }
         catch (error)
         {
-            alert('Errore durante il recupero dei contatori');
+            alert('Errore durante il recupero del cliente');
             console.error(error);
         }
-    };
+    }, [clienteId]);
 
-    const handleSaveCliente = async (updatedCliente) => {
+    const handleEditCliente = async (updatedCliente) => {
         try {
             await clienteApi.updateCliente(clienteId, updatedCliente);
             setCliente(updatedCliente);
@@ -79,35 +65,41 @@ const ClienteDetails= () =>
         }
     };
 
-    const handleBackClick = () => {
-        history.goBack(); // Adjust the route as per your Clienti list URL
+    const fetchContatori = async () =>
+    {
+        try
+        {
+            const response = await clienteApi.getContatori(clienteId);
+            setContatori(response.data);
+            setShowContatori(true);
+        }
+        catch (error)
+        {
+            alert('Errore durante il recupero dei contatori');
+            console.error(error);
+        }
+    };
+
+    const handleAssociaContatore = async (contatoreId) => {
+        try {
+            await clienteApi.associateContatore(clienteId, contatoreId);
+            alert('Contatore associato con successo.');
+            setAssociatingContatore(false);
+        } catch (error) {
+            console.error('Errore durante l\'associazione del contatore:', error);
+            alert('Errore durante l\'associazione del contatore.');
+        }
     };
 
     const handleCreateContatore = async (newContatore) => {
         try {
-            // Create the new contatore
             const response = await contatoreApi.createContatore(newContatore);
-
-            // Associate the new contatore with the current cliente
             await clienteApi.associateContatore(clienteId, response.data._id);
-
             alert('Contatore creato e associato con successo');
             setCreatingContatore(false);
             fetchContatori();
         } catch (error) {
             alert('Errore durante la creazione o associazione del contatore');
-            console.error(error);
-        }
-    };
-
-    const handleSaveContatore = async (updatedContatore) => {
-        try {
-            await contatoreApi.updateContatore(updatedContatore._id, updatedContatore);
-            alert('Contatore aggiornato con successo');
-            setEditingContatore(null);
-            fetchContatori();
-        } catch (error) {
-            alert('Errore durante l\'aggiornamento del contatore');
             console.error(error);
         }
     };
@@ -119,7 +111,6 @@ const ClienteDetails= () =>
             const response = await clienteApi.getFatture(clienteId);
             setFatture(response.data);
             setShowFatture(true);
-            setShowContatori(false);
         }
         catch (error)
         {
@@ -128,59 +119,13 @@ const ClienteDetails= () =>
         }
     };
 
-    const handleOpenContatoreModal = async () =>
-    {
-        try
-        {
-            const response = await contatoreApi.getContatori();
-            setContatori(response.data);
-            setShowContatoreModal(true);
-            setShowFatturaModal(false);
-        }
-        catch (error)
-        {
-            alert('Errore durante il recupero dei contatori');
-            console.error(error);
-        }
-    };
-
-    const handleOpenFatturaModal = async () =>
-    {
-        try
-        {
-            const response = await fatturaApi.getFatture();
-            setFatture(response.data);
-            setShowFatturaModal(true);
-            setShowContatoreModal(false);
-        } 
-        catch (error)
-        {
-            alert('Errore durante il recupero delle fatture');
-            console.error(error);
-        }
-    };
-
-    const handleSelectContatore = async (contatoreId) =>
-    {
-        try
-        {
-            await clienteApi.associateContatore(clienteId, contatoreId);
-            setShowContatoreModal(false);
-            fetchContatori();
-        }
-        catch (error)
-        {
-            alert('Errore durante l\'associazione del contatore');
-            console.error(error);
-        }
-    };
-
-    const handleSelectFattura = async (fatturaId) =>
+    const handleAssociaFattura = async (fatturaId) =>
     {
         try
         {
             await clienteApi.associateFattura(clienteId, fatturaId);
-            setShowFatturaModal(false);
+            alert('Fattura associata con successo.');
+            setAssociatingFattura(false);
             fetchFatture();
         }
         catch (error)
@@ -189,6 +134,33 @@ const ClienteDetails= () =>
             console.error(error);
         }
     };
+
+    const handleCreateFattura = async (newFattura) => {
+        try {
+            const response = await fatturaApi.createFattura(newFattura);
+            await clienteApi.associateFattura(clienteId, response.data._id);
+            alert('Fattura creata e associata con successo');
+            setCreatingFattura(false);
+            fetchFatture();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione della fattura');
+            console.error(error);
+        }
+    };
+
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        resetViews();
+    };
+
+    const handleBackClick = () => {
+        history.goBack();
+    };
+
+    useEffect(() => {
+        resetViews();
+        if (clienteId) fetchCliente();
+    }, [clienteId, fetchCliente]);
 
     if (!cliente)
     {
@@ -201,7 +173,7 @@ const ClienteDetails= () =>
             {isEditing ? (
                 <ClienteEditor
                     cliente={cliente}
-                    onSave={handleSaveCliente}
+                    onSave={handleEditCliente}
                     onCancel={() => setIsEditing(false)}
                     mode="Modifica"
                 />
@@ -372,13 +344,12 @@ const ClienteDetails= () =>
                                 <button
                                     key={tab.id}
                                     className={`tab ${activeTab === tab.id ? 'active' : ''}`}
-                                    onClick={() => setActiveTab(tab.id)}
+                                    onClick={() => handleTabChange(tab.id)}
                                 >
                                     {tab.label}
                                 </button>
                             ))}
                         </div>
-
                         {/* Tab Content */}
                         <div className={`tab-content ${activeTab === 'contatori' ? 'show' : ''}`}>
                             {activeTab === 'contatori' && (
@@ -386,11 +357,11 @@ const ClienteDetails= () =>
                                     <button onClick={fetchContatori} className="btn btn-show-contatori">
                                         Visualizza Contatori
                                     </button>
+                                    <button onClick={() => setAssociatingContatore(true)} className="btn btn-associate-contatore">
+                                        Associa Contatore
+                                    </button>
                                     <button onClick={() => setCreatingContatore(true)} className="btn btn-create-contatore">
                                         Crea Contatore
-                                    </button>
-                                    <button onClick={handleOpenContatoreModal} className="btn btn-associate-contatore">
-                                        Associa Contatore
                                     </button>
                                 </div>
                             )}
@@ -401,8 +372,11 @@ const ClienteDetails= () =>
                                     <button onClick={fetchFatture} className="btn btn-show-fatture">
                                         Visualizza Fatture
                                     </button>
-                                    <button onClick={handleOpenFatturaModal} className="btn btn-associate-fattura">
+                                    <button onClick={() => setAssociatingFattura(true)} className="btn btn-associate-fattura">
                                         Associa Fattura
+                                    </button>
+                                    <button onClick={() => setCreatingFattura(true)} className="btn btn-create-contatore">
+                                        Crea Fattura
                                     </button>
                                 </div>
                             )}
@@ -472,73 +446,69 @@ const ClienteDetails= () =>
                                 <th>Data</th>
                                 <th>Confermata</th>
                                 <th>Codice</th>
+                                <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {fatture.length === 0 ? (
+                            {Array.isArray(fatture) && fatture.length > 0 ? (
+                                fatture.map((fattura) => (
+                                    <tr key={fattura._id}>
+                                        <td>{fattura.ragione_sociale}</td>
+                                        <td>{fattura.anno}</td>
+                                        <td>{fattura.numero}</td>
+                                        <td>{new Date(fattura.data_fattura).toLocaleDateString()}</td>
+                                        <td><input type="checkbox" checked={fattura.confermata} readOnly /></td>
+                                        <td>{fattura.codice}</td>
+                                        <td>
+                                            <button
+                                                className="btn btn-edit"
+                                                onClick={() => history.push(`/fatture/${fattura._id}`)}
+                                            >
+                                            Apri
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
                                 <tr>
                                     <td colSpan="8">Nessuna fattura associata</td>
                                 </tr>
-                            ) : (
-                                fatture.map((fattura) => (
-                                <tr key={fattura._id}>
-                                    <td>{fattura.ragione_sociale}</td>
-                                    <td>{fattura.anno}</td>
-                                    <td>{fattura.numero}</td>
-                                    <td>{new Date(fattura.data_fattura).toLocaleDateString()}</td>
-                                    <td><input type="checkbox" checked={fattura.confermata} readOnly /></td>
-                                    <td>{fattura.codice}</td>
-                                </tr>))
                             )}
                         </tbody>
                     </table>
                 </div>
             )}
-            {showContatoreModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Contatore</h3>
-                        <ul>
-                            {contatori.map((contatore) => (
-                                <li key={contatore._id} onClick={() => handleSelectContatore(contatore._id)}>
-                                    {contatore.seriale}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-            )}
-            {editingContatore && (
-                <ContatoreEditor
-                    contatore={editingContatore}
-                    onSave={handleSaveContatore}
-                    onCancel={() => setEditingContatore(null)}
-                    mode="Modifica"
+            {associatingContatore && (
+                <ContatoreList
+                    onSelectContatore={handleAssociaContatore}
                 />
             )}
             {creatingContatore && (
                 <ContatoreEditor
                     contatore={{
                         nome_cliente: `${cliente.nome || ''} ${cliente.cognome || ''}`.trim(),
+                        cliente: cliente._id,
                     }}
                     onSave={handleCreateContatore}
                     onCancel={() => setCreatingContatore(false)}
                     mode="Nuovo"
                 />
             )}
-            {showFatturaModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Fattura</h3>
-                        <ul>
-                            {fatture.map((fattura) => (
-                                <li key={fattura._id} onClick={() => handleSelectFattura(fattura._id)}>
-                                    {fattura.codice}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+            {associatingFattura && (
+                <FatturaList
+                    onSelectFattura={handleAssociaFattura}
+                />
+            )}
+            {creatingFattura && (
+                <FatturaEditor
+                    fattura={{
+                        cliente: cliente._id,
+                        ragione_sociale: `${cliente.nome || ''} ${cliente.cognome || ''}`.trim(),
+                    }}
+                    onSave={handleCreateFattura}
+                    onCancel={() => setCreatingFattura(false)}
+                    mode="Nuovo"
+                />
             )}
         </div>
     );
