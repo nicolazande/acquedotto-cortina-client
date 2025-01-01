@@ -5,33 +5,53 @@ import contatoreApi from '../../api/contatoreApi';
 import '../../styles/Edificio/EdificioDetails.css';
 import EdificioEditor from '../shared/EdificioEditor';
 import ContatoreEditor from '../shared/ContatoreEditor';
+import ContatoreList from '../Contatore/ContatoreList';
+
 
 const EdificioDetails = () => {
     const { id: edificioId } = useParams();
     const history = useHistory();
 
     const [edificio, setEdificio] = useState(null);
+
     const [contatori, setContatori] = useState([]);
     const [showContatori, setShowContatori] = useState(false);
-    const [showContatoreModal, setShowContatoreModal] = useState(false);
+    const [associatingContatore, setAssociatingContatore] = useState(false);
+    const [creatingContatore, setCreatingContatore] = useState(false);
+    
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('contatori');
-    const [contatoriList, setContatoriList] = useState([]);
-    const [creatingContatore, setCreatingContatore] = useState(false);
+    
+
+    const resetViews = () => {
+        setShowContatori(false);
+        setAssociatingContatore(false);
+        setCreatingContatore(false);
+        setContatori([]);
+    };
 
     const fetchEdificio = useCallback(async () => {
         try {
             const response = await edificioApi.getEdificio(edificioId);
             setEdificio(response.data);
+            resetViews();
         } catch (error) {
             alert('Errore durante il recupero dell\'edificio');
             console.error(error);
         }
     }, [edificioId]);
 
-    useEffect(() => {
-        if (edificioId) fetchEdificio();
-    }, [edificioId, fetchEdificio]);
+    const handleEditEdificio = async (updatedEdificio) => {
+        try {
+            await edificioApi.updateEdificio(edificioId, updatedEdificio);
+            alert('Edificio aggiornato con successo');
+            setIsEditing(false);
+            fetchEdificio();
+        } catch (error) {
+            alert('Errore durante l\'aggiornamento dell\'edificio');
+            console.error(error);
+        }
+    };
 
     const fetchContatori = async () => {
         try {
@@ -44,14 +64,14 @@ const EdificioDetails = () => {
         }
     };
 
-    const handleOpenContatoreModal = async () => {
+    const handleAssociaContatore = async (contatoreId) => {
         try {
-            const response = await contatoreApi.getContatori();
-            setContatoriList(response.data);
-            setShowContatoreModal(true);
+            await edificioApi.associateContatore(edificioId, contatoreId);
+            alert('Contatore associato con successo.');
+            setAssociatingContatore(false);
         } catch (error) {
-            alert('Errore durante il recupero dei contatori');
-            console.error(error);
+            console.error('Errore durante l\'associazione del contatore:', error);
+            alert('Errore durante l\'associazione del contatore.');
         }
     };
 
@@ -68,32 +88,19 @@ const EdificioDetails = () => {
         }
     };
 
-    const handleSelectContatore = async (contatoreId) => {
-        try {
-            await edificioApi.associateContatore(edificioId, contatoreId);
-            setShowContatoreModal(false);
-            fetchContatori();
-        } catch (error) {
-            alert('Errore durante l\'associazione del contatore');
-            console.error(error);
-        }
-    };
-
-    const handleSaveEdificio = async (updatedEdificio) => {
-        try {
-            await edificioApi.updateEdificio(edificioId, updatedEdificio);
-            alert('Edificio aggiornato con successo');
-            setIsEditing(false);
-            fetchEdificio();
-        } catch (error) {
-            alert('Errore durante l\'aggiornamento dell\'edificio');
-            console.error(error);
-        }
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        resetViews();
     };
 
     const handleBackClick = () => {
         history.goBack();
     };
+
+    useEffect(() => {
+        resetViews();
+        if (edificioId) fetchEdificio();
+    }, [edificioId, fetchEdificio]);
 
     if (!edificio) {
         return <div>Seleziona un edificio per vedere i dettagli</div>;
@@ -105,7 +112,7 @@ const EdificioDetails = () => {
             {isEditing ? (
                 <EdificioEditor
                     edificio={edificio}
-                    onSave={handleSaveEdificio}
+                    onSave={handleEditEdificio}
                     onCancel={() => setIsEditing(false)}
                     mode="Modifica"
                 />
@@ -151,72 +158,88 @@ const EdificioDetails = () => {
                         </table>
                     </div>
                     <div className="tabs-container">
+                        {/* Tab Navigation */}
                         <div className="tabs">
-                            <button
-                                className={`tab ${activeTab === 'contatori' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('contatori')}
-                            >
-                                Contatori
-                            </button>
+                            {[
+                                { id: 'contatori', label: 'Contatori' },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                    onClick={() => handleTabChange(tab.id)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
                         </div>
+                        {/* Tab Content */}
                         <div className={`tab-content ${activeTab === 'contatori' ? 'show' : ''}`}>
-                            <div className="contatori-box">
-                                <button onClick={fetchContatori} className="btn btn-show-contatori">
-                                    Visualizza Contatori
-                                </button>
-                                <button onClick={() => setCreatingContatore(true)} className="btn btn-create-contatore">
-                                    Crea Contatore
-                                </button>
-                                <button onClick={handleOpenContatoreModal} className="btn btn-associate-contatore">
-                                    Associa Contatore
-                                </button>
-                                {showContatori && (
-                                    <table className="contatori-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Seriale</th>
-                                                <th>Seriale Interno</th>
-                                                <th>Cliente</th>
-                                                <th>Azioni</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {contatori.length === 0 ? (
-                                                <tr>
-                                                    <td colSpan="4">Nessun contatore associato</td>
-                                                </tr>
-                                            ) : (
-                                                contatori.map((contatore) => (
-                                                    <tr key={contatore._id}>
-                                                        <td>{contatore.seriale}</td>
-                                                        <td>{contatore.seriale_interno}</td>
-                                                        <td>{contatore.nome_cliente || 'N/A'}</td>
-                                                        <td>
-                                                            <button
-                                                                className="btn btn-view"
-                                                                onClick={() =>
-                                                                    history.push(`/contatori/${contatore._id}`)
-                                                                }
-                                                            >
-                                                                Apri
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                            )}
-                                        </tbody>
-                                    </table>
-                                )}
-                            </div>
+                            {activeTab === 'contatori' && (
+                                <div className="contatori-box">
+                                    <button onClick={fetchContatori} className="btn btn-show-contatori">
+                                        Visualizza Contatori
+                                    </button>
+                                    <button onClick={() => setAssociatingContatore(true)} className="btn btn-associate-contatore">
+                                        Associa Contatore
+                                    </button>
+                                    <button onClick={() => setCreatingContatore(true)} className="btn btn-create-contatore">
+                                        Crea Contatore
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </>
             )}
             <div className="btn-back-container">
-                <button onClick={handleBackClick} className="btn btn-back">
-                    Indietro
-                </button>
+                <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
+            
+            {showContatori && (
+                <div className="contatori-section">
+                    <h3>Contatori Associati</h3>
+                    <table className="contatori-table">
+                        <thead>
+                            <tr>
+                                <th>Seriale</th>
+                                <th>Seriale Interno</th>
+                                <th>Cliente</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {contatori.length === 0 ? (
+                                <tr>
+                                    <td colSpan="4">Nessun contatore associato</td>
+                                </tr>
+                            ) : (
+                                contatori.map((contatore) => (
+                                    <tr key={contatore._id}>
+                                        <td>{contatore.seriale}</td>
+                                        <td>{contatore.seriale_interno}</td>
+                                        <td>{contatore.nome_cliente || 'N/A'}</td>
+                                        <td>
+                                            <button
+                                                className="btn btn-view"
+                                                onClick={() =>
+                                                    history.push(`/contatori/${contatore._id}`)
+                                                }
+                                            >
+                                                Apri
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+            {associatingContatore && (
+                <ContatoreList
+                    onSelectContatore={handleAssociaContatore}
+                />
+            )}
             {creatingContatore && (
                 <ContatoreEditor
                     contatore={{
@@ -226,46 +249,6 @@ const EdificioDetails = () => {
                     onCancel={() => setCreatingContatore(false)}
                     mode="Nuovo"
                 />
-            )}
-            {showContatoreModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h3>Seleziona Contatore</h3>
-                            <button
-                                className="btn btn-close"
-                                onClick={() => setShowContatoreModal(false)}
-                            >
-                                Chiudi
-                            </button>
-                        </div>
-                        <table className="contatori-table">
-                            <thead>
-                                <tr>
-                                    <th>Seriale</th>
-                                    <th>Nome Cliente</th>
-                                    <th>Azioni</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {contatoriList.map((contatore) => (
-                                    <tr key={contatore._id}>
-                                        <td>{contatore.seriale}</td>
-                                        <td>{contatore.nome_cliente || 'N/A'}</td>
-                                        <td>
-                                            <button
-                                                className="btn btn-select"
-                                                onClick={() => handleSelectContatore(contatore._id)}
-                                            >
-                                                Seleziona
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             )}
         </div>
     );

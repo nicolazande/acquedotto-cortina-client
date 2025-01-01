@@ -7,6 +7,15 @@ import listinoApi from '../../api/listinoApi';
 import letturaApi from '../../api/letturaApi';
 import '../../styles/Contatore/ContatoreDetails.css';
 import ContatoreEditor from '../shared/ContatoreEditor'
+import ClienteList from '../Cliente/ClienteList';
+import ClienteEditor from '../shared/ClienteEditor'
+import LetturaList from '../Lettura/LetturaList';
+import LetturaEditor from '../shared/LetturaEditor'
+import EdificioList from '../Edificio/EdificioList';
+import EdificioEditor from '../shared/EdificioEditor'
+import ListinoList from '../Listino/ListinoList';
+import ListinoEditor from '../shared/ListinoEditor'
+
 
 const ContatoreDetails = () =>
 {
@@ -15,17 +24,39 @@ const ContatoreDetails = () =>
     const [contatore, setContatore] = useState(null);
     const [letture, setLetture] = useState([]);
     const [showLetture, setShowLetture] = useState(false);
-    const [showClienteModal, setShowClienteModal] = useState(false);
-    const [showEdificioModal, setShowEdificioModal] = useState(false);
-    const [showListinoModal, setShowListinoModal] = useState(false);
-    const [showLetturaModal, setShowLetturaModal] = useState(false);
+    const [associatingLettura, setAssociatingLettura] = useState(false);
+    const [creatingLettura, setCreatingLettura] = useState(false);
+    const [cliente, setCliente] = useState([]);
+    const [showCliente, setShowCliente] = useState(false);
+    const [associatingCliente, setAssociatingCliente] = useState(false);
+    const [creatingCliente, setCreatingCliente] = useState(false);
+    const [edificio, setEdificio] = useState([]);
+    const [showEdificio, setShowEdificio] = useState(false);
+    const [associatingEdificio, setAssociatingEdificio] = useState(false);
+    const [creatingEdificio, setCreatingEdificio] = useState(false);
+    const [listino, setListino] = useState([]);
+    const [showListiono, setShowListino] = useState(false);
+    const [associatingListino, setAssociatingListino] = useState(false);
+    const [creatingListino, setCreatingListino] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('modifica');
-    const [clienti, setClienti] = useState([]);
-    const [edifici, setEdifici] = useState([]);
-    const [listini, setListini] = useState([]);
-    const [lettureList, setLettureList] = useState([]);
 
+    const resetViews = () => {
+        setLetture([]);
+        setShowLetture(false);
+        setAssociatingLettura(false);
+        setCreatingLettura(false);
+        setCliente([]);
+        setShowCliente(false);
+        setAssociatingCliente(false);
+        setCreatingCliente(false);
+        setEdificio([]);
+        setShowEdificio(false);
+        setAssociatingEdificio(false);
+        setCreatingEdificio(false);
+        setListino([]);
+    };
+    
     const fetchContatore = useCallback(async () => {
         console.log("fetchContatore called with ID:", contatoreId);
         try {
@@ -36,18 +67,6 @@ const ContatoreDetails = () =>
             console.error("Error in fetchContatore:", error);
         }
     }, [contatoreId]);
-
-    useEffect(() =>
-    {
-        if (contatoreId)
-        {
-            fetchContatore();
-        }
-        setShowClienteModal(false);
-        setShowEdificioModal(false);
-        setShowListinoModal(false);
-        setShowLetturaModal(false);
-    }, [contatoreId, fetchContatore]);
 
     const fetchLetture = async () =>
     {
@@ -64,130 +83,6 @@ const ContatoreDetails = () =>
         }
     };
 
-    const handleBackClick = () => {
-        history.goBack(); // Adjust the route as per your Clienti list URL
-    };
-
-    const handleOpenClienteModal = async () =>
-    {
-        try
-        {
-            const response = await clienteApi.getClienti();
-            setClienti(response.data);
-            setShowClienteModal(true);
-        }
-        catch (error)
-        {
-            alert('Errore durante il recupero dei clienti');
-            console.error(error);
-        }
-    };
-
-    const handleOpenEdificioModal = async () =>
-    {
-        try
-        {
-            const response = await edificioApi.getEdifici();
-            setEdifici(response.data);
-            setShowEdificioModal(true);
-        }
-        catch (error)
-        {
-            alert('Errore durante il recupero degli edifici');
-            console.error(error);
-        }
-    };
-
-    const handleOpenListinoModal = async () =>
-    {
-        try
-        {
-            const response = await listinoApi.getListini();
-            setListini(response.data);
-            setShowListinoModal(true);
-        }
-        catch (error)
-        {
-            alert('Errore durante il recupero dei listini');
-            console.error(error);
-        }
-    };
-
-    const handleOpenLetturaModal = async () =>
-    {
-        try 
-        {
-            const response = await letturaApi.getLetture();
-            setLettureList(response.data);
-            setShowLetturaModal(true);
-        } 
-        catch (error) 
-        {
-            alert('Errore durante il recupero delle letture');
-            console.error(error);
-        }
-    };
-
-    const handleSelectCliente = async (clienteId) => 
-    {
-        try 
-        {
-            await contatoreApi.associateCliente(contatoreId, clienteId);
-            setShowClienteModal(false);
-            fetchContatore(); // Aggiorna i dettagli del contatore
-        } 
-        catch (error)
-        {
-            alert('Errore durante l\'associazione del cliente');
-            console.error(error);
-        }
-    };
-
-    const handleSelectEdificio = async (edificioId) => 
-    {
-        try 
-        {
-            await contatoreApi.associateEdificio(contatoreId, edificioId);
-            setShowEdificioModal(false);
-            fetchContatore(); // Aggiorna i dettagli del contatore
-        } 
-        catch (error) 
-        {
-            alert('Errore durante l\'associazione dell\'edificio');
-            console.error(error);
-        }
-    };
-
-    const handleSelectListino = async (listinoId) => 
-    {
-        try 
-        {
-            await contatoreApi.associateListino(contatoreId, listinoId);
-            setShowListinoModal(false);
-            fetchContatore(); // Aggiorna i dettagli del contatore
-        } 
-        catch (error) 
-        {
-            alert('Errore durante l\'associazione del listino');
-            console.error(error);
-        }
-    };
-
-    const handleSelectLettura = async (letturaId) => 
-    {
-        try 
-        {
-            await contatoreApi.associateLettura(contatoreId, letturaId);
-            setShowLetturaModal(false);
-            fetchLetture();
-        } 
-        catch (error) 
-        {
-            alert('Errore durante l\'associazione della lettura');
-            console.error(error);
-        }
-    };
-
     const handleSaveContatore = async (updatedContatore) => {
         try {
             await contatoreApi.updateContatore(contatoreId, updatedContatore);
@@ -199,6 +94,162 @@ const ContatoreDetails = () =>
             console.error(error);
         }
     };
+
+    const fetchCliente = async () =>
+    {
+        try
+        {
+            const response = await contatoreApi.getCliente(contatoreId);
+            setCliente(response.data);
+            setShowCliente(true);
+        }
+        catch (error)
+        {
+            alert('Errore durante il recupero del cliente');
+            console.error(error);
+        }
+    };
+
+    const handleAssociateCliente = async (clienteId) => {
+        try {
+            await contatoreApi.associateCliente(contatoreId, clienteId);
+            alert('Cliente associato con successo.');
+            setAssociatingCliente(false);
+        } catch (error) {
+            console.error('Errore durante l\'associazione del cliente:', error);
+            alert('Errore durante l\'associazione del cliente.');
+        }
+    };
+
+    const handleCreateCliente = async (newCliente) => {
+        try {
+            const response = await clienteApi.createCliente(newCliente);
+            await contatoreApi.associateCliente(contatoreId, response.data._id);
+            alert('Cliente creato e associato con successo');
+            setCreatingCliente(false);
+            fetchCliente();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione del cliente');
+            console.error(error);
+        }
+    };
+
+    const handleAssociateLettura = async (letturaId) => {
+        try {
+            await contatoreApi.associateLettura(contatoreId, letturaId);
+            alert('Lettura associato con successo.');
+            setAssociatingLettura(false);
+        } catch (error) {
+            console.error('Errore durante l\'associazione della lettura:', error);
+            alert('Errore durante l\'associazione della lettura.');
+        }
+    };
+
+    const handleCreateLettura = async (newLettura) => {
+        try {
+            const response = await letturaApi.createLettura(newLettura);
+            await contatoreApi.associateLettura(contatoreId, response.data._id);
+            alert('Lettura creata e associata con successo');
+            setCreatingLettura(false);
+            fetchLetture();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione della lettura');
+            console.error(error);
+        }
+    };
+
+    const fetchEdificio = async () =>
+    {
+        try
+        {
+            const response = await contatoreApi.getEdificio(contatoreId);
+            setEdificio(response.data);
+            setShowEdificio(true);
+        }
+        catch (error)
+        {
+            alert('Errore durante il recupero dell\'edificio');
+            console.error(error);
+        }
+    };
+
+    const handleAssociaEdificio = async (edificioId) => {
+        try {
+            await contatoreApi.associateEdificio(contatoreId, edificioId);
+            alert('Edificio associato con successo.');
+            setAssociatingEdificio(false);
+        } catch (error) {
+            console.error('Errore durante l\'associazione dell\'edificio:', error);
+            alert('Errore durante l\'associazione dell\'edificio.');
+        }
+    };
+
+    const handleCreateEdificio = async (newEdificio) => {
+        try {
+            const response = await edificioApi.createEdificio(newEdificio);
+            await contatoreApi.associateEdificio(contatoreId, response.data._id);
+            alert('Edificio creato e associato con successo');
+            setCreatingEdificio(false);
+            fetchEdificio();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione dell\'edificio');
+            console.error(error);
+        }
+    };
+
+    const fetchListino = async () =>
+    {
+        try
+        {
+            const response = await contatoreApi.getListino(contatoreId);
+            setListino(response.data);
+            setShowListino(true);
+        }
+        catch (error)
+        {
+            alert('Errore durante il recupero del listino');
+            console.error(error);
+        }
+    };
+
+    const handleAssociaListino = async (listinoId) => {
+        try {
+            await contatoreApi.associateListino(contatoreId, listinoId);
+            alert('Listino associato con successo.');
+            setAssociatingListino(false);
+        } catch (error) {
+            console.error('Errore durante l\'associazione del listino:', error);
+            alert('Errore durante l\'associazione del listino.');
+        }
+    };
+    
+    const handleCreateListino = async (newListino) => {
+        try {
+            const response = await listinoApi.createListino(newListino);
+            await contatoreApi.associateListino(contatoreId, response.data._id);
+            alert('Listino creato e associato con successo');
+            setCreatingListino(false);
+            fetchListino();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione del listino');
+            console.error(error);
+        }
+    };
+
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        resetViews();
+    };
+
+    const handleBackClick = () => {
+        history.goBack(); // Adjust the route as per your Clienti list URL
+    };
+
+    useEffect(() =>
+    {
+        resetViews();
+        if (contatoreId) fetchContatore();
+    }, [contatoreId, fetchContatore]);
 
     if (!contatore) 
     {
@@ -322,7 +373,7 @@ const ContatoreDetails = () =>
                                 <button
                                     key={tab.id}
                                     className={`tab ${activeTab === tab.id ? 'active' : ''}`}
-                                    onClick={() => setActiveTab(tab.id)}
+                                    onClick={() => handleTabChange(tab.id)}
                                 >
                                     {tab.label}
                                 </button>
@@ -332,18 +383,14 @@ const ContatoreDetails = () =>
                         <div className={`tab-content ${activeTab === 'cliente' ? 'show' : ''}`}>
                             {activeTab === 'cliente' && (
                                 <div className="cliente-box">
-                                    {contatore.cliente && contatore.cliente._id ? (
-                                        <button
-                                            className="btn btn-edit"
-                                            onClick={() => history.push(`/clienti/${contatore.cliente._id}`)}
-                                        >
-                                            Apri
-                                        </button>
-                                    ) : (
-                                        <p>Cliente non associato</p>
-                                    )}
-                                    <button onClick={handleOpenClienteModal} className="btn btn-associate-cliente">
+                                    <button onClick={fetchCliente} className="btn btn-show-cliente">
+                                        Visualizza Cliente
+                                    </button>
+                                    <button onClick={() => setAssociatingCliente(true)} className="btn btn-associate-cliente">
                                         Associa Cliente
+                                    </button>
+                                    <button onClick={() => setCreatingCliente(true)} className="btn btn-create-cliente">
+                                        Crea Cliente
                                     </button>
                                 </div>
                             )}
@@ -354,8 +401,11 @@ const ContatoreDetails = () =>
                                     <button onClick={fetchLetture} className="btn btn-show-letture">
                                         Visualizza Letture
                                     </button>
-                                    <button onClick={handleOpenLetturaModal} className="btn btn-associate-lettura">
+                                    <button onClick={() => setAssociatingLettura(true)} className="btn btn-associate-lettura">
                                         Associa Lettura
+                                    </button>
+                                    <button onClick={() => setCreatingLettura(true)} className="btn btn-create-lettura">
+                                        Crea Lettura
                                     </button>
                                 </div>
                             )}
@@ -363,8 +413,14 @@ const ContatoreDetails = () =>
                         <div className={`tab-content ${activeTab === 'edificio' ? 'show' : ''}`}>
                             {activeTab === 'edificio' && (
                                 <div className="edificio-box">
-                                    <button onClick={handleOpenEdificioModal} className="btn btn-associate-edificio">
+                                    <button onClick={fetchEdificio} className="btn btn-show-edificio">
+                                        Visualizza Edifico
+                                    </button>
+                                    <button onClick={() => setAssociatingEdificio(true)} className="btn btn-associate-edificio">
                                         Associa Edificio
+                                    </button>
+                                    <button onClick={() => setCreatingEdificio(true)} className="btn btn-create-edificio">
+                                        Crea Edificio
                                     </button>
                                 </div>
                             )}
@@ -372,8 +428,14 @@ const ContatoreDetails = () =>
                         <div className={`tab-content ${activeTab === 'listino' ? 'show' : ''}`}>
                             {activeTab === 'listino' && (
                                 <div className="listino-box">
-                                    <button onClick={handleOpenListinoModal} className="btn btn-associate-listino">
+                                    <button onClick={fetchListino} className="btn btn-show-listino">
+                                        Visualizza Listino
+                                    </button>
+                                    <button onClick={() => setAssociatingListino(true)} className="btn btn-associate-listino">
                                         Associa Listino
+                                    </button>
+                                    <button onClick={() => setCreatingListino(true)} className="btn btn-create-listino">
+                                        Crea Listino
                                     </button>
                                 </div>
                             )}
@@ -384,6 +446,47 @@ const ContatoreDetails = () =>
             <div className="btn-back-container">
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
+            
+            {showCliente && (
+                <table className="cliente-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Cognome</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{cliente.nome}</td>
+                            <td>{cliente.cognome}</td>
+                            <td>
+                                <button
+                                    onClick={() => history.push(`/clienti/${cliente._id}`)}
+                                    className="btn btn-open"
+                                >
+                                    Apri
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            )}
+            {associatingCliente && (
+                <ClienteList
+                    onSelectCliente={handleAssociateCliente}
+                />
+            )}
+            {creatingCliente && (
+                <ClienteEditor
+                    cliente={{
+                        contatore: contatore._id,
+                    }}
+                    onSave={handleCreateCliente}
+                    onCancel={() => setCreatingCliente(false)}
+                    mode="Nuovo"
+                />
+            )}
             {showLetture && (
                 <div className="letture-section">
                     <h3>Letture Associate</h3>
@@ -392,9 +495,10 @@ const ContatoreDetails = () =>
                             <tr>
                                 <th>Data</th>
                                 <th>Valore</th>
-                                <th>UdM</th>
+                                <th>Unita' di misura</th>
                                 <th>Fatturata</th>
                                 <th>Note</th>
+                                <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -405,11 +509,19 @@ const ContatoreDetails = () =>
                             ) : (
                                 letture.map((lettura) => (
                                     <tr key={lettura._id}>
-                                        <td>{new Date(lettura.data).toLocaleDateString()}</td>
-                                        <td>{lettura.valore}</td>
-                                        <td>{lettura.UdM}</td>
+                                        <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
+                                        <td>{lettura.consumo}</td>
+                                        <td>{lettura.unita_misura}</td>
                                         <td><input type="checkbox" checked={lettura.fatturata} readOnly /></td>
                                         <td>{lettura.note}</td>
+                                        <td>
+                                            <button
+                                                onClick={() => history.push(`/letture/${lettura._id}`)}
+                                                className="btn btn-open"
+                                            >
+                                                Apri
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             )}
@@ -417,61 +529,92 @@ const ContatoreDetails = () =>
                     </table>
                 </div>
             )}
-            {showClienteModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Cliente</h3>
-                        <ul>
-                            {clienti.map((cliente) => (
-                                <li key={cliente._id} onClick={() => handleSelectCliente(cliente._id)}>
-                                    {cliente.nome} {cliente.cognome}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+            {associatingLettura && (
+                <LetturaList
+                    onSelectLettura={handleAssociateLettura}
+                />
             )}
-            {showEdificioModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Edificio</h3>
-                        <ul>
-                            {edifici.map((edificio) => (
-                                <li key={edificio._id} onClick={() => handleSelectEdificio(edificio._id)}>
-                                    {edificio.descrizione}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+            {creatingLettura && (
+                <LetturaEditor
+                    lettura={{
+                        contatore: contatore._id,
+                    }}
+                    onSave={handleCreateLettura}
+                    onCancel={() => setCreatingLettura(false)}
+                    mode="Nuovo"
+                />
             )}
-            {showListinoModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Listino</h3>
-                        <ul>
-                            {listini.map((listino) => (
-                                <li key={listino._id} onClick={() => handleSelectListino(listino._id)}>
-                                    {listino.descrizione}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+            {showEdificio && (
+                <table className="edificio-table">
+                    <thead>
+                        <tr>
+                            <th>Descrizione</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{edificio.descrizione}</td>
+                            <td>
+                                <button
+                                    onClick={() => history.push(`/edifici/${edificio._id}`)}
+                                    className="btn btn-open"
+                                >
+                                    Apri
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             )}
-            {showLetturaModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h3>Seleziona Lettura</h3>
-                        <ul>
-                            {lettureList.map((lettura) => (
-                                <li key={lettura._id} onClick={() => handleSelectLettura(lettura._id)}>
-                                    {new Date(lettura.data).toLocaleDateString()} - {lettura.valore} {lettura.UdM}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+            {associatingEdificio && (
+                <EdificioList
+                    onSelectEdificio={handleAssociaEdificio}
+                />
+            )}
+            {creatingEdificio && (
+                <EdificioEditor
+                    onSave={handleCreateEdificio}
+                    onCancel={() => setCreatingEdificio(false)}
+                    mode="Nuovo"
+                />
+            )}
+            {showListiono && (
+                <table className="listino-table">
+                    <thead>
+                        <tr>
+                            <th>Descrizione</th>
+                            <th>Categoria</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{listino.descrizione}</td>
+                            <td>{listino.categoria}</td>
+                            <td>
+                                <button
+                                    onClick={() => history.push(`/listini/${listino._id}`)}
+                                    className="btn btn-open"
+                                >
+                                    Apri
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            )}
+            {associatingListino && (
+                <ListinoList
+                    onSelectListino={handleAssociaListino}
+                />
+            )}
+            {creatingListino && (
+                <ListinoEditor
+                    onSave={handleCreateListino}
+                    onCancel={() => setCreatingListino(false)}
+                    mode="Nuovo"
+                />
             )}
         </div>
     );
