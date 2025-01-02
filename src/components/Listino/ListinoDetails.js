@@ -305,7 +305,7 @@ const ListinoDetails = () => {
                             <tr>
                                 <th>Seriale</th>
                                 <th>Seriale Interno</th>
-                                <th>Inattivo</th>
+                                <th>Attivo</th>
                                 <th>Condominiale</th>
                                 <th>Sostituzione</th>
                                 <th>Subentro</th>

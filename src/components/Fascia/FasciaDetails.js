@@ -4,50 +4,43 @@ import fasciaApi from '../../api/fasciaApi';
 import listinoApi from '../../api/listinoApi';
 import '../../styles/Fascia/FasciaDetails.css';
 import ListinoList from '../Listino/ListinoList';
+import FasciaEditor from '../shared/FasciaEditor';
+import ListinoEditor from '../shared/ListinoEditor';
+
 
 const FasciaDetails = () => {
     const { id: fasciaId } = useParams();
     const history = useHistory();
     const [fascia, setFascia] = useState(null);
-    const [listino, setListino] = useState(null);
+
+    const [listino, setListino] = useState([]);
     const [showListino, setShowListino] = useState(false);
-    const [showListinoModal, setShowListinoModal] = useState(false);
+    const [associatingListino, setAssociatingListino] = useState(false);
+    const [creatingListino, setCreatingListino] = useState(false);
+
     const [activeTab, setActiveTab] = useState('modifica');
     const [isEditing, setIsEditing] = useState(false);
+
+
+    const resetViews = () => {
+        setShowListino(false);
+        setAssociatingListino(false);
+        setCreatingListino(false);
+        setListino([]);
+    };
 
     const fetchFascia = useCallback(async () => {
         try {
             const response = await fasciaApi.getFascia(fasciaId);
             setFascia(response.data);
-
-            if (response.data.listino) {
-                const listinoResponse = await listinoApi.getListino(response.data.listino);
-                setListino(listinoResponse.data);
-            }
+            resetViews();
         } catch (error) {
             console.error('Errore durante il recupero della fascia:', error);
             alert('Errore durante il recupero della fascia.');
         }
     }, [fasciaId]);
 
-    useEffect(() => {
-        if (fasciaId) fetchFascia();
-    }, [fasciaId, fetchFascia]);
-
-    const handleAssociaListino = async (listinoId) => {
-        try {
-            await fasciaApi.associateListino(fasciaId, listinoId);
-            const listinoResponse = await listinoApi.getListino(listinoId);
-            setListino(listinoResponse.data);
-            alert('Listino associato con successo.');
-            setShowListinoModal(false);
-        } catch (error) {
-            console.error('Errore durante l\'associazione del listino:', error);
-            alert('Errore durante l\'associazione del listino.');
-        }
-    };
-
-    const handleSaveFascia = async (updatedFascia) => {
+    const handleEditFascia = async (updatedFascia) => {
         try {
             await fasciaApi.updateFascia(fasciaId, updatedFascia);
             setFascia(updatedFascia);
@@ -59,65 +52,71 @@ const FasciaDetails = () => {
         }
     };
 
+    const fetchListino = async () => {
+        try {
+            const response = await fasciaApi.getListino(fasciaId);
+            setListino(response.data);
+            setShowListino(true);
+        } catch (error) {
+            console.error('Errore durante il recupero del listino associato:', error);
+            alert('Errore durante il recupero del listino associato.');
+        }
+    };
+
+    const handleAssociaListino = async (listinoId) => {
+        try {
+            await fasciaApi.associateListino(fasciaId, listinoId);
+            alert('Listino associato con successo.');
+            setAssociatingListino(false);
+            fetchListino();
+        } catch (error) {
+            console.error('Errore durante l\'associazione del listino:', error);
+            alert('Errore durante l\'associazione del listino.');
+        }
+    };
+
+    const handleCreateListino = async (newListino) => {
+        try {
+            const response = await listinoApi.createListino(newListino);
+            await fasciaApi.associateListino(fasciaId, response.data._id);
+            alert('Listino creato e associato con successo');
+            setCreatingListino(false);
+            fetchListino();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione del contatore');
+            console.error(error);
+        }
+    };
+
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        resetViews();
+    };
+
     const handleBackClick = () => {
         history.goBack();
     };
+
+    useEffect(() => {
+        resetViews();
+        if (fasciaId) fetchFascia();
+    }, [fasciaId, fetchFascia]);
+
 
     if (!fascia) {
         return <div>Seleziona una fascia per vedere i dettagli...</div>;
     }
 
     return (
-        <div className="fascia-details">
+        <div className="lettura-details">
             <h2>Dettagli Fascia</h2>
             {isEditing ? (
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSaveFascia(fascia);
-                }}>
-                    <div className="form-group">
-                        <label>Tipo:</label>
-                        <input
-                            type="text"
-                            name="tipo"
-                            value={fascia.tipo || ''}
-                            onChange={(e) => setFascia({ ...fascia, tipo: e.target.value })}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Min:</label>
-                        <input
-                            type="number"
-                            name="min"
-                            value={fascia.min || ''}
-                            onChange={(e) => setFascia({ ...fascia, min: e.target.value })}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Max:</label>
-                        <input
-                            type="number"
-                            name="max"
-                            value={fascia.max || ''}
-                            onChange={(e) => setFascia({ ...fascia, max: e.target.value })}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Prezzo:</label>
-                        <input
-                            type="number"
-                            name="prezzo"
-                            value={fascia.prezzo || ''}
-                            onChange={(e) => setFascia({ ...fascia, prezzo: e.target.value })}
-                        />
-                    </div>
-                    <div className="btn-container">
-                        <button type="submit" className="btn btn-save">Salva</button>
-                        <button type="button" className="btn btn-cancel" onClick={() => setIsEditing(false)}>
-                            Annulla
-                        </button>
-                    </div>
-                </form>
+                <FasciaEditor
+                    fascia={fascia}
+                    onSave={handleEditFascia}
+                    onCancel={() => setIsEditing(false)}
+                    mode="Modifica"
+                />
             ) : (
                 <>
                     <div className="table-container">
@@ -147,31 +146,44 @@ const FasciaDetails = () => {
                         </table>
                     </div>
                     <div className="tabs-container">
+                        {/* Tab Navigation */}
                         <div className="tabs">
-                            <button
-                                className={`tab ${activeTab === 'listino' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('listino')}
-                            >
-                                Listino
-                            </button>
+                            {[
+                                { id: 'listino', label: 'Listino' },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                    onClick={() => handleTabChange(tab.id)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
                         </div>
-                        {activeTab === 'listino' && (
-                            <div className="listino-box">
-                                <button onClick={() => setShowListino(true)} className="btn btn-show-listino">
-                                    Visualizza Listino
-                                </button>
-                                <button onClick={() => setShowListinoModal(true)} className="btn btn-associate-listino">
-                                    Associa Listino
-                                </button>
-                            </div>
-                        )}
+                        {/* Tab Content */}
+                        <div className={`tab-content ${activeTab === 'listino' ? 'show' : ''}`}>
+                            {activeTab === 'listino' && (
+                                <div className="listino-box">
+                                    <button onClick={fetchListino} className="btn btn-show-listino">
+                                        Visualizza Listino
+                                    </button>
+                                    <button onClick={() => setAssociatingListino(true)} className="btn btn-associate-listino">
+                                        Associa Listino
+                                    </button>
+                                    <button onClick={() => setCreatingListino(true)} className="btn btn-create-listino">
+                                        Crea Listino
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </>
             )}
             <div className="btn-back-container">
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
-            {showListino && listino && (
+
+            {showListino && (
                 <div className="listino-section">
                     <h3>Listino Associato</h3>
                     <table className="listino-table">
@@ -199,8 +211,17 @@ const FasciaDetails = () => {
                     </table>
                 </div>
             )}
-            {showListinoModal && (
-                <ListinoList onSelectListino={handleAssociaListino} />
+            {associatingListino && (
+                <ListinoList
+                    onSelectListino={handleAssociaListino}
+                />
+            )}
+            {creatingListino && (
+                <ListinoEditor
+                    onSave={handleCreateListino}
+                    onCancel={() => setCreatingListino(false)}
+                    mode="Nuovo"
+                />
             )}
         </div>
     );
