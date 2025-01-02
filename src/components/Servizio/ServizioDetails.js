@@ -7,64 +7,78 @@ import fatturaApi from '../../api/fatturaApi';
 import '../../styles/Servizio/ServizioDetails.css';
 import ServizioEditor from '../shared/ServizioEditor';
 import LetturaList from '../Lettura/LetturaList';
+import LetturaEditor from '../shared/LetturaEditor';
 import ArticoloList from '../Articolo/ArticoloList';
+import ArticoloEditor from '../shared/ArticoloEditor';
 import FatturaList from '../Fattura/FatturaList';
+import FatturaEditor from '../shared/FatturaEditor';
+
 
 const ServizioDetails = () => {
     const { id: servizioId } = useParams();
     const history = useHistory();
+
     const [servizio, setServizio] = useState(null);
+
     const [lettura, setLettura] = useState([]);
-    const [showLetturaModal, setShowLetturaModal] = useState(false);
     const [showLettura, setShowLettura] = useState(false);
-    const [articolo, setArticolo] = useState([]);
-    const [showArticolo, setShowArticolo] = useState(false);
-    const [showArticoloModal, setShowArticoloModal] = useState(false);
+    const [associatingLettura, setAssociatingLettura] = useState(false);
+    const [creatingLettura, setCreatingLettura] = useState(false);
+
     const [fattura, setFattura] = useState([]);
     const [showFattura, setShowFattura] = useState(false);
-    const [showFatturaModal, setShowFatturaModal] = useState(false);
+    const [associatingFattura, setAssociatingFattura] = useState(false);
+    const [creatingFattura, setCreatingFattura] = useState(false);
+
+    const [articolo, setArticolo] = useState([]);
+    const [showArticolo, setShowArticolo] = useState(false);
+    const [associatingArticolo, setAssociatingArticolo] = useState(false);
+    const [creatingArticolo, setCreatingArticolo] = useState(false);
+
     const [activeTab, setActiveTab] = useState('modifica');
     const [isEditing, setIsEditing] = useState(false);
 
-    useEffect(() => {
-        const fetchServizio = async () => {
-            try {
-                const response = await servizioApi.getServizio(servizioId);
-                setServizio(response.data);
-            } catch (error) {
-                alert('Errore durante il recupero del servizio');
-                console.error('Errore durante il recupero del servizio:', error);
-            }
-        };
-    
-        if (servizioId) {
-            fetchServizio();
-        }
-    
-        setShowLetturaModal(false);
-        setShowArticoloModal(false);
-        setShowFatturaModal(false);
-    }, [servizioId]);    
 
-    const fetchLettura = async () => {
-        try {
-            const response = await servizioApi.getLettura(servizioId);
-            setLettura(response.data);
-            setShowLettura(true);
-        } catch (error) {
-            console.error('Errore durante il recupero delle lettura:', error);
-            alert('Errore durante il recupero delle lettura.');
-        }
+    const resetViews = () => {
+        setFattura([]);
+        setShowFattura(false);
+        setAssociatingFattura(false);
+        setCreatingFattura(false);
+
+        setLettura([]);
+        setShowLettura(false);
+        setAssociatingLettura(false);
+        setCreatingLettura(false);
+
+        setArticolo([]);
+        setShowArticolo(false);
+        setAssociatingArticolo(false);
+        setCreatingArticolo(false);
     };
 
-    const fetchArticolo = async () => {
+    const fetchServizio = useCallback(async () => {
+        try
+        {
+            const response = await servizioApi.getServizio(servizioId);
+            setServizio(response.data);
+            resetViews();
+        }
+        catch (error)
+        {
+            alert('Errore durante il recupero del servizio');
+            console.error(error);
+        }
+    }, [servizioId]);
+
+    const handleEditServizio = async (updatedServizio) => {
         try {
-            const response = await servizioApi.getArticolo(servizioId);
-            setArticolo(response.data);
-            setShowArticolo(true);
+            await servizioApi.updateServizio(servizioId, updatedServizio);
+            setServizio(updatedServizio);
+            setIsEditing(false);
+            alert('Servizio aggiornato con successo');
         } catch (error) {
-            console.error('Errore durante il recupero degli articolo:', error);
-            alert('Errore durante il recupero degli articolo.');
+            alert('Errore durante l\'aggiornamento del servizio');
+            console.error(error);
         }
     };
 
@@ -79,14 +93,75 @@ const ServizioDetails = () => {
         }
     };
 
+    const handleAssociaFattura = async (fatturaId) => {
+        try {
+            await servizioApi.associateFattura(servizioId, fatturaId);
+            alert('Fattura associata con successo.');
+            setAssociatingFattura(false);
+            fetchFattura();
+        } catch (error) {
+            console.error('Errore durante l\'associazione della fattura:', error);
+            alert('Errore durante l\'associazione della fattura.');
+        }
+    };
+
+    const handleCreateFattura = async (newFattura) => {
+        try {
+            const response = await fatturaApi.createFattura(newFattura);
+            await servizioApi.associateFattura(servizioId, response.data._id);
+            alert('Fattura creata e associata con successo');
+            setCreatingFattura(false);
+            fetchFattura();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione della fattura');
+            console.error(error);
+        }
+    };
+
+    const fetchLettura = async () => {
+        try {
+            const response = await servizioApi.getLettura(servizioId);
+            setLettura(response.data);
+            setShowLettura(true);
+        } catch (error) {
+            console.error('Errore durante il recupero delle lettura:', error);
+            alert('Errore durante il recupero delle lettura.');
+        }
+    };
+
     const handleAssociaLettura = async (letturaId) => {
         try {
             await servizioApi.associateLettura(servizioId, letturaId);
             alert('Lettura associata con successo.');
-            setShowLetturaModal(false);
+            setAssociatingLettura(false);
+            fetchLettura();
         } catch (error) {
             console.error('Errore durante l\'associazione della lettura:', error);
             alert('Errore durante l\'associazione della lettura.');
+        }
+    };
+
+    const handleCreateLettura = async (newLettura) => {
+        try {
+            const response = await letturaApi.createLettura(newLettura);
+            await servizioApi.associateLettura(servizioId, response.data._id);
+            alert('Contatore creato e associato con successo');
+            setCreatingLettura(false);
+            fetchLettura();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione della lettura');
+            console.error(error);
+        }
+    };
+
+    const fetchArticolo = async () => {
+        try {
+            const response = await servizioApi.getArticolo(servizioId);
+            setArticolo(response.data);
+            setShowArticolo(true);
+        } catch (error) {
+            console.error('Errore durante il recupero degli articolo:', error);
+            alert('Errore durante il recupero degli articolo.');
         }
     };
 
@@ -94,39 +169,40 @@ const ServizioDetails = () => {
         try {
             await servizioApi.associateArticolo(servizioId, articoloId);
             alert('Articolo associato con successo.');
-            setShowLetturaModal(false);
+            setAssociatingArticolo(false);
+            fetchArticolo();
         } catch (error) {
             console.error('Errore durante l\'associazione dell\'articolo:', error);
             alert('Errore durante l\'associazione dell\'articolo.');
         }
     };
 
-    const handleAssociaFattura = async (fatturaId) => {
+    const handleCreateArticolo = async (newArticolo) => {
         try {
-            await servizioApi.associateFattura(servizioId, fatturaId);
-            alert('Fattura associata con successo.');
-            setShowFatturaModal(false);
+            const response = await articoloApi.createArticolo(newArticolo);
+            await servizioApi.associateArticolo(servizioId, response.data._id);
+            alert('Articolo creato e associato con successo');
+            setCreatingArticolo(false);
+            fetchArticolo();
         } catch (error) {
-            console.error('Errore durante l\'associazione della fattura:', error);
-            alert('Errore durante l\'associazione della fattura.');
+            alert('Errore durante la creazione o associazione dell\'articolo');
+            console.error(error);
         }
     };
 
-    const handleSaveServizio = async (updatedServizio) => {
-        try {
-            await servizioApi.updateServizio(servizioId, updatedServizio);
-            setServizio(updatedServizio);
-            setIsEditing(false);
-            alert('Servizio aggiornato con successo.');
-        } catch (error) {
-            console.error('Errore durante l\'aggiornamento del servizio:', error);
-            alert('Errore durante l\'aggiornamento del servizio.');
-        }
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        resetViews();
     };
 
     const handleBackClick = () => {
         history.goBack();
     };
+
+    useEffect(() => {
+        resetViews();
+        if (servizioId) fetchServizio();
+    }, [servizioId, fetchServizio]);
 
     if (!servizio) {
         return <div>Seleziona un servizio per vedere i dettagli...</div>;
@@ -138,7 +214,7 @@ const ServizioDetails = () => {
             {isEditing ? (
                 <ServizioEditor
                     servizio={servizio}
-                    onSave={handleSaveServizio}
+                    onSave={handleEditServizio}
                     onCancel={() => setIsEditing(false)}
                     mode="Modifica"
                 />
@@ -173,48 +249,66 @@ const ServizioDetails = () => {
                                 <button
                                     key={tab.id}
                                     className={`tab ${activeTab === tab.id ? 'active' : ''}`}
-                                    onClick={() => setActiveTab(tab.id)}
+                                    onClick={() => handleTabChange(tab.id)}
                                 >
                                     {tab.label}
                                 </button>
                             ))}
                         </div>
-                        {activeTab === 'lettura' && (
-                            <div className="lettura-box">
-                                <button onClick={fetchLettura} className="btn btn-show-lettura">
-                                    Visualizza Letture
-                                </button>
-                                <button onClick={() => setShowLetturaModal(true)} className="btn btn-associate-lettura">
-                                    Associa Lettura
-                                </button>
-                            </div>
-                        )}
-                        {activeTab === 'articolo' && (
-                            <div className="articolo-box">
-                                <button onClick={fetchArticolo} className="btn btn-show-articolo">
-                                    Visualizza Articoli
-                                </button>
-                                <button onClick={() => setShowArticoloModal(true)} className="btn btn-associate-articolo">
-                                    Associa Articolo
-                                </button>
-                            </div>
-                        )}
-                        {activeTab === 'fattura' && (
-                            <div className="fattura-box">
-                                <button onClick={fetchFattura} className="btn btn-show-fattura">
-                                    Visualizza Fattura
-                                </button>
-                                <button onClick={() => setShowFatturaModal(true)} className="btn btn-associate-fattura">
-                                    Associa Fattura
-                                </button>
-                            </div>
-                        )}
+                        {/* Tab Content */}
+                        <div className={`tab-content ${activeTab === 'lettura' ? 'show' : ''}`}>
+                            {activeTab === 'lettura' && (
+                                <div className="lettura-box">
+                                    <button onClick={fetchLettura} className="btn btn-show-lettura">
+                                        Visualizza Letture
+                                    </button>
+                                    <button onClick={() => setAssociatingLettura(true)} className="btn btn-associate-lettura">
+                                        Associa Lettura
+                                    </button>
+                                    <button onClick={() => setCreatingLettura(true)} className="btn btn-create-lettura">
+                                        Crea Lettura
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className={`tab-content ${activeTab === 'articolo' ? 'show' : ''}`}>
+                            {activeTab === 'articolo' && (
+                                <div className="articolo-box">
+                                    <button onClick={fetchArticolo} className="btn btn-show-articolo">
+                                        Visualizza Articoli
+                                    </button>
+                                    <button onClick={() => setAssociatingArticolo(true)} className="btn btn-associate-articolo">
+                                        Associa Articolo
+                                    </button>
+                                    <button onClick={() => setCreatingArticolo(true)} className="btn btn-create-articolo">
+                                        Crea Articolo
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className={`tab-content ${activeTab === 'fattura' ? 'show' : ''}`}>
+                            {activeTab === 'fattura' && (
+                                <div className="fattura-box">
+                                    <button onClick={fetchFattura} className="btn btn-show-fattura">
+                                        Visualizza Fattura
+                                    </button>
+                                    <button onClick={() => setAssociatingFattura(true)} className="btn btn-associate-fattura">
+                                        Associa Fattura
+                                    </button>
+                                    <button onClick={() => setCreatingFattura(true)} className="btn btn-create-fattura">
+                                        Crea Fattura
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </>
             )}
+
             <div className="btn-back-container">
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
+
             {showLettura && (
                 <div className="lettura-section">
                     <h3>Lettura Associata</h3>
@@ -223,7 +317,7 @@ const ServizioDetails = () => {
                             <tr>
                                 <th>Data</th>
                                 <th>Valore</th>
-                                <th>UdM</th>
+                                <th>Unita' di misura</th>
                                 <th>Fatturata</th>
                                 <th>Note</th>
                                 <th>Azioni</th>
@@ -257,27 +351,36 @@ const ServizioDetails = () => {
                     </table>
                 </div>
             )}
-            {showLetturaModal && (
+            {associatingLettura && (
                 <LetturaList
                     onSelectLettura={handleAssociaLettura}
                 />
                 
             )}
-            {showArticolo && articolo && (
+            {creatingLettura && (
+                <LetturaEditor
+                    onSave={handleCreateLettura}
+                    onCancel={() => setCreatingLettura(false)}
+                    mode="Nuovo"
+                />
+            )}
+            {showArticolo && (
                 <div className="articolo-section">
                     <h3>Articolo Associato</h3>
                     <table className="articolo-table">
                         <thead>
                             <tr>
                                 <th>Descrizione</th>
-                                <th>Prezzo</th>
+                                <th>Codice</th>
+                                <th>Iva</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>{articolo.descrizione || 'N/A'}</td>
-                                <td>{articolo.prezzo?.toFixed(2) || '0.00'}</td>
+                                <td>{articolo.codice}</td>
+                                <td>{articolo.iva}</td>
                                 <td>
                                     <button
                                         className="btn btn-edit"
@@ -291,13 +394,20 @@ const ServizioDetails = () => {
                     </table>
                 </div>
             )}
-            {showArticoloModal && (
+            {associatingArticolo && (
                 <ArticoloList
                     onSelectArticolo={handleAssociaArticolo}
                 />
                 
             )}
-            {showFattura && fattura && (
+            {creatingArticolo && (
+                <ArticoloEditor
+                    onSave={handleCreateArticolo}
+                    onCancel={() => setCreatingArticolo(false)}
+                    mode="Nuovo"
+                />
+            )}
+            {showFattura && (
                 <div className="fattura-section">
                     <h3>Fattura Associata</h3>
                     <table className="fattura-table">
@@ -327,9 +437,16 @@ const ServizioDetails = () => {
                     </table>
                 </div>
             )}
-            {showFatturaModal && (
+            {associatingFattura && (
                 <FatturaList
                     onSelectFattura={handleAssociaFattura}
+                />
+            )}
+            {creatingFattura && (
+                <FatturaEditor
+                    onSave={handleCreateFattura}
+                    onCancel={() => setCreatingFattura(false)}
+                    mode="Nuovo"
                 />
             )}
 

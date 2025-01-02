@@ -4,7 +4,6 @@ import servizioApi from '../../api/servizioApi';
 import articoloApi from '../../api/articoloApi';
 import '../../styles/Articolo/ArticoloDetails.css';
 import ServizioEditor from '../shared/ServizioEditor';
-import ArticoloList from '../Articolo/ArticoloList';
 import ServizioList from '../Servizio/ServizioList';
 
 
@@ -14,25 +13,43 @@ const ArticoloDetails = () => {
     const [articolo, setArticolo] = useState(null);
     const [servizi, setServizi] = useState([]);
     const [showServizi, setShowServizi] = useState(false);
-    const [showServiziModal, setShowServizioModal] = useState(false);
+    const [associatingServizio, setAssociatingServizio] = useState(false);
+    const [creatingServizio, setCreatingServizio] = useState(false);
     const [activeTab, setActiveTab] = useState('modifica');
     const [isEditing, setIsEditing] = useState(false);
+
+
+    const resetViews = () => {
+        setServizi([]);
+        setShowServizi(false);
+        setAssociatingServizio(false);
+        setCreatingServizio(false);
+    };
 
     const fetchArticolo = useCallback(async () => {
         try {
             const response = await articoloApi.getArticolo(articoloId);
             setArticolo(response.data);
+            resetViews();
         } catch (error) {
             console.error('Errore durante il recupero dell\'articolo:', error);
             alert('Errore durante il recupero dell\'articolo.');
         }
     }, [articoloId]);
 
-    useEffect(() => {
-        if (articoloId) fetchArticolo();
-    }, [articoloId, fetchArticolo]);
+    const handleEditArticolo = async (updatedArticolo) => {
+        try {
+            await articoloApi.updateArticolo(articoloId, updatedArticolo);
+            setArticolo(updatedArticolo);
+            setIsEditing(false);
+            alert('Articolo aggiornato con successo.');
+        } catch (error) {
+            console.error('Errore durante l\'aggiornamento dell\'articolo:', error);
+            alert('Errore durante l\'aggiornamento dell\'articolo.');
+        }
+    };    
 
-    const fetchServiziAssociati = async () => {
+    const fetchServizi = async () => {
         try {
             const response = await articoloApi.getServizi(articoloId);
             setServizi(response.data);
@@ -47,28 +64,40 @@ const ArticoloDetails = () => {
         try {
             await articoloApi.associateServizio(articoloId, servizioId);
             alert('Servizio associato con successo.');
-            setShowServizioModal(false);
+            setAssociatingServizio(false);
+            fetchServizi();
         } catch (error) {
             console.error('Errore durante l\'associazione del servizio:', error);
             alert('Errore durante l\'associazione del servizio.');
         }
     };
 
-    const handleSaveArticolo = async (updatedArticolo) => {
+    const handleCreateServizio = async (newServizio) => {
         try {
-            await articoloApi.updateArticolo(articoloId, updatedArticolo);
-            setArticolo(updatedArticolo);
-            setIsEditing(false);
-            alert('Articolo aggiornato con successo.');
+            const response = await servizioApi.createServizio(newServizio);
+            await articoloApi.associateServizio(articoloId, response.data._id);
+            alert('Servizio creato e associato con successo');
+            setCreatingServizio(false);
+            fetchServizi();
         } catch (error) {
-            console.error('Errore durante l\'aggiornamento dell\'articolo:', error);
-            alert('Errore durante l\'aggiornamento dell\'articolo.');
+            alert('Errore durante la creazione o associazione del servizio');
+            console.error(error);
         }
+    };
+
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        resetViews();
     };
 
     const handleBackClick = () => {
         history.goBack();
     };
+
+    useEffect(() => {
+        resetViews();
+        if (articoloId) fetchArticolo();
+    }, [articoloId, fetchArticolo]);
 
     if (!articolo) {
         return <div>Seleziona un articolo per vedere i dettagli...</div>;
@@ -80,7 +109,7 @@ const ArticoloDetails = () => {
             {isEditing ? (
                 <ServizioEditor
                     servizio={articolo}
-                    onSave={handleSaveArticolo}
+                    onSave={handleEditArticolo}
                     onCancel={() => setIsEditing(false)}
                     mode="Modifica"
                 />
@@ -110,6 +139,7 @@ const ArticoloDetails = () => {
                         </table>
                     </div>
                     <div className="tabs-container">
+                        {/* Tab Navigation */}
                         <div className="tabs">
                             {[
                                 { id: 'servizi', label: 'Servizi' },
@@ -117,28 +147,35 @@ const ArticoloDetails = () => {
                                 <button
                                     key={tab.id}
                                     className={`tab ${activeTab === tab.id ? 'active' : ''}`}
-                                    onClick={() => setActiveTab(tab.id)}
+                                    onClick={() => handleTabChange(tab.id)}
                                 >
                                     {tab.label}
                                 </button>
                             ))}
                         </div>
-                        {activeTab === 'servizi' && (
-                            <div className="servizi-box">
-                                <button onClick={fetchServiziAssociati} className="btn btn-show-servizi">
-                                    Visualizza Servizi
-                                </button>
-                                <button onClick={() => setShowServizioModal(true)} className="btn btn-associate-servizio">
-                                    Associa Servizio
-                                </button>
-                            </div>
-                        )}
+                        {/* Tab Content */}
+                        <div className={`tab-content ${activeTab === 'servizi' ? 'show' : ''}`}>
+                            {activeTab === 'servizi' && (
+                                <div className="servizi-box">
+                                    <button onClick={fetchServizi} className="btn btn-show-servizi">
+                                        Visualizza Servizi
+                                    </button>
+                                    <button onClick={() => setAssociatingServizio(true)} className="btn btn-associate-servizio">
+                                        Associa Servizio
+                                    </button>
+                                    <button onClick={() => setCreatingServizio(true)} className="btn btn-create-servizio">
+                                        Crea Servizio
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </>
             )}
             <div className="btn-back-container">
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
+
             {showServizi && (
                 <div className="servizi-section">
                     <h3>Servizi Associati</h3>
@@ -179,9 +216,19 @@ const ArticoloDetails = () => {
                     </table>
                 </div>
             )}
-            {showServiziModal && (
+            {associatingServizio && (
                 <ServizioList
                     onSelectServizio={handleAssociaServizio}
+                />
+            )}
+            {creatingServizio && (
+                <ServizioEditor
+                    servizio={{
+                        articolo: articolo._id,
+                    }}
+                    onSave={handleCreateServizio}
+                    onCancel={() => setCreatingServizio(false)}
+                    mode="Nuovo"
                 />
             )}
         </div>

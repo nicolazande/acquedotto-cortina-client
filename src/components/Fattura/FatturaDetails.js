@@ -7,110 +7,58 @@ import scadenzaApi from '../../api/scadenzaApi';
 import '../../styles/Fattura/FatturaDetails.css';
 import FatturaEditor from '../shared/FatturaEditor';
 import ClienteList from '../Cliente/ClienteList';
+import ClienteEditor from '../shared/ClienteEditor';
 import ServizioList from '../Servizio/ServizioList';
+import ServizioEditor from '../shared/ServizioEditor';
 import ScadenzaList from '../Scadenza/ScadenzaList';
+import ScadenzaEditor from '../shared/ScadenzaEditor';
+
 
 const FatturaDetails = () => {
     const { id: fatturaId } = useParams();
     const history = useHistory();
     const [fattura, setFattura] = useState(null);
     const [servizi, setServizi] = useState([]);
-    const [cliente, setCliente] = useState(null);
+    const [showServizi, setShowServizi] = useState(false);
+    const [associatingServizio, setAssociatingServizio] = useState(false);
+    const [creatingServizio, setCreatingServizio] = useState(false);
+    const [cliente, setCliente] = useState([]);
+    const [showCliente, setShowCliente] = useState(false);
+    const [associatingCliente, setAssociatingCliente] = useState(false);
+    const [creatingCliente, setCreatingCliente] = useState(false);
     const [scadenza, setScadenza] = useState(null);
-    const [showClienteModal, setShowClienteModal] = useState(false);
-    const [showServizioModal, setShowServizioModal] = useState(false);
-    const [showScadenzaModal, setShowScadenzaModal] = useState(false);
+    const [showScadenza, setShowScadenza] = useState(false);
+    const [associatingScadenza, setAssociatingScadenza] = useState(false);
+    const [creatingScadenza, setCreatingScadenza] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('modifica');
 
     const resetViews = () => {
-        setShowClienteModal(false);
-        setShowServizioModal(false);
-        setShowScadenzaModal(false);
         setCliente(null);
+        setShowCliente(false);
+        setAssociatingCliente(false);
+        setCreatingCliente(false);
         setServizi([]);
-        setScadenza(null);
+        setShowServizi(false);
+        setAssociatingServizio(false);
+        setCreatingServizio(false);
+        setScadenza([]);
+        setShowScadenza(false);
+        setAssociatingScadenza(false);
+        setCreatingScadenza(false);
     };
 
     const fetchFattura = useCallback(async () => {
         try {
             const response = await fatturaApi.getFattura(fatturaId);
             setFattura(response.data);
+            resetViews();
         } catch (error) {
             console.error('Errore durante il recupero della fattura:', error);
         }
     }, [fatturaId]);
 
-    useEffect(() => {
-        if (fatturaId) {
-            fetchFattura();
-        }
-    }, [fatturaId, fetchFattura]);
-
-    const fetchServiziAssociati = async () => {
-        resetViews();
-        try {
-            const response = await fatturaApi.getServizi(fatturaId);
-            setServizi(response.data);
-        } catch (error) {
-            console.error('Errore durante il recupero dei servizi:', error);
-        }
-    };
-
-    const fetchClienteAssociato = async () => {
-        resetViews();
-        try {
-            const response = await fatturaApi.getCliente(fatturaId);
-            setCliente(response.data);
-        } catch (error) {
-            console.error('Errore durante il recupero del cliente:', error);
-        }
-    };
-
-    const fetchScadenzaAssociata = async () => {
-        resetViews();
-        try {
-            const response = await fatturaApi.getScadenza(fatturaId);
-            setScadenza(response.data);
-        } catch (error) {
-            console.error('Errore durante il recupero della scadenza:', error);
-        }
-    };
-
-    const handleSelectCliente = async (clienteId) => {
-        try {
-            await fatturaApi.associateCliente(fatturaId, clienteId);
-            fetchClienteAssociato();
-            setShowClienteModal(false);
-            setActiveTab('modifica');
-        } catch (error) {
-            console.error('Errore durante l\'associazione del cliente:', error);
-        }
-    };
-
-    const handleSelectServizio = async (servizioId) => {
-        try {
-            await fatturaApi.associateServizio(fatturaId, servizioId);
-            fetchServiziAssociati();
-            setShowServizioModal(false);
-            setActiveTab('modifica');
-        } catch (error) {
-            console.error('Errore durante l\'associazione del servizio:', error);
-        }
-    };
-
-    const handleSelectScadenza = async (scadenzaId) => {
-        try {
-            await fatturaApi.associateScadenza(fatturaId, scadenzaId);
-            fetchScadenzaAssociata();
-            setShowScadenzaModal(false);
-            setActiveTab('modifica');
-        } catch (error) {
-            console.error('Errore durante l\'associazione della scadenza:', error);
-        }
-    };
-
-    const handleSaveFattura = async (updatedFattura) => {
+    const handleEditFattura = async (updatedFattura) => {
         try {
             await fatturaApi.updateFattura(fatturaId, updatedFattura);
             setFattura(updatedFattura);
@@ -121,26 +69,128 @@ const FatturaDetails = () => {
         }
     };
 
-    const handleNavigateToCliente = (clienteId) => {
-        history.push(`/clienti/${clienteId}`);
+    const fetchServizi = async () => {
+        try {
+            const response = await fatturaApi.getServizi(fatturaId);
+            setServizi(response.data);
+            setShowServizi(true);
+        } catch (error) {
+            console.error('Errore durante il recupero dei servizi:', error);
+        }
     };
 
-    const handleNavigateToServizio = (servizioId) => {
-        history.push(`/servizi/${servizioId}`);
+    const handleAssociateServizio = async (servizioId) => {
+        try {
+            await fatturaApi.associateServizio(fatturaId, servizioId);
+            alert('Servizio associato con successo');
+            setAssociatingServizio(false);
+            fetchServizi();
+        } catch (error) {
+            alert("Errore durante l'associazione del contatore");
+            console.error(error);
+        }
     };
 
-    const handleNavigateToScadenza = (scadenzaId) => {
-        history.push(`/scadenze/${scadenzaId}`);
+    const handleCreateServizio = async (newServizio) => {
+        try {
+            const response = await servizioApi.createServizio(newServizio);
+            await fatturaApi.associateServizio(fatturaId, response.data._id);
+            alert('Servizio creato e associato con successo');
+            setCreatingServizio(false);
+            fetchServizi();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione del servizio');
+            console.error(error);
+        }
     };
 
-    const handleBackClick = () => {
-        history.goBack();
+    const fetchCliente = async () => {
+        try {
+            const response = await fatturaApi.getCliente(fatturaId);
+            setCliente(response.data);
+            setShowCliente(true);
+        } catch (error) {
+            console.error('Errore durante il recupero del cliente:', error);
+            alert('Errore durante il recupero del cliente associato.');
+
+        }
+    };
+
+    const handleAssociateCliente = async (clienteId) => {
+        try {
+            await fatturaApi.associateCliente(fatturaId, clienteId);
+            alert('Cliente associato con successo.');
+            setAssociatingCliente(false);
+            fetchCliente();
+        } catch (error) {
+            console.error('Errore durante l\'associazione del cliente:', error);
+            alert('Errore durante l\'associazione del cliente.');
+        }
+    };
+
+    const handleCreateCliente = async (newCliente) => {
+        try {
+            const response = await clienteApi.createCliente(newCliente);
+            await fatturaApi.associateCliente(fatturaId, response.data._id);
+            alert('Cliente creato e associato con successo');
+            setCreatingCliente(false);
+            fetchCliente();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione del cliente');
+            console.error(error);
+        }
+    };
+
+    const fetchScadenza = async () => {
+        try {
+            const response = await fatturaApi.getScadenza(fatturaId);
+            setScadenza(response.data);
+            setShowScadenza(true);
+        } catch (error) {
+            console.error('Errore durante il recupero della scadenza:', error);
+            alert('Errore durante il recupero della scadenza associata.');
+
+        }
+    };
+
+    const handleAssociateScadenza = async (scadenzaId) => {
+        try {
+            await fatturaApi.associateScadenza(fatturaId, scadenzaId);
+            alert('Scadenza associata con successo.');
+            setAssociatingScadenza(false);
+            fetchScadenza();
+        } catch (error) {
+            console.error('Errore durante l\'associazione della scadenza:', error);
+            alert('Errore durante l\'associazione della scadenza.');
+        }
+    };
+
+    const handleCreateScadenza = async (newScadenza) => {
+        try {
+            const response = await scadenzaApi.createScadenza(newScadenza);
+            await fatturaApi.associateScadenza(fatturaId, response.data._id);
+            alert('Scadenza creata e associato con successo');
+            setCreatingScadenza(false);
+            fetchScadenza();
+        } catch (error) {
+            alert('Errore durante la creazione o associazione della scadenza');
+            console.error(error);
+        }
     };
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);
         resetViews();
     };
+
+    const handleBackClick = () => {
+        history.goBack();
+    };
+
+    useEffect(() => {
+        resetViews();
+        if (fatturaId) fetchFattura();
+    }, [fatturaId, fetchFattura]);
 
     if (!fattura) {
         return <div>Seleziona una fattura per vedere i dettagli...</div>;
@@ -152,7 +202,7 @@ const FatturaDetails = () => {
             {isEditing ? (
                 <FatturaEditor
                     fattura={fattura}
-                    onSave={handleSaveFattura}
+                    onSave={handleEditFattura}
                     onCancel={() => setIsEditing(false)}
                     mode="Modifica"
                 />
@@ -219,42 +269,56 @@ const FatturaDetails = () => {
                         </div>
                         {activeTab === 'cliente' && (
                             <div className="cliente-box">
-                                <button onClick={fetchClienteAssociato} className="btn btn-show-cliente">
+                                <button onClick={fetchCliente} className="btn btn-show-cliente">
                                     Visualizza Cliente
                                 </button>
-                                <button onClick={() => setShowClienteModal(true)} className="btn btn-associate-cliente">
+                                <button onClick={() => setAssociatingCliente(true)} className="btn btn-associate-cliente">
                                     Associa Cliente
+                                </button>
+                                <button onClick={() => setCreatingCliente(true)} className="btn btn-create-cliente">
+                                    Crea Cliente
                                 </button>
                             </div>
                         )}
                         {activeTab === 'servizi' && (
                             <div className="servizi-box">
-                                <button onClick={fetchServiziAssociati} className="btn btn-show-servizi">
+                                <button
+                                    onClick={fetchServizi}
+                                    className="btn btn-view-servizi"
+                                >
                                     Visualizza Servizi
                                 </button>
-                                <button onClick={() => setShowServizioModal(true)} className="btn btn-associate-servizio">
+                                <button onClick={() => setAssociatingServizio(true)} className="btn btn-associate-servizio">
                                     Associa Servizio
+                                </button>
+                                <button onClick={() => setCreatingServizio(true)} className="btn btn-create-servizio">
+                                    Nuovo Servizio
                                 </button>
                             </div>
                         )}
                         {activeTab === 'scadenza' && (
                             <div className="scadenza-box">
-                                <button onClick={fetchScadenzaAssociata} className="btn btn-show-scadenza">
+                                <button onClick={fetchScadenza} className="btn btn-show-scadenza">
                                     Visualizza Scadenza
                                 </button>
-                                <button onClick={() => setShowScadenzaModal(true)} className="btn btn-associate-scadenza">
+                                <button onClick={() => setAssociatingScadenza(true)} className="btn btn-associate-scadenza">
                                     Associa Scadenza
+                                </button>
+                                <button onClick={() => setCreatingScadenza(true)} className="btn btn-create-scadenza">
+                                    Nuova Scadenza
                                 </button>
                             </div>
                         )}
                     </div>
                 </>
             )}
+
             <div className="btn-back-container">
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
-            {servizi.length > 0 && (
-                <div className="servizi-section">
+
+            {showServizi && (
+                <div className="contatori-section">
                     <h3>Servizi Associati</h3>
                     <table className="servizi-table">
                         <thead>
@@ -271,10 +335,10 @@ const FatturaDetails = () => {
                                     <td>{servizio.valore_unitario}</td>
                                     <td>
                                         <button
-                                            onClick={() => handleNavigateToServizio(servizio._id)}
-                                            className="btn btn-open"
+                                            className="btn btn-edit"
+                                            onClick={() => history.push(`/servizi/${servizio._id}`)}
                                         >
-                                            Apri
+                                        Apri
                                         </button>
                                     </td>
                                 </tr>
@@ -283,7 +347,22 @@ const FatturaDetails = () => {
                     </table>
                 </div>
             )}
-            {cliente && (
+            {associatingServizio && (
+                <ServizioList
+                    onSelectServizio={handleAssociateServizio}
+                />
+            )}
+            {creatingServizio && (
+                <ServizioEditor
+                    servizio={{
+                        fattura: fattura._id,
+                    }}
+                    onSave={handleCreateServizio}
+                    onCancel={() => setCreatingServizio(false)}
+                    mode="Nuovo"
+                />
+            )}
+            {showCliente && (
                 <table className="cliente-table">
                     <thead>
                         <tr>
@@ -298,7 +377,7 @@ const FatturaDetails = () => {
                             <td>{cliente.cognome}</td>
                             <td>
                                 <button
-                                    onClick={() => handleNavigateToCliente(cliente._id)}
+                                    onClick={() => history.push(`/clienti/${cliente._id}`)}
                                     className="btn btn-open"
                                 >
                                     Apri
@@ -308,39 +387,57 @@ const FatturaDetails = () => {
                     </tbody>
                 </table>
             )}
-            {scadenza && (
-                <table className="scadenza-table">
-                    <thead>
-                        <tr>
-                            <th>Scadenza</th>
-                            <th>Cliente</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{new Date(scadenza.scadenza).toLocaleDateString()}</td>
-                            <td>{`${scadenza.nome} ${scadenza.cognome}`}</td>
-                            <td>
-                                <button
-                                    onClick={() => handleNavigateToScadenza(scadenza._id)}
-                                    className="btn btn-open"
-                                >
-                                    Apri
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            {associatingCliente && (
+                <ClienteList
+                    onSelectCliente={handleAssociateCliente}
+                />
             )}
-            {showClienteModal && (
-                <ClienteList onSelectCliente={handleSelectCliente} />
+            {creatingCliente && (
+                <ClienteEditor
+                    onSave={handleCreateCliente}
+                    onCancel={() => setCreatingCliente(false)}
+                    mode="Nuovo"
+                />
             )}
-            {showServizioModal && (
-                <ServizioList onSelectServizio={handleSelectServizio} />
+            {showScadenza && (
+                <div className="letture-section">
+                    <h3>Scadenza Associata</h3>
+                    <table className="scadenza-table">
+                        <thead>
+                            <tr>
+                                <th>Scadenza</th>
+                                <th>Cliente</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{new Date(scadenza.scadenza).toLocaleDateString()}</td>
+                                <td>{`${scadenza.nome} ${scadenza.cognome}`}</td>
+                                <td>
+                                    <button
+                                        onClick={() => history.push(`/scadenze/${scadenza._id}`)}
+                                        className="btn btn-open"
+                                    >
+                                        Apri
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             )}
-            {showScadenzaModal && (
-                <ScadenzaList onSelectScadenza={handleSelectScadenza} />
+            {associatingScadenza && (
+                <ScadenzaList
+                    onSelectScadenza={handleAssociateScadenza}
+                />
+            )}
+            {creatingScadenza && (
+                <ScadenzaEditor
+                    onSave={handleCreateScadenza}
+                    onCancel={() => setCreatingScadenza(false)}
+                    mode="Nuovo"
+                />
             )}
         </div>
     );
