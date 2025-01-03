@@ -1,141 +1,219 @@
-/* Styles for ArticoloDetails */
+/* ArticoloDetails.css */
 
-.articolo-details {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    max-width: 1200px;
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.table-container {
-    width: 100%;
-    overflow-x: auto; /* Enable horizontal scrolling only for the table container */
-    margin-bottom: 20px;
-}
-
-.articolo-details h2 {
-    font-size: 1.5em;
-    margin-bottom: 20px;
+h2, h3 {
     text-align: center;
+    color: #333;
 }
 
-.info-table {
+table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin: 1em 0;
 }
 
-.info-table th, .info-table td {
+th, td {
     text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+    padding: 0.8em;
+    border: 1px solid #ddd;
 }
 
-.info-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
+th {
+    background-color: #f4f4f4;
 }
 
-.btn-container {
-    display: flex;
-    justify-content: flex-start; /* Align buttons to the start of the container */
-    margin-top: 20px;
-    gap: 10px; /* Space between buttons */
-    align-items: center;
-    overflow-x: auto; /* Ensure the container can scroll horizontally if needed */
-    padding: 10px 0; /* Optional: add padding for better appearance */
-    white-space: nowrap; /* Prevent buttons from wrapping to the next line */
+tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
 }
 
-.btn-container .btn {
+/* Buttons */
+button {
+    cursor: pointer;
+    padding: 0.6em 1.2em;
+    border: none;
+    border-radius: 5px;
+    margin: 0.5em;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #ddd;
+    transform: scale(1.05);
+}
+
+.btn {
     background-color: #007bff;
     color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    margin: 5px;
-    flex-shrink: 0; /* Prevent buttons from shrinking */
 }
 
-.btn-container .btn:hover {
+.btn:hover {
     background-color: #0056b3;
 }
 
 .btn-edit {
-    background-color: #ffa500;
+    background-color: #28a745;
+    color: white;
 }
 
 .btn-edit:hover {
-    background-color: #cc8400;
+    background-color: #1e7e34;
 }
 
 .btn-delete {
-    background-color: #ff3b30;
+    background-color: #dc3545;
+    color: white;
 }
 
 .btn-delete:hover {
-    background-color: #c4302b;
+    background-color: #c82333;
 }
 
-.btn-back-container {
+.btn-show-servizi,
+.btn-associate-servizio,
+.btn-create-servizio {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-show-servizi:hover,
+.btn-associate-servizio:hover,
+.btn-create-servizio:hover {
+    background-color: #117a8b;
+}
+
+/* Container Styles */
+.articolo-details {
+    max-width: 900px;
+    margin: 1em auto;
+    padding: 1em;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+/* Search Container */
+.search-container {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    align-items: center;
+    gap: 2em; /* Equal spacing between buttons */
+    margin-top: 1em;
+    padding: 1em;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.btn-back-container .btn-back {
-    background-color: #6c757d;
-    color: white;
+/* Tabs */
+.tabs-container {
+    margin-top: 1em;
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 1em;
+    gap: 1em; /* Adds spacing between tabs */
+}
+
+.tab {
+    padding: 0.6em 1.2em;
+    font-size: 1rem;
+    background: none;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
+    outline: none;
+    border-bottom: 2px solid transparent;
 }
 
-.btn-back-container .btn-back:hover {
-    background-color: #5a6268;
-}
-
-.edit-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.form-group label {
+.tab.active {
+    border-bottom: 2px solid #007bff;
     font-weight: bold;
 }
 
-.form-group input, .form-group textarea {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.tab-content {
+    display: none;
 }
 
-.edit-form .btn-save {
-    background-color: #28a745;
+.tab-content.show {
+    display: block;
 }
 
-.edit-form .btn-save:hover {
-    background-color: #218838;
+/* Button Alignment */
+.btn-back-container,
+.servizi-box {
+    display: flex;
+    justify-content: center;
+    gap: 1em; /* Adds spacing between buttons */
+    flex-wrap: wrap; /* Ensures buttons wrap on smaller screens */
+    margin-top: 1em;
 }
 
-.edit-form .btn-cancel {
-    background-color: #6c757d;
+/* Servizi Section */
+.servizi-section {
+    margin-top: 1.5em;
 }
 
-.edit-form .btn-cancel:hover {
-    background-color: #5a6268;
+.servizi-section h3 {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.servizi-table td:last-child {
+    display: flex;
+    justify-content: center;
+    gap: 1em; /* Adds spacing between action buttons */
+    vertical-align: middle;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .articolo-details {
+        padding: 1em;
+        margin: 0.5em;
+    }
+
+    button {
+        width: auto;
+        padding: 0.8em;
+        margin: 0.3em 0;
+    }
+
+    th, td {
+        font-size: 0.9rem;
+        padding: 0.6em;
+    }
+
+    .tabs {
+        flex-wrap: wrap;
+    }
+
+    .tab {
+        flex: 1 1 50%;
+        text-align: center;
+    }
+
+    .search-container {
+        flex-direction: column; /* Stack buttons on smaller screens */
+        gap: 1em;
+        padding: 1em;
+    }
+
+    .servizi-table td:last-child {
+        flex-direction: column; /* Stack action buttons in the Servizi table on smaller screens */
+        gap: 0.5em;
+    }
 }

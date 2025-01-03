@@ -13,19 +13,15 @@ import FasciaEditor from '../shared/FasciaEditor';
 const ListinoDetails = () => {
     const { id: listinoId } = useParams();
     const history = useHistory();
-
     const [listino, setListino] = useState(null);
-
     const [fasce, setFasce] = useState([]);
     const [showFasce, setShowFasce] = useState(false);
     const [associatingFascia, setAssociatingFascia] = useState(false);
     const [creatingFascia, setCreatingFascia] = useState(false);
-
     const [contatori, setContatori] = useState([]);
     const [showContatori, setShowContatori] = useState(false);
     const [associatingContatore, setAssociatingContatore] = useState(false);
     const [creatingContatore, setCreatingContatore] = useState(false);
-
     const [activeTab, setActiveTab] = useState('modifica');
     const [isEditing, setIsEditing] = useState(false);
 
@@ -61,6 +57,19 @@ const ListinoDetails = () => {
         } catch (error) {
             console.error('Errore durante l\'aggiornamento del listino:', error);
             alert('Errore durante l\'aggiornamento del listino.');
+        }
+    };
+
+    const handleDeleteListino = async () => {
+        try {
+            if (window.confirm('Sei sicuro di voler cancellare questo listino?')) {
+                await listinoApi.deleteListino(listinoId);
+                alert('Listino cancellato con successo');
+                handleBackClick();
+            }
+        } catch (error) {
+            alert('Errore durante la cancellazione del listino');
+            console.error(error);
         }
     };
 
@@ -171,6 +180,9 @@ const ListinoDetails = () => {
                             <button onClick={() => setIsEditing(true)} className="btn btn-edit">
                                 Modifica
                             </button>
+                            <button onClick={handleDeleteListino} className="btn btn-delete">
+                                Cancella
+                            </button>
                         </div>
                         <table className="info-table">
                             <tbody>
@@ -238,7 +250,7 @@ const ListinoDetails = () => {
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
 
-            {showFasce && (
+            {showFasce && Array.isArray(fasce) && fasce.length > 0 && (
                 <div className="fasce-section">
                     <h3>Fasce Associate</h3>
                     <table className="fasce-table">
@@ -254,11 +266,7 @@ const ListinoDetails = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {fasce.length === 0 ? (
-                                <tr>
-                                    <td colSpan="6">Nessuna fascia associata</td>
-                                </tr>
-                            ) : (
+                            {
                                 fasce.map((fascia) => (
                                     <tr key={fascia._id}>
                                         <td>{fascia.tipo}</td>
@@ -279,7 +287,7 @@ const ListinoDetails = () => {
                                         </td>
                                     </tr>
                                 ))
-                            )}
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -297,7 +305,7 @@ const ListinoDetails = () => {
                 />
             )}
 
-            {showContatori && (
+            {showContatori && Array.isArray(contatori) && contatori.length > 0 && (
                 <div className="contatori-section">
                     <h3>Contatori Associati</h3>
                     <table className="contatori-table">
@@ -313,11 +321,7 @@ const ListinoDetails = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {contatori.length === 0 ? (
-                                <tr>
-                                    <td colSpan="7">Nessun contatore associato</td>
-                                </tr>
-                            ) : (
+                            {
                                 contatori.map((contatore) => (
                                     <tr key={contatore._id}>
                                         <td>{contatore.seriale}</td>
@@ -344,7 +348,7 @@ const ListinoDetails = () => {
                                         </td>
                                     </tr>
                                 ))
-                            )}
+                            }
                         </tbody>
                     </table>
                 </div>

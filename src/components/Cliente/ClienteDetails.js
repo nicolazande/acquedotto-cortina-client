@@ -5,10 +5,11 @@ import contatoreApi from '../../api/contatoreApi';
 import fatturaApi from '../../api/fatturaApi';
 import ContatoreEditor from '../shared/ContatoreEditor'
 import ClienteEditor from '../shared/ClienteEditor'
-import '../../styles/Cliente/ClienteDetails.css';
 import ContatoreList from '../Contatore/ContatoreList';
 import FatturaList from '../Fattura/FatturaList';
 import FatturaEditor from '../shared/FatturaEditor';
+
+import '../../styles/Cliente/ClienteDetails.css';
 
 
 const ClienteDetails= () => 
@@ -64,6 +65,19 @@ const ClienteDetails= () =>
             console.error(error);
         }
     };
+
+    const handleDeleteCliente = async () => {
+        try {
+            if (window.confirm('Sei sicuro di voler cancellare questo cliente?')) {
+                await clienteApi.deleteCliente(clienteId);
+                alert('Cliente cancellato con successo');
+                handleBackClick();
+            }
+        } catch (error) {
+            alert('Errore durante la cancellazione del cliente');
+            console.error(error);
+        }
+    };    
 
     const fetchContatori = async () =>
     {
@@ -183,6 +197,9 @@ const ClienteDetails= () =>
                         <div className="search-container">
                             <button onClick={() => setIsEditing(true)} className="btn btn-edit">
                                 Modifica
+                            </button>
+                            <button onClick={handleDeleteCliente} className="btn btn-delete">
+                                Cancella
                             </button>
                         </div>
                         <table className="info-table">
@@ -388,8 +405,8 @@ const ClienteDetails= () =>
             <div className="btn-back-container">
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
-            
-            {showContatori && (
+
+            {showContatori && Array.isArray(contatori) && contatori.length > 0 && (
                 <div className="contatori-section">
                     <h3>Contatori Associati</h3>
                     <table className="contatori-table">
@@ -406,11 +423,7 @@ const ClienteDetails= () =>
                             </tr>
                         </thead>
                         <tbody>
-                            {contatori.length === 0 ? (
-                                <tr>
-                                    <td colSpan="8">Nessun contatore associato</td>
-                                </tr>
-                            ) : (
+                            {
                                 contatori.map((contatore) => (
                                 <tr key={contatore._id}>
                                     <td>{contatore.seriale}</td>
@@ -429,51 +442,7 @@ const ClienteDetails= () =>
                                         </button>
                                     </td>
                                 </tr>))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-            {showFatture && (
-                <div className="fatture-section">
-                    <h3>Fatture Associate</h3>
-                    <table className="fatture-table">
-                        <thead>
-                            <tr>
-                                <th>Ragione Sociale</th>
-                                <th>Anno</th>
-                                <th>Numero</th>
-                                <th>Data</th>
-                                <th>Confermata</th>
-                                <th>Codice</th>
-                                <th>Azioni</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {Array.isArray(fatture) && fatture.length > 0 ? (
-                                fatture.map((fattura) => (
-                                    <tr key={fattura._id}>
-                                        <td>{fattura.ragione_sociale}</td>
-                                        <td>{fattura.anno}</td>
-                                        <td>{fattura.numero}</td>
-                                        <td>{new Date(fattura.data_fattura).toLocaleDateString()}</td>
-                                        <td><input type="checkbox" checked={fattura.confermata} readOnly /></td>
-                                        <td>{fattura.codice}</td>
-                                        <td>
-                                            <button
-                                                className="btn btn-edit"
-                                                onClick={() => history.push(`/fatture/${fattura._id}`)}
-                                            >
-                                            Apri
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="8">Nessuna fattura associata</td>
-                                </tr>
-                            )}
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -493,6 +462,46 @@ const ClienteDetails= () =>
                     onCancel={() => setCreatingContatore(false)}
                     mode="Nuovo"
                 />
+            )}
+            {showFatture && Array.isArray(fatture) && fatture.length > 0 && (
+                <div className="fatture-section">
+                    <h3>Fatture Associate</h3>
+                    <table className="fatture-table">
+                        <thead>
+                            <tr>
+                                <th>Ragione Sociale</th>
+                                <th>Anno</th>
+                                <th>Numero</th>
+                                <th>Data</th>
+                                <th>Confermata</th>
+                                <th>Codice</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                fatture.map((fattura) => (
+                                    <tr key={fattura._id}>
+                                        <td>{fattura.ragione_sociale}</td>
+                                        <td>{fattura.anno}</td>
+                                        <td>{fattura.numero}</td>
+                                        <td>{new Date(fattura.data_fattura).toLocaleDateString()}</td>
+                                        <td><input type="checkbox" checked={fattura.confermata} readOnly /></td>
+                                        <td>{fattura.codice}</td>
+                                        <td>
+                                            <button
+                                                className="btn btn-edit"
+                                                onClick={() => history.push(`/fatture/${fattura._id}`)}
+                                            >
+                                            Apri
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                </div>
             )}
             {associatingFattura && (
                 <FatturaList

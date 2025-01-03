@@ -17,24 +17,19 @@ import FatturaEditor from '../shared/FatturaEditor';
 const ServizioDetails = () => {
     const { id: servizioId } = useParams();
     const history = useHistory();
-
     const [servizio, setServizio] = useState(null);
-
     const [lettura, setLettura] = useState([]);
     const [showLettura, setShowLettura] = useState(false);
     const [associatingLettura, setAssociatingLettura] = useState(false);
     const [creatingLettura, setCreatingLettura] = useState(false);
-
     const [fattura, setFattura] = useState([]);
     const [showFattura, setShowFattura] = useState(false);
     const [associatingFattura, setAssociatingFattura] = useState(false);
     const [creatingFattura, setCreatingFattura] = useState(false);
-
     const [articolo, setArticolo] = useState([]);
     const [showArticolo, setShowArticolo] = useState(false);
     const [associatingArticolo, setAssociatingArticolo] = useState(false);
     const [creatingArticolo, setCreatingArticolo] = useState(false);
-
     const [activeTab, setActiveTab] = useState('modifica');
     const [isEditing, setIsEditing] = useState(false);
 
@@ -81,6 +76,19 @@ const ServizioDetails = () => {
             console.error(error);
         }
     };
+
+    const handleDeleteServizio = async () => {
+        try {
+            if (window.confirm('Sei sicuro di voler cancellare questo servizio?')) {
+                await servizioApi.deleteServizio(servizioId);
+                alert('Servizio cancellato con successo');
+                handleBackClick();
+            }
+        } catch (error) {
+            alert('Errore durante la cancellazione del servizio');
+            console.error(error);
+        }
+    };   
 
     const fetchFattura = async () => {
         try {
@@ -225,6 +233,9 @@ const ServizioDetails = () => {
                             <button onClick={() => setIsEditing(true)} className="btn btn-edit">
                                 Modifica
                             </button>
+                            <button onClick={handleDeleteServizio} className="btn btn-delete">
+                                Cancella
+                            </button>
                         </div>
                         <table className="info-table">
                             <tbody>
@@ -309,7 +320,7 @@ const ServizioDetails = () => {
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
 
-            {showLettura && (
+            {showLettura && lettura && (
                 <div className="lettura-section">
                     <h3>Lettura Associata</h3>
                     <table className="lettura-table">
@@ -364,7 +375,7 @@ const ServizioDetails = () => {
                     mode="Nuovo"
                 />
             )}
-            {showArticolo && (
+            {showArticolo && articolo &&  (
                 <div className="articolo-section">
                     <h3>Articolo Associato</h3>
                     <table className="articolo-table">
@@ -407,7 +418,7 @@ const ServizioDetails = () => {
                     mode="Nuovo"
                 />
             )}
-            {showFattura && (
+            {showFattura && fattura && (
                 <div className="fattura-section">
                     <h3>Fattura Associata</h3>
                     <table className="fattura-table">

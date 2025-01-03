@@ -61,6 +61,19 @@ const LetturaDetails = () => {
         }
     };
 
+    const handleDeleteLettura = async () => {
+        try {
+            if (window.confirm('Sei sicuro di voler cancellare questa lettura?')) {
+                await letturaApi.deleteLettura(letturaId);
+                alert('Lettura cancellata con successo');
+                handleBackClick();
+            }
+        } catch (error) {
+            alert('Errore durante la cancellazione della lettura');
+            console.error(error);
+        }
+    };    
+
     const fetchContatori = async () =>
     {
         try
@@ -169,6 +182,9 @@ const LetturaDetails = () => {
                             <button onClick={() => setIsEditing(true)} className="btn btn-edit">
                                 Modifica
                             </button>
+                            <button onClick={handleDeleteLettura} className="btn btn-delete">
+                                Cancella
+                            </button>
                         </div>
                         <table className="info-table">
                             <tbody>
@@ -262,7 +278,7 @@ const LetturaDetails = () => {
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
 
-            {showServizi && (
+            {showServizi && Array.isArray(servizi) && servizi.length > 0 && (
                 <div className="contatori-section">
                     <h3>Servizi Associati</h3>
                     <table className="servizi-table">
@@ -307,7 +323,7 @@ const LetturaDetails = () => {
                     mode="Nuovo"
                 />
             )}
-            {showContatore && (
+            {showContatore && contatore && (
                 <div className="contatori-section">
                     <h3>Contatori Associati</h3>
                     <table className="contatori-table">

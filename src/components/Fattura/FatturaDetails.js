@@ -69,6 +69,19 @@ const FatturaDetails = () => {
         }
     };
 
+    const handleDeleteFattura = async () => {
+        try {
+            if (window.confirm('Sei sicuro di voler cancellare questa fattura?')) {
+                await fatturaApi.deleteFattura(fatturaId);
+                alert('Fattura cancellata con successo');
+                handleBackClick();
+            }
+        } catch (error) {
+            alert('Errore durante la cancellazione della fattura');
+            console.error(error);
+        }
+    };    
+
     const fetchServizi = async () => {
         try {
             const response = await fatturaApi.getServizi(fatturaId);
@@ -213,6 +226,9 @@ const FatturaDetails = () => {
                             <button onClick={() => setIsEditing(true)} className="btn btn-edit">
                                 Modifica
                             </button>
+                            <button onClick={handleDeleteFattura} className="btn btn-delete">
+                                Cancella
+                            </button>
                         </div>
                         <table className="info-table">
                             <tbody>
@@ -317,7 +333,7 @@ const FatturaDetails = () => {
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
 
-            {showServizi && (
+            {showServizi && Array.isArray(servizi) && servizi.length > 0 && (
                 <div className="contatori-section">
                     <h3>Servizi Associati</h3>
                     <table className="servizi-table">
@@ -362,30 +378,33 @@ const FatturaDetails = () => {
                     mode="Nuovo"
                 />
             )}
-            {showCliente && (
-                <table className="cliente-table">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Cognome</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{cliente.nome}</td>
-                            <td>{cliente.cognome}</td>
-                            <td>
-                                <button
-                                    onClick={() => history.push(`/clienti/${cliente._id}`)}
-                                    className="btn btn-open"
-                                >
-                                    Apri
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            {showCliente && cliente && (
+                <div className="cliente-section">
+                    <h3>Cliente Associato</h3>
+                    <table className="cliente-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Cognome</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{cliente.nome}</td>
+                                <td>{cliente.cognome}</td>
+                                <td>
+                                    <button
+                                        onClick={() => history.push(`/clienti/${cliente._id}`)}
+                                        className="btn btn-open"
+                                    >
+                                        Apri
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             )}
             {associatingCliente && (
                 <ClienteList
@@ -399,7 +418,7 @@ const FatturaDetails = () => {
                     mode="Nuovo"
                 />
             )}
-            {showScadenza && (
+            {showScadenza && scadenza && (
                 <div className="letture-section">
                     <h3>Scadenza Associata</h3>
                     <table className="scadenza-table">

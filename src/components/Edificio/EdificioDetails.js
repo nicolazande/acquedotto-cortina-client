@@ -53,6 +53,19 @@ const EdificioDetails = () => {
         }
     };
 
+    const handleDeleteEdificio = async () => {
+        try {
+            if (window.confirm('Sei sicuro di voler cancellare questo edificio?')) {
+                await edificioApi.deleteEdificio(edificioId);
+                alert('Edificio cancellato con successo');
+                handleBackClick();
+            }
+        } catch (error) {
+            alert('Errore durante la cancellazione dell\'edificio');
+            console.error(error);
+        }
+    }; 
+
     const fetchContatori = async () => {
         try {
             const response = await edificioApi.getContatori(edificioId);
@@ -122,6 +135,9 @@ const EdificioDetails = () => {
                         <div className="search-container">
                             <button onClick={() => setIsEditing(true)} className="btn btn-edit">
                                 Modifica
+                            </button>
+                            <button onClick={handleDeleteEdificio} className="btn btn-delete">
+                                Cancella
                             </button>
                         </div>
                         <table className="info-table">
@@ -195,7 +211,7 @@ const EdificioDetails = () => {
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
             
-            {showContatori && (
+            {showContatori && Array.isArray(contatori) && contatori.length > 0 && (
                 <div className="contatori-section">
                     <h3>Contatori Associati</h3>
                     <table className="contatori-table">
@@ -208,11 +224,7 @@ const EdificioDetails = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {contatori.length === 0 ? (
-                                <tr>
-                                    <td colSpan="4">Nessun contatore associato</td>
-                                </tr>
-                            ) : (
+                            {
                                 contatori.map((contatore) => (
                                     <tr key={contatore._id}>
                                         <td>{contatore.seriale}</td>
@@ -230,7 +242,7 @@ const EdificioDetails = () => {
                                         </td>
                                     </tr>
                                 ))
-                            )}
+                            }
                         </tbody>
                     </table>
                 </div>

@@ -47,6 +47,19 @@ const ArticoloDetails = () => {
             console.error('Errore durante l\'aggiornamento dell\'articolo:', error);
             alert('Errore durante l\'aggiornamento dell\'articolo.');
         }
+    };
+
+    const handleDeleteArticolo = async () => {
+        try {
+            if (window.confirm('Sei sicuro di voler cancellare questo articolo?')) {
+                await articoloApi.deleteArticolo(articoloId);
+                alert('Articolo cancellato con successo');
+                handleBackClick();
+            }
+        } catch (error) {
+            alert('Errore durante la cancellazione dell\'articolo');
+            console.error(error);
+        }
     };    
 
     const fetchServizi = async () => {
@@ -120,6 +133,9 @@ const ArticoloDetails = () => {
                             <button onClick={() => setIsEditing(true)} className="btn btn-edit">
                                 Modifica
                             </button>
+                            <button onClick={handleDeleteArticolo} className="btn btn-delete">
+                                Cancella
+                            </button>
                         </div>
                         <table className="info-table">
                             <tbody>
@@ -176,7 +192,7 @@ const ArticoloDetails = () => {
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
 
-            {showServizi && (
+            {showServizi && Array.isArray(servizi) && servizi.length > 0 && (
                 <div className="servizi-section">
                     <h3>Servizi Associati</h3>
                     <table className="servizi-table">
@@ -189,11 +205,7 @@ const ArticoloDetails = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {servizi.length === 0 ? (
-                                <tr>
-                                    <td colSpan="3">Nessun servizio associato</td>
-                                </tr>
-                            ) : (
+                            {
                                 servizi.map((servizio) => (
                                     <tr key={servizio._id}>
                                         <td>{servizio.descrizione}</td>
@@ -211,7 +223,7 @@ const ArticoloDetails = () => {
                                         </td>
                                     </tr>
                                 ))
-                            )}
+                            }
                         </tbody>
                     </table>
                 </div>

@@ -49,6 +49,19 @@ const ScadenzaDetails = () => {
         }
     };
 
+    const handleDeleteScadenza = async () => {
+        try {
+            if (window.confirm('Sei sicuro di voler cancellare questa scadenza?')) {
+                await scadenzaApi.deleteScadenza(scadenzaId);
+                alert('Scadenza cancellata con successo');
+                handleBackClick();
+            }
+        } catch (error) {
+            alert('Errore durante la cancellazione della scadenza');
+            console.error(error);
+        }
+    }; 
+
     const fetchFattura = async () => {
         try {
             const response = await scadenzaApi.getFattura(scadenzaId);
@@ -120,6 +133,9 @@ const ScadenzaDetails = () => {
                             <button onClick={() => setIsEditing(true)} className="btn btn-edit">
                                 Modifica
                             </button>
+                            <button onClick={handleDeleteScadenza} className="btn btn-delete">
+                                Cancella
+                            </button>
                         </div>
                         <table className="info-table">
                             <tbody>
@@ -187,10 +203,9 @@ const ScadenzaDetails = () => {
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
 
-            {showFattura && (
+            {showFattura && fattura && (
                 <div className="fattura-section">
                     <h3>Fattura Associata</h3>
-                    {fattura ? (
                         <table className="fattura-table">
                             <thead>
                                 <tr>
@@ -222,9 +237,6 @@ const ScadenzaDetails = () => {
                                 </tr>
                             </tbody>
                         </table>
-                    ) : (
-                        <p>Nessuna fattura associata.</p>
-                    )}
                 </div>
             )}
             {associatingFattura && (

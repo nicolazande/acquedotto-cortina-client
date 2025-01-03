@@ -41,6 +41,7 @@ const ContatoreDetails = () =>
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('modifica');
 
+
     const resetViews = () => {
         setLetture([]);
         setShowLetture(false);
@@ -83,7 +84,7 @@ const ContatoreDetails = () =>
         }
     };
 
-    const handleSaveContatore = async (updatedContatore) => {
+    const handleEditContatore = async (updatedContatore) => {
         try {
             await contatoreApi.updateContatore(contatoreId, updatedContatore);
             setContatore(updatedContatore);
@@ -94,6 +95,19 @@ const ContatoreDetails = () =>
             console.error(error);
         }
     };
+
+    const handleDeleteContatore = async () => {
+        try {
+            if (window.confirm('Sei sicuro di voler cancellare questo contatore?')) {
+                await contatoreApi.deleteContatore(contatoreId);
+                alert('Contatore cancellato con successo');
+                handleBackClick();
+            }
+        } catch (error) {
+            alert('Errore durante la cancellazione del contatore');
+            console.error(error);
+        }
+    };    
 
     const fetchCliente = async () =>
     {
@@ -263,7 +277,7 @@ const ContatoreDetails = () =>
             (
                 <ContatoreEditor
                     contatore={contatore}
-                    onSave={handleSaveContatore}
+                    onSave={handleEditContatore}
                     onCancel={() => setIsEditing(false)}
                     mode="Modifica" // "Nuovo", "Visualizza", or "Modifica"
                 />
@@ -273,6 +287,9 @@ const ContatoreDetails = () =>
                         <div className="search-container">
                             <button onClick={() => setIsEditing(true)} className="btn btn-edit">
                                 Modifica
+                            </button>
+                            <button onClick={handleDeleteContatore} className="btn btn-delete">
+                                Cancella
                             </button>
                         </div>
                         <table className="info-table">
@@ -447,30 +464,33 @@ const ContatoreDetails = () =>
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
             
-            {showCliente && (
-                <table className="cliente-table">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Cognome</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{cliente.nome}</td>
-                            <td>{cliente.cognome}</td>
-                            <td>
-                                <button
-                                    onClick={() => history.push(`/clienti/${cliente._id}`)}
-                                    className="btn btn-open"
-                                >
-                                    Apri
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            {showCliente && cliente && (
+                <div className="cliente-section">
+                <h3>Cliente Associato</h3>
+                    <table className="cliente-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Cognome</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{cliente.nome}</td>
+                                <td>{cliente.cognome}</td>
+                                <td>
+                                    <button
+                                        onClick={() => history.push(`/clienti/${cliente._id}`)}
+                                        className="btn btn-open"
+                                    >
+                                        Apri
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             )}
             {associatingCliente && (
                 <ClienteList
@@ -487,7 +507,7 @@ const ContatoreDetails = () =>
                     mode="Nuovo"
                 />
             )}
-            {showLetture && (
+            {showLetture && Array.isArray(letture) && letture.length > 0 && (
                 <div className="letture-section">
                     <h3>Letture Associate</h3>
                     <table className="letture-table">
@@ -502,11 +522,7 @@ const ContatoreDetails = () =>
                             </tr>
                         </thead>
                         <tbody>
-                            {letture.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5">Nessuna lettura associata</td>
-                                </tr>
-                            ) : (
+                            {
                                 letture.map((lettura) => (
                                     <tr key={lettura._id}>
                                         <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
@@ -524,7 +540,7 @@ const ContatoreDetails = () =>
                                         </td>
                                     </tr>
                                 ))
-                            )}
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -544,28 +560,31 @@ const ContatoreDetails = () =>
                     mode="Nuovo"
                 />
             )}
-            {showEdificio && (
-                <table className="edificio-table">
-                    <thead>
-                        <tr>
-                            <th>Descrizione</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{edificio.descrizione}</td>
-                            <td>
-                                <button
-                                    onClick={() => history.push(`/edifici/${edificio._id}`)}
-                                    className="btn btn-open"
-                                >
-                                    Apri
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            {showEdificio && edificio && (
+                <div className="edificio-section">
+                <h3>Edificio Associato</h3>
+                    <table className="edificio-table">
+                        <thead>
+                            <tr>
+                                <th>Descrizione</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{edificio.descrizione}</td>
+                                <td>
+                                    <button
+                                        onClick={() => history.push(`/edifici/${edificio._id}`)}
+                                        className="btn btn-open"
+                                    >
+                                        Apri
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             )}
             {associatingEdificio && (
                 <EdificioList
@@ -579,30 +598,33 @@ const ContatoreDetails = () =>
                     mode="Nuovo"
                 />
             )}
-            {showListiono && (
-                <table className="listino-table">
-                    <thead>
-                        <tr>
-                            <th>Descrizione</th>
-                            <th>Categoria</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{listino.descrizione}</td>
-                            <td>{listino.categoria}</td>
-                            <td>
-                                <button
-                                    onClick={() => history.push(`/listini/${listino._id}`)}
-                                    className="btn btn-open"
-                                >
-                                    Apri
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            {showListiono && listino && (
+                <div className="listino-section">
+                <h3>Listino Associato</h3>
+                    <table className="listino-table">
+                        <thead>
+                            <tr>
+                                <th>Descrizione</th>
+                                <th>Categoria</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{listino.descrizione}</td>
+                                <td>{listino.categoria}</td>
+                                <td>
+                                    <button
+                                        onClick={() => history.push(`/listini/${listino._id}`)}
+                                        className="btn btn-open"
+                                    >
+                                        Apri
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             )}
             {associatingListino && (
                 <ListinoList

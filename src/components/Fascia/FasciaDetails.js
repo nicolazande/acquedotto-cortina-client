@@ -12,12 +12,10 @@ const FasciaDetails = () => {
     const { id: fasciaId } = useParams();
     const history = useHistory();
     const [fascia, setFascia] = useState(null);
-
     const [listino, setListino] = useState([]);
     const [showListino, setShowListino] = useState(false);
     const [associatingListino, setAssociatingListino] = useState(false);
     const [creatingListino, setCreatingListino] = useState(false);
-
     const [activeTab, setActiveTab] = useState('modifica');
     const [isEditing, setIsEditing] = useState(false);
 
@@ -51,6 +49,19 @@ const FasciaDetails = () => {
             alert('Errore durante l\'aggiornamento della fascia.');
         }
     };
+
+    const handleDeleteFascia = async () => {
+        try {
+            if (window.confirm('Sei sicuro di voler cancellare questa fascia?')) {
+                await fasciaApi.deleteFascia(fasciaId);
+                alert('Fascia cancellata con successo');
+                handleBackClick();
+            }
+        } catch (error) {
+            alert('Errore durante la cancellazione della fascia');
+            console.error(error);
+        }
+    };   
 
     const fetchListino = async () => {
         try {
@@ -120,6 +131,14 @@ const FasciaDetails = () => {
             ) : (
                 <>
                     <div className="table-container">
+                        <div className="search-container">
+                            <button onClick={() => setIsEditing(true)} className="btn btn-edit">
+                                Modifica
+                            </button>
+                            <button onClick={handleDeleteFascia} className="btn btn-delete">
+                                Cancella
+                            </button>
+                        </div>
                         <table className="info-table">
                             <tbody>
                                 <tr>
@@ -183,7 +202,7 @@ const FasciaDetails = () => {
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>
 
-            {showListino && (
+            {showListino && listino && (
                 <div className="listino-section">
                     <h3>Listino Associato</h3>
                     <table className="listino-table">
