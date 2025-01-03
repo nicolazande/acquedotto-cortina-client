@@ -1,207 +1,187 @@
-/* Styles for ScadenzaDetails */
+/* ScadenzaDetails.css */
 
-.scadenza-detail {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    max-width: 1200px;
+/* General Styles for ScadenzaDetails */
+.scadenza-details body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.scadenza-detail h2 {
-    font-size: 1.5em;
-    margin-bottom: 20px;
+.scadenza-details h2, 
+.scadenza-details h3 {
     text-align: center;
+    color: #333;
 }
 
-.table-container {
-    width: 100%;
-    overflow-x: auto; /* Enable horizontal scrolling only for the table container */
-    margin-bottom: 20px;
-}
-
-.info-table {
+.scadenza-details table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin: 1em 0;
 }
 
-.info-table th, .info-table td {
+.scadenza-details th, 
+.scadenza-details td {
     text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+    padding: 0.8em;
+    border: 1px solid #ddd;
 }
 
-.info-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
+.scadenza-details th {
+    background-color: #f4f4f4;
 }
 
-.btn-show-letture, .btn-associate-cliente, .btn-associate-edificio, .btn-associate-listino, .btn-associate-lettura, .btn-edit, .btn-save, .btn-cancel, .btn-associate-fattura {
+.scadenza-details tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+/* Buttons */
+.scadenza-details button {
+    cursor: pointer;
+    padding: 0.5em 1em;
+    border: none;
+    border-radius: 5px;
+    margin: 0.4em;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.scadenza-details button:hover {
+    background-color: #ddd;
+    transform: scale(1.05);
+}
+
+.scadenza-details .btn {
     background-color: #007bff;
     color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    margin: 5px;
-    display: block;
-    margin: 10px auto;
 }
 
-.btn-show-letture:hover, .btn-associate-cliente:hover, .btn-associate-edificio:hover, .btn-associate-listino:hover, .btn-associate-lettura:hover, .btn-edit:hover, .btn-save:hover, .btn-associate-fattura:hover {
+.scadenza-details .btn:hover {
     background-color: #0056b3;
 }
 
-.btn-delete {
-    background-color: #ff3b30;
-}
-
-.btn-delete:hover {
-    background-color: #c4302b;
-}
-
-.btn-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    flex-wrap: wrap;
-}
-
-.btn-back-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.letture-section {
-    margin-top: 20px;
-}
-
-.letture-section h3 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.letture-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.letture-table th, .letture-table td {
-    text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-}
-
-.letture-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-
-.edit-form {
-    display: flex;
-    flex-direction: column;
-}
-
-.edit-form .form-group {
-    margin-bottom: 15px;
-}
-
-.edit-form label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    display: block;
-}
-
-.edit-form input[type="text"],
-.edit-form input[type="date"],
-.edit-form input[type="email"],
-.edit-form input[type="number"],
-.edit-form textarea {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.edit-form input[type="checkbox"] {
-    margin-right: 10px;
-}
-
-.edit-form .btn-save {
+.scadenza-details .btn-edit {
     background-color: #28a745;
     color: white;
 }
 
-.edit-form .btn-save:hover {
-    background-color: #218838;
+.scadenza-details .btn-edit:hover {
+    background-color: #1e7e34;
 }
 
-.edit-form .btn-cancel {
+.scadenza-details .btn-delete {
     background-color: #dc3545;
     color: white;
 }
 
-.edit-form .btn-cancel:hover {
+.scadenza-details .btn-delete:hover {
     background-color: #c82333;
 }
 
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+/* Container Styles */
+.scadenza-details {
+    max-width: 900px;
+    margin: 1em auto;
+    padding: 1em;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.scadenza-details .table-container {
+    overflow-x: auto;
+}
+
+/* Search Container */
+.scadenza-details .search-container {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.modal-content {
-    background-color: white;
-    padding: 20px;
+    gap: 0.8em;
+    margin-top: 1em;
+    padding: 1em;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
     border-radius: 10px;
-    max-width: 500px;
-    width: 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.modal-content h3 {
-    margin-top: 0;
-    font-size: 1.5em;
-    margin-bottom: 20px;
-    text-align: center;
+/* Tabs */
+.scadenza-details .tabs-container {
+    margin-top: 1em;
 }
 
-.modal-content ul {
-    list-style: none;
-    padding: 0;
+.scadenza-details .tabs {
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 1em;
+    gap: 0.8em;
 }
 
-.modal-content li {
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    cursor: pointer;
-}
-
-.modal-content li:hover {
-    background-color: #f1f1f1;
-}
-
-.modal-content button {
-    background-color: #007bff;
-    color: white;
+.scadenza-details .tab {
+    padding: 0.5em 1em;
+    font-size: 1rem;
+    background: none;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    display: block;
-    margin: 20px auto;
+    outline: none;
+    border-bottom: 2px solid transparent;
 }
 
-.modal-content button:hover {
-    background-color: #0056b3;
+.scadenza-details .tab.active {
+    border-bottom: 2px solid #007bff;
+    font-weight: bold;
+}
+
+.scadenza-details .tab-content {
+    display: none;
+}
+
+.scadenza-details .tab-content.show {
+    display: block;
+}
+
+/* Button Alignment */
+.scadenza-details .btn-back-container,
+.scadenza-details .fattura-box {
+    display: flex;
+    justify-content: center;
+    gap: 0.8em;
+    flex-wrap: wrap;
+    margin-top: 1em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .scadenza-details {
+        padding: 1em;
+        margin: 0.5em;
+    }
+
+    .scadenza-details button {
+        width: auto;
+        padding: 0.6em;
+        margin: 0.4em;
+    }
+
+    .scadenza-details th, 
+    .scadenza-details td {
+        font-size: 0.9rem;
+        padding: 0.6em;
+    }
+
+    .scadenza-details .tabs {
+        flex-wrap: wrap;
+    }
+
+    .scadenza-details .tab {
+        flex: 1 1 50%;
+        text-align: center;
+    }
+
+    .scadenza-details .search-container {
+        flex-direction: column;
+        gap: 1em;
+        padding: 1em;
+    }
 }

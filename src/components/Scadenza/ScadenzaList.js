@@ -92,7 +92,7 @@ const ScadenzaList = ({ onSelectScadenza }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="Nome o Cognome"
+                            placeholder="..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />

@@ -1,77 +1,80 @@
 /* ClienteDetails.css */
 
-/* General Styles */
-body {
+/* General Styles for ClienteDetails */
+.cliente-details body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-h2, h3 {
+.cliente-details h2, 
+.cliente-details h3 {
     text-align: center;
     color: #333;
 }
 
-table {
+.cliente-details table {
     width: 100%;
     border-collapse: collapse;
     margin: 1em 0;
 }
 
-th, td {
+.cliente-details th, 
+.cliente-details td {
     text-align: left;
     padding: 0.8em;
     border: 1px solid #ddd;
 }
 
-th {
+.cliente-details th {
     background-color: #f4f4f4;
 }
 
-tbody tr:nth-child(odd) {
+.cliente-details tbody tr:nth-child(odd) {
     background-color: #f9f9f9;
 }
 
-button {
+/* Buttons */
+.cliente-details button {
     cursor: pointer;
-    padding: 0.6em 1.2em;
+    padding: 0.5em 1em; /* Slightly larger button size */
     border: none;
     border-radius: 5px;
-    margin: 0.5em;
-    font-size: 1rem;
+    margin: 0.4em; /* Adjusted for a clean layout */
+    font-size: 1rem; /* Standard font size */
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-button:hover {
+.cliente-details button:hover {
     background-color: #ddd;
     transform: scale(1.05);
 }
 
-.btn {
+.cliente-details .btn {
     background-color: #007bff;
     color: white;
 }
 
-.btn:hover {
+.cliente-details .btn:hover {
     background-color: #0056b3;
 }
 
-.btn-edit {
+.cliente-details .btn-edit {
     background-color: #28a745;
     color: white;
 }
 
-.btn-edit:hover {
+.cliente-details .btn-edit:hover {
     background-color: #1e7e34;
 }
 
-.btn-delete {
+.cliente-details .btn-delete {
     background-color: #dc3545;
     color: white;
 }
 
-.btn-delete:hover {
+.cliente-details .btn-delete:hover {
     background-color: #c82333;
 }
 
@@ -85,16 +88,16 @@ button:hover {
     border-radius: 10px;
 }
 
-.table-container {
+.cliente-details .table-container {
     overflow-x: auto;
 }
 
 /* Enhanced Search Container */
-.search-container {
+.cliente-details .search-container {
     display: flex;
-    justify-content: center;
+    justify-content: center; /* Align horizontally */
     align-items: center;
-    gap: 2em; /* Equal spacing between buttons */
+    gap: 0.8em; /* Slightly larger spacing */
     margin-top: 1em;
     padding: 1em;
     background-color: #f9f9f9;
@@ -104,20 +107,20 @@ button:hover {
 }
 
 /* Tabs */
-.tabs-container {
+.cliente-details .tabs-container {
     margin-top: 1em;
 }
 
-.tabs {
+.cliente-details .tabs {
     display: flex;
     justify-content: center;
     border-bottom: 2px solid #ddd;
     margin-bottom: 1em;
-    gap: 1em; /* Adds spacing between tabs */
+    gap: 0.8em; /* Adjusted spacing between tabs */
 }
 
-.tab {
-    padding: 0.6em 1.2em;
+.cliente-details .tab {
+    padding: 0.5em 1em; /* Adjusted tab size */
     font-size: 1rem;
     background: none;
     border: none;
@@ -125,27 +128,27 @@ button:hover {
     border-bottom: 2px solid transparent;
 }
 
-.tab.active {
+.cliente-details .tab.active {
     border-bottom: 2px solid #007bff;
     font-weight: bold;
 }
 
-.tab-content {
+.cliente-details .tab-content {
     display: none;
 }
 
-.tab-content.show {
+.cliente-details .tab-content.show {
     display: block;
 }
 
 /* Button Alignment */
-.btn-back-container,
-.contatori-box,
-.fatture-box {
+.cliente-details .btn-back-container,
+.cliente-details .contatori-box,
+.cliente-details .fatture-box {
     display: flex;
     justify-content: center;
-    gap: 1em; /* Adds spacing between buttons */
-    flex-wrap: wrap; /* Ensures buttons wrap on smaller screens */
+    gap: 0.8em; /* Adjusted spacing */
+    flex-wrap: wrap;
     margin-top: 1em;
 }
 
@@ -156,27 +159,28 @@ button:hover {
         margin: 0.5em;
     }
 
-    button {
+    .cliente-details button {
         width: auto;
-        padding: 0.8em;
-        margin: 0.3em 0;
+        padding: 0.6em; /* Slightly larger on mobile */
+        margin: 0.4em;
     }
 
-    th, td {
+    .cliente-details th, 
+    .cliente-details td {
         font-size: 0.9rem;
         padding: 0.6em;
     }
 
-    .tabs {
+    .cliente-details .tabs {
         flex-wrap: wrap;
     }
 
-    .tab {
+    .cliente-details .tab {
         flex: 1 1 50%;
         text-align: center;
     }
 
-    .search-container {
+    .cliente-details .search-container {
         flex-direction: column; /* Stack buttons on smaller screens */
         gap: 1em;
         padding: 1em;

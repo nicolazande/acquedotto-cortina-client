@@ -91,7 +91,7 @@ const ArticoloList = ({ onSelectArticolo }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="Cerca per codice o descrizione..."
+                            placeholder="..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -125,12 +125,6 @@ const ArticoloList = ({ onSelectArticolo }) => {
                                     <td>
                                         <button
                                             className="btn"
-                                            onClick={() => onSelectArticolo && onSelectArticolo(articolo._id)}
-                                        >
-                                            Seleziona
-                                        </button>
-                                        <button
-                                            className="btn"
                                             onClick={() => history.push(`/articoli/${articolo._id}`)}
                                         >
                                             Dettagli
@@ -140,6 +134,12 @@ const ArticoloList = ({ onSelectArticolo }) => {
                                             onClick={() => handleDelete(articolo._id)}
                                         >
                                             Cancella
+                                        </button>
+                                        <button
+                                            className="btn"
+                                            onClick={() => onSelectArticolo && onSelectArticolo(articolo._id)}
+                                        >
+                                            Seleziona
                                         </button>
                                     </td>
                                 </tr>

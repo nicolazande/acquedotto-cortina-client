@@ -1,200 +1,185 @@
-/* Styles for EdificioDetails */
+/* General Styles for EdificioDetails */
 .edificio-details {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    max-width: 800px; /* Reduced max-width for better focus */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.edificio-details h2 {
-    font-size: 1.5em;
-    margin-bottom: 20px;
+.edificio-details h2, 
+.edificio-details h3 {
     text-align: center;
+    color: #333;
 }
 
-/* Table Styles */
-.table-container {
-    overflow-x: auto;
-    margin-bottom: 20px;
-}
-
-.info-table, .contatori-table {
+.edificio-details table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin: 1em 0;
 }
 
-.info-table th, .info-table td,
-.contatori-table th, .contatori-table td {
+.edificio-details th, 
+.edificio-details td {
     text-align: left;
-    padding: 10px;
-    border: 1px solid #ccc; /* Unified border style */
+    padding: 0.8em;
+    border: 1px solid #ddd;
 }
 
-.info-table th, .contatori-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
+.edificio-details th {
+    background-color: #f4f4f4;
 }
 
-/* Modal Styles */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 600px; /* Adjusted for smaller viewports */
-    width: 100%;
-    position: relative;
-}
-
-.modal-content h3 {
-    font-size: 1.2em;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.btn-close {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.btn-close:hover {
-    background-color: #c82333;
-}
-
-/* Tabs */
-.tabs-container {
-    margin-top: 20px;
-}
-
-.tabs {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
-
-.tab {
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s ease;
-}
-
-.tab:hover, .tab.active {
-    color: #007bff;
-    font-weight: bold;
-    border-bottom: 3px solid #007bff;
+.edificio-details tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
 }
 
 /* Buttons */
-.btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-size: 14px;
+.edificio-details button {
     cursor: pointer;
-    transition: background-color 0.3s;
-    text-align: center;
+    padding: 0.5em 1em;
+    border: none;
+    border-radius: 5px;
+    margin: 0.4em;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.btn:hover {
+.edificio-details button:hover {
+    background-color: #ddd;
+    transform: scale(1.05);
+}
+
+.edificio-details .btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.edificio-details .btn:hover {
     background-color: #0056b3;
 }
 
-.btn-edit {
+.edificio-details .btn-edit {
     background-color: #28a745;
+    color: white;
 }
 
-.btn-edit:hover {
-    background-color: #218838;
+.edificio-details .btn-edit:hover {
+    background-color: #1e7e34;
 }
 
-.btn-back {
-    background-color: #6c757d;
-}
-
-.btn-back:hover {
-    background-color: #5a6268;
-}
-
-.btn-save {
-    background-color: #28a745;
-}
-
-.btn-save:hover {
-    background-color: #218838;
-}
-
-.btn-cancel {
+.edificio-details .btn-delete {
     background-color: #dc3545;
+    color: white;
 }
 
-.btn-cancel:hover {
+.edificio-details .btn-delete:hover {
     background-color: #c82333;
 }
 
-/* Utility Containers */
-.btn-container {
+/* Container Styles */
+.edificio-details {
+    max-width: 900px;
+    margin: 1em auto;
+    padding: 1em;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.edificio-details .table-container {
+    overflow-x: auto;
+}
+
+/* Search Container */
+.edificio-details .search-container {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
+    align-items: center;
+    gap: 0.8em;
+    margin-top: 1em;
+    padding: 1em;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Tabs */
+.edificio-details .tabs-container {
+    margin-top: 1em;
+}
+
+.edificio-details .tabs {
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 1em;
+    gap: 0.8em;
+}
+
+.edificio-details .tab {
+    padding: 0.5em 1em;
+    font-size: 1rem;
+    background: none;
+    border: none;
+    outline: none;
+    border-bottom: 2px solid transparent;
+}
+
+.edificio-details .tab.active {
+    border-bottom: 2px solid #007bff;
+    font-weight: bold;
+}
+
+.edificio-details .tab-content {
+    display: none;
+}
+
+.edificio-details .tab-content.show {
+    display: block;
+}
+
+/* Button Alignment */
+.edificio-details .btn-back-container,
+.edificio-details .contatori-box {
+    display: flex;
+    justify-content: center;
+    gap: 0.8em;
     flex-wrap: wrap;
+    margin-top: 1em;
 }
 
-.btn-back-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.contatori-box {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 600px) {
-    .tabs {
-        flex-wrap: wrap;
-        gap: 10px;
+/* Responsive Design */
+@media (max-width: 768px) {
+    .edificio-details {
+        padding: 1em;
+        margin: 0.5em;
     }
 
-    .btn {
-        font-size: 12px;
-        padding: 8px 10px;
+    .edificio-details button {
+        width: auto;
+        padding: 0.6em;
+        margin: 0.4em;
+    }
+
+    .edificio-details th, 
+    .edificio-details td {
+        font-size: 0.9rem;
+        padding: 0.6em;
+    }
+
+    .edificio-details .tabs {
+        flex-wrap: wrap;
+    }
+
+    .edificio-details .tab {
+        flex: 1 1 50%;
+        text-align: center;
+    }
+
+    .edificio-details .search-container {
+        flex-direction: column;
+        gap: 1em;
+        padding: 1em;
     }
 }

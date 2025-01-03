@@ -1,191 +1,188 @@
-/* Styles for ListinoDetails */
+/* ListinoDetails.css */
 
-.listino-details {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    max-width: 1200px;
+/* General Styles */
+.listino-details body {
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.listino-details h2 {
-    font-size: 1.8em;
-    margin-bottom: 20px;
+.listino-details h2, 
+.listino-details h3 {
     text-align: center;
     color: #333;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 10px;
 }
 
-.table-container {
-    width: 100%;
-    overflow-x: auto;
-    margin-bottom: 20px;
-}
-
-.info-table, .fasce-table, .contatori-table {
+.listino-details table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
-    font-size: 14px;
+    margin: 1em 0;
+}
+
+.listino-details th, 
+.listino-details td {
     text-align: left;
-}
-
-.info-table th, .info-table td, 
-.fasce-table th, .fasce-table td, 
-.contatori-table th, .contatori-table td {
-    padding: 12px 10px;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.info-table th, .fasce-table th, .contatori-table th {
-    background-color: #f5f5f5;
-    font-weight: bold;
-    color: #555;
-}
-
-.info-table td, .fasce-table td, .contatori-table td {
-    color: #555;
-}
-
-.btn {
-    padding: 10px 15px;
-    font-size: 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-    margin: 5px;
-    text-transform: uppercase;
-}
-
-.btn-edit, .btn-show-fasce, .btn-show-contatori, .btn-associate-fascia, .btn-associate-contatore {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    transition: background-color 0.3s ease;
-}
-
-.btn-edit:hover, .btn-show-fasce:hover, .btn-show-contatori:hover, 
-.btn-associate-fascia:hover, .btn-associate-contatore:hover {
-    background-color: #0056b3;
-}
-
-.btn-back {
-    background-color: #6c757d;
-    color: #fff;
-}
-
-.btn-back:hover {
-    background-color: #5a6268;
-}
-
-.btn-back-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.tabs-container {
-    margin-top: 20px;
-}
-
-.tabs {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.tabs .tab {
-    padding: 10px 15px;
-    font-size: 14px;
-    font-weight: bold;
-    border: 1px solid #007bff;
-    color: #007bff;
-    background-color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.tabs .tab.active {
-    background-color: #007bff;
-    color: #fff;
-}
-
-.tabs .tab:hover {
-    background-color: #0056b3;
-    color: #fff;
-}
-
-.fasce-section, .contatori-section {
-    margin-top: 20px;
-}
-
-.fasce-section h3, .contatori-section h3 {
-    font-size: 1.5em;
-    color: #007bff;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.modal {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-}
-
-.modal-content {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-}
-
-.modal-content h3 {
-    margin-bottom: 15px;
-    text-align: center;
-    color: #333;
-}
-
-.modal-content ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.modal-content ul li {
-    padding: 10px;
+    padding: 0.8em;
     border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    text-align: center;
 }
 
-.modal-content ul li:hover {
+.listino-details th {
+    background-color: #f4f4f4;
+}
+
+.listino-details tbody tr:nth-child(odd) {
     background-color: #f9f9f9;
 }
 
-.modal-content button {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+/* Buttons */
+.listino-details button {
     cursor: pointer;
-    margin-top: 15px;
+    padding: 0.5em 1em;
+    border: none;
+    border-radius: 5px;
+    margin: 0.4em;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.modal-content button:hover {
+.listino-details button:hover {
+    background-color: #ddd;
+    transform: scale(1.05);
+}
+
+.listino-details .btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.listino-details .btn:hover {
+    background-color: #0056b3;
+}
+
+.listino-details .btn-edit {
+    background-color: #28a745;
+    color: white;
+}
+
+.listino-details .btn-edit:hover {
+    background-color: #1e7e34;
+}
+
+.listino-details .btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.listino-details .btn-delete:hover {
     background-color: #c82333;
+}
+
+/* Container Styles */
+.listino-details {
+    max-width: 900px;
+    margin: 1em auto;
+    padding: 1em;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.listino-details .table-container {
+    overflow-x: auto;
+}
+
+/* Enhanced Search Container */
+.listino-details .search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8em;
+    margin-top: 1em;
+    padding: 1em;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Tabs */
+.listino-details .tabs-container {
+    margin-top: 1em;
+}
+
+.listino-details .tabs {
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 1em;
+    gap: 0.8em;
+}
+
+.listino-details .tab {
+    padding: 0.5em 1em;
+    font-size: 1rem;
+    background: none;
+    border: none;
+    outline: none;
+    border-bottom: 2px solid transparent;
+}
+
+.listino-details .tab.active {
+    border-bottom: 2px solid #007bff;
+    font-weight: bold;
+}
+
+.listino-details .tab-content {
+    display: none;
+}
+
+.listino-details .tab-content.show {
+    display: block;
+}
+
+/* Button Alignment */
+.listino-details .btn-back-container,
+.listino-details .fasce-box,
+.listino-details .contatori-box {
+    display: flex;
+    justify-content: center;
+    gap: 0.8em;
+    flex-wrap: wrap;
+    margin-top: 1em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .listino-details {
+        padding: 1em;
+        margin: 0.5em;
+    }
+
+    .listino-details button {
+        width: auto;
+        padding: 0.6em;
+        margin: 0.4em;
+    }
+
+    .listino-details th, 
+    .listino-details td {
+        font-size: 0.9rem;
+        padding: 0.6em;
+    }
+
+    .listino-details .tabs {
+        flex-wrap: wrap;
+    }
+
+    .listino-details .tab {
+        flex: 1 1 50%;
+        text-align: center;
+    }
+
+    .listino-details .search-container {
+        flex-direction: column;
+        gap: 1em;
+        padding: 1em;
+    }
 }

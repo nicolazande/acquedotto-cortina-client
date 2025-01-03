@@ -2,10 +2,12 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import fasciaApi from '../../api/fasciaApi';
 import listinoApi from '../../api/listinoApi';
-import '../../styles/Fascia/FasciaDetails.css';
+
 import ListinoList from '../Listino/ListinoList';
 import FasciaEditor from '../shared/FasciaEditor';
 import ListinoEditor from '../shared/ListinoEditor';
+
+import '../../styles/Fascia/FasciaDetails.css';
 
 
 const FasciaDetails = () => {

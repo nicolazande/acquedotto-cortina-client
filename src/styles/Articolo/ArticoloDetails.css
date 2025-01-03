@@ -1,92 +1,81 @@
 /* ArticoloDetails.css */
 
-/* General Styles */
-body {
+/* General Styles for ArticoloDetails */
+.articolo-details body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-h2, h3 {
+.articolo-details h2, 
+.articolo-details h3 {
     text-align: center;
     color: #333;
 }
 
-table {
+.articolo-details table {
     width: 100%;
     border-collapse: collapse;
     margin: 1em 0;
 }
 
-th, td {
+.articolo-details th, 
+.articolo-details td {
     text-align: left;
     padding: 0.8em;
     border: 1px solid #ddd;
 }
 
-th {
+.articolo-details th {
     background-color: #f4f4f4;
 }
 
-tbody tr:nth-child(odd) {
+.articolo-details tbody tr:nth-child(odd) {
     background-color: #f9f9f9;
 }
 
 /* Buttons */
-button {
+.articolo-details button {
     cursor: pointer;
-    padding: 0.6em 1.2em;
+    padding: 0.5em 1em; /* Slightly larger button size */
     border: none;
     border-radius: 5px;
-    margin: 0.5em;
-    font-size: 1rem;
+    margin: 0.4em; /* Adjusted for a clean layout */
+    font-size: 1rem; /* Standard font size */
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-button:hover {
+.articolo-details button:hover {
     background-color: #ddd;
     transform: scale(1.05);
 }
 
-.btn {
+.articolo-details .btn {
     background-color: #007bff;
     color: white;
 }
 
-.btn:hover {
+.articolo-details .btn:hover {
     background-color: #0056b3;
 }
 
-.btn-edit {
+.articolo-details .btn-edit {
     background-color: #28a745;
     color: white;
 }
 
-.btn-edit:hover {
+.articolo-details .btn-edit:hover {
     background-color: #1e7e34;
 }
 
-.btn-delete {
+.articolo-details .btn-delete {
     background-color: #dc3545;
     color: white;
 }
 
-.btn-delete:hover {
+.articolo-details .btn-delete:hover {
     background-color: #c82333;
-}
-
-.btn-show-servizi,
-.btn-associate-servizio,
-.btn-create-servizio {
-    background-color: #17a2b8;
-    color: white;
-}
-
-.btn-show-servizi:hover,
-.btn-associate-servizio:hover,
-.btn-create-servizio:hover {
-    background-color: #117a8b;
 }
 
 /* Container Styles */
@@ -99,16 +88,16 @@ button:hover {
     border-radius: 10px;
 }
 
-.table-container {
+.articolo-details .table-container {
     overflow-x: auto;
 }
 
-/* Search Container */
-.search-container {
+/* Enhanced Search Container */
+.articolo-details .search-container {
     display: flex;
-    justify-content: center;
+    justify-content: center; /* Align horizontally */
     align-items: center;
-    gap: 2em; /* Equal spacing between buttons */
+    gap: 0.8em; /* Slightly larger spacing */
     margin-top: 1em;
     padding: 1em;
     background-color: #f9f9f9;
@@ -118,20 +107,20 @@ button:hover {
 }
 
 /* Tabs */
-.tabs-container {
+.articolo-details .tabs-container {
     margin-top: 1em;
 }
 
-.tabs {
+.articolo-details .tabs {
     display: flex;
     justify-content: center;
     border-bottom: 2px solid #ddd;
     margin-bottom: 1em;
-    gap: 1em; /* Adds spacing between tabs */
+    gap: 0.8em; /* Adjusted spacing between tabs */
 }
 
-.tab {
-    padding: 0.6em 1.2em;
+.articolo-details .tab {
+    padding: 0.5em 1em; /* Adjusted tab size */
     font-size: 1rem;
     background: none;
     border: none;
@@ -139,44 +128,27 @@ button:hover {
     border-bottom: 2px solid transparent;
 }
 
-.tab.active {
+.articolo-details .tab.active {
     border-bottom: 2px solid #007bff;
     font-weight: bold;
 }
 
-.tab-content {
+.articolo-details .tab-content {
     display: none;
 }
 
-.tab-content.show {
+.articolo-details .tab-content.show {
     display: block;
 }
 
 /* Button Alignment */
-.btn-back-container,
-.servizi-box {
+.articolo-details .btn-back-container,
+.articolo-details .servizi-box {
     display: flex;
     justify-content: center;
-    gap: 1em; /* Adds spacing between buttons */
-    flex-wrap: wrap; /* Ensures buttons wrap on smaller screens */
+    gap: 0.8em; /* Adjusted spacing */
+    flex-wrap: wrap;
     margin-top: 1em;
-}
-
-/* Servizi Section */
-.servizi-section {
-    margin-top: 1.5em;
-}
-
-.servizi-section h3 {
-    text-align: center;
-    margin-bottom: 1em;
-}
-
-.servizi-table td:last-child {
-    display: flex;
-    justify-content: center;
-    gap: 1em; /* Adds spacing between action buttons */
-    vertical-align: middle;
 }
 
 /* Responsive Design */
@@ -186,34 +158,30 @@ button:hover {
         margin: 0.5em;
     }
 
-    button {
+    .articolo-details button {
         width: auto;
-        padding: 0.8em;
-        margin: 0.3em 0;
+        padding: 0.6em; /* Slightly larger on mobile */
+        margin: 0.4em;
     }
 
-    th, td {
+    .articolo-details th, 
+    .articolo-details td {
         font-size: 0.9rem;
         padding: 0.6em;
     }
 
-    .tabs {
+    .articolo-details .tabs {
         flex-wrap: wrap;
     }
 
-    .tab {
+    .articolo-details .tab {
         flex: 1 1 50%;
         text-align: center;
     }
 
-    .search-container {
+    .articolo-details .search-container {
         flex-direction: column; /* Stack buttons on smaller screens */
         gap: 1em;
         padding: 1em;
-    }
-
-    .servizi-table td:last-child {
-        flex-direction: column; /* Stack action buttons in the Servizi table on smaller screens */
-        gap: 0.5em;
     }
 }

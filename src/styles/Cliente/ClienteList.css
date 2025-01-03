@@ -1,94 +1,104 @@
 /* ClienteList.css */
 
-/* General Styles */
-body {
+/* General Styles for ClienteList */
+.cliente-list-container {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-h2 {
+.cliente-list h2 {
     text-align: center;
     color: #333;
     margin-bottom: 1em;
 }
 
-table {
+.cliente-list table {
     width: 100%;
     border-collapse: collapse;
     margin: 1em 0;
 }
 
-th, td {
+.cliente-list th,
+.cliente-list td {
     text-align: left;
     padding: 0.8em;
     border: 1px solid #ddd;
 }
 
-th {
+.cliente-list th {
     background-color: #f4f4f4;
 }
 
-tbody tr:nth-child(odd) {
+.cliente-list tbody tr:nth-child(odd) {
     background-color: #f9f9f9;
 }
 
 /* Buttons */
-button {
+.cliente-list button {
     cursor: pointer;
-    padding: 0.6em 1.2em;
+    padding: 0.5em 1em; /* Slightly larger button size */
     border: none;
     border-radius: 5px;
-    margin: 0.5em 0;
-    font-size: 1rem;
+    margin: 0.4em; /* Adjusted for a clean layout */
+    font-size: 1rem; /* Standard font size */
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-button:hover {
+.cliente-list button:hover {
     background-color: #ddd;
     transform: scale(1.05);
 }
 
-.btn {
+.cliente-list .btn {
     background-color: #007bff;
     color: white;
 }
 
-.btn:hover {
+.cliente-list .btn:hover {
     background-color: #0056b3;
 }
 
-.btn-delete {
-    background-color: #dc3545;
-    color: white;
-}
-
-.btn-delete:hover {
-    background-color: #c82333;
-}
-
-.btn-select {
+.cliente-list .btn-search {
     background-color: #17a2b8;
     color: white;
 }
 
-.btn-select:hover {
+.cliente-list .btn-search:hover {
     background-color: #117a8b;
 }
 
-.btn-prev, .btn-next {
+.cliente-list .btn-new-cliente {
+    background-color: #28a745;
+    color: white;
+}
+
+.cliente-list .btn-new-cliente:hover {
+    background-color: #1e7e34;
+}
+
+.cliente-list .btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.cliente-list .btn-delete:hover {
+    background-color: #c82333;
+}
+
+.cliente-list .btn-select {
     background-color: #6c757d;
     color: white;
 }
 
-.btn-prev:hover, .btn-next:hover {
+.cliente-list .btn-select:hover {
     background-color: #5a6268;
 }
 
 /* Container Styles */
 .cliente-list-container {
-    max-width: 1000px;
+    max-width: 1600px;
     margin: 1em auto;
     padding: 1em;
     background: #fff;
@@ -96,69 +106,61 @@ button:hover {
     border-radius: 10px;
 }
 
-.search-container {
+.cliente-list .search-container {
+    display: flex;
+    justify-content: center; /* Horizontal alignment */
+    align-items: center;
+    gap: 0.8em; /* Slightly larger spacing */
     margin-bottom: 1em;
-    background-color: #f9f9f9;
     padding: 1em;
+    background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
-.search-bar {
+.cliente-list .search-bar {
     display: flex;
-    gap: 1em;
+    justify-content: center; /* Aligns input and buttons horizontally */
     align-items: center;
+    gap: 0.8em; /* Larger spacing between input and buttons */
     width: 100%;
     max-width: 800px;
 }
 
-.search-bar input {
+.cliente-list .search-bar input {
     flex-grow: 1;
-    padding: 0.6em;
-    font-size: 1rem;
+    padding: 0.5em; /* Slightly larger padding */
     border: 1px solid #ddd;
     border-radius: 5px;
+    font-size: 1rem;
 }
 
-/* Table Actions Column */
-.cliente-table td:last-child {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1em; /* Adds equal spacing between action buttons */
-    vertical-align: middle;
-}
-
-/* Table Styling */
-.table-container {
+.cliente-list .table-container {
     overflow-x: auto;
 }
 
 /* Pagination */
-.pagination {
+.cliente-list .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 0.5em; /* Slightly larger spacing between buttons */
     margin-top: 1em;
-    gap: 0.5em;
 }
 
-.page-button {
-    padding: 0.6em 1.2em;
+.cliente-list .page-button {
+    padding: 0.5em 1em;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 5px;
     transition: background-color 0.3s ease;
 }
 
-.page-button:hover {
+.cliente-list .page-button:hover {
     background-color: #e2e6ea;
 }
 
-.page-button.active {
+.cliente-list .page-button.active {
     background-color: #007bff;
     color: white;
     font-weight: bold;
@@ -166,17 +168,21 @@ button:hover {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .search-bar {
-        flex-direction: column;
-        gap: 0.5em;
+    .cliente-list .search-bar {
+        flex-wrap: wrap; /* Wrap buttons on smaller screens */
+        gap: 0.8em;
     }
 
-    .pagination {
+    .cliente-list .pagination {
         flex-wrap: wrap;
     }
 
-    .cliente-table td:last-child {
-        flex-direction: column; /* Stack action buttons on smaller screens */
-        gap: 0.5em;
+    .cliente-list table {
+        font-size: 0.9rem;
+    }
+
+    .cliente-list th,
+    .cliente-list td {
+        padding: 0.6em;
     }
 }
