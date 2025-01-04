@@ -3,7 +3,7 @@ import ListinoList from '../components/Listino/ListinoList';
 import '../styles/Listino/ListinoPage.css';
 
 const ListinoPage = () => {
-    const [selectedListinoId, setSelectedListinoId] = useState(null);
+    const [, setSelectedListinoId] = useState(null);
 
     const handleListinoSelect = (listinoId) => {
         setSelectedListinoId(listinoId);

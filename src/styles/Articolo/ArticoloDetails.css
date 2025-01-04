@@ -78,6 +78,15 @@
     background-color: #c82333;
 }
 
+.articolo-details .btn-back {
+    background-color: #6c757d;
+    color: white;
+}
+
+.articolo-details .btn-back:hover {
+    background-color: #5a6268;
+}
+
 /* Container Styles */
 .articolo-details {
     max-width: 900px;

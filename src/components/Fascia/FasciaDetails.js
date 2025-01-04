@@ -200,6 +200,7 @@ const FasciaDetails = () => {
                     </div>
                 </>
             )}
+            
             <div className="btn-back-container">
                 <button onClick={handleBackClick} className="btn btn-back">Indietro</button>
             </div>

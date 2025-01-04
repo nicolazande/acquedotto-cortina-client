@@ -78,6 +78,15 @@
     background-color: #c82333;
 }
 
+.fattura-details .btn-back {
+    background-color: #6c757d;
+    color: white;
+}
+
+.fattura-details .btn-back:hover {
+    background-color: #5a6268;
+}
+
 /* Container Styles */
 .fattura-details {
     max-width: 900px;

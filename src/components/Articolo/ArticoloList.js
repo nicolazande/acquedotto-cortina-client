@@ -124,22 +124,22 @@ const ArticoloList = ({ onSelectArticolo }) => {
                                     <td>{articolo.iva}</td>
                                     <td>
                                         <button
-                                            className="btn"
+                                            className="btn btn-details"
                                             onClick={() => history.push(`/articoli/${articolo._id}`)}
                                         >
                                             Dettagli
+                                        </button>
+                                        <button
+                                            className="btn btn-select"
+                                            onClick={() => onSelectArticolo && onSelectArticolo(articolo._id)}
+                                        >
+                                            Seleziona
                                         </button>
                                         <button
                                             className="btn btn-delete"
                                             onClick={() => handleDelete(articolo._id)}
                                         >
                                             Cancella
-                                        </button>
-                                        <button
-                                            className="btn"
-                                            onClick={() => onSelectArticolo && onSelectArticolo(articolo._id)}
-                                        >
-                                            Seleziona
                                         </button>
                                     </td>
                                 </tr>

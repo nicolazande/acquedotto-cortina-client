@@ -125,7 +125,7 @@ const ClienteList = ( { onSelectCliente }) => {
                                     <td>{cliente.email || '-'}</td>
                                     <td>
                                         <button
-                                            className="btn"
+                                            className="btn btn-details"
                                             onClick={() => history.push(`/clienti/${cliente._id}`)}
                                         >
                                             Dettagli

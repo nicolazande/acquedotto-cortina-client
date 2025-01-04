@@ -3,7 +3,7 @@ import ArticoloList from '../components/Articolo/ArticoloList';
 import '../styles/Articolo/ArticoloPage.css';
 
 const ArticoloPage = () => {
-    const [selectedArticoloId, setSelectedArticoloId] = useState(null);
+    const [, setSelectedArticoloId] = useState(null);
 
     const handleArticoloSelect = (articoloId) => {
         setSelectedArticoloId(articoloId);

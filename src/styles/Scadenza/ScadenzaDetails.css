@@ -78,6 +78,15 @@
     background-color: #c82333;
 }
 
+.scadenza-details .btn-back {
+    background-color: #6c757d;
+    color: white;
+}
+
+.scadenza-details .btn-back:hover {
+    background-color: #5a6268;
+}
+
 /* Container Styles */
 .scadenza-details {
     max-width: 900px;

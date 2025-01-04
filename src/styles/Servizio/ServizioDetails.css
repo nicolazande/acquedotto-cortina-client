@@ -80,6 +80,15 @@
     background-color: #c82333;
 }
 
+.servizio-details .btn-back {
+    background-color: #6c757d;
+    color: white;
+}
+
+.servizio-details .btn-back:hover {
+    background-color: #5a6268;
+}
+
 /* Container Styles */
 .servizio-details {
     max-width: 900px;

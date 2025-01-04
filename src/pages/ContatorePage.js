@@ -3,7 +3,7 @@ import ContatoreList from '../components/Contatore/ContatoreList';
 import '../styles/Contatore/ContatorePage.css';
 
 const ContatorePage = () => {
-    const [selectedContatoreId, setSelectedContatoreId] = useState(null);
+    const [, setSelectedContatoreId] = useState(null);
 
     const handleContatoreSelect = (contatoreId) => {
         setSelectedContatoreId(contatoreId);

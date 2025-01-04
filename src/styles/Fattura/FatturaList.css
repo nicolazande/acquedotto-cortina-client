@@ -103,14 +103,18 @@
 /* Search Bar Styles */
 .fattura-list .search-container {
     display: flex;
-    justify-content: center;
+    justify-content: center; /* Horizontal alignment */
     align-items: center;
-    gap: 0.8em;
+    gap: 0.8em; /* Spacing */
     margin-bottom: 1em;
     padding: 1em;
     background-color: #f9f9f9;
+    border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 80%; /* Set width to 80% */
+    margin-left: auto; /* Center horizontally */
+    margin-right: auto;
 }
 
 .fattura-list .search-bar {

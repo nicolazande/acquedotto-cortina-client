@@ -3,7 +3,7 @@ import FatturaList from '../components/Fattura/FatturaList';
 import '../styles/Fattura/FatturaPage.css';
 
 const FatturaPage = () => {
-    const [selectedFatturaId, setSelectedFatturaId] = useState(null);
+    const [, setSelectedFatturaId] = useState(null);
 
     const handleFatturaSelect = (fatturaId) => {
         setSelectedFatturaId(fatturaId);

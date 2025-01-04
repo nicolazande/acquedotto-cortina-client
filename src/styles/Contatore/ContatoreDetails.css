@@ -76,6 +76,15 @@
     background-color: #c82333;
 }
 
+.contatore-details .btn-back {
+    background-color: #6c757d;
+    color: white;
+}
+
+.contatore-details .btn-back:hover {
+    background-color: #5a6268;
+}
+
 /* Container Styles */
 .contatore-details {
     max-width: 900px;

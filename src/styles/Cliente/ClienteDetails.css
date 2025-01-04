@@ -78,6 +78,15 @@
     background-color: #c82333;
 }
 
+.cliente-details .btn-back {
+    background-color: #6c757d;
+    color: white;
+}
+
+.cliente-details .btn-back:hover {
+    background-color: #5a6268;
+}
+
 /* Container Styles */
 .cliente-details {
     max-width: 900px;

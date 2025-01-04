@@ -3,7 +3,7 @@ import FasciaList from '../components/Fascia/FasciaList';
 import '../styles/Fascia/FasciaPage.css';
 
 const FasciaPage = () => {
-    const [selectedFasciaId, setSelectedFasciaId] = useState(null);
+    const [, setSelectedFasciaId] = useState(null);
 
     const handleFasciaSelect = (fasciaId) => {
         setSelectedFasciaId(fasciaId);

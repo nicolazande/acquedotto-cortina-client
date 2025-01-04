@@ -76,6 +76,15 @@
     background-color: #c82333;
 }
 
+.edificio-details .btn-back {
+    background-color: #6c757d;
+    color: white;
+}
+
+.edificio-details .btn-back:hover {
+    background-color: #5a6268;
+}
+
 /* Container Styles */
 .edificio-details {
     max-width: 900px;

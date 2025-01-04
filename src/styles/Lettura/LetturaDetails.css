@@ -78,6 +78,15 @@
     background-color: #c82333;
 }
 
+.lettura-details .btn-back {
+    background-color: #6c757d;
+    color: white;
+}
+
+.lettura-details .btn-back:hover {
+    background-color: #5a6268;
+}
+
 /* Container Styles */
 .lettura-details {
     max-width: 900px;
