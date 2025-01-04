@@ -1,0 +1,145 @@
+/* ArticoloEditor.css */
+
+/* Modal Background */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+/* Modal Content */
+.modal-content {
+    background: #fff;
+    padding: 1.5em;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 95%;
+    max-width: 600px;
+    max-height: 80%; /* Restrict height for scrolling */
+    overflow-y: auto; /* Enable scrolling */
+    text-align: center;
+    position: relative;
+}
+
+/* Header */
+.modal-content h3 {
+    margin-bottom: 1.2em;
+    font-size: 1.4rem;
+    color: #333;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1em;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4em;
+    font-weight: bold;
+    color: #555;
+    font-size: 1rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.6em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Spacer Line */
+.spacer-line {
+    margin: 1.5em 0;
+    border-top: 1px solid #050000;
+}
+
+/* Buttons */
+.btn-container {
+    margin-top: 1em;
+    display: flex;
+    justify-content: space-around;
+}
+
+.btn {
+    cursor: pointer;
+    padding: 0.6em 1.2em;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+.btn-save {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-save:hover {
+    background-color: #1e7e34;
+}
+
+.btn-cancel {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333;
+}
+
+/* Scrollbar Styling */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 1em;
+        max-width: 90%;
+    }
+
+    .form-group input {
+        padding: 0.5em;
+    }
+
+    .btn {
+        padding: 0.5em 1em;
+        font-size: 0.9rem;
+    }
+}

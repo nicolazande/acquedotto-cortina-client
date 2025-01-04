@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import '../../styles/shared/Editor.css';
+
 const ArticoloEditor = ({ articolo, onSave, onCancel, mode }) => {
     const [editFormData, setEditFormData] = useState({ ...articolo });
 

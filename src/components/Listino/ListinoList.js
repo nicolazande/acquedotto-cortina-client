@@ -92,7 +92,7 @@ const ListinoList = ({ onSelectListino }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="Descrizione..."
+                            placeholder="..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
