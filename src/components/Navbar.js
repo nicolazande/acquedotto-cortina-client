@@ -22,6 +22,9 @@ const Navbar = ({ onLogout }) => {
                     <Link to="/" className="nav-link" onClick={toggleMenu}>Home</Link>
                 </li>
                 <li className="nav-item">
+                    <Link to="/auth/profile" className="nav-link" onClick={toggleMenu}>Admin</Link>
+                </li>
+                <li className="nav-item">
                     <Link to="/clienti" className="nav-link" onClick={toggleMenu}>Clienti</Link>
                 </li>
                 <li className="nav-item">

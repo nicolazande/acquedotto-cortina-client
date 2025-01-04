@@ -1,196 +1,153 @@
-/* ScadenzaDetails.css */
-
-/* General Styles for ScadenzaDetails */
-.scadenza-details body {
+/* General Styles for AuthPage */
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #6ec1e4 0%, #4a90e2 100%);
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    padding: 20px;
+    box-sizing: border-box; /* Ensure padding does not cause overflow */
 }
 
-.scadenza-details h2, 
-.scadenza-details h3 {
+.auth-container {
+    max-width: 500px;
+    margin: 1em auto;
+    padding: 2em;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
     text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Header Styles */
+.auth-container h2 {
+    margin-bottom: 1em;
     color: #333;
+    font-size: 1.8rem;
+    font-weight: bold;
 }
 
-.scadenza-details table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1em 0;
+/* Form Styles */
+.auth-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.scadenza-details th, 
-.scadenza-details td {
-    text-align: left;
+.auth-container label {
+    align-self: flex-start;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    color: #555;
+    font-size: 1rem;
+}
+
+.auth-container input {
+    width: calc(100% - 20px);
     padding: 0.8em;
+    margin-bottom: 1.2em;
     border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.scadenza-details th {
-    background-color: #f4f4f4;
-}
-
-.scadenza-details tbody tr:nth-child(odd) {
-    background-color: #f9f9f9;
+.auth-container input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+    outline: none;
 }
 
 /* Buttons */
-.scadenza-details button {
+.auth-container button {
     cursor: pointer;
-    padding: 0.5em 1em;
+    padding: 0.8em 1.5em;
     border: none;
     border-radius: 5px;
-    margin: 0.4em;
+    margin: 0.6em 0;
     font-size: 1rem;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.scadenza-details button:hover {
+.auth-container button:hover {
     background-color: #ddd;
     transform: scale(1.05);
 }
 
-.scadenza-details .btn {
+.auth-container .btn-primary {
     background-color: #007bff;
     color: white;
 }
 
-.scadenza-details .btn:hover {
+.auth-container .btn-primary:hover {
     background-color: #0056b3;
 }
 
-.scadenza-details .btn-edit {
-    background-color: #28a745;
-    color: white;
-}
-
-.scadenza-details .btn-edit:hover {
-    background-color: #1e7e34;
-}
-
-.scadenza-details .btn-delete {
-    background-color: #dc3545;
-    color: white;
-}
-
-.scadenza-details .btn-delete:hover {
-    background-color: #c82333;
-}
-
-.scadenza-details .btn-back {
+.auth-container .btn-secondary {
     background-color: #6c757d;
     color: white;
 }
 
-.scadenza-details .btn-back:hover {
+.auth-container .btn-secondary:hover {
     background-color: #5a6268;
 }
 
-/* Container Styles */
-.scadenza-details {
-    max-width: 900px;
-    margin: 1em auto;
-    padding: 1em;
-    background: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-}
-
-.scadenza-details .table-container {
-    overflow-x: auto;
-}
-
-/* Search Container */
-.scadenza-details .search-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.8em;
-    margin-top: 1em;
-    padding: 1em;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Tabs */
-.scadenza-details .tabs-container {
-    margin-top: 1em;
-}
-
-.scadenza-details .tabs {
-    display: flex;
-    justify-content: center;
-    border-bottom: 2px solid #ddd;
+/* Error Message */
+.auth-container p.error-message {
+    color: #dc3545;
+    font-size: 0.9rem;
     margin-bottom: 1em;
-    gap: 0.8em;
 }
 
-.scadenza-details .tab {
-    padding: 0.5em 1em;
-    font-size: 1rem;
-    background: none;
-    border: none;
-    outline: none;
-    border-bottom: 2px solid transparent;
+/* Links */
+.auth-container a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9rem;
 }
 
-.scadenza-details .tab.active {
-    border-bottom: 2px solid #007bff;
-    font-weight: bold;
-}
-
-.scadenza-details .tab-content {
-    display: none;
-}
-
-.scadenza-details .tab-content.show {
-    display: block;
-}
-
-/* Button Alignment */
-.scadenza-details .btn-back-container,
-.scadenza-details .fattura-box {
-    display: flex;
-    justify-content: center;
-    gap: 0.8em;
-    flex-wrap: wrap;
-    margin-top: 1em;
+.auth-container a:hover {
+    text-decoration: underline;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .scadenza-details {
+    .auth-container {
+        padding: 1.5em;
+    }
+
+    .auth-container h2 {
+        font-size: 1.6rem;
+    }
+
+    .auth-container input {
+        padding: 0.7em;
+    }
+
+    .auth-container button {
+        padding: 0.7em 1.2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
         padding: 1em;
-        margin: 0.5em;
     }
 
-    .scadenza-details button {
-        width: auto;
-        padding: 0.6em;
-        margin: 0.4em;
+    .auth-container h2 {
+        font-size: 1.4rem;
     }
 
-    .scadenza-details th, 
-    .scadenza-details td {
-        font-size: 0.9rem;
-        padding: 0.6em;
-    }
-
-    .scadenza-details .tabs {
-        flex-wrap: wrap;
-    }
-
-    .scadenza-details .tab {
-        flex: 1 1 50%;
-        text-align: center;
-    }
-
-    .scadenza-details .search-container {
-        flex-direction: column;
-        gap: 1em;
-        padding: 1em;
+    .auth-container input,
+    .auth-container button {
+        padding: 0.6em 1em;
     }
 }

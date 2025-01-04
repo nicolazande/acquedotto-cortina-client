@@ -26,6 +26,7 @@ import ArticoloDetails from './components/Articolo/ArticoloDetails';
 import ListinoDetails from './components/Listino/ListinoDetails';
 import FasciaDetails from './components/Fascia/FasciaDetails';
 import ScadenzaDetails from './components/Scadenza/ScadenzaDetails';
+import ProfilePage from './pages/ProfilePage';
 
 
 const App = () => {
@@ -36,6 +37,10 @@ const App = () => {
         const token = localStorage.getItem('token');
         if (token) {
             setIsAuthenticated(true);
+        }
+        else
+        {
+            handleLogout();
         }
     }, []);
 
@@ -63,6 +68,11 @@ const App = () => {
                         {/* Protected Routes */}
                         {isAuthenticated ? (
                             <>
+                                {/* Routes for Contatori */}
+                                <Switch>
+                                    <Route path="/auth/profile" component={ProfilePage} />
+                                </Switch>
+
                                 {/* Routes for Contatori */}
                                 <Switch>
                                     <Route path="/contatori/:id" render={(props) => <ContatoreDetails {...props} />} />

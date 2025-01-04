@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import '../styles//Auth.css';
-
-const API_URL = `${process.env.REACT_APP_API_URL}/api/auth/login`;
+import PropTypes from 'prop-types';
+import authApi from '../api/authApi';
+import '../styles/Auth.css';
 
 const LoginPage = ({ onLogin, history }) => {
     const [username, setUsername] = useState('');
@@ -11,13 +10,15 @@ const LoginPage = ({ onLogin, history }) => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError(''); // Clear any existing errors
         try {
-            const response = await axios.post(`${API_URL}`, { username, password });
+            const response = await authApi.login({ username, password });
             localStorage.setItem('token', response.data.token);
-            onLogin(); // Aggiorna lo stato di autenticazione nell'App
-            history.push('/');
+            onLogin(); // Update authentication state in App
+            history.push('/'); // Redirect to home page
         } catch (err) {
-            setError('Invalid credentials');
+            const errorMessage = err.response?.data?.error || 'Invalid credentials';
+            setError(errorMessage);
         }
     };
 
@@ -25,34 +26,45 @@ const LoginPage = ({ onLogin, history }) => {
         <div className="auth-page">
             <div className="auth-container">
                 <h2>Login</h2>
-                {error && <p>{error}</p>}
+                {error && <p className="error-message">{error}</p>}
                 <form onSubmit={handleLogin}>
-                    <div>
-                        <label>Username</label>
+                    <div className="form-group">
+                        <label htmlFor="username">Username</label>
                         <input
+                            id="username"
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
                         />
                     </div>
-                    <div>
-                        <label>Password</label>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
                         <input
+                            id="password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
-                    <button type="submit">Login</button>
+                    <div className="btn-back-container">
+                        <button type="submit" className="btn btn-primary">
+                            Login
+                        </button>
+                    </div>
                 </form>
-                <div>
+                <div className="auth-footer">
                     <a href="/register">Non hai un account? Registrati</a>
                 </div>
             </div>
         </div>
     );
+};
+
+LoginPage.propTypes = {
+    onLogin: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
 export default LoginPage;

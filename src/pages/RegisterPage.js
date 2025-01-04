@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import PropTypes from 'prop-types';
+import authApi from '../api/authApi';
 import '../styles/Auth.css';
-
-const API_URL = `${process.env.REACT_APP_API_URL}/api/auth/register`;
 
 const RegisterPage = ({ history }) => {
     const [username, setUsername] = useState('');
@@ -11,11 +10,13 @@ const RegisterPage = ({ history }) => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        setError(''); // Clear any existing errors
         try {
-            await axios.post(`${API_URL}`, { username, password });
-            history.push('/login');
+            await authApi.register({ username, password });
+            history.push('/login'); // Redirect to login on successful registration
         } catch (err) {
-            setError('Error registering user');
+            const errorMessage = err.response?.data?.error || 'An unexpected error occurred during registration.';
+            setError(errorMessage);
         }
     };
 
@@ -23,34 +24,44 @@ const RegisterPage = ({ history }) => {
         <div className="auth-page">
             <div className="auth-container">
                 <h2>Register</h2>
-                {error && <p>{error}</p>}
+                {error && <p className="error-message">{error}</p>}
                 <form onSubmit={handleRegister}>
-                    <div>
-                        <label>Username</label>
+                    <div className="form-group">
+                        <label htmlFor="username">Username</label>
                         <input
+                            id="username"
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
                         />
                     </div>
-                    <div>
-                        <label>Password</label>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
                         <input
+                            id="password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
-                    <button type="submit">Register</button>
+                    <div className="btn-back-container">
+                        <button type="submit" className="btn btn-primary">
+                            Register
+                        </button>
+                    </div>
                 </form>
-                <div>
-                    <a href="/login">Hai già un account? Accedi</a>
+                <div className="auth-footer">
+                    <a href="/login">Already have an account? Log in</a>
                 </div>
             </div>
         </div>
     );
+};
+
+RegisterPage.propTypes = {
+    history: PropTypes.object.isRequired,
 };
 
 export default RegisterPage;
