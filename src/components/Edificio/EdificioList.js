@@ -216,6 +216,7 @@ const EdificioList = ({ onSelectEdificio }) => {
                                 <th>Indirizzo</th>
                                 <th>CAP</th>
                                 <th>Località</th>
+                                <th>Tipo</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -231,6 +232,7 @@ const EdificioList = ({ onSelectEdificio }) => {
                                     <td>{edificio.indirizzo}</td>
                                     <td>{edificio.cap}</td>
                                     <td>{edificio.localita}</td>
+                                    <td>{edificio.tipo}</td>
                                     <td>
                                         <button
                                             className="btn btn-dettagli"

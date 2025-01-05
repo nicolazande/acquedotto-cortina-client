@@ -43,8 +43,8 @@ const FasciaEditor = ({ fascia, onSave, onCancel, mode }) => {
                 <form onSubmit={handleSave}>
                     {[
                         { label: 'Tipo', name: 'tipo', type: 'text' },
-                        { label: 'Min', name: 'min', type: 'number' },
-                        { label: 'Max', name: 'max', type: 'number' },
+                        { label: 'Minimo', name: 'min', type: 'number' },
+                        { label: 'Massimo', name: 'max', type: 'number' },
                         { label: 'Prezzo', name: 'prezzo', type: 'number' },
                         { label: 'Inizio', name: 'inizio', type: 'date' },
                         { label: 'Scadenza', name: 'scadenza', type: 'date' },

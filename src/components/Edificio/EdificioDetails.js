@@ -163,12 +163,56 @@ const EdificioDetails = () => {
                                     <td>{edificio.localita || 'N/A'}</td>
                                 </tr>
                                 <tr>
+                                    <th>Provincia</th>
+                                    <td>{edificio.provincia || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nazione</th>
+                                    <td>{edificio.nazione || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Attività</th>
+                                    <td>{edificio.attivita || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Posti letto</th>
+                                    <td>{edificio.posti_letto || 'N/A'}</td>
+                                </tr>
+                                <tr>
                                     <th>Latitudine</th>
                                     <td>{edificio.latitudine || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Longitudine</th>
                                     <td>{edificio.longitudine || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Unità abitative</th>
+                                    <td>{edificio.unita_abitative || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Catasto</th>
+                                    <td>{edificio.catasto || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Foglio</th>
+                                    <td>{edificio.foglio || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>PED</th>
+                                    <td>{edificio.ped || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Estensione</th>
+                                    <td>{edificio.estensione || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <td>{edificio.tipo || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Note</th>
+                                    <td>{edificio.note || 'N/A'}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -217,9 +261,10 @@ const EdificioDetails = () => {
                     <table className="contatori-table">
                         <thead>
                             <tr>
-                                <th>Seriale</th>
-                                <th>Seriale Interno</th>
+                                <th>Edificio</th>
                                 <th>Cliente</th>
+                                <th>Seriale</th>
+                                <th>Inattivo</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -227,9 +272,12 @@ const EdificioDetails = () => {
                             {
                                 contatori.map((contatore) => (
                                     <tr key={contatore._id}>
+                                        <td>{contatore.nome_edificio}</td>
+                                        <td>{contatore.nome_cliente}</td>
                                         <td>{contatore.seriale}</td>
-                                        <td>{contatore.seriale_interno}</td>
-                                        <td>{contatore.nome_cliente || 'N/A'}</td>
+                                        <td>
+                                            <input type="checkbox" checked={contatore.inattivo} readOnly />
+                                        </td>
                                         <td>
                                             <button
                                                 className="btn btn-view"

@@ -112,8 +112,8 @@ const ServizioList = ({ onSelectServizio }) => {
                         <thead>
                             <tr>
                                 <th>Descrizione</th>
-                                <th>Tipo Tariffa</th>
-                                <th>Prezzo</th>
+                                <th>Data Lettura</th>
+                                <th>Valore unitario</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -121,8 +121,8 @@ const ServizioList = ({ onSelectServizio }) => {
                             {servizi.map((servizio) => (
                                 <tr key={servizio._id}>
                                     <td>{servizio.descrizione}</td>
-                                    <td>{servizio.tipo_tariffa || 'N/A'}</td>
-                                    <td>{servizio.prezzo}</td>
+                                    <td>{new Date(servizio.data_lettura).toLocaleDateString()}</td>
+                                    <td>{servizio.valore_unitario.toFixed(2)} €</td>
                                     <td>
                                         <button
                                             className="btn"

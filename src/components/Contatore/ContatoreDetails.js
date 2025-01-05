@@ -324,7 +324,9 @@ const ContatoreDetails = () =>
                                 </tr>
                                 <tr>
                                     <th>Inattivo</th>
-                                    <td>{contatore.inattivo ? 'Sì' : 'No'}</td>
+                                    <td>
+                                        <input type="checkbox" checked={contatore.inattivo} readOnly />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Consumo</th>
@@ -332,15 +334,21 @@ const ContatoreDetails = () =>
                                 </tr>
                                 <tr>
                                     <th>Subentro</th>
-                                    <td>{contatore.subentro ? 'Sì' : 'No'}</td>
+                                    <td>
+                                        <input type="checkbox" checked={contatore.subentro} readOnly />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Sostituzione</th>
-                                    <td>{contatore.sostituzione ? 'Sì' : 'No'}</td>
+                                    <td>
+                                        <input type="checkbox" checked={contatore.sostituzione} readOnly />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Condominiale</th>
-                                    <td>{contatore.condominiale ? 'Sì' : 'No'}</td>
+                                    <td>
+                                        <input type="checkbox" checked={contatore.condominiale} readOnly />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Inizio</th>
@@ -472,6 +480,7 @@ const ContatoreDetails = () =>
                             <tr>
                                 <th>Nome</th>
                                 <th>Cognome</th>
+                                <th>Nascita</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -479,6 +488,7 @@ const ContatoreDetails = () =>
                             <tr>
                                 <td>{cliente.nome}</td>
                                 <td>{cliente.cognome}</td>
+                                <td>{cliente.data_nascita ? new Date(cliente.data_nascita).toLocaleDateString() : '-'}</td>
                                 <td>
                                     <button
                                         onClick={() => history.push(`/clienti/${cliente._id}`)}
@@ -513,11 +523,10 @@ const ContatoreDetails = () =>
                     <table className="letture-table">
                         <thead>
                             <tr>
-                                <th>Data</th>
-                                <th>Valore</th>
-                                <th>Unita' di misura</th>
+                                <th>Data Lettura</th>
+                                <th>Consumo</th>
                                 <th>Fatturata</th>
-                                <th>Note</th>
+                                <th>Tipo</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -526,10 +535,11 @@ const ContatoreDetails = () =>
                                 letture.map((lettura) => (
                                     <tr key={lettura._id}>
                                         <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
-                                        <td>{lettura.consumo}</td>
-                                        <td>{lettura.unita_misura}</td>
-                                        <td><input type="checkbox" checked={lettura.fatturata} readOnly /></td>
-                                        <td>{lettura.note}</td>
+                                        <td>{lettura.consumo} {lettura.unita_misura}</td>
+                                        <td>
+                                            <input type="checkbox" checked={lettura.fatturata} readOnly />
+                                        </td>
+                                        <td>{lettura.tipo}</td>
                                         <td>
                                             <button
                                                 onClick={() => history.push(`/letture/${lettura._id}`)}
@@ -567,12 +577,20 @@ const ContatoreDetails = () =>
                         <thead>
                             <tr>
                                 <th>Descrizione</th>
+                                <th>Indirizzo</th>
+                                <th>CAP</th>
+                                <th>Località</th>
+                                <th>Tipo</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>{edificio.descrizione}</td>
+                                <td>{edificio.indirizzo}</td>
+                                <td>{edificio.cap}</td>
+                                <td>{edificio.localita}</td>
+                                <td>{edificio.tipo}</td>
                                 <td>
                                     <button
                                         onClick={() => history.push(`/edifici/${edificio._id}`)}

@@ -245,7 +245,47 @@ const ServizioDetails = () => {
                                 </tr>
                                 <tr>
                                     <th>Tariffa</th>
-                                    <td>{servizio.tariffa || 'N/A'}</td>
+                                    <td>{servizio.tipo_tariffa || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo attività</th>
+                                    <td>{servizio.tipo_attivita || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Metri cubi</th>
+                                    <td>{servizio.metri_cubi || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Prezzo</th>
+                                    <td>{servizio.prezzo.toFixed(2)} €</td>
+                                </tr>
+                                <tr>
+                                    <th>Valore unitario</th>
+                                    <td>{servizio.valore_unitario.toFixed(2)} €</td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo quota</th>
+                                    <td>{servizio.tipo_quota || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Seriale condominio</th>
+                                    <td>{servizio.seriale_condominio || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Lettura precedente</th>
+                                    <td>{servizio.lettura_precedente || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Lettura fatturazione</th>
+                                    <td>{servizio.lettura_fatturazione || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data Lettura</th>
+                                    <td>{new Date(servizio.data_lettura).toLocaleDateString()}</td>
+                                </tr>
+                                <tr>
+                                    <th>Descrizione attività</th>
+                                    <td>{servizio.descrizione_attivita || 'N/A'}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -326,11 +366,10 @@ const ServizioDetails = () => {
                     <table className="lettura-table">
                         <thead>
                             <tr>
-                                <th>Data</th>
-                                <th>Valore</th>
-                                <th>Unita' di misura</th>
+                                <th>Data Lettura</th>
+                                <th>Consumo</th>
                                 <th>Fatturata</th>
-                                <th>Note</th>
+                                <th>Tipo</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -338,12 +377,11 @@ const ServizioDetails = () => {
                         {lettura ? (
                             <tr>
                                 <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
-                                <td>{lettura.consumo}</td>
-                                <td>{lettura.unita_misura}</td>
+                                <td>{lettura.consumo} {lettura.unita_misura}</td>
                                 <td>
                                     <input type="checkbox" checked={lettura.fatturata} readOnly />
                                 </td>
-                                <td>{lettura.note || 'N/A'}</td>
+                                <td>{lettura.tipo}</td>
                                 <td>
                                     <button
                                         className="btn btn-edit"
@@ -424,17 +462,23 @@ const ServizioDetails = () => {
                     <table className="fattura-table">
                         <thead>
                             <tr>
-                                <th>Codice</th>
-                                <th>Importo</th>
+                                <th>Cliente</th>
+                                <th>Tipo Documento</th>
                                 <th>Data</th>
+                                <th>Confermata</th>
+                                <th>Totale</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{fattura.codice || 'N/A'}</td>
-                                <td>{fattura.totale_fattura?.toFixed(2) || '0.00'}</td>
+                                <td>{fattura.ragione_sociale ? fattura.ragione_sociale : 'N/A'}</td>
+                                <td>{fattura.tipo_documento}</td>
                                 <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString() : 'N/A'}</td>
+                                <td>
+                                    <input type="checkbox" checked={fattura.confermata} readOnly />
+                                </td>
+                                <td>{fattura.totale_fattura} € </td>
                                 <td>
                                     <button
                                         className="btn btn-edit"

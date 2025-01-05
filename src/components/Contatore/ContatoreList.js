@@ -111,16 +111,22 @@ const ContatoreList = ({ onSelectContatore }) => {
                     <table className="contatore-table">
                         <thead>
                             <tr>
+                                <th>Edificio</th>
+                                <th>Cliente</th>
                                 <th>Seriale</th>
-                                <th>Nome Cliente</th>
+                                <th>Inattivo</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             {contatori.map((contatore) => (
                                 <tr key={contatore._id}>
-                                    <td>{contatore.seriale}</td>
+                                    <td>{contatore.nome_edificio}</td>
                                     <td>{contatore.nome_cliente}</td>
+                                    <td>{contatore.seriale}</td>
+                                    <td>
+                                        <input type="checkbox" checked={contatore.inattivo} readOnly />
+                                    </td>
                                     <td>
                                         <button
                                             className="btn"

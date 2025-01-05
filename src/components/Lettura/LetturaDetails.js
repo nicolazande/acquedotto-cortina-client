@@ -189,11 +189,7 @@ const LetturaDetails = () => {
                         <table className="info-table">
                             <tbody>
                                 <tr>
-                                    <th>Tipo</th>
-                                    <td>{lettura.tipo || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Data</th>
+                                    <th>Data Lettura</th>
                                     <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
                                 </tr>
                                 <tr>
@@ -206,7 +202,11 @@ const LetturaDetails = () => {
                                 </tr>
                                 <tr>
                                     <th>Fatturata</th>
-                                    <td>{lettura.fatturata ? 'Sì' : 'No'}</td>
+                                    <td><input type="checkbox" checked={lettura.fatturata} readOnly /></td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <td>{lettura.tipo || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Note</th>
@@ -285,7 +285,8 @@ const LetturaDetails = () => {
                         <thead>
                             <tr>
                                 <th>Descrizione</th>
-                                <th>Valore</th>
+                                <th>Data Lettura</th>
+                                <th>Valore unitario</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -293,7 +294,8 @@ const LetturaDetails = () => {
                             {servizi.map((servizio) => (
                                 <tr key={servizio._id}>
                                     <td>{servizio.descrizione}</td>
-                                    <td>{servizio.valore_unitario}</td>
+                                    <td>{new Date(servizio.data_lettura).toLocaleDateString()}</td>
+                                    <td>{servizio.valore_unitario.toFixed(2)} €</td>
                                     <td>
                                         <button
                                             className="btn btn-edit"
@@ -329,25 +331,21 @@ const LetturaDetails = () => {
                     <table className="contatori-table">
                         <thead>
                             <tr>
-                            <th>Seriale</th>
-                                <th>Seriale Interno</th>
                                 <th>Edificio</th>
+                                <th>Cliente</th>
+                                <th>Seriale</th>
                                 <th>Inattivo</th>
-                                <th>Condominiale</th>
-                                <th>Sostituzione</th>
-                                <th>Subentro</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{contatore.seriale}</td>
-                                <td>{contatore.seriale_interno}</td>
                                 <td>{contatore.nome_edificio}</td>
-                                <td><input type="checkbox" checked={contatore.inattivo} readOnly /></td>
-                                <td><input type="checkbox" checked={contatore.condominiale} readOnly /></td>
-                                <td><input type="checkbox" checked={contatore.sostituzione} readOnly /></td>
-                                <td><input type="checkbox" checked={contatore.subentro} readOnly /></td>
+                                <td>{contatore.nome_cliente}</td>
+                                <td>{contatore.seriale}</td>
+                                <td>
+                                    <input type="checkbox" checked={contatore.inattivo} readOnly />
+                                </td>
                                 <td>
                                     <button
                                         className="btn btn-edit"

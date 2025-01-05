@@ -113,7 +113,7 @@ const ClienteList = ( { onSelectCliente }) => {
                             <tr>
                                 <th>Nome</th>
                                 <th>Cognome</th>
-                                <th>Email</th>
+                                <th>Nascita</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -122,7 +122,7 @@ const ClienteList = ( { onSelectCliente }) => {
                                 <tr key={cliente._id}>
                                     <td>{cliente.nome || '-'}</td>
                                     <td>{cliente.cognome || '-'}</td>
-                                    <td>{cliente.email || '-'}</td>
+                                    <td>{cliente.data_nascita ? new Date(cliente.data_nascita).toLocaleDateString() : '-'}</td>
                                     <td>
                                         <button
                                             className="btn btn-details"

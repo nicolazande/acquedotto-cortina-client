@@ -209,12 +209,12 @@ const ClienteDetails= () =>
                                     <td>{cliente.ragione_sociale || '-'}</td>
                                 </tr>
                                 <tr>
-                                    <th>Nome</th>
-                                    <td>{cliente.nome || '-'}</td>
-                                </tr>
-                                <tr>
                                     <th>Cognome</th>
                                     <td>{cliente.cognome || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nome</th>
+                                    <td>{cliente.nome || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Sesso</th>
@@ -222,11 +222,15 @@ const ClienteDetails= () =>
                                 </tr>
                                 <tr>
                                     <th>Socio</th>
-                                    <td>{cliente.socio ? 'Sì' : 'No'}</td>
+                                    <td><input type="checkbox" checked={cliente.socio} readOnly /></td>
                                 </tr>
                                 <tr>
                                     <th>Quote</th>
                                     <td>{cliente.quote || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Commerciali</th>
+                                    <td>{cliente.con_commerciali || '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Data di Nascita</th>
@@ -301,6 +305,10 @@ const ClienteDetails= () =>
                                     <td>{cliente.partita_iva || '-'}</td>
                                 </tr>
                                 <tr>
+                                    <th>Stampa di cortesia</th>
+                                    <td>{cliente.stampa_cortesia || '-'}</td>
+                                </tr>
+                                <tr>
                                     <th>Telefono</th>
                                     <td>{cliente.telefono || '-'}</td>
                                 </tr>
@@ -334,7 +342,7 @@ const ClienteDetails= () =>
                                 </tr>
                                 <tr>
                                     <th>Fattura Elettronica</th>
-                                    <td>{cliente.fattura_elettronica ? 'Sì' : 'No'}</td>
+                                    <td><input type="checkbox" checked={cliente.fattura_elettronica} readOnly /></td>
                                 </tr>
                                 <tr>
                                     <th>Codice ERP</th>
@@ -412,13 +420,10 @@ const ClienteDetails= () =>
                     <table className="contatori-table">
                         <thead>
                             <tr>
-                                <th>Seriale</th>
-                                <th>Seriale Interno</th>
                                 <th>Edificio</th>
-                                <th>Inattivo</th>
-                                <th>Condominiale</th>
-                                <th>Sostituzione</th>
-                                <th>Subentro</th>
+                                <th>Cliente</th>
+                                <th>Seriale</th>
+                                <th>Inttivo</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -426,13 +431,12 @@ const ClienteDetails= () =>
                             {
                                 contatori.map((contatore) => (
                                 <tr key={contatore._id}>
-                                    <td>{contatore.seriale}</td>
-                                    <td>{contatore.seriale_interno}</td>
                                     <td>{contatore.nome_edificio}</td>
-                                    <td><input type="checkbox" checked={contatore.inattivo} readOnly /></td>
-                                    <td><input type="checkbox" checked={contatore.condominiale} readOnly /></td>
-                                    <td><input type="checkbox" checked={contatore.sostituzione} readOnly /></td>
-                                    <td><input type="checkbox" checked={contatore.subentro} readOnly /></td>
+                                    <td>{contatore.nome_cliente}</td>
+                                    <td>{contatore.seriale}</td>
+                                    <td>
+                                        <input type="checkbox" checked={contatore.inattivo} readOnly />
+                                    </td>
                                     <td>
                                         <button
                                             className="btn btn-edit"
@@ -469,12 +473,11 @@ const ClienteDetails= () =>
                     <table className="fatture-table">
                         <thead>
                             <tr>
-                                <th>Ragione Sociale</th>
-                                <th>Anno</th>
-                                <th>Numero</th>
+                                <th>Cliente</th>
+                                <th>Tipo Documento</th>
                                 <th>Data</th>
                                 <th>Confermata</th>
-                                <th>Codice</th>
+                                <th>Totale</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -482,12 +485,13 @@ const ClienteDetails= () =>
                             {
                                 fatture.map((fattura) => (
                                     <tr key={fattura._id}>
-                                        <td>{fattura.ragione_sociale}</td>
-                                        <td>{fattura.anno}</td>
-                                        <td>{fattura.numero}</td>
-                                        <td>{new Date(fattura.data_fattura).toLocaleDateString()}</td>
-                                        <td><input type="checkbox" checked={fattura.confermata} readOnly /></td>
-                                        <td>{fattura.codice}</td>
+                                        <td>{fattura.cliente ? `${cliente.nome} ${cliente.cognome}` : 'N/A'}</td>
+                                        <td>{fattura.tipo_documento}</td>
+                                        <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString() : 'N/A'}</td>
+                                        <td>
+                                            <input type="checkbox" checked={fattura.confermata} readOnly />
+                                        </td>
+                                        <td>{fattura.totale_fattura} € </td>
                                         <td>
                                             <button
                                                 className="btn btn-edit"

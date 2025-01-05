@@ -257,11 +257,9 @@ const ListinoDetails = () => {
                         <thead>
                             <tr>
                                 <th>Tipo</th>
-                                <th>Min</th>
-                                <th>Max</th>
+                                <th>Minimo</th>
+                                <th>Massimo</th>
                                 <th>Prezzo</th>
-                                <th>Scadenza</th>
-                                <th>Fisso</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -273,10 +271,6 @@ const ListinoDetails = () => {
                                         <td>{fascia.min}</td>
                                         <td>{fascia.max}</td>
                                         <td>{fascia.prezzo}</td>
-                                        <td>{new Date(fascia.scadenza).toLocaleDateString()}</td>
-                                        <td>
-                                            <input type="checkbox" checked={fascia.fisso} readOnly />
-                                        </td>
                                         <td>
                                             <button
                                                 className="btn btn-edit"
@@ -311,12 +305,10 @@ const ListinoDetails = () => {
                     <table className="contatori-table">
                         <thead>
                             <tr>
+                                <th>Edificio</th>
+                                <th>Cliente</th>
                                 <th>Seriale</th>
-                                <th>Seriale Interno</th>
-                                <th>Attivo</th>
-                                <th>Condominiale</th>
-                                <th>Sostituzione</th>
-                                <th>Subentro</th>
+                                <th>Inattivo</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -324,19 +316,11 @@ const ListinoDetails = () => {
                             {
                                 contatori.map((contatore) => (
                                     <tr key={contatore._id}>
+                                        <td>{contatore.nome_edificio}</td>
+                                        <td>{contatore.nome_cliente}</td>
                                         <td>{contatore.seriale}</td>
-                                        <td>{contatore.seriale_interno}</td>
                                         <td>
-                                            <input type="checkbox" checked={!contatore.inattivo} readOnly />
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" checked={contatore.condominiale} readOnly />
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" checked={contatore.sostituzione} readOnly />
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" checked={contatore.subentro} readOnly />
+                                            <input type="checkbox" checked={contatore.inattivo} readOnly />
                                         </td>
                                         <td>
                                             <button

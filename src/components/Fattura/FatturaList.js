@@ -115,7 +115,7 @@ const FatturaList = ({ onSelectFattura }) => {
                                 <th>Tipo Documento</th>
                                 <th>Data</th>
                                 <th>Confermata</th>
-                                <th>Numero</th>
+                                <th>Totale</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -128,7 +128,7 @@ const FatturaList = ({ onSelectFattura }) => {
                                     <td>
                                         <input type="checkbox" checked={fattura.confermata} readOnly />
                                     </td>
-                                    <td>{fattura.numero}</td>
+                                    <td>{fattura.totale_fattura} € </td>
                                     <td>
                                         <button
                                             className="btn"

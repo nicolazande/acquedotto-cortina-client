@@ -2,10 +2,12 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import scadenzaApi from '../../api/scadenzaApi';
 import fatturaApi from '../../api/fatturaApi';
-import '../../styles/Scadenza/ScadenzaDetails.css';
+
 import ScadenzaEditor from '../shared/ScadenzaEditor';
 import FatturaEditor from '../shared/FatturaEditor';
 import FatturaList from '../Fattura/FatturaList';
+
+import '../../styles/Scadenza/ScadenzaDetails.css';
 
 const ScadenzaDetails = () => {
     const { id: scadenzaId } = useParams();
@@ -140,6 +142,22 @@ const ScadenzaDetails = () => {
                         <table className="info-table">
                             <tbody>
                                 <tr>
+                                    <th>Scadenza</th>
+                                    <td>{scadenza.scadenza ? new Date(scadenza.scadenza).toLocaleDateString() : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Saldo</th>
+                                    <td><input type="checkbox" checked={scadenza.saldo} readOnly /></td>
+                                </tr>
+                                <tr>
+                                    <th>Pagamento</th>
+                                    <td>{scadenza.pagamento ? new Date(scadenza.pagamento).toLocaleDateString() : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ritardo</th>
+                                    <td>{scadenza.ritardo} giorni</td>
+                                </tr>
+                                <tr>
                                     <th>Anno</th>
                                     <td>{scadenza.anno}</td>
                                 </tr>
@@ -157,11 +175,11 @@ const ScadenzaDetails = () => {
                                 </tr>
                                 <tr>
                                     <th>Totale</th>
-                                    <td>€{scadenza.totale.toFixed(2)}</td>
+                                    <td>{scadenza.totale.toFixed(2)} €</td>
                                 </tr>
                                 <tr>
-                                    <th>Saldo</th>
-                                    <td>{scadenza.saldo ? 'Sì' : 'No'}</td>
+                                    <th>Solleciti</th>
+                                    <td>{scadenza.solleciti}</td>
                                 </tr>
                             </tbody>
                         </table>

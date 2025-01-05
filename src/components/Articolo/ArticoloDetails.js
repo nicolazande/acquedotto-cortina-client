@@ -199,8 +199,8 @@ const ArticoloDetails = () => {
                         <thead>
                             <tr>
                                 <th>Descrizione</th>
-                                <th>Valore</th>
-                                <th>Data</th>
+                                <th>Data Lettura</th>
+                                <th>Valore unitario</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -209,8 +209,8 @@ const ArticoloDetails = () => {
                                 servizi.map((servizio) => (
                                     <tr key={servizio._id}>
                                         <td>{servizio.descrizione}</td>
-                                        <td>{servizio.valore_unitario}</td>
                                         <td>{new Date(servizio.data_lettura).toLocaleDateString()}</td>
+                                        <td>{servizio.valore_unitario.toFixed(2)} €</td>
                                         <td>
                                             <button
                                                 className="btn btn-view"

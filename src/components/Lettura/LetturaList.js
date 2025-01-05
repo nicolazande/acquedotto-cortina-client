@@ -112,7 +112,6 @@ const LetturaList = ({ onSelectLettura }) => {
                             <tr>
                                 <th>Data Lettura</th>
                                 <th>Consumo</th>
-                                <th>Unità di Misura</th>
                                 <th>Fatturata</th>
                                 <th>Tipo</th>
                                 <th>Azioni</th>
@@ -122,8 +121,7 @@ const LetturaList = ({ onSelectLettura }) => {
                             {letture.map((lettura) => (
                                 <tr key={lettura._id}>
                                     <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
-                                    <td>{lettura.consumo}</td>
-                                    <td>{lettura.unita_misura}</td>
+                                    <td>{lettura.consumo} {lettura.unita_misura}</td>
                                     <td>
                                         <input type="checkbox" checked={lettura.fatturata} readOnly />
                                     </td>

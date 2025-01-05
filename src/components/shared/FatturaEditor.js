@@ -165,6 +165,26 @@ const FatturaEditor = ({ fattura, onSave, onCancel, mode }) => {
                         />
                     </div>
                     <div className="form-group">
+                        <label>Data fattura elettronica:</label>
+                        <input
+                            type="date"
+                            name="data_fattura_elettronica"
+                            value={editFormData.data_fattura_elettronica || ''}
+                            onChange={handleEditChange}
+                            readOnly={isReadOnly}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Data invio fattura:</label>
+                        <input
+                            type="date"
+                            name="data_invio_fattura"
+                            value={editFormData.data_invio_fattura || ''}
+                            onChange={handleEditChange}
+                            readOnly={isReadOnly}
+                        />
+                    </div>
+                    <div className="form-group">
                         <label>Tipo Pagamento:</label>
                         <input
                             type="text"

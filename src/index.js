@@ -4,6 +4,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import './styles/index.css';
+import './services/auth';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

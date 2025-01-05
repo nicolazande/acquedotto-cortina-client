@@ -148,11 +148,11 @@ const FasciaDetails = () => {
                                     <td>{fascia.tipo || 'N/A'}</td>
                                 </tr>
                                 <tr>
-                                    <th>Min</th>
+                                    <th>Minimo</th>
                                     <td>{fascia.min || 'N/A'}</td>
                                 </tr>
                                 <tr>
-                                    <th>Max</th>
+                                    <th>Massimo</th>
                                     <td>{fascia.max || 'N/A'}</td>
                                 </tr>
                                 <tr>
@@ -160,8 +160,12 @@ const FasciaDetails = () => {
                                     <td>{fascia.prezzo || 'N/A'}</td>
                                 </tr>
                                 <tr>
-                                    <th>Listino</th>
-                                    <td>{listino ? `${listino.categoria} - ${listino.descrizione}` : 'N/A'}</td>
+                                    <th>inizio</th>
+                                    <td>{fascia.inizio ? new Date(fascia.inizio).toLocaleDateString() : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Scadenza</th>
+                                    <td>{fascia.scadenza ? new Date(fascia.scadenza).toLocaleDateString() : 'N/A'}</td>
                                 </tr>
                             </tbody>
                         </table>

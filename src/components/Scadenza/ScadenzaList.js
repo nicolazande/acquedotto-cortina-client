@@ -111,10 +111,10 @@ const ScadenzaList = ({ onSelectScadenza }) => {
                     <table className="scadenza-table">
                         <thead>
                             <tr>
-                                <th>Anno</th>
-                                <th>Numero</th>
-                                <th>Cognome</th>
                                 <th>Nome</th>
+                                <th>Cognome</th>
+                                <th>Scadenza</th>
+                                <th>Ritardo</th>
                                 <th>Totale</th>
                                 <th>Saldo</th>
                                 <th>Azioni</th>
@@ -123,11 +123,11 @@ const ScadenzaList = ({ onSelectScadenza }) => {
                         <tbody>
                             {scadenze.map((scadenza) => (
                                 <tr key={scadenza._id}>
-                                    <td>{scadenza.anno}</td>
-                                    <td>{scadenza.numero}</td>
-                                    <td>{scadenza.cognome}</td>
                                     <td>{scadenza.nome}</td>
-                                    <td>€{scadenza.totale.toFixed(2)}</td>
+                                    <td>{scadenza.cognome}</td>
+                                    <td>{scadenza.scadenza ? new Date(scadenza.scadenza).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{scadenza.ritardo} giorni</td>
+                                    <td>{scadenza.totale.toFixed(2)} €</td>
                                     <td>
                                         <input type="checkbox" checked={scadenza.saldo} readOnly />
                                     </td>

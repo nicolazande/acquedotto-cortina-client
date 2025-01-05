@@ -112,8 +112,8 @@ const FasciaList = ({ onSelectFascia }) => {
                         <thead>
                             <tr>
                                 <th>Tipo</th>
-                                <th>Min</th>
-                                <th>Max</th>
+                                <th>Minimo</th>
+                                <th>Massimo</th>
                                 <th>Prezzo</th>
                                 <th>Azioni</th>
                             </tr>

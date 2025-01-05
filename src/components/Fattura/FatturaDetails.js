@@ -241,6 +241,12 @@ const FatturaDetails = () => {
                                     <td>{fattura.ragione_sociale || 'N/A'}</td>
                                 </tr>
                                 <tr>
+                                    <th>Confermata</th>
+                                    <td>
+                                        <input type="checkbox" checked={fattura.confermata} readOnly />
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th>Anno</th>
                                     <td>{fattura.anno || 'N/A'}</td>
                                 </tr>
@@ -249,16 +255,45 @@ const FatturaDetails = () => {
                                     <td>{fattura.numero || 'N/A'}</td>
                                 </tr>
                                 <tr>
-                                    <th>Data</th>
+                                    <th>Data Fattura</th>
                                     <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString() : 'N/A'}</td>
                                 </tr>
-                                <tr>
-                                    <th>Confermata</th>
-                                    <td>{fattura.confermata ? 'Sì' : 'No'}</td>
-                                </tr>
+                                
                                 <tr>
                                     <th>Codice</th>
                                     <td>{fattura.codice || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Destinazione</th>
+                                    <td>{fattura.destinazione || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Imponibile</th>
+                                    <td>{fattura.imponibile || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>IVA</th>
+                                    <td>{fattura.iva || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Sconto imponibile</th>
+                                    <td>{fattura.sconto_imponibile || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Totale fattura</th>
+                                    <td>{fattura.totale_fattura || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data fattura elettronica</th>
+                                    <td>{fattura.data_fattura_elettronica  ? new Date(fattura.data_fattura_elettronica ).toLocaleDateString() : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data invio fattura</th>
+                                    <td>{fattura.data_invio_fattura  ? new Date(fattura.data_invio_fattura ).toLocaleDateString() : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo pagamento</th>
+                                    <td>{fattura.tipo_pagamento || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Cliente</th>
@@ -340,7 +375,8 @@ const FatturaDetails = () => {
                         <thead>
                             <tr>
                                 <th>Descrizione</th>
-                                <th>Valore</th>
+                                <th>Data Lettura</th>
+                                <th>Valore unitario</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -348,7 +384,8 @@ const FatturaDetails = () => {
                             {servizi.map((servizio) => (
                                 <tr key={servizio._id}>
                                     <td>{servizio.descrizione}</td>
-                                    <td>{servizio.valore_unitario}</td>
+                                    <td>{new Date(servizio.data_lettura).toLocaleDateString()}</td>
+                                    <td>{servizio.valore_unitario.toFixed(2)} €</td>
                                     <td>
                                         <button
                                             className="btn btn-edit"
@@ -386,6 +423,7 @@ const FatturaDetails = () => {
                             <tr>
                                 <th>Nome</th>
                                 <th>Cognome</th>
+                                <th>Nascita</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -393,6 +431,7 @@ const FatturaDetails = () => {
                             <tr>
                                 <td>{cliente.nome}</td>
                                 <td>{cliente.cognome}</td>
+                                <td>{cliente.data_nascita ? new Date(cliente.data_nascita).toLocaleDateString() : '-'}</td>
                                 <td>
                                     <button
                                         onClick={() => history.push(`/clienti/${cliente._id}`)}
@@ -424,15 +463,25 @@ const FatturaDetails = () => {
                     <table className="scadenza-table">
                         <thead>
                             <tr>
+                                <th>Nome</th>
+                                <th>Cognome</th>
                                 <th>Scadenza</th>
-                                <th>Cliente</th>
+                                <th>Ritardo</th>
+                                <th>Totale</th>
+                                <th>Saldo</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{new Date(scadenza.scadenza).toLocaleDateString()}</td>
-                                <td>{`${scadenza.nome} ${scadenza.cognome}`}</td>
+                            <td>{scadenza.nome}</td>
+                                    <td>{scadenza.cognome}</td>
+                                    <td>{scadenza.scadenza ? new Date(scadenza.scadenza).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{scadenza.ritardo} giorni</td>
+                                    <td>{scadenza.totale.toFixed(2)} €</td>
+                                    <td>
+                                        <input type="checkbox" checked={scadenza.saldo} readOnly />
+                                    </td>
                                 <td>
                                     <button
                                         onClick={() => history.push(`/scadenze/${scadenza._id}`)}
