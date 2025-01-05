@@ -1,3 +1,4 @@
+/* Navbar General Styles */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -11,9 +12,10 @@
     right: 0;
     z-index: 1000;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    white-space: nowrap; /* Impedisce la rottura della linea dei link */
+    white-space: nowrap; /* Prevent breaking of links */
 }
 
+/* Brand Styling */
 .navbar-brand a {
     color: white;
     font-size: 1.8em;
@@ -21,6 +23,7 @@
     font-weight: bold;
 }
 
+/* Toggle Button (Hamburger Menu) */
 .menu-toggle {
     font-size: 2em;
     cursor: pointer;
@@ -28,13 +31,14 @@
     color: white;
 }
 
+/* Navbar Menu Styles */
 .navbar-nav {
     display: flex;
     align-items: center;
     list-style: none;
     padding: 0;
     margin: 0;
-    overflow-x: auto;
+    overflow-x: auto; /* Horizontal scroll if items overflow */
 }
 
 .navbar-nav .nav-item {
@@ -56,6 +60,7 @@
     transform: scale(1.02);
 }
 
+/* Logout Button */
 .btn-logout {
     background: none;
     border: none;
@@ -73,11 +78,14 @@
     transform: scale(1.02);
 }
 
+/* Responsive Navbar Styles */
 @media (max-width: 768px) {
+    /* Show Toggle Button in Mobile */
     .menu-toggle {
         display: block;
     }
 
+    /* Navbar Menu (Vertical Layout) */
     .navbar-nav {
         position: absolute;
         top: 100%;
@@ -86,14 +94,15 @@
         background-color: #007aff;
         flex-direction: column;
         align-items: center;
-        max-height: 0;
+        max-height: 0; /* Collapsed initially */
         overflow: hidden;
         transition: max-height 0.3s ease;
         z-index: 999;
     }
 
     .navbar-nav.active {
-        max-height: 500px;
+        max-height: 100vh; /* Allow full height to display all items */
+        overflow-y: auto; /* Add vertical scroll if needed */
     }
 
     .navbar-nav .nav-item {
@@ -110,5 +119,16 @@
         padding: 15px 0;
         margin: 0;
         border-radius: 0;
+        text-align: center;
+    }
+
+    /* Adjust Logout Button in Mobile */
+    .btn-logout {
+        background-color: transparent;
+        font-size: 1rem;
+    }
+
+    .btn-logout:hover {
+        background-color: #ff3b30;
     }
 }
