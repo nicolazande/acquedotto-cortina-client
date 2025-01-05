@@ -1,0 +1,15 @@
+/* styles/ServerStatusIndicator.css */
+.status-circle {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-circle.green {
+    background-color: green;
+}
+
+.status-circle.red {
+    background-color: red;
+}

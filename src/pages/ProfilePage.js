@@ -123,7 +123,7 @@ const ProfilePage = ({ history }) => {
                             className="btn btn-edit"
                             onClick={() => setIsEditing(true)}
                         >
-                            Modifica Profilo
+                            Modifica
                         </button>
                     )}
                 </div>

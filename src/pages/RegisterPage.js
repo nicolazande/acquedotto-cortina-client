@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import authApi from '../api/authApi';
+import ServerStatusIndicator from '../ServerStatusIndicator';
 import '../styles/Auth.css';
 
 const RegisterPage = ({ history }) => {
@@ -10,10 +11,10 @@ const RegisterPage = ({ history }) => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        setError(''); // Clear any existing errors
+        setError('');
         try {
             await authApi.register({ username, password });
-            history.push('/login'); // Redirect to login on successful registration
+            history.push('/login');
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'An unexpected error occurred during registration.';
             setError(errorMessage);
@@ -22,6 +23,7 @@ const RegisterPage = ({ history }) => {
 
     return (
         <div className="auth-page">
+            <ServerStatusIndicator />
             <div className="auth-container">
                 <h2>Register</h2>
                 {error && <p className="error-message">{error}</p>}
@@ -53,7 +55,7 @@ const RegisterPage = ({ history }) => {
                     </div>
                 </form>
                 <div className="auth-footer">
-                    <a href="/login">Already have an account? Log in</a>
+                    <a href="/login">Hai gia' un account? Log in</a>
                 </div>
             </div>
         </div>

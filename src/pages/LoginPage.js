@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import authApi from '../api/authApi';
+import ServerStatusIndicator from '../ServerStatusIndicator';
 import '../styles/Auth.css';
 
 const LoginPage = ({ onLogin, history }) => {
@@ -24,6 +25,7 @@ const LoginPage = ({ onLogin, history }) => {
 
     return (
         <div className="auth-page">
+            <ServerStatusIndicator />
             <div className="auth-container">
                 <h2>Login</h2>
                 {error && <p className="error-message">{error}</p>}

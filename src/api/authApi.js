@@ -11,6 +11,7 @@ const authApi = {
     updateProfile: (data) => axios.put(`${API_URL}/profile`, data, { // Corrected endpoint
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     }),
+    healthCheck: () => axios.get(`${API_URL}/health`), // Added health check endpoint
 };
 
 
