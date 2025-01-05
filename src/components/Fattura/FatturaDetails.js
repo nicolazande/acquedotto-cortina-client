@@ -369,7 +369,7 @@ const FatturaDetails = () => {
             </div>
 
             {showServizi && Array.isArray(servizi) && servizi.length > 0 && (
-                <div className="contatori-section">
+                <div className="servizi-section">
                     <h3>Servizi Associati</h3>
                     <table className="servizi-table">
                         <thead>

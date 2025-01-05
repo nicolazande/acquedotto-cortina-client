@@ -21,12 +21,13 @@
     padding: 1.5em;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    width: 95%;
+    width: 90%; /* Ensure it doesn't exceed the parent width */
     max-width: 600px;
-    max-height: 80%; /* Restrict height for scrolling */
-    overflow-y: auto; /* Enable scrolling */
+    max-height: 90%; /* Limit the height */
+    overflow-y: auto; /* Enable scrolling if content exceeds height */
     text-align: center;
     position: relative;
+    box-sizing: border-box; /* Include padding in width/height calculation */
 }
 
 /* Header */
@@ -50,16 +51,21 @@
     font-size: 1rem;
 }
 
-.form-group input {
+.form-group input,
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 0.6em;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
+    box-sizing: border-box; /* Include padding in width calculation */
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
     border-color: #007bff;
     outline: none;
 }
@@ -75,6 +81,8 @@
     margin-top: 1em;
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1em; /* Add space between buttons for better wrapping */
 }
 
 .btn {
@@ -84,6 +92,9 @@
     border-radius: 5px;
     font-size: 1rem;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    flex: 1 1 auto; /* Allow buttons to adjust flexibly */
+    text-align: center;
+    max-width: 200px; /* Prevent buttons from growing too large */
 }
 
 .btn:hover {
@@ -131,15 +142,25 @@
 @media (max-width: 768px) {
     .modal-content {
         padding: 1em;
-        max-width: 90%;
+        width: 95%; /* Adjust for smaller screens */
+        max-height: 85%; /* Limit modal height further on smaller screens */
     }
 
-    .form-group input {
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
         padding: 0.5em;
     }
 
     .btn {
         padding: 0.5em 1em;
         font-size: 0.9rem;
+        max-width: 100%; /* Allow buttons to span full width on small screens */
     }
+}
+
+/* Parent Constraint */
+.modal-content {
+    max-width: calc(100vw - 40px); /* Ensure it doesn't exceed the viewport width */
+    max-height: calc(100vh - 40px); /* Ensure it doesn't exceed the viewport height */
 }

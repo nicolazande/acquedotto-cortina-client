@@ -99,6 +99,57 @@
     overflow-x: auto;
 }
 
+/* Enhanced Sections (Cliente, Letture, Edificio, etc.) */
+.contatore-details .cliente-section,
+.contatore-details .letture-section,
+.contatore-details .edificio-section,
+.contatore-details .listino-section {
+    max-width: 100%; /* Restrict to container width */
+    overflow-x: auto; /* Allow horizontal scrolling if needed */
+    margin-top: 1em;
+    padding: 1em;
+    background-color: #f9f9f9; /* Optional: Add light background */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add subtle shadow */
+}
+
+.contatore-details .cliente-section table,
+.contatore-details .letture-section table,
+.contatore-details .edificio-section table,
+.contatore-details .listino-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.contatore-details .cliente-section th,
+.contatore-details .letture-section th,
+.contatore-details .edificio-section th,
+.contatore-details .listino-section th,
+.contatore-details .cliente-section td,
+.contatore-details .letture-section td,
+.contatore-details .edificio-section td,
+.contatore-details .listino-section td {
+    padding: 0.8em;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 0.95rem; /* Slightly smaller font for better fit */
+}
+
+.contatore-details .cliente-section th,
+.contatore-details .letture-section th,
+.contatore-details .edificio-section th,
+.contatore-details .listino-section th {
+    background-color: #f4f4f4;
+}
+
+.contatore-details .cliente-section tbody tr:nth-child(odd),
+.contatore-details .letture-section tbody tr:nth-child(odd),
+.contatore-details .edificio-section tbody tr:nth-child(odd),
+.contatore-details .listino-section tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
 /* Search Container */
 .contatore-details .search-container {
     display: flex;
@@ -193,5 +244,13 @@
         flex-direction: column;
         gap: 1em;
         padding: 1em;
+    }
+
+    .contatore-details .cliente-section,
+    .contatore-details .letture-section,
+    .contatore-details .edificio-section,
+    .contatore-details .listino-section {
+        padding: 0.5em; /* Reduce padding for smaller screens */
+        border-radius: 5px;
     }
 }

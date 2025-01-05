@@ -1,7 +1,5 @@
-/* ServizioDetails.css */
-
 /* General Styles for ServizioDetails */
-.servizio-details body {
+.servizio-details {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -12,7 +10,6 @@
 .servizio-details h3 {
     text-align: center;
     color: #333;
-    margin: 1em 0;
 }
 
 .servizio-details table {
@@ -30,11 +27,10 @@
 
 .servizio-details th {
     background-color: #f4f4f4;
-    font-weight: bold;
 }
 
-.servizio-details tbody tr:last-child td {
-    border-bottom: none;
+.servizio-details tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
 }
 
 /* Buttons */
@@ -101,21 +97,6 @@
 
 .servizio-details .table-container {
     overflow-x: auto;
-    margin: 1em 0;
-}
-
-/* Enhanced Search Container */
-.servizio-details .search-container {
-    display: flex;
-    justify-content: center; /* Align horizontally */
-    align-items: center;
-    gap: 0.8em; /* Slightly larger spacing */
-    margin-top: 1em;
-    padding: 1em;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Tabs */
@@ -153,6 +134,51 @@
     display: block;
 }
 
+/* Section Styles */
+.servizio-details .lettura-section,
+.servizio-details .articolo-section,
+.servizio-details .fattura-section {
+    max-width: 100%;
+    overflow-x: auto;
+    margin-top: 1em;
+    padding: 1em;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.servizio-details .lettura-section table,
+.servizio-details .articolo-section table,
+.servizio-details .fattura-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.servizio-details .lettura-section th,
+.servizio-details .articolo-section th,
+.servizio-details .fattura-section th,
+.servizio-details .lettura-section td,
+.servizio-details .articolo-section td,
+.servizio-details .fattura-section td {
+    padding: 0.8em;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 0.95rem;
+}
+
+.servizio-details .lettura-section th,
+.servizio-details .articolo-section th,
+.servizio-details .fattura-section th {
+    background-color: #f4f4f4;
+}
+
+.servizio-details .lettura-section tbody tr:nth-child(odd),
+.servizio-details .articolo-section tbody tr:nth-child(odd),
+.servizio-details .fattura-section tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
 /* Button Alignment */
 .servizio-details .btn-back-container,
 .servizio-details .lettura-box,
@@ -163,15 +189,6 @@
     gap: 0.8em;
     flex-wrap: wrap;
     margin-top: 1em;
-}
-
-.servizio-details .btn-back {
-    background-color: #6c757d;
-    color: white;
-}
-
-.servizio-details .btn-back:hover {
-    background-color: #5a6268;
 }
 
 /* Responsive Design */
@@ -187,7 +204,7 @@
         margin: 0.4em;
     }
 
-    .servizio-details th, 
+    .servizio-details th,
     .servizio-details td {
         font-size: 0.9rem;
         padding: 0.6em;
@@ -202,9 +219,10 @@
         text-align: center;
     }
 
-    .servizio-details .search-container {
-        flex-direction: column;
-        gap: 1em;
-        padding: 1em;
+    .servizio-details .lettura-section,
+    .servizio-details .articolo-section,
+    .servizio-details .fattura-section {
+        padding: 0.5em;
+        border-radius: 5px;
     }
 }

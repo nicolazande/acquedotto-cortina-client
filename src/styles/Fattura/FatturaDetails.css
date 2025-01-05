@@ -1,7 +1,5 @@
-/* FatturaDetails.css */
-
-/* General Styles */
-.fattura-details body {
+/* General Styles for FatturaDetails */
+.fattura-details {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -101,18 +99,49 @@
     overflow-x: auto;
 }
 
-/* Enhanced Search Container */
-.fattura-details .search-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.8em;
+/* Enhanced Sections */
+.fattura-details .cliente-section,
+.fattura-details .servizi-section,
+.fattura-details .letture-section {
+    max-width: 100%; /* Ensure it stays within container width */
+    overflow-x: auto; /* Allow horizontal scrolling */
     margin-top: 1em;
     padding: 1em;
-    background-color: #f9f9f9;
+    background-color: #f9f9f9; /* Optional: Add light background */
     border: 1px solid #ddd;
     border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add subtle shadow */
+}
+
+.fattura-details .cliente-section table,
+.fattura-details .servizi-section table,
+.fattura-details .letture-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.fattura-details .cliente-section th, 
+.fattura-details .servizi-section th,
+.fattura-details .letture-section th,
+.fattura-details .cliente-section td, 
+.fattura-details .servizi-section td,
+.fattura-details .letture-section td {
+    padding: 0.8em;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 0.95rem; /* Slightly smaller font for better fit */
+}
+
+.fattura-details .cliente-section th,
+.fattura-details .servizi-section th,
+.fattura-details .letture-section th {
+    background-color: #f4f4f4;
+}
+
+.fattura-details .cliente-section tbody tr:nth-child(odd),
+.fattura-details .servizi-section tbody tr:nth-child(odd),
+.fattura-details .letture-section tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
 }
 
 /* Tabs */
@@ -190,9 +219,10 @@
         text-align: center;
     }
 
-    .fattura-details .search-container {
-        flex-direction: column;
-        gap: 1em;
-        padding: 1em;
+    .fattura-details .cliente-section,
+    .fattura-details .servizi-section,
+    .fattura-details .letture-section {
+        padding: 0.5em;
+        border-radius: 5px;
     }
 }

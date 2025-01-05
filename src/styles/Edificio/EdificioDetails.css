@@ -99,6 +99,39 @@
     overflow-x: auto;
 }
 
+/* Enhanced Sections */
+.edificio-details .contatori-section {
+    max-width: 100%; /* Restrict to container width */
+    overflow-x: auto; /* Allow horizontal scrolling if needed */
+    margin-top: 1em;
+    padding: 1em;
+    background-color: #f9f9f9; /* Optional: Add light background */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add subtle shadow */
+}
+
+.edificio-details .contatori-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.edificio-details .contatori-section th,
+.edificio-details .contatori-section td {
+    padding: 0.8em;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 0.95rem; /* Slightly smaller font for better fit */
+}
+
+.edificio-details .contatori-section th {
+    background-color: #f4f4f4;
+}
+
+.edificio-details .contatori-section tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
 /* Search Container */
 .edificio-details .search-container {
     display: flex;
@@ -190,5 +223,10 @@
         flex-direction: column;
         gap: 1em;
         padding: 1em;
+    }
+
+    .edificio-details .contatori-section {
+        padding: 0.5em;
+        border-radius: 5px;
     }
 }

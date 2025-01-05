@@ -1,5 +1,3 @@
-/* FasciaDetails.css */
-
 /* General Styles for FasciaDetails */
 .fascia-details {
     font-family: Arial, sans-serif;
@@ -101,7 +99,40 @@
     overflow-x: auto;
 }
 
-/* Enhanced Search Container */
+/* Enhanced Sections */
+.fascia-details .listino-section {
+    max-width: 100%; /* Restrict to container width */
+    overflow-x: auto; /* Allow horizontal scrolling if needed */
+    margin-top: 1em;
+    padding: 1em;
+    background-color: #f9f9f9; /* Optional: Add light background */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add subtle shadow */
+}
+
+.fascia-details .listino-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.fascia-details .listino-section th,
+.fascia-details .listino-section td {
+    padding: 0.8em;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 0.95rem; /* Slightly smaller font for better fit */
+}
+
+.fascia-details .listino-section th {
+    background-color: #f4f4f4;
+}
+
+.fascia-details .listino-section tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+/* Search Container */
 .fascia-details .search-container {
     display: flex;
     justify-content: center;
@@ -192,5 +223,10 @@
         flex-direction: column;
         gap: 1em;
         padding: 1em;
+    }
+
+    .fascia-details .listino-section {
+        padding: 0.5em;
+        border-radius: 5px;
     }
 }

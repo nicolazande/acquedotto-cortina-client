@@ -1,7 +1,5 @@
-/* ScadenzaDetails.css */
-
 /* General Styles for ScadenzaDetails */
-.scadenza-details body {
+.scadenza-details {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -101,18 +99,37 @@
     overflow-x: auto;
 }
 
-/* Enhanced Search Container */
-.scadenza-details .search-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.8em;
+/* Sections */
+.scadenza-details .fattura-section {
+    max-width: 100%;
+    overflow-x: auto;
     margin-top: 1em;
     padding: 1em;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.scadenza-details .fattura-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.scadenza-details .fattura-section th,
+.scadenza-details .fattura-section td {
+    padding: 0.8em;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 0.95rem;
+}
+
+.scadenza-details .fattura-section th {
+    background-color: #f4f4f4;
+}
+
+.scadenza-details .fattura-section tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
 }
 
 /* Tabs */
@@ -173,7 +190,7 @@
         margin: 0.4em;
     }
 
-    .scadenza-details th, 
+    .scadenza-details th,
     .scadenza-details td {
         font-size: 0.9rem;
         padding: 0.6em;
@@ -188,9 +205,8 @@
         text-align: center;
     }
 
-    .scadenza-details .search-container {
-        flex-direction: column;
-        gap: 1em;
-        padding: 1em;
+    .scadenza-details .fattura-section {
+        padding: 0.5em;
+        border-radius: 5px;
     }
 }

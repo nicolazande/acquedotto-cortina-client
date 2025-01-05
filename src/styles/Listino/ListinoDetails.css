@@ -1,7 +1,5 @@
-/* ListinoDetails.css */
-
-/* General Styles */
-.listino-details body {
+/* General Styles for ListinoDetails */
+.listino-details {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -101,18 +99,43 @@
     overflow-x: auto;
 }
 
-/* Enhanced Search Container */
-.listino-details .search-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.8em;
+/* Sections */
+.listino-details .fasce-section,
+.listino-details .contatori-section {
+    max-width: 100%;
+    overflow-x: auto;
     margin-top: 1em;
     padding: 1em;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.listino-details .fasce-section table,
+.listino-details .contatori-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.listino-details .fasce-section th,
+.listino-details .contatori-section th,
+.listino-details .fasce-section td,
+.listino-details .contatori-section td {
+    padding: 0.8em;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 0.95rem;
+}
+
+.listino-details .fasce-section th,
+.listino-details .contatori-section th {
+    background-color: #f4f4f4;
+}
+
+.listino-details .fasce-section tbody tr:nth-child(odd),
+.listino-details .contatori-section tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
 }
 
 /* Tabs */
@@ -174,7 +197,7 @@
         margin: 0.4em;
     }
 
-    .listino-details th, 
+    .listino-details th,
     .listino-details td {
         font-size: 0.9rem;
         padding: 0.6em;
@@ -189,9 +212,9 @@
         text-align: center;
     }
 
-    .listino-details .search-container {
-        flex-direction: column;
-        gap: 1em;
-        padding: 1em;
+    .listino-details .fasce-section,
+    .listino-details .contatori-section {
+        padding: 0.5em;
+        border-radius: 5px;
     }
 }

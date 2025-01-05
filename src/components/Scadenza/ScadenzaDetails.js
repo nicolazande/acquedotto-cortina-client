@@ -209,7 +209,7 @@ const ScadenzaDetails = () => {
                                         Associa Fattura
                                     </button>
                                     <button onClick={() => setCreatingFattura(true)} className="btn btn-create-fattura">
-                                        Associa Fattura
+                                        Crea Fattura
                                     </button>
                                 </div>
                             )}
