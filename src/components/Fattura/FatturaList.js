@@ -5,30 +5,31 @@ import FatturaEditor from '../shared/FatturaEditor';
 import '../../styles/Fattura/FatturaList.css';
 
 const FatturaList = ({ onSelectFattura }) => {
-    const [fatture, setFatture] = useState([]); // Stores the current page's fatture
+    const [fatture, setFatture] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeSearch, setActiveSearch] = useState('');
     const [creatingFattura, setCreatingFattura] = useState(false);
-    const [totalPages, setTotalPages] = useState(1); // Total pages for pagination
-    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Start of current pagination slot
-    const itemsPerPage = 50; // Items displayed per page
-    const slotSize = 10; // Number of pages in each slot
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentSlotStart, setCurrentSlotStart] = useState(1);
+    const itemsPerPage = 50;
+    const slotSize = 10;
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
+    const sortField = queryParams.get('sortField') || 'data_fattura';
+    const sortOrder = queryParams.get('sortOrder') || 'desc';
 
-    // Fetch fatture whenever currentPage or activeSearch changes
     useEffect(() => {
-        fetchFatture(currentPage, activeSearch);
-    }, [currentPage, activeSearch]);
+        fetchFatture(currentPage, activeSearch, sortField, sortOrder);
+    }, [currentPage, activeSearch, sortField, sortOrder]);
 
-    const fetchFatture = async (page = 1, search = '') => {
+    const fetchFatture = async (page = 1, search = '', field = 'data_fattura', order = 'desc') => {
         try {
-            const response = await fatturaApi.getFatture(page, itemsPerPage, search);
+            const response = await fatturaApi.getFatture(page, itemsPerPage, search, field, order);
             const { data, totalPages: fetchedTotalPages } = response.data;
-            setFatture(data); // Set the current page's fatture
-            setTotalPages(fetchedTotalPages); // Set total pages for pagination
+            setFatture(data);
+            setTotalPages(fetchedTotalPages);
         } catch (error) {
             alert('Errore durante il recupero delle fatture');
             console.error(error);
@@ -38,7 +39,7 @@ const FatturaList = ({ onSelectFattura }) => {
     const handleDelete = async (id) => {
         try {
             await fatturaApi.deleteFattura(id);
-            fetchFatture(currentPage, activeSearch); // Refetch current page after deletion
+            fetchFatture(currentPage, activeSearch, sortField, sortOrder);
         } catch (error) {
             alert('Errore durante la cancellazione della fattura');
             console.error(error);
@@ -46,13 +47,13 @@ const FatturaList = ({ onSelectFattura }) => {
     };
 
     const handleSearch = () => {
-        setActiveSearch(searchTerm); // Combine search terms
-        history.push('?page=1'); // Reset to the first page for a new search
+        setActiveSearch(searchTerm);
+        history.push(`?page=1&sortField=${sortField}&sortOrder=${sortOrder}`);
     };
 
     const handlePageChange = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
-            history.push(`?page=${pageNumber}`);
+            history.push(`?page=${pageNumber}&sortField=${sortField}&sortOrder=${sortOrder}`);
         }
     };
 
@@ -64,13 +65,14 @@ const FatturaList = ({ onSelectFattura }) => {
         }
     };
 
+    const handleSort = (field) => {
+        const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+        history.push(`?page=1&sortField=${field}&sortOrder=${newOrder}`);
+    };
+
     const renderPageButtons = () => {
         const buttons = [];
-        for (
-            let i = currentSlotStart;
-            i < currentSlotStart + slotSize && i <= totalPages;
-            i++
-        ) {
+        for (let i = currentSlotStart; i < currentSlotStart + slotSize && i <= totalPages; i++) {
             buttons.push(
                 <button
                     key={i}
@@ -92,7 +94,7 @@ const FatturaList = ({ onSelectFattura }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="..."
+                            placeholder="Cerca..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -111,24 +113,42 @@ const FatturaList = ({ onSelectFattura }) => {
                     <table className="fattura-table">
                         <thead>
                             <tr>
-                                <th>Cliente</th>
-                                <th>Tipo Documento</th>
-                                <th>Data</th>
-                                <th>Confermata</th>
-                                <th>Totale</th>
+                                <th onClick={() => handleSort('cliente.nome')}>
+                                    Cliente {sortField === 'cliente.nome' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('tipo_documento')}>
+                                    Tipo Documento {sortField === 'tipo_documento' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('data_fattura')}>
+                                    Data {sortField === 'data_fattura' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('confermata')}>
+                                    Confermata {sortField === 'confermata' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('totale_fattura')}>
+                                    Totale {sortField === 'totale_fattura' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             {fatture.map((fattura) => (
                                 <tr key={fattura._id}>
-                                    <td>{fattura.cliente ? `${fattura.cliente.nome} ${fattura.cliente.cognome}` : 'N/A'}</td>
+                                    <td>
+                                        {fattura.cliente
+                                            ? `${fattura.cliente.nome} ${fattura.cliente.cognome}`
+                                            : 'N/A'}
+                                    </td>
                                     <td>{fattura.tipo_documento}</td>
-                                    <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString() : 'N/A'}</td>
+                                    <td>
+                                        {fattura.data_fattura
+                                            ? new Date(fattura.data_fattura).toLocaleDateString()
+                                            : 'N/A'}
+                                    </td>
                                     <td>
                                         <input type="checkbox" checked={fattura.confermata} readOnly />
                                     </td>
-                                    <td>{fattura.totale_fattura} € </td>
+                                    <td>{fattura.totale_fattura} €</td>
                                     <td>
                                         <button
                                             className="btn"
@@ -176,7 +196,7 @@ const FatturaList = ({ onSelectFattura }) => {
                 <FatturaEditor
                     onSave={(newFattura) => {
                         setCreatingFattura(false);
-                        fetchFatture(currentPage, activeSearch); // Refetch current data
+                        fetchFatture(currentPage, activeSearch, sortField, sortOrder);
                     }}
                     onCancel={() => setCreatingFattura(false)}
                 />

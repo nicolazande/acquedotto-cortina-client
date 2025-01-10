@@ -4,31 +4,32 @@ import clienteApi from '../../api/clienteApi';
 import ClienteEditor from '../shared/ClienteEditor';
 import '../../styles/Cliente/ClienteList.css';
 
-const ClienteList = ( { onSelectCliente }) => {
-    const [clienti, setClienti] = useState([]); // Stores the current page's clients
-    const [searchTerm, setSearchTerm] = useState(''); // Controlled input value
-    const [activeSearch, setActiveSearch] = useState(''); // Search term currently applied
+const ClienteList = ({ onSelectCliente }) => {
+    const [clienti, setClienti] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeSearch, setActiveSearch] = useState('');
     const [creatingCliente, setCreatingCliente] = useState(false);
-    const [totalPages, setTotalPages] = useState(1); // Total pages
-    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Start of current pagination slot
-    const itemsPerPage = 50; // Items displayed per page
-    const slotSize = 10; // Number of pages in each slot
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentSlotStart, setCurrentSlotStart] = useState(1);
+    const itemsPerPage = 50;
+    const slotSize = 10;
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
+    const sortField = queryParams.get('sortField') || 'cognome';
+    const sortOrder = queryParams.get('sortOrder') || 'asc';
 
-    // Fetch clients whenever currentPage or activeSearch changes
     useEffect(() => {
-        fetchClienti(currentPage, activeSearch);
-    }, [currentPage, activeSearch]);
+        fetchClienti(currentPage, activeSearch, sortField, sortOrder);
+    }, [currentPage, activeSearch, sortField, sortOrder]);
 
-    const fetchClienti = async (page = 1, search = '') => {
+    const fetchClienti = async (page = 1, search = '', field = 'cognome', order = 'asc') => {
         try {
-            const response = await clienteApi.getClienti(page, itemsPerPage, search);
+            const response = await clienteApi.getClienti(page, itemsPerPage, search, field, order);
             const { data, totalPages: fetchedTotalPages } = response.data;
-            setClienti(data); // Set the current page's data
-            setTotalPages(fetchedTotalPages); // Set total pages for pagination
+            setClienti(data);
+            setTotalPages(fetchedTotalPages);
         } catch (error) {
             alert('Errore durante il recupero dei clienti');
             console.error(error);
@@ -38,7 +39,7 @@ const ClienteList = ( { onSelectCliente }) => {
     const handleDelete = async (id) => {
         try {
             await clienteApi.deleteCliente(id);
-            fetchClienti(currentPage, activeSearch); // Refetch current page after deletion
+            fetchClienti(currentPage, activeSearch, sortField, sortOrder);
         } catch (error) {
             alert('Errore durante la cancellazione del cliente');
             console.error(error);
@@ -46,13 +47,13 @@ const ClienteList = ( { onSelectCliente }) => {
     };
 
     const handleSearch = () => {
-        setActiveSearch(searchTerm); // Apply the current input as the active search term
-        history.push('?page=1'); // Reset to the first page for a new search
+        setActiveSearch(searchTerm);
+        history.push(`?page=1&sortField=${sortField}&sortOrder=${sortOrder}`);
     };
 
     const handlePageChange = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
-            history.push(`?page=${pageNumber}`);
+            history.push(`?page=${pageNumber}&sortField=${sortField}&sortOrder=${sortOrder}`);
         }
     };
 
@@ -64,13 +65,14 @@ const ClienteList = ( { onSelectCliente }) => {
         }
     };
 
+    const handleSort = (field) => {
+        const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+        history.push(`?page=1&sortField=${field}&sortOrder=${newOrder}`);
+    };
+
     const renderPageButtons = () => {
         const buttons = [];
-        for (
-            let i = currentSlotStart;
-            i < currentSlotStart + slotSize && i <= totalPages;
-            i++
-        ) {
+        for (let i = currentSlotStart; i < currentSlotStart + slotSize && i <= totalPages; i++) {
             buttons.push(
                 <button
                     key={i}
@@ -92,7 +94,7 @@ const ClienteList = ( { onSelectCliente }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="..."
+                            placeholder="Cerca..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -111,9 +113,15 @@ const ClienteList = ( { onSelectCliente }) => {
                     <table className="cliente-table">
                         <thead>
                             <tr>
-                                <th>Nome</th>
-                                <th>Cognome</th>
-                                <th>Nascita</th>
+                                <th onClick={() => handleSort('nome')}>
+                                    Nome {sortField === 'nome' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('cognome')}>
+                                    Cognome {sortField === 'cognome' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('data_nascita')}>
+                                    Nascita {sortField === 'data_nascita' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -122,7 +130,11 @@ const ClienteList = ( { onSelectCliente }) => {
                                 <tr key={cliente._id}>
                                     <td>{cliente.nome || '-'}</td>
                                     <td>{cliente.cognome || '-'}</td>
-                                    <td>{cliente.data_nascita ? new Date(cliente.data_nascita).toLocaleDateString() : '-'}</td>
+                                    <td>
+                                        {cliente.data_nascita
+                                            ? new Date(cliente.data_nascita).toLocaleDateString()
+                                            : '-'}
+                                    </td>
                                     <td>
                                         <button
                                             className="btn btn-details"
@@ -170,7 +182,7 @@ const ClienteList = ( { onSelectCliente }) => {
                 <ClienteEditor
                     onSave={(newCliente) => {
                         setCreatingCliente(false);
-                        fetchClienti(currentPage, activeSearch); // Refetch current data
+                        fetchClienti(currentPage, activeSearch, sortField, sortOrder);
                     }}
                     onCancel={() => setCreatingCliente(false)}
                 />

@@ -2,11 +2,10 @@ import axios from 'axios';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/api/fasce`;
 
-const fasciaApi =
-{
+const fasciaApi = {
     createFascia: (data) => axios.post(API_URL, data),
-    getFasce: (page = 1, limit = 50, search = '') =>
-        axios.get(API_URL, { params: { page, limit, search } }),
+    getFasce: (page = 1, limit = 50, search = '', sortField = 'tipo', sortOrder = 'asc') =>
+        axios.get(API_URL, { params: { page, limit, search, sortField, sortOrder } }),
     getFascia: (id) => axios.get(`${API_URL}/${id}`),
     updateFascia: (id, data) => axios.put(`${API_URL}/${id}`, data),
     deleteFascia: (id) => axios.delete(`${API_URL}/${id}`),

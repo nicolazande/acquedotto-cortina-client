@@ -5,30 +5,31 @@ import ListinoEditor from '../shared/ListinoEditor';
 import '../../styles/Listino/ListinoList.css';
 
 const ListinoList = ({ onSelectListino }) => {
-    const [listini, setListini] = useState([]); // Stores the current page's listini
-    const [searchTerm, setSearchTerm] = useState(''); // Controlled input value
-    const [activeSearch, setActiveSearch] = useState(''); // Search term currently applied
+    const [listini, setListini] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeSearch, setActiveSearch] = useState('');
     const [creatingListino, setCreatingListino] = useState(false);
-    const [totalPages, setTotalPages] = useState(1); // Total pages
-    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Start of current pagination slot
-    const itemsPerPage = 50; // Items displayed per page
-    const slotSize = 10; // Number of pages in each slot
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentSlotStart, setCurrentSlotStart] = useState(1);
+    const itemsPerPage = 50;
+    const slotSize = 10;
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
+    const sortField = queryParams.get('sortField') || 'categoria';
+    const sortOrder = queryParams.get('sortOrder') || 'asc';
 
-    // Fetch listini whenever currentPage or activeSearch changes
     useEffect(() => {
-        fetchListini(currentPage, activeSearch);
-    }, [currentPage, activeSearch]);
+        fetchListini(currentPage, activeSearch, sortField, sortOrder);
+    }, [currentPage, activeSearch, sortField, sortOrder]);
 
-    const fetchListini = async (page = 1, search = '') => {
+    const fetchListini = async (page = 1, search = '', field = 'categoria', order = 'asc') => {
         try {
-            const response = await listinoApi.getListini(page, itemsPerPage, search);
+            const response = await listinoApi.getListini(page, itemsPerPage, search, field, order);
             const { data, totalPages: fetchedTotalPages } = response.data;
-            setListini(data); // Set the current page's data
-            setTotalPages(fetchedTotalPages); // Set total pages for pagination
+            setListini(data);
+            setTotalPages(fetchedTotalPages);
         } catch (error) {
             alert('Errore durante il recupero dei listini');
             console.error(error);
@@ -38,7 +39,7 @@ const ListinoList = ({ onSelectListino }) => {
     const handleDelete = async (id) => {
         try {
             await listinoApi.deleteListino(id);
-            fetchListini(currentPage, activeSearch); // Refetch current page after deletion
+            fetchListini(currentPage, activeSearch, sortField, sortOrder);
         } catch (error) {
             alert('Errore durante la cancellazione del listino');
             console.error(error);
@@ -46,13 +47,13 @@ const ListinoList = ({ onSelectListino }) => {
     };
 
     const handleSearch = () => {
-        setActiveSearch(searchTerm); // Apply the current input as the active search term
-        history.push('?page=1'); // Reset to the first page for a new search
+        setActiveSearch(searchTerm);
+        history.push(`?page=1&sortField=${sortField}&sortOrder=${sortOrder}`);
     };
 
     const handlePageChange = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
-            history.push(`?page=${pageNumber}`);
+            history.push(`?page=${pageNumber}&sortField=${sortField}&sortOrder=${sortOrder}`);
         }
     };
 
@@ -64,13 +65,14 @@ const ListinoList = ({ onSelectListino }) => {
         }
     };
 
+    const handleSort = (field) => {
+        const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+        history.push(`?page=1&sortField=${field}&sortOrder=${newOrder}`);
+    };
+
     const renderPageButtons = () => {
         const buttons = [];
-        for (
-            let i = currentSlotStart;
-            i < currentSlotStart + slotSize && i <= totalPages;
-            i++
-        ) {
+        for (let i = currentSlotStart; i < currentSlotStart + slotSize && i <= totalPages; i++) {
             buttons.push(
                 <button
                     key={i}
@@ -92,7 +94,7 @@ const ListinoList = ({ onSelectListino }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="..."
+                            placeholder="Cerca..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -111,8 +113,12 @@ const ListinoList = ({ onSelectListino }) => {
                     <table className="listino-table">
                         <thead>
                             <tr>
-                                <th>Categoria</th>
-                                <th>Descrizione</th>
+                                <th onClick={() => handleSort('categoria')}>
+                                    Categoria {sortField === 'categoria' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('descrizione')}>
+                                    Descrizione {sortField === 'descrizione' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -168,7 +174,7 @@ const ListinoList = ({ onSelectListino }) => {
                 <ListinoEditor
                     onSave={(newListino) => {
                         setCreatingListino(false);
-                        fetchListini(currentPage, activeSearch); // Refetch current data
+                        fetchListini(currentPage, activeSearch, sortField, sortOrder);
                     }}
                     onCancel={() => setCreatingListino(false)}
                     mode="Nuovo"

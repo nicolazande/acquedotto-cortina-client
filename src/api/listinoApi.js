@@ -2,11 +2,10 @@ import axios from 'axios';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/api/listini`;
 
-const listinoApi =
-{
+const listinoApi = {
     createListino: (data) => axios.post(API_URL, data),
-    getListini: (page = 1, limit = 50, search = '') =>
-        axios.get(API_URL, { params: { page, limit, search } }),
+    getListini: (page = 1, limit = 50, search = '', sortField = '', sortOrder = 'asc') =>
+        axios.get(API_URL, { params: { page, limit, search, sortField, sortOrder } }),
     getListino: (id) => axios.get(`${API_URL}/${id}`),
     updateListino: (id, data) => axios.put(`${API_URL}/${id}`, data),
     deleteListino: (id) => axios.delete(`${API_URL}/${id}`),

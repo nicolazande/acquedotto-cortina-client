@@ -5,30 +5,31 @@ import ServizioEditor from '../shared/ServizioEditor';
 import '../../styles/Servizio/ServizioList.css';
 
 const ServizioList = ({ onSelectServizio }) => {
-    const [servizi, setServizi] = useState([]); // Stores the current page's services
-    const [searchTerm, setSearchTerm] = useState(''); // Controlled input value
-    const [activeSearch, setActiveSearch] = useState(''); // Search term currently applied
+    const [servizi, setServizi] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeSearch, setActiveSearch] = useState('');
     const [creatingServizio, setCreatingServizio] = useState(false);
-    const [totalPages, setTotalPages] = useState(1); // Total pages
-    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Start of current pagination slot
-    const itemsPerPage = 50; // Items displayed per page
-    const slotSize = 10; // Number of pages in each slot
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentSlotStart, setCurrentSlotStart] = useState(1);
+    const itemsPerPage = 50;
+    const slotSize = 10;
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
+    const sortField = queryParams.get('sortField') || 'data_lettura';
+    const sortOrder = queryParams.get('sortOrder') || 'desc';
 
-    // Fetch services whenever currentPage or activeSearch changes
     useEffect(() => {
-        fetchServizi(currentPage, activeSearch);
-    }, [currentPage, activeSearch]);
+        fetchServizi(currentPage, activeSearch, sortField, sortOrder);
+    }, [currentPage, activeSearch, sortField, sortOrder]);
 
-    const fetchServizi = async (page = 1, search = '') => {
+    const fetchServizi = async (page = 1, search = '', field = 'data_lettura', order = 'desc') => {
         try {
-            const response = await servizioApi.getServizi(page, itemsPerPage, search);
+            const response = await servizioApi.getServizi(page, itemsPerPage, search, field, order);
             const { data, totalPages: fetchedTotalPages } = response.data;
-            setServizi(data); // Set the current page's data
-            setTotalPages(fetchedTotalPages); // Set total pages for pagination
+            setServizi(data);
+            setTotalPages(fetchedTotalPages);
         } catch (error) {
             alert('Errore durante il recupero dei servizi');
             console.error(error);
@@ -38,7 +39,7 @@ const ServizioList = ({ onSelectServizio }) => {
     const handleDelete = async (id) => {
         try {
             await servizioApi.deleteServizio(id);
-            fetchServizi(currentPage, activeSearch); // Refetch current page after deletion
+            fetchServizi(currentPage, activeSearch, sortField, sortOrder);
         } catch (error) {
             alert('Errore durante la cancellazione del servizio');
             console.error(error);
@@ -46,13 +47,13 @@ const ServizioList = ({ onSelectServizio }) => {
     };
 
     const handleSearch = () => {
-        setActiveSearch(searchTerm); // Apply the current input as the active search term
-        history.push('?page=1'); // Reset to the first page for a new search
+        setActiveSearch(searchTerm);
+        history.push(`?page=1&sortField=${sortField}&sortOrder=${sortOrder}`);
     };
 
     const handlePageChange = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
-            history.push(`?page=${pageNumber}`);
+            history.push(`?page=${pageNumber}&sortField=${sortField}&sortOrder=${sortOrder}`);
         }
     };
 
@@ -64,13 +65,14 @@ const ServizioList = ({ onSelectServizio }) => {
         }
     };
 
+    const handleSort = (field) => {
+        const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+        history.push(`?page=1&sortField=${field}&sortOrder=${newOrder}`);
+    };
+
     const renderPageButtons = () => {
         const buttons = [];
-        for (
-            let i = currentSlotStart;
-            i < currentSlotStart + slotSize && i <= totalPages;
-            i++
-        ) {
+        for (let i = currentSlotStart; i < currentSlotStart + slotSize && i <= totalPages; i++) {
             buttons.push(
                 <button
                     key={i}
@@ -92,7 +94,7 @@ const ServizioList = ({ onSelectServizio }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="..."
+                            placeholder="Cerca..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -111,9 +113,15 @@ const ServizioList = ({ onSelectServizio }) => {
                     <table className="servizio-table">
                         <thead>
                             <tr>
-                                <th>Descrizione</th>
-                                <th>Data Lettura</th>
-                                <th>Valore unitario</th>
+                                <th onClick={() => handleSort('descrizione')}>
+                                    Descrizione {sortField === 'descrizione' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('data_lettura')}>
+                                    Data Lettura {sortField === 'data_lettura' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('valore_unitario')}>
+                                    Valore Unitario {sortField === 'valore_unitario' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -170,7 +178,7 @@ const ServizioList = ({ onSelectServizio }) => {
                 <ServizioEditor
                     onSave={(newServizio) => {
                         setCreatingServizio(false);
-                        fetchServizi(currentPage, activeSearch); // Refetch current data
+                        fetchServizi(currentPage, activeSearch, sortField, sortOrder);
                     }}
                     onCancel={() => setCreatingServizio(false)}
                 />

@@ -5,26 +5,28 @@ import LetturaEditor from '../shared/LetturaEditor';
 import '../../styles/Lettura/LetturaList.css';
 
 const LetturaList = ({ onSelectLettura }) => {
-    const [letture, setLetture] = useState([]); // Current page's letture
-    const [searchTerm, setSearchTerm] = useState(''); // Controlled input for search
-    const [activeSearch, setActiveSearch] = useState(''); // Applied search term
+    const [letture, setLetture] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeSearch, setActiveSearch] = useState('');
     const [creatingLettura, setCreatingLettura] = useState(false);
-    const [totalPages, setTotalPages] = useState(1); // Total number of pages
-    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Pagination slot start
-    const itemsPerPage = 50; // Items displayed per page
-    const slotSize = 10; // Number of pages per slot
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentSlotStart, setCurrentSlotStart] = useState(1);
+    const itemsPerPage = 50;
+    const slotSize = 10;
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
+    const sortField = queryParams.get('sortField') || 'data_lettura';
+    const sortOrder = queryParams.get('sortOrder') || 'desc';
 
     useEffect(() => {
-        fetchLetture(currentPage, activeSearch);
-    }, [currentPage, activeSearch]);
+        fetchLetture(currentPage, activeSearch, sortField, sortOrder);
+    }, [currentPage, activeSearch, sortField, sortOrder]);
 
-    const fetchLetture = async (page = 1, search = '') => {
+    const fetchLetture = async (page = 1, search = '', field = 'data_lettura', order = 'desc') => {
         try {
-            const response = await letturaApi.getLetture(page, itemsPerPage, search);
+            const response = await letturaApi.getLetture(page, itemsPerPage, search, field, order);
             const { data, totalPages: fetchedTotalPages } = response.data;
             setLetture(data);
             setTotalPages(fetchedTotalPages);
@@ -37,7 +39,7 @@ const LetturaList = ({ onSelectLettura }) => {
     const handleDelete = async (id) => {
         try {
             await letturaApi.deleteLettura(id);
-            fetchLetture(currentPage, activeSearch); // Refetch data after deletion
+            fetchLetture(currentPage, activeSearch, sortField, sortOrder);
         } catch (error) {
             alert('Errore durante la cancellazione della lettura');
             console.error(error);
@@ -45,13 +47,13 @@ const LetturaList = ({ onSelectLettura }) => {
     };
 
     const handleSearch = () => {
-        setActiveSearch(searchTerm); // Apply the search term
-        history.push('?page=1'); // Reset to the first page
+        setActiveSearch(searchTerm);
+        history.push(`?page=1&sortField=${sortField}&sortOrder=${sortOrder}`);
     };
 
     const handlePageChange = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
-            history.push(`?page=${pageNumber}`);
+            history.push(`?page=${pageNumber}&sortField=${sortField}&sortOrder=${sortOrder}`);
         }
     };
 
@@ -63,13 +65,14 @@ const LetturaList = ({ onSelectLettura }) => {
         }
     };
 
+    const handleSort = (field) => {
+        const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+        history.push(`?page=1&sortField=${field}&sortOrder=${newOrder}`);
+    };
+
     const renderPageButtons = () => {
         const buttons = [];
-        for (
-            let i = currentSlotStart;
-            i < currentSlotStart + slotSize && i <= totalPages;
-            i++
-        ) {
+        for (let i = currentSlotStart; i < currentSlotStart + slotSize && i <= totalPages; i++) {
             buttons.push(
                 <button
                     key={i}
@@ -91,7 +94,7 @@ const LetturaList = ({ onSelectLettura }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="..."
+                            placeholder="Cerca..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -110,10 +113,18 @@ const LetturaList = ({ onSelectLettura }) => {
                     <table className="lettura-table">
                         <thead>
                             <tr>
-                                <th>Data Lettura</th>
-                                <th>Consumo</th>
-                                <th>Fatturata</th>
-                                <th>Tipo</th>
+                                <th onClick={() => handleSort('data_lettura')}>
+                                    Data Lettura {sortField === 'data_lettura' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('consumo')}>
+                                    Consumo {sortField === 'consumo' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('fatturata')}>
+                                    Fatturata {sortField === 'fatturata' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('tipo')}>
+                                    Tipo {sortField === 'tipo' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -173,7 +184,7 @@ const LetturaList = ({ onSelectLettura }) => {
                 <LetturaEditor
                     onSave={(newLettura) => {
                         setCreatingLettura(false);
-                        fetchLetture(currentPage, activeSearch); // Refetch data after creation
+                        fetchLetture(currentPage, activeSearch, sortField, sortOrder);
                     }}
                     onCancel={() => setCreatingLettura(false)}
                 />

@@ -17,14 +17,16 @@ const ArticoloList = ({ onSelectArticolo }) => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
+    const sortField = queryParams.get('sortField') || 'codice';
+    const sortOrder = queryParams.get('sortOrder') || 'asc';
 
     useEffect(() => {
-        fetchArticoli(currentPage, activeSearch);
-    }, [currentPage, activeSearch]);
+        fetchArticoli(currentPage, activeSearch, sortField, sortOrder);
+    }, [currentPage, activeSearch, sortField, sortOrder]);
 
-    const fetchArticoli = async (page = 1, search = '') => {
+    const fetchArticoli = async (page = 1, search = '', field = 'codice', order = 'asc') => {
         try {
-            const response = await articoloApi.getArticoli(page, itemsPerPage, search);
+            const response = await articoloApi.getArticoli(page, itemsPerPage, search, field, order);
             const { data, totalPages: fetchedTotalPages } = response.data;
             setArticoli(data);
             setTotalPages(fetchedTotalPages);
@@ -37,7 +39,7 @@ const ArticoloList = ({ onSelectArticolo }) => {
     const handleDelete = async (id) => {
         try {
             await articoloApi.deleteArticolo(id);
-            fetchArticoli(currentPage, activeSearch);
+            fetchArticoli(currentPage, activeSearch, sortField, sortOrder);
         } catch (error) {
             alert('Errore durante la cancellazione dell\'articolo');
             console.error(error);
@@ -46,12 +48,12 @@ const ArticoloList = ({ onSelectArticolo }) => {
 
     const handleSearch = () => {
         setActiveSearch(searchTerm);
-        history.push('?page=1');
+        history.push(`?page=1&sortField=${sortField}&sortOrder=${sortOrder}`);
     };
 
     const handlePageChange = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
-            history.push(`?page=${pageNumber}`);
+            history.push(`?page=${pageNumber}&sortField=${sortField}&sortOrder=${sortOrder}`);
         }
     };
 
@@ -63,13 +65,14 @@ const ArticoloList = ({ onSelectArticolo }) => {
         }
     };
 
+    const handleSort = (field) => {
+        const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+        history.push(`?page=1&sortField=${field}&sortOrder=${newOrder}`);
+    };
+
     const renderPageButtons = () => {
         const buttons = [];
-        for (
-            let i = currentSlotStart;
-            i < currentSlotStart + slotSize && i <= totalPages;
-            i++
-        ) {
+        for (let i = currentSlotStart; i < currentSlotStart + slotSize && i <= totalPages; i++) {
             buttons.push(
                 <button
                     key={i}
@@ -91,7 +94,7 @@ const ArticoloList = ({ onSelectArticolo }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="..."
+                            placeholder="Cerca..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -110,9 +113,15 @@ const ArticoloList = ({ onSelectArticolo }) => {
                     <table className="articolo-table">
                         <thead>
                             <tr>
-                                <th>Codice</th>
-                                <th>Descrizione</th>
-                                <th>IVA</th>
+                                <th onClick={() => handleSort('codice')}>
+                                    Codice {sortField === 'codice' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('descrizione')}>
+                                    Descrizione {sortField === 'descrizione' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('iva')}>
+                                    IVA {sortField === 'iva' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -169,7 +178,7 @@ const ArticoloList = ({ onSelectArticolo }) => {
                 <ArticoloEditor
                     onSave={(newArticolo) => {
                         setCreatingArticolo(false);
-                        fetchArticoli(currentPage, activeSearch);
+                        fetchArticoli(currentPage, activeSearch, sortField, sortOrder);
                     }}
                     onCancel={() => setCreatingArticolo(false)}
                 />

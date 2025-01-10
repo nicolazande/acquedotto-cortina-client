@@ -17,15 +17,17 @@ const FasciaList = ({ onSelectFascia }) => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
+    const sortField = queryParams.get('sortField') || 'tipo'; // Default sort field
+    const sortOrder = queryParams.get('sortOrder') || 'asc'; // Default sort order
 
     // Fetch fasce whenever currentPage or activeSearch changes
     useEffect(() => {
-        fetchFasce(currentPage, activeSearch);
-    }, [currentPage, activeSearch]);
+        fetchFasce(currentPage, activeSearch, sortField, sortOrder);
+    }, [currentPage, activeSearch, sortField, sortOrder]);
 
-    const fetchFasce = async (page = 1, search = '') => {
+    const fetchFasce = async (page = 1, search = '', field = 'tipo', order = 'asc') => {
         try {
-            const response = await fasciaApi.getFasce(page, itemsPerPage, search);
+            const response = await fasciaApi.getFasce(page, itemsPerPage, search, field, order);
             const { data, totalPages: fetchedTotalPages } = response.data;
             setFasce(data); // Set the current page's data
             setTotalPages(fetchedTotalPages); // Set total pages for pagination
@@ -38,7 +40,7 @@ const FasciaList = ({ onSelectFascia }) => {
     const handleDelete = async (id) => {
         try {
             await fasciaApi.deleteFascia(id);
-            fetchFasce(currentPage, activeSearch); // Refetch current page after deletion
+            fetchFasce(currentPage, activeSearch, sortField, sortOrder); // Refetch current page after deletion
         } catch (error) {
             alert('Errore durante la cancellazione della fascia');
             console.error(error);
@@ -47,12 +49,12 @@ const FasciaList = ({ onSelectFascia }) => {
 
     const handleSearch = () => {
         setActiveSearch(searchTerm); // Apply the current input as the active search term
-        history.push('?page=1'); // Reset to the first page for a new search
+        history.push(`?page=1&sortField=${sortField}&sortOrder=${sortOrder}`); // Reset to the first page for a new search
     };
 
     const handlePageChange = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
-            history.push(`?page=${pageNumber}`);
+            history.push(`?page=${pageNumber}&sortField=${sortField}&sortOrder=${sortOrder}`);
         }
     };
 
@@ -64,13 +66,14 @@ const FasciaList = ({ onSelectFascia }) => {
         }
     };
 
+    const handleSort = (field) => {
+        const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+        history.push(`?page=1&sortField=${field}&sortOrder=${newOrder}`);
+    };
+
     const renderPageButtons = () => {
         const buttons = [];
-        for (
-            let i = currentSlotStart;
-            i < currentSlotStart + slotSize && i <= totalPages;
-            i++
-        ) {
+        for (let i = currentSlotStart; i < currentSlotStart + slotSize && i <= totalPages; i++) {
             buttons.push(
                 <button
                     key={i}
@@ -92,7 +95,7 @@ const FasciaList = ({ onSelectFascia }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="..."
+                            placeholder="Cerca..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -111,10 +114,18 @@ const FasciaList = ({ onSelectFascia }) => {
                     <table className="fascia-table">
                         <thead>
                             <tr>
-                                <th>Tipo</th>
-                                <th>Minimo</th>
-                                <th>Massimo</th>
-                                <th>Prezzo</th>
+                                <th onClick={() => handleSort('tipo')}>
+                                    Tipo {sortField === 'tipo' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('min')}>
+                                    Minimo {sortField === 'min' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('max')}>
+                                    Massimo {sortField === 'max' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('prezzo')}>
+                                    Prezzo {sortField === 'prezzo' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -172,7 +183,7 @@ const FasciaList = ({ onSelectFascia }) => {
                 <FasciaEditor
                     onSave={(newFascia) => {
                         setCreatingFascia(false);
-                        fetchFasce(currentPage, activeSearch); // Refetch current data
+                        fetchFasce(currentPage, activeSearch, sortField, sortOrder); // Refetch current data
                     }}
                     onCancel={() => setCreatingFascia(false)}
                 />

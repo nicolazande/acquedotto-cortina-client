@@ -5,30 +5,31 @@ import ContatoreEditor from '../shared/ContatoreEditor';
 import '../../styles/Contatore/ContatoreList.css';
 
 const ContatoreList = ({ onSelectContatore }) => {
-    const [contatori, setContatori] = useState([]); // Stores the current page's contatori
-    const [searchTerm, setSearchTerm] = useState(''); // Controlled input value
-    const [activeSearch, setActiveSearch] = useState(''); // Search term currently applied
+    const [contatori, setContatori] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeSearch, setActiveSearch] = useState('');
     const [creatingContatore, setCreatingContatore] = useState(false);
-    const [totalPages, setTotalPages] = useState(1); // Total pages
-    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Start of current pagination slot
-    const itemsPerPage = 50; // Items displayed per page
-    const slotSize = 10; // Number of pages in each slot
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentSlotStart, setCurrentSlotStart] = useState(1);
+    const itemsPerPage = 50;
+    const slotSize = 10;
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
+    const sortField = queryParams.get('sortField') || 'seriale';
+    const sortOrder = queryParams.get('sortOrder') || 'asc';
 
-    // Fetch contatori whenever currentPage or activeSearch changes
     useEffect(() => {
-        fetchContatori(currentPage, activeSearch);
-    }, [currentPage, activeSearch]);
+        fetchContatori(currentPage, activeSearch, sortField, sortOrder);
+    }, [currentPage, activeSearch, sortField, sortOrder]);
 
-    const fetchContatori = async (page = 1, search = '') => {
+    const fetchContatori = async (page = 1, search = '', field = 'seriale', order = 'asc') => {
         try {
-            const response = await contatoreApi.getContatori(page, itemsPerPage, search);
+            const response = await contatoreApi.getContatori(page, itemsPerPage, search, field, order);
             const { data, totalPages: fetchedTotalPages } = response.data;
-            setContatori(data); // Set the current page's data
-            setTotalPages(fetchedTotalPages); // Set total pages for pagination
+            setContatori(data);
+            setTotalPages(fetchedTotalPages);
         } catch (error) {
             alert('Errore durante il recupero dei contatori');
             console.error(error);
@@ -38,7 +39,7 @@ const ContatoreList = ({ onSelectContatore }) => {
     const handleDelete = async (id) => {
         try {
             await contatoreApi.deleteContatore(id);
-            fetchContatori(currentPage, activeSearch); // Refetch current page after deletion
+            fetchContatori(currentPage, activeSearch, sortField, sortOrder);
         } catch (error) {
             alert('Errore durante la cancellazione del contatore');
             console.error(error);
@@ -46,13 +47,13 @@ const ContatoreList = ({ onSelectContatore }) => {
     };
 
     const handleSearch = () => {
-        setActiveSearch(searchTerm); // Apply the current input as the active search term
-        history.push('?page=1'); // Reset to the first page for a new search
+        setActiveSearch(searchTerm);
+        history.push(`?page=1&sortField=${sortField}&sortOrder=${sortOrder}`);
     };
 
     const handlePageChange = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
-            history.push(`?page=${pageNumber}`);
+            history.push(`?page=${pageNumber}&sortField=${sortField}&sortOrder=${sortOrder}`);
         }
     };
 
@@ -64,13 +65,14 @@ const ContatoreList = ({ onSelectContatore }) => {
         }
     };
 
+    const handleSort = (field) => {
+        const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+        history.push(`?page=1&sortField=${field}&sortOrder=${newOrder}`);
+    };
+
     const renderPageButtons = () => {
         const buttons = [];
-        for (
-            let i = currentSlotStart;
-            i < currentSlotStart + slotSize && i <= totalPages;
-            i++
-        ) {
+        for (let i = currentSlotStart; i < currentSlotStart + slotSize && i <= totalPages; i++) {
             buttons.push(
                 <button
                     key={i}
@@ -92,7 +94,7 @@ const ContatoreList = ({ onSelectContatore }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="..."
+                            placeholder="Cerca..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -111,10 +113,18 @@ const ContatoreList = ({ onSelectContatore }) => {
                     <table className="contatore-table">
                         <thead>
                             <tr>
-                                <th>Edificio</th>
-                                <th>Cliente</th>
-                                <th>Seriale</th>
-                                <th>Inattivo</th>
+                                <th onClick={() => handleSort('nome_edificio')}>
+                                    Edificio {sortField === 'nome_edificio' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('nome_cliente')}>
+                                    Cliente {sortField === 'nome_cliente' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('seriale')}>
+                                    Seriale {sortField === 'seriale' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('inattivo')}>
+                                    Inattivo {sortField === 'inattivo' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -174,7 +184,7 @@ const ContatoreList = ({ onSelectContatore }) => {
                 <ContatoreEditor
                     onSave={(newContatore) => {
                         setCreatingContatore(false);
-                        fetchContatori(currentPage, activeSearch); // Refetch current data
+                        fetchContatori(currentPage, activeSearch, sortField, sortOrder);
                     }}
                     onCancel={() => setCreatingContatore(false)}
                 />

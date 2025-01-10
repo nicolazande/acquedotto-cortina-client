@@ -8,8 +8,8 @@ import '../../styles/Edificio/EdificioList.css';
 
 const EdificioList = ({ onSelectEdificio }) => {
     const [edifici, setEdifici] = useState([]);
-    const [searchTerm, setSearchTerm] = useState(''); // Controlled input value
-    const [activeSearch, setActiveSearch] = useState(''); // Search term currently applied
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeSearch, setActiveSearch] = useState('');
     const [creatingEdificio, setCreatingEdificio] = useState(false);
     const [highlightedRowId, setHighlightedRowId] = useState(null);
     const [totalPages, setTotalPages] = useState(1);
@@ -23,14 +23,16 @@ const EdificioList = ({ onSelectEdificio }) => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
+    const sortField = queryParams.get('sortField') || 'descrizione';
+    const sortOrder = queryParams.get('sortOrder') || 'asc';
 
     useEffect(() => {
-        fetchEdifici(currentPage, activeSearch);
-    }, [currentPage, activeSearch]);
+        fetchEdifici(currentPage, activeSearch, sortField, sortOrder);
+    }, [currentPage, activeSearch, sortField, sortOrder]);
 
-    const fetchEdifici = async (page, descrizione, localita) => {
+    const fetchEdifici = async (page = 1, search = '', field = 'descrizione', order = 'asc') => {
         try {
-            const response = await edificioApi.getEdifici(page, itemsPerPage, descrizione, localita);
+            const response = await edificioApi.getEdifici(page, itemsPerPage, search, field, order);
             const { data, totalPages: fetchedTotalPages } = response.data;
             setEdifici(data);
             setTotalPages(fetchedTotalPages);
@@ -44,7 +46,7 @@ const EdificioList = ({ onSelectEdificio }) => {
     const handleDelete = async (id) => {
         try {
             await edificioApi.deleteEdificio(id);
-            fetchEdifici(currentPage, activeSearch);
+            fetchEdifici(currentPage, activeSearch, sortField, sortOrder);
         } catch (error) {
             alert("Errore durante la cancellazione dell'edificio");
             console.error(error);
@@ -53,12 +55,12 @@ const EdificioList = ({ onSelectEdificio }) => {
 
     const handleSearch = () => {
         setActiveSearch(searchTerm);
-        history.push('?page=1');
+        history.push(`?page=1&sortField=${sortField}&sortOrder=${sortOrder}`);
     };
 
     const handlePageChange = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
-            history.push(`?page=${pageNumber}`);
+            history.push(`?page=${pageNumber}&sortField=${sortField}&sortOrder=${sortOrder}`);
         }
     };
 
@@ -70,16 +72,9 @@ const EdificioList = ({ onSelectEdificio }) => {
         }
     };
 
-    const handleCreateEdificio = async (newEdificio) => {
-        try {
-            await edificioApi.createEdificio(newEdificio);
-            alert('Edificio creato con successo');
-            setCreatingEdificio(false);
-            fetchEdifici(currentPage, activeSearch);
-        } catch (error) {
-            alert("Errore durante la creazione dell'edificio");
-            console.error(error);
-        }
+    const handleSort = (field) => {
+        const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+        history.push(`?page=1&sortField=${field}&sortOrder=${newOrder}`);
     };
 
     const renderPageButtons = () => {
@@ -154,25 +149,9 @@ const EdificioList = ({ onSelectEdificio }) => {
     };
 
     const handleMarkerClick = async (edificioId) => {
-        try {
-            // Query the database for the clicked edificio
-            const response = await edificioApi.getEdificio(edificioId); // Replace with the correct API method
-            const clickedEdificio = response.data;
-    
-            if (clickedEdificio) {
-                // Update the state to only show the clicked edificio
-                setEdifici([clickedEdificio]); // Only keep the clicked edificio
-                setHighlightedRowId(edificioId); // Highlight the row
-                initializeMap([clickedEdificio]); // Update the map with only the clicked edificio
-                scrollToEdificioRow(edificioId); // Scroll to the highlighted row
-                highlightMarker(edificioId); // Highlight the marker
-            } else {
-                console.warn("Clicked edificio not found in the database.");
-            }
-        } catch (error) {
-            console.error("Error fetching data for clicked marker:", error);
-            alert("Errore durante il recupero dei dati per il marker selezionato.");
-        }
+        setHighlightedRowId(edificioId);
+        highlightMarker(edificioId);
+        scrollToEdificioRow(edificioId);
     };
 
     const handleRowClick = (edificioId) => {
@@ -192,7 +171,7 @@ const EdificioList = ({ onSelectEdificio }) => {
                     <div className="search-bar">
                         <input
                             type="text"
-                            placeholder="..."
+                            placeholder="Cerca..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -212,11 +191,21 @@ const EdificioList = ({ onSelectEdificio }) => {
                     <table className="edificio-table">
                         <thead>
                             <tr>
-                                <th>Descrizione</th>
-                                <th>Indirizzo</th>
-                                <th>CAP</th>
-                                <th>Località</th>
-                                <th>Tipo</th>
+                                <th onClick={() => handleSort('descrizione')}>
+                                    Descrizione {sortField === 'descrizione' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('indirizzo')}>
+                                    Indirizzo {sortField === 'indirizzo' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('cap')}>
+                                    CAP {sortField === 'cap' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('localita')}>
+                                    Località {sortField === 'localita' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('tipo')}>
+                                    Tipo {sortField === 'tipo' && (sortOrder === 'asc' ? '▲' : '▼')}
+                                </th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -284,7 +273,11 @@ const EdificioList = ({ onSelectEdificio }) => {
             </div>
             {creatingEdificio && (
                 <EdificioEditor
-                    onSave={handleCreateEdificio}
+                    onSave={async (newEdificio) => {
+                        await edificioApi.createEdificio(newEdificio);
+                        setCreatingEdificio(false);
+                        fetchEdifici(currentPage, activeSearch, sortField, sortOrder);
+                    }}
                     onCancel={() => setCreatingEdificio(false)}
                 />
             )}
