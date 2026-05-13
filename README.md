@@ -30,6 +30,14 @@ REACT_APP_API_URL=http://localhost:5000
 `REACT_APP_API_URL` deve indicare la base del server, senza obbligo di aggiungere `/api`.
 Il codice normalizza anche il caso in cui venga inserito per errore `http://localhost:5000/api`.
 
+Con un server remoto:
+
+```bash
+REACT_APP_API_URL=https://api.example.com
+```
+
+Nel server aggiungi l'origine del client in `CLIENT_ORIGINS`, altrimenti il browser blocchera' le richieste CORS.
+
 Se la variabile non e' presente, le richieste usano `/api/...` e possono passare dal proxy CRA configurato in `package.json`.
 
 ## Struttura utile
