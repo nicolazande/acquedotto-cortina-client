@@ -1,18 +1,17 @@
-import axios from 'axios';
+import { createResourceApi } from './resourceApi';
 
-const API_URL = `${process.env.REACT_APP_API_URL}/api/listini`;
+const resource = createResourceApi('listini');
 
 const listinoApi = {
-    createListino: (data) => axios.post(API_URL, data),
-    getListini: (page = 1, limit = 50, search = '', sortField = '', sortOrder = 'asc') =>
-        axios.get(API_URL, { params: { page, limit, search, sortField, sortOrder } }),
-    getListino: (id) => axios.get(`${API_URL}/${id}`),
-    updateListino: (id, data) => axios.put(`${API_URL}/${id}`, data),
-    deleteListino: (id) => axios.delete(`${API_URL}/${id}`),
-    associateFascia: (listinoId, fasciaId) => axios.post(`${API_URL}/${listinoId}/fasce/${fasciaId}`),
-    associateContatore: (listinoId, contatoreId) => axios.post(`${API_URL}/${listinoId}/contatori/${contatoreId}`),
-    getFasce: (id) => axios.get(`${API_URL}/${id}/fasce`),
-    getContatori: (id) => axios.get(`${API_URL}/${id}/contatori`),
+    createListino: resource.create,
+    getListini: resource.list,
+    getListino: resource.get,
+    updateListino: resource.update,
+    deleteListino: resource.remove,
+    associateFascia: (listinoId, fasciaId) => resource.postRelation(listinoId, `fasce/${fasciaId}`),
+    associateContatore: (listinoId, contatoreId) => resource.postRelation(listinoId, `contatori/${contatoreId}`),
+    getFasce: (id) => resource.getRelation(id, 'fasce'),
+    getContatori: (id) => resource.getRelation(id, 'contatori'),
 };
 
 export default listinoApi;

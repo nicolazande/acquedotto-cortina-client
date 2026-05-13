@@ -3,7 +3,6 @@ import { useParams, useHistory } from 'react-router-dom';
 import letturaApi from '../../api/letturaApi';
 import contatoreApi from '../../api/contatoreApi';
 import servizioApi from '../../api/servizioApi';
-import '../../styles/Lettura/LetturaDetails.css';
 import LetturaEditor from '../shared/LetturaEditor';
 import ContatoreEditor from '../shared/ContatoreEditor';
 import ServizioEditor from '../shared/ServizioEditor';
@@ -93,7 +92,7 @@ const LetturaDetails = () => {
         try {
             await letturaApi.associateContatore(letturaId, contatoreId);
             alert('Contatore associato con successo');
-            setAssociatingContatore(false); // Close the ContatoreList view
+            setAssociatingContatore(false);
         } catch (error) {
             alert("Errore durante l'associazione del contatore");
             console.error(error);
@@ -190,7 +189,7 @@ const LetturaDetails = () => {
                             <tbody>
                                 <tr>
                                     <th>Data Lettura</th>
-                                    <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
+                                    <td>{new Date(lettura.data_lettura).toLocaleDateString('it-IT')}</td>
                                 </tr>
                                 <tr>
                                     <th>Consumo</th>
@@ -221,7 +220,6 @@ const LetturaDetails = () => {
                     </div>
 
                     <div className="tabs-container">
-                        {/* Tab Navigation */}
                         <div className="tabs">
                             {[
                                 { id: 'servizi', label: 'Servizi' },
@@ -236,7 +234,6 @@ const LetturaDetails = () => {
                                 </button>
                             ))}
                         </div>
-                        {/* Tab Content */}
                         <div className={`tab-content ${activeTab === 'servizi' ? 'show' : ''}`}>
                             {activeTab === 'servizi' && (
                                 <div className="servizi-box">
@@ -294,7 +291,7 @@ const LetturaDetails = () => {
                             {servizi.map((servizio) => (
                                 <tr key={servizio._id}>
                                     <td>{servizio.descrizione}</td>
-                                    <td>{new Date(servizio.data_lettura).toLocaleDateString()}</td>
+                                    <td>{new Date(servizio.data_lettura).toLocaleDateString('it-IT')}</td>
                                     <td>{servizio.valore_unitario.toFixed(2)} €</td>
                                     <td>
                                         <button

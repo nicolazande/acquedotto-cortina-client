@@ -4,7 +4,6 @@ const ScadenzaEditor = ({ scadenza, onSave, onCancel, mode }) => {
     const [editFormData, setEditFormData] = useState({ ...scadenza });
 
     useEffect(() => {
-        // Initialize the form data when the component is mounted or when scadenza changes
         setEditFormData({ ...scadenza });
     }, [scadenza]);
 

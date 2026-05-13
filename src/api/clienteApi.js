@@ -1,20 +1,17 @@
-import axios from 'axios';
+import { createResourceApi } from './resourceApi';
 
-const API_URL = `${process.env.REACT_APP_API_URL}/api/clienti`;
+const resource = createResourceApi('clienti', { defaultSortField: 'nome' });
 
 const clienteApi = {
-    createCliente: (data) => axios.post(API_URL, data),
-    getClienti: (page = 1, limit = 50, search = '', sortField = 'nome', sortOrder = 'asc') =>
-        axios.get(API_URL, { params: { page, limit, search, sortField, sortOrder } }),
-    getCliente: (id) => axios.get(`${API_URL}/${id}`),
-    updateCliente: (id, data) => axios.put(`${API_URL}/${id}`, data),
-    deleteCliente: (id) => axios.delete(`${API_URL}/${id}`),
-    associateContatore: (clienteId, contatoreId) =>
-        axios.post(`${API_URL}/${clienteId}/contatori/${contatoreId}`),
-    associateFattura: (clienteId, fatturaId) =>
-        axios.post(`${API_URL}/${clienteId}/fatture/${fatturaId}`),
-    getContatori: (id) => axios.get(`${API_URL}/${id}/contatori`),
-    getFatture: (id) => axios.get(`${API_URL}/${id}/fatture`),
+    createCliente: resource.create,
+    getClienti: resource.list,
+    getCliente: resource.get,
+    updateCliente: resource.update,
+    deleteCliente: resource.remove,
+    associateContatore: (clienteId, contatoreId) => resource.postRelation(clienteId, `contatori/${contatoreId}`),
+    associateFattura: (clienteId, fatturaId) => resource.postRelation(clienteId, `fatture/${fatturaId}`),
+    getContatori: (id) => resource.getRelation(id, 'contatori'),
+    getFatture: (id) => resource.getRelation(id, 'fatture'),
 };
 
 export default clienteApi;

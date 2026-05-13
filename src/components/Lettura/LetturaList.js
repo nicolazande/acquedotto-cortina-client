@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import letturaApi from '../../api/letturaApi';
 import LetturaEditor from '../shared/LetturaEditor';
-import '../../styles/Lettura/LetturaList.css';
 
 const LetturaList = ({ onSelectLettura }) => {
     const [letture, setLetture] = useState([]);
@@ -131,7 +130,7 @@ const LetturaList = ({ onSelectLettura }) => {
                         <tbody>
                             {letture.map((lettura) => (
                                 <tr key={lettura._id}>
-                                    <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
+                                    <td>{new Date(lettura.data_lettura).toLocaleDateString('it-IT')}</td>
                                     <td>{lettura.consumo} {lettura.unita_misura}</td>
                                     <td>
                                         <input type="checkbox" checked={lettura.fatturata} readOnly />
@@ -144,12 +143,14 @@ const LetturaList = ({ onSelectLettura }) => {
                                         >
                                             Dettagli
                                         </button>
-                                        <button
-                                            className="btn btn-select"
-                                            onClick={() => onSelectLettura && onSelectLettura(lettura._id)}
-                                        >
-                                            Seleziona
-                                        </button>
+                                        {onSelectLettura && (
+                                            <button
+                                                className="btn btn-select"
+                                                onClick={() => onSelectLettura(lettura._id)}
+                                            >
+                                                Seleziona
+                                            </button>
+                                        )}
                                         <button
                                             className="btn btn-delete"
                                             onClick={() => handleDelete(lettura._id)}
@@ -182,7 +183,9 @@ const LetturaList = ({ onSelectLettura }) => {
             </div>
             {creatingLettura && (
                 <LetturaEditor
-                    onSave={(newLettura) => {
+                    mode="Nuovo"
+                    onSave={async (newLettura) => {
+                        await letturaApi.createLettura(newLettura);
                         setCreatingLettura(false);
                         fetchLetture(currentPage, activeSearch, sortField, sortOrder);
                     }}

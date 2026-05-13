@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import './styles/ServerStatusIndicator.css'; // Add styles for the indicator
-import authApi from './api/authApi'; // Updated to use authApi
+import './styles/ServerStatusIndicator.css';
+import authApi from './api/authApi';
 
 const ServerStatusIndicator = () => {
     const [isServerAvailable, setIsServerAvailable] = useState(false);
@@ -11,30 +10,33 @@ const ServerStatusIndicator = () => {
 
         const checkServerStatus = async () => {
             try {
-                await authApi.healthCheck(); // Use healthCheck from authApi
+                await authApi.healthCheck();
                 setIsServerAvailable(true);
-                clearInterval(intervalId); // Stop checking once the server is available
+                clearInterval(intervalId);
             } catch (error) {
                 setIsServerAvailable(false);
             }
         };
 
-        intervalId = setInterval(checkServerStatus, 5000); // Check every 5 seconds
-        checkServerStatus(); // Initial check immediately
+        intervalId = setInterval(checkServerStatus, 5000);
+        checkServerStatus();
 
-        return () => clearInterval(intervalId); // Clean up interval on unmount
+        return () => clearInterval(intervalId);
     }, []);
 
+    const statusLabel = isServerAvailable ? 'API online' : 'API offline';
+
     return (
-        <div className="server-status-indicator">
-            <div
-                className={`status-circle ${isServerAvailable ? 'green' : 'red'}`}
-                title={isServerAvailable ? 'Server is available' : 'Server is unavailable'}
-            ></div>
+        <div
+            className={`server-status-indicator ${isServerAvailable ? 'is-online' : 'is-offline'}`}
+            role="status"
+            aria-label={statusLabel}
+            title={statusLabel}
+        >
+            <span className="status-circle" aria-hidden="true" />
+            <span className="status-label">API</span>
         </div>
     );
 };
-
-ServerStatusIndicator.propTypes = {};
 
 export default ServerStatusIndicator;

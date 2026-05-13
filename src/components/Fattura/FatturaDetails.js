@@ -4,7 +4,6 @@ import fatturaApi from '../../api/fatturaApi';
 import clienteApi from '../../api/clienteApi';
 import servizioApi from '../../api/servizioApi';
 import scadenzaApi from '../../api/scadenzaApi';
-import '../../styles/Fattura/FatturaDetails.css';
 import FatturaEditor from '../shared/FatturaEditor';
 import ClienteList from '../Cliente/ClienteList';
 import ClienteEditor from '../shared/ClienteEditor';
@@ -256,7 +255,7 @@ const FatturaDetails = () => {
                                 </tr>
                                 <tr>
                                     <th>Data Fattura</th>
-                                    <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString('it-IT') : 'N/A'}</td>
                                 </tr>
                                 
                                 <tr>
@@ -285,11 +284,11 @@ const FatturaDetails = () => {
                                 </tr>
                                 <tr>
                                     <th>Data fattura elettronica</th>
-                                    <td>{fattura.data_fattura_elettronica  ? new Date(fattura.data_fattura_elettronica ).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{fattura.data_fattura_elettronica  ? new Date(fattura.data_fattura_elettronica ).toLocaleDateString('it-IT') : 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Data invio fattura</th>
-                                    <td>{fattura.data_invio_fattura  ? new Date(fattura.data_invio_fattura ).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{fattura.data_invio_fattura  ? new Date(fattura.data_invio_fattura ).toLocaleDateString('it-IT') : 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Tipo pagamento</th>
@@ -384,7 +383,7 @@ const FatturaDetails = () => {
                             {servizi.map((servizio) => (
                                 <tr key={servizio._id}>
                                     <td>{servizio.descrizione}</td>
-                                    <td>{new Date(servizio.data_lettura).toLocaleDateString()}</td>
+                                    <td>{new Date(servizio.data_lettura).toLocaleDateString('it-IT')}</td>
                                     <td>{servizio.valore_unitario.toFixed(2)} €</td>
                                     <td>
                                         <button
@@ -431,7 +430,7 @@ const FatturaDetails = () => {
                             <tr>
                                 <td>{cliente.nome}</td>
                                 <td>{cliente.cognome}</td>
-                                <td>{cliente.data_nascita ? new Date(cliente.data_nascita).toLocaleDateString() : '-'}</td>
+                                <td>{cliente.data_nascita ? new Date(cliente.data_nascita).toLocaleDateString('it-IT') : '-'}</td>
                                 <td>
                                     <button
                                         onClick={() => history.push(`/clienti/${cliente._id}`)}
@@ -476,7 +475,7 @@ const FatturaDetails = () => {
                             <tr>
                             <td>{scadenza.nome}</td>
                                     <td>{scadenza.cognome}</td>
-                                    <td>{scadenza.scadenza ? new Date(scadenza.scadenza).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{scadenza.scadenza ? new Date(scadenza.scadenza).toLocaleDateString('it-IT') : 'N/A'}</td>
                                     <td>{scadenza.ritardo} giorni</td>
                                     <td>{scadenza.totale.toFixed(2)} €</td>
                                     <td>

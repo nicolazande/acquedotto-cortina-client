@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Setup Axios Interceptor for Authorization
 axios.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
@@ -12,14 +11,14 @@ axios.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Optional: Handle global response errors like 401 Unauthorized
 axios.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            // Handle token expiration or invalid token
             localStorage.removeItem('token');
-            window.location.href = '/login'; // Redirect to login page
+            if (window.location.pathname !== '/login') {
+                window.location.assign('/login');
+            }
         }
         return Promise.reject(error);
     }

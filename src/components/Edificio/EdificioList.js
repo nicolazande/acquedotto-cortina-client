@@ -4,7 +4,9 @@ import edificioApi from '../../api/edificioApi';
 import EdificioEditor from '../shared/EdificioEditor';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import '../../styles/Edificio/EdificioList.css';
+
+const defaultMarkerIcon = L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' });
+const highlightedMarkerIcon = L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png' });
 
 const EdificioList = ({ onSelectEdificio }) => {
     const [edifici, setEdifici] = useState([]);
@@ -16,6 +18,7 @@ const EdificioList = ({ onSelectEdificio }) => {
     const [currentSlotStart, setCurrentSlotStart] = useState(1);
     const itemsPerPage = 50;
     const slotSize = 10;
+    const mapElementRef = useRef(null);
     const mapRef = useRef(null);
     const markersRef = useRef({});
     const highlightedMarkerRef = useRef(null);
@@ -26,11 +29,69 @@ const EdificioList = ({ onSelectEdificio }) => {
     const sortField = queryParams.get('sortField') || 'descrizione';
     const sortOrder = queryParams.get('sortOrder') || 'asc';
 
-    useEffect(() => {
-        fetchEdifici(currentPage, activeSearch, sortField, sortOrder);
-    }, [currentPage, activeSearch, sortField, sortOrder]);
+    const highlightMarker = useCallback((edificioId) => {
+        if (highlightedMarkerRef.current) {
+            highlightedMarkerRef.current.setIcon(defaultMarkerIcon);
+        }
 
-    const fetchEdifici = async (page = 1, search = '', field = 'descrizione', order = 'asc') => {
+        const marker = markersRef.current[edificioId];
+        if (marker && mapRef.current) {
+            marker.setIcon(highlightedMarkerIcon);
+            mapRef.current.setView(marker.getLatLng(), 16);
+            highlightedMarkerRef.current = marker;
+        }
+    }, []);
+
+    const scrollToEdificioRow = useCallback((edificioId) => {
+        const row = document.getElementById(`row-${edificioId}`);
+        if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, []);
+
+    const handleMarkerClick = useCallback((edificioId) => {
+        setHighlightedRowId(edificioId);
+        highlightMarker(edificioId);
+        scrollToEdificioRow(edificioId);
+    }, [highlightMarker, scrollToEdificioRow]);
+
+    const initializeMap = useCallback((data) => {
+        if (!mapElementRef.current) return;
+
+        if (!mapRef.current) {
+            const mapInstance = L.map(mapElementRef.current, {
+                center: [46.5396, 12.1357],
+                zoom: 10,
+                zoomControl: false,
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+            }).addTo(mapInstance);
+
+            mapRef.current = mapInstance;
+        }
+
+        Object.values(markersRef.current).forEach((marker) => {
+            mapRef.current.removeLayer(marker);
+        });
+        markersRef.current = {};
+
+        data.forEach((edificio) => {
+            if (edificio.latitudine && edificio.longitudine) {
+                const marker = L.marker([edificio.latitudine, edificio.longitudine], {
+                    icon: defaultMarkerIcon,
+                })
+                    .addTo(mapRef.current)
+                    .bindPopup(`${edificio.descrizione}`);
+
+                marker.on('click', () => handleMarkerClick(edificio._id));
+                markersRef.current[edificio._id] = marker;
+            }
+        });
+    }, [handleMarkerClick]);
+
+    const fetchEdifici = useCallback(async (page = 1, search = '', field = 'descrizione', order = 'asc') => {
         try {
             const response = await edificioApi.getEdifici(page, itemsPerPage, search, field, order);
             const { data, totalPages: fetchedTotalPages } = response.data;
@@ -41,7 +102,11 @@ const EdificioList = ({ onSelectEdificio }) => {
             alert('Errore durante il recupero degli edifici');
             console.error(error);
         }
-    };
+    }, [initializeMap]);
+
+    useEffect(() => {
+        fetchEdifici(currentPage, activeSearch, sortField, sortOrder);
+    }, [currentPage, activeSearch, sortField, sortOrder, fetchEdifici]);
 
     const handleDelete = async (id) => {
         try {
@@ -93,67 +158,6 @@ const EdificioList = ({ onSelectEdificio }) => {
         return buttons;
     };
 
-    const initializeMap = useCallback((data) => {
-        if (!mapRef.current) {
-            const mapInstance = L.map('map', {
-                center: [46.5396, 12.1357],
-                zoom: 10,
-                zoomControl: false,
-            });
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
-            }).addTo(mapInstance);
-
-            mapRef.current = mapInstance;
-        }
-
-        Object.values(markersRef.current).forEach((marker) => {
-            mapRef.current.removeLayer(marker);
-        });
-
-        data.forEach((edificio) => {
-            if (edificio.latitudine && edificio.longitudine) {
-                const marker = L.marker([edificio.latitudine, edificio.longitudine], {
-                    icon: L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' }),
-                })
-                    .addTo(mapRef.current)
-                    .bindPopup(`${edificio.descrizione}`);
-
-                marker.on('click', () => handleMarkerClick(edificio._id));
-                markersRef.current[edificio._id] = marker;
-            }
-        });
-    }, []);
-
-    const highlightMarker = (edificioId) => {
-        if (highlightedMarkerRef.current) {
-            highlightedMarkerRef.current.setIcon(
-                L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' })
-            );
-        }
-
-        const marker = markersRef.current[edificioId];
-        if (marker) {
-            marker.setIcon(L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png' }));
-            mapRef.current.setView(marker.getLatLng(), 16);
-            highlightedMarkerRef.current = marker;
-        }
-    };
-
-    const scrollToEdificioRow = (edificioId) => {
-        const row = document.getElementById(`row-${edificioId}`);
-        if (row) {
-            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    };
-
-    const handleMarkerClick = async (edificioId) => {
-        setHighlightedRowId(edificioId);
-        highlightMarker(edificioId);
-        scrollToEdificioRow(edificioId);
-    };
-
     const handleRowClick = (edificioId) => {
         setHighlightedRowId(edificioId);
         highlightMarker(edificioId);
@@ -186,7 +190,7 @@ const EdificioList = ({ onSelectEdificio }) => {
                         </button>
                     </div>
                 </div>
-                <div id="map" className="edificio-map"></div>
+                <div ref={mapElementRef} className="edificio-map"></div>
                 <div className="table-container">
                     <table className="edificio-table">
                         <thead>
@@ -232,12 +236,17 @@ const EdificioList = ({ onSelectEdificio }) => {
                                         >
                                             Dettagli
                                         </button>
-                                        <button
-                                            className="btn btn-select"
-                                            onClick={() => onSelectEdificio && onSelectEdificio(edificio._id)}
-                                        >
-                                            Seleziona
-                                        </button>
+                                        {onSelectEdificio && (
+                                            <button
+                                                className="btn btn-select"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onSelectEdificio(edificio._id);
+                                                }}
+                                            >
+                                                Seleziona
+                                            </button>
+                                        )}
                                         <button
                                             className="btn btn-delete"
                                             onClick={(e) => {
@@ -273,6 +282,7 @@ const EdificioList = ({ onSelectEdificio }) => {
             </div>
             {creatingEdificio && (
                 <EdificioEditor
+                    mode="Nuovo"
                     onSave={async (newEdificio) => {
                         await edificioApi.createEdificio(newEdificio);
                         setCreatingEdificio(false);

@@ -2,25 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import fasciaApi from '../../api/fasciaApi';
 import FasciaEditor from '../shared/FasciaEditor';
-import '../../styles/Fascia/FasciaList.css';
 
 const FasciaList = ({ onSelectFascia }) => {
-    const [fasce, setFasce] = useState([]); // Stores the current page's fasce
-    const [searchTerm, setSearchTerm] = useState(''); // Controlled input value
-    const [activeSearch, setActiveSearch] = useState(''); // Search term currently applied
+    const [fasce, setFasce] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeSearch, setActiveSearch] = useState('');
     const [creatingFascia, setCreatingFascia] = useState(false);
-    const [totalPages, setTotalPages] = useState(1); // Total pages
-    const [currentSlotStart, setCurrentSlotStart] = useState(1); // Start of current pagination slot
-    const itemsPerPage = 50; // Items displayed per page
-    const slotSize = 10; // Number of pages in each slot
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentSlotStart, setCurrentSlotStart] = useState(1);
+    const itemsPerPage = 50;
+    const slotSize = 10;
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
-    const sortField = queryParams.get('sortField') || 'tipo'; // Default sort field
-    const sortOrder = queryParams.get('sortOrder') || 'asc'; // Default sort order
+    const sortField = queryParams.get('sortField') || 'tipo';
+    const sortOrder = queryParams.get('sortOrder') || 'asc';
 
-    // Fetch fasce whenever currentPage or activeSearch changes
     useEffect(() => {
         fetchFasce(currentPage, activeSearch, sortField, sortOrder);
     }, [currentPage, activeSearch, sortField, sortOrder]);
@@ -29,8 +27,8 @@ const FasciaList = ({ onSelectFascia }) => {
         try {
             const response = await fasciaApi.getFasce(page, itemsPerPage, search, field, order);
             const { data, totalPages: fetchedTotalPages } = response.data;
-            setFasce(data); // Set the current page's data
-            setTotalPages(fetchedTotalPages); // Set total pages for pagination
+            setFasce(data);
+            setTotalPages(fetchedTotalPages);
         } catch (error) {
             alert('Errore durante il recupero delle fasce');
             console.error(error);
@@ -40,7 +38,7 @@ const FasciaList = ({ onSelectFascia }) => {
     const handleDelete = async (id) => {
         try {
             await fasciaApi.deleteFascia(id);
-            fetchFasce(currentPage, activeSearch, sortField, sortOrder); // Refetch current page after deletion
+            fetchFasce(currentPage, activeSearch, sortField, sortOrder);
         } catch (error) {
             alert('Errore durante la cancellazione della fascia');
             console.error(error);
@@ -48,8 +46,8 @@ const FasciaList = ({ onSelectFascia }) => {
     };
 
     const handleSearch = () => {
-        setActiveSearch(searchTerm); // Apply the current input as the active search term
-        history.push(`?page=1&sortField=${sortField}&sortOrder=${sortOrder}`); // Reset to the first page for a new search
+        setActiveSearch(searchTerm);
+        history.push(`?page=1&sortField=${sortField}&sortOrder=${sortOrder}`);
     };
 
     const handlePageChange = (pageNumber) => {
@@ -143,12 +141,14 @@ const FasciaList = ({ onSelectFascia }) => {
                                         >
                                             Dettagli
                                         </button>
-                                        <button
-                                            className="btn btn-select"
-                                            onClick={() => onSelectFascia && onSelectFascia(fascia._id)}
-                                        >
-                                            Seleziona
-                                        </button>
+                                        {onSelectFascia && (
+                                            <button
+                                                className="btn btn-select"
+                                                onClick={() => onSelectFascia(fascia._id)}
+                                            >
+                                                Seleziona
+                                            </button>
+                                        )}
                                         <button
                                             className="btn btn-delete"
                                             onClick={() => handleDelete(fascia._id)}
@@ -181,9 +181,11 @@ const FasciaList = ({ onSelectFascia }) => {
             </div>
             {creatingFascia && (
                 <FasciaEditor
-                    onSave={(newFascia) => {
+                    mode="Nuovo"
+                    onSave={async (newFascia) => {
+                        await fasciaApi.createFascia(newFascia);
                         setCreatingFascia(false);
-                        fetchFasce(currentPage, activeSearch, sortField, sortOrder); // Refetch current data
+                        fetchFasce(currentPage, activeSearch, sortField, sortOrder);
                     }}
                     onCancel={() => setCreatingFascia(false)}
                 />

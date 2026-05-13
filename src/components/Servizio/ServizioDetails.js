@@ -4,7 +4,6 @@ import servizioApi from '../../api/servizioApi';
 import letturaApi from '../../api/letturaApi';
 import articoloApi from '../../api/articoloApi';
 import fatturaApi from '../../api/fatturaApi';
-import '../../styles/Servizio/ServizioDetails.css';
 import ServizioEditor from '../shared/ServizioEditor';
 import LetturaList from '../Lettura/LetturaList';
 import LetturaEditor from '../shared/LetturaEditor';
@@ -281,7 +280,7 @@ const ServizioDetails = () => {
                                 </tr>
                                 <tr>
                                     <th>Data Lettura</th>
-                                    <td>{new Date(servizio.data_lettura).toLocaleDateString()}</td>
+                                    <td>{new Date(servizio.data_lettura).toLocaleDateString('it-IT')}</td>
                                 </tr>
                                 <tr>
                                     <th>Descrizione attività</th>
@@ -306,7 +305,6 @@ const ServizioDetails = () => {
                                 </button>
                             ))}
                         </div>
-                        {/* Tab Content */}
                         <div className={`tab-content ${activeTab === 'lettura' ? 'show' : ''}`}>
                             {activeTab === 'lettura' && (
                                 <div className="lettura-box">
@@ -376,7 +374,7 @@ const ServizioDetails = () => {
                         <tbody>
                         {lettura ? (
                             <tr>
-                                <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
+                                <td>{new Date(lettura.data_lettura).toLocaleDateString('it-IT')}</td>
                                 <td>{lettura.consumo} {lettura.unita_misura}</td>
                                 <td>
                                     <input type="checkbox" checked={lettura.fatturata} readOnly />
@@ -474,7 +472,7 @@ const ServizioDetails = () => {
                             <tr>
                                 <td>{fattura.ragione_sociale ? fattura.ragione_sociale : 'N/A'}</td>
                                 <td>{fattura.tipo_documento}</td>
-                                <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString() : 'N/A'}</td>
+                                <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString('it-IT') : 'N/A'}</td>
                                 <td>
                                     <input type="checkbox" checked={fattura.confermata} readOnly />
                                 </td>

@@ -1,11 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import './styles/index.css';
+import './styles/shared/Editor.css';
 import './services/auth';
-import './GlobalDate'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -14,8 +12,3 @@ root.render(
       <App />
     </React.StrictMode>
 );
-
-/* register service worker */
-serviceWorkerRegistration.register();
-
-reportWebVitals();

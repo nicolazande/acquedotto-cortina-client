@@ -1,20 +1,19 @@
-import axios from 'axios';
+import { createResourceApi } from './resourceApi';
 
-const API_URL = `${process.env.REACT_APP_API_URL}/api/fatture`;
+const resource = createResourceApi('fatture');
 
 const fatturaApi = {
-    createFattura: (data) => axios.post(API_URL, data),
-    getFatture: (page = 1, limit = 50, search = '', sortField = '', sortOrder = 'asc') =>
-        axios.get(API_URL, { params: { page, limit, search, sortField, sortOrder } }),
-    getFattura: (id) => axios.get(`${API_URL}/${id}`),
-    updateFattura: (id, data) => axios.put(`${API_URL}/${id}`, data),
-    deleteFattura: (id) => axios.delete(`${API_URL}/${id}`),
-    associateCliente: (fatturaId, clienteId) => axios.post(`${API_URL}/${fatturaId}/cliente/${clienteId}`),
-    associateServizio: (fatturaId, servizioId) => axios.post(`${API_URL}/${fatturaId}/servizio/${servizioId}`),
-    associateScadenza: (fatturaId, scadenzaId) => axios.post(`${API_URL}/${fatturaId}/scadenza/${scadenzaId}`),
-    getCliente: (id) => axios.get(`${API_URL}/${id}/cliente`),
-    getServizi: (id) => axios.get(`${API_URL}/${id}/servizi`),
-    getScadenza: (id) => axios.get(`${API_URL}/${id}/scadenza`),
+    createFattura: resource.create,
+    getFatture: resource.list,
+    getFattura: resource.get,
+    updateFattura: resource.update,
+    deleteFattura: resource.remove,
+    associateCliente: (fatturaId, clienteId) => resource.postRelation(fatturaId, `cliente/${clienteId}`),
+    associateServizio: (fatturaId, servizioId) => resource.postRelation(fatturaId, `servizio/${servizioId}`),
+    associateScadenza: (fatturaId, scadenzaId) => resource.postRelation(fatturaId, `scadenza/${scadenzaId}`),
+    getCliente: (id) => resource.getRelation(id, 'cliente'),
+    getServizi: (id) => resource.getRelation(id, 'servizi'),
+    getScadenza: (id) => resource.getRelation(id, 'scadenza'),
 };
 
 export default fatturaApi;

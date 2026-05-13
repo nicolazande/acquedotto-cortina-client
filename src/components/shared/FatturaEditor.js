@@ -4,7 +4,6 @@ const FatturaEditor = ({ fattura, onSave, onCancel, mode }) => {
     const [editFormData, setEditFormData] = useState({ ...fattura });
 
     useEffect(() => {
-        // Format date fields as 'YYYY-MM-DD' for proper input compatibility
         const formattedFattura = {
             ...fattura,
             data_fattura: fattura?.data_fattura
@@ -23,7 +22,7 @@ const FatturaEditor = ({ fattura, onSave, onCancel, mode }) => {
     const isReadOnly = mode === 'Visualizza';
 
     const handleEditChange = (e) => {
-        if (isReadOnly) return; // Prevent editing in 'Visualizza' mode
+        if (isReadOnly) return;
 
         const { name, value, type, checked } = e.target;
         setEditFormData((prevData) => ({

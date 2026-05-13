@@ -1,22 +1,223 @@
-/* HomePage.css */
-
 .homepage {
-    text-align: center;
-    padding: 50px 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
-    margin: 20px auto;
+    display: grid;
+    gap: 18px;
 }
 
-.homepage h1 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
-    color: #333;
+.home-hero {
+    position: relative;
+    display: flex;
+    min-height: 154px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 28px;
+    overflow: hidden;
+    color: #ffffff;
+    background:
+        linear-gradient(125deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0) 42%),
+        linear-gradient(135deg, #11383d, #17626b 54%, #4f579d);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-panel);
 }
 
-.homepage p {
-    font-size: 1.2em;
-    color: #666;
+.home-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto -18% -56% 30%;
+    height: 160px;
+    background: linear-gradient(90deg, rgba(198, 111, 50, 0), rgba(198, 111, 50, 0.26), rgba(255, 255, 255, 0.08));
+    transform: rotate(-8deg);
+}
+
+.home-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.eyebrow {
+    display: inline-flex;
+    margin-bottom: 9px;
+    color: rgba(222, 252, 255, 0.78);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.home-hero h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 2.55rem;
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+.home-grid {
+    display: grid;
+    gap: 14px;
+}
+
+.home-grid-primary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-grid-compact {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.home-panel {
+    display: grid;
+    gap: 14px;
+}
+
+.home-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.home-panel-heading h2 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0;
+    color: var(--color-heading);
+    font-size: 1.05rem;
+    letter-spacing: 0;
+}
+
+.home-panel-heading h2::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 22px;
+    background: var(--color-accent);
+    border-radius: 999px;
+}
+
+.home-card {
+    --tile-color: var(--color-primary);
+    --tile-soft: var(--color-primary-soft);
+
+    position: relative;
+    display: grid;
+    min-height: 174px;
+    grid-template-columns: 1fr auto;
+    align-content: space-between;
+    gap: 16px;
+    padding: 18px;
+    overflow: hidden;
+    color: var(--color-text);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 251, 251, 0.96)),
+        var(--color-surface);
+    border: 1px solid rgba(217, 228, 230, 0.96);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-subtle);
+    transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.home-card:nth-child(3n + 2) {
+    --tile-color: var(--color-violet);
+    --tile-soft: var(--color-violet-soft);
+}
+
+.home-card:nth-child(3n) {
+    --tile-color: var(--color-accent);
+    --tile-soft: var(--color-accent-soft);
+}
+
+.home-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: var(--tile-color);
+}
+
+.home-card:hover {
+    border-color: color-mix(in srgb, var(--tile-color) 48%, white);
+    box-shadow: 0 24px 52px rgba(22, 38, 45, 0.14);
+    transform: translateY(-3px);
+}
+
+.home-card-mark {
+    display: inline-flex;
+    width: 44px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    color: var(--tile-color);
+    background: var(--tile-soft);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.home-card-action {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    justify-content: center;
+    align-self: start;
+    padding: 0 10px;
+    color: var(--tile-color);
+    background: color-mix(in srgb, var(--tile-soft) 78%, white);
+    border: 1px solid color-mix(in srgb, var(--tile-color) 18%, white);
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.home-card-copy {
+    display: grid;
+    grid-column: 1 / -1;
+    gap: 7px;
+}
+
+.home-card-copy strong {
+    display: block;
+    color: var(--color-heading);
+    font-size: 1.12rem;
+    line-height: 1.1;
+}
+
+.home-card-copy span {
+    display: block;
+    color: var(--color-muted);
+    font-size: 0.94rem;
+    line-height: 1.42;
+}
+
+@media (max-width: 1180px) {
+    .home-grid-primary,
+    .home-grid-compact {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .homepage {
+        gap: 14px;
+    }
+
+    .home-hero {
+        min-height: 132px;
+        align-items: flex-start;
+        padding: 20px;
+    }
+
+    .home-hero h1 {
+        font-size: 2.05rem;
+    }
+
+    .home-grid-primary,
+    .home-grid-compact {
+        grid-template-columns: 1fr;
+    }
+
+    .home-card {
+        min-height: 148px;
+    }
 }

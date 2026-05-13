@@ -1,17 +1,15 @@
-import axios from 'axios';
+import { createResourceApi } from './resourceApi';
 
-const API_URL = `${process.env.REACT_APP_API_URL}/api/scadenze`;
+const resource = createResourceApi('scadenze', { defaultLimit: 100, defaultSortField: 'scadenza' });
 
 const scadenzaApi = {
-    createScadenza: (data) => axios.post(API_URL, data),
-    getScadenze: (page = 1, limit = 100, search = '', sortField = 'scadenza', sortOrder = 'asc') =>
-        axios.get(API_URL, { params: { page, limit, search, sortField, sortOrder } }),
-    getScadenza: (id) => axios.get(`${API_URL}/${id}`),
-    updateScadenza: (id, data) => axios.put(`${API_URL}/${id}`, data),
-    deleteScadenza: (id) => axios.delete(`${API_URL}/${id}`),
-    associateFattura: (scadenzaId, fatturaId) =>
-        axios.post(`${API_URL}/${scadenzaId}/fattura/${fatturaId}`),
-    getFattura: (id) => axios.get(`${API_URL}/${id}/fattura`),
+    createScadenza: resource.create,
+    getScadenze: resource.list,
+    getScadenza: resource.get,
+    updateScadenza: resource.update,
+    deleteScadenza: resource.remove,
+    associateFattura: (scadenzaId, fatturaId) => resource.postRelation(scadenzaId, `fattura/${fatturaId}`),
+    getFattura: (id) => resource.getRelation(id, 'fattura'),
 };
 
 export default scadenzaApi;

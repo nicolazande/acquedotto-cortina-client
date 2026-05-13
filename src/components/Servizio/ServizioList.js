@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import servizioApi from '../../api/servizioApi';
 import ServizioEditor from '../shared/ServizioEditor';
-import '../../styles/Servizio/ServizioList.css';
 
 const ServizioList = ({ onSelectServizio }) => {
     const [servizi, setServizi] = useState([]);
@@ -129,7 +128,7 @@ const ServizioList = ({ onSelectServizio }) => {
                             {servizi.map((servizio) => (
                                 <tr key={servizio._id}>
                                     <td>{servizio.descrizione}</td>
-                                    <td>{new Date(servizio.data_lettura).toLocaleDateString()}</td>
+                                    <td>{new Date(servizio.data_lettura).toLocaleDateString('it-IT')}</td>
                                     <td>{servizio.valore_unitario.toFixed(2)} €</td>
                                     <td>
                                         <button
@@ -138,12 +137,14 @@ const ServizioList = ({ onSelectServizio }) => {
                                         >
                                             Dettagli
                                         </button>
-                                        <button
-                                            className="btn btn-select"
-                                            onClick={() => onSelectServizio && onSelectServizio(servizio._id)}
-                                        >
-                                            Seleziona
-                                        </button>
+                                        {onSelectServizio && (
+                                            <button
+                                                className="btn btn-select"
+                                                onClick={() => onSelectServizio(servizio._id)}
+                                            >
+                                                Seleziona
+                                            </button>
+                                        )}
                                         <button
                                             className="btn btn-delete"
                                             onClick={() => handleDelete(servizio._id)}
@@ -176,7 +177,9 @@ const ServizioList = ({ onSelectServizio }) => {
             </div>
             {creatingServizio && (
                 <ServizioEditor
-                    onSave={(newServizio) => {
+                    mode="Nuovo"
+                    onSave={async (newServizio) => {
+                        await servizioApi.createServizio(newServizio);
                         setCreatingServizio(false);
                         fetchServizi(currentPage, activeSearch, sortField, sortOrder);
                     }}

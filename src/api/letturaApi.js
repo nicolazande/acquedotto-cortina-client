@@ -1,18 +1,17 @@
-import axios from 'axios';
+import { createResourceApi } from './resourceApi';
 
-const API_URL = `${process.env.REACT_APP_API_URL}/api/letture`;
+const resource = createResourceApi('letture');
 
 const letturaApi = {
-    createLettura: (data) => axios.post(API_URL, data),
-    getLetture: (page = 1, limit = 50, search = '', sortField = '', sortOrder = 'asc') =>
-        axios.get(API_URL, { params: { page, limit, search, sortField, sortOrder } }),
-    getLettura: (id) => axios.get(`${API_URL}/${id}`),
-    updateLettura: (id, data) => axios.put(`${API_URL}/${id}`, data),
-    deleteLettura: (id) => axios.delete(`${API_URL}/${id}`),
-    associateContatore: (letturaId, contatoreId) => axios.post(`${API_URL}/${letturaId}/contatori/${contatoreId}`),
-    associateServizio: (letturaId, servizioId) => axios.post(`${API_URL}/${letturaId}/servizi/${servizioId}`),
-    getContatore: (id) => axios.get(`${API_URL}/${id}/contatore`),
-    getServizi: (id) => axios.get(`${API_URL}/${id}/servizi`),
+    createLettura: resource.create,
+    getLetture: resource.list,
+    getLettura: resource.get,
+    updateLettura: resource.update,
+    deleteLettura: resource.remove,
+    associateContatore: (letturaId, contatoreId) => resource.postRelation(letturaId, `contatori/${contatoreId}`),
+    associateServizio: (letturaId, servizioId) => resource.postRelation(letturaId, `servizi/${servizioId}`),
+    getContatore: (id) => resource.getRelation(id, 'contatore'),
+    getServizi: (id) => resource.getRelation(id, 'servizi'),
 };
 
 export default letturaApi;

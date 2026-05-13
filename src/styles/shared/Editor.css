@@ -1,166 +1,110 @@
-/* ArticoloEditor.css */
-
-/* Modal Background */
 .modal {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    inset: 0;
+    z-index: 1200;
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index: 1000;
-    overflow: hidden;
+    justify-content: center;
+    padding: 24px;
+    overflow: auto;
+    background: rgba(17, 24, 27, 0.58);
+    backdrop-filter: blur(6px);
 }
 
-/* Modal Content */
 .modal-content {
-    background: #fff;
-    padding: 1.5em;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    width: 90%; /* Ensure it doesn't exceed the parent width */
-    max-width: 600px;
-    max-height: 90%; /* Limit the height */
-    overflow-y: auto; /* Enable scrolling if content exceeds height */
-    text-align: center;
     position: relative;
-    box-sizing: border-box; /* Include padding in width/height calculation */
+    width: min(940px, 100%);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    padding: 26px;
+    text-align: left;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-float);
 }
 
-/* Header */
+.modal-content::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-violet), var(--color-accent));
+}
+
 .modal-content h3 {
-    margin-bottom: 1.2em;
-    font-size: 1.4rem;
-    color: #333;
+    margin: 0 0 20px;
+    color: var(--color-heading);
+    font-size: 1.45rem;
+    line-height: 1.15;
+    letter-spacing: 0;
 }
 
-/* Form Styles */
+.modal-content form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 16px;
+}
+
 .form-group {
-    margin-bottom: 1em;
+    margin: 0;
     text-align: left;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.4em;
-    font-weight: bold;
-    color: #555;
-    font-size: 1rem;
+    margin-bottom: 6px;
+    color: #344349;
+    font-size: 0.86rem;
+    font-weight: 850;
 }
 
-.form-group input,
-.form-group textarea,
-.form-group select {
-    width: 100%;
-    padding: 0.6em;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-    box-sizing: border-box; /* Include padding in width calculation */
+.form-group input[type="checkbox"] {
+    width: 18px;
+    min-height: 18px;
+    margin-top: 7px;
 }
 
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-/* Spacer Line */
+.btn-container,
 .spacer-line {
-    margin: 1.5em 0;
-    border-top: 1px solid #050000;
+    grid-column: 1 / -1;
 }
 
-/* Buttons */
-.btn-container {
-    margin-top: 1em;
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 1em; /* Add space between buttons for better wrapping */
+.modal-content .btn-container {
+    justify-content: flex-end;
+    padding-top: 4px;
 }
 
-.btn {
-    cursor: pointer;
-    padding: 0.6em 1.2em;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    flex: 1 1 auto; /* Allow buttons to adjust flexibly */
-    text-align: center;
-    max-width: 200px; /* Prevent buttons from growing too large */
+.spacer-line {
+    margin: 8px 0;
+    border-top: 1px solid var(--color-border);
 }
 
-.btn:hover {
-    transform: scale(1.05);
-}
-
-.btn-save {
-    background-color: #28a745;
-    color: white;
-}
-
-.btn-save:hover {
-    background-color: #1e7e34;
-}
-
-.btn-cancel {
-    background-color: #dc3545;
-    color: white;
-}
-
-.btn-cancel:hover {
-    background-color: #c82333;
-}
-
-/* Scrollbar Styling */
 .modal-content::-webkit-scrollbar {
     width: 8px;
 }
 
 .modal-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 5px;
+    background: var(--color-surface-muted);
 }
 
 .modal-content::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 5px;
+    background: var(--color-border-strong);
+    border-radius: 8px;
 }
 
-.modal-content::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
+@media (max-width: 760px) {
+    .modal {
+        align-items: flex-start;
+        padding: 12px;
+    }
 
-/* Responsive Design */
-@media (max-width: 768px) {
     .modal-content {
-        padding: 1em;
-        width: 95%; /* Adjust for smaller screens */
-        max-height: 85%; /* Limit modal height further on smaller screens */
+        max-height: none;
+        padding: 18px;
     }
 
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-        padding: 0.5em;
+    .modal-content form {
+        grid-template-columns: 1fr;
     }
-
-    .btn {
-        padding: 0.5em 1em;
-        font-size: 0.9rem;
-        max-width: 100%; /* Allow buttons to span full width on small screens */
-    }
-}
-
-/* Parent Constraint */
-.modal-content {
-    max-width: calc(100vw - 40px); /* Ensure it doesn't exceed the viewport width */
-    max-height: calc(100vh - 40px); /* Ensure it doesn't exceed the viewport height */
 }

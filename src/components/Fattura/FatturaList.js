@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import fatturaApi from '../../api/fatturaApi';
 import FatturaEditor from '../shared/FatturaEditor';
-import '../../styles/Fattura/FatturaList.css';
 
 const FatturaList = ({ onSelectFattura }) => {
     const [fatture, setFatture] = useState([]);
@@ -142,7 +141,7 @@ const FatturaList = ({ onSelectFattura }) => {
                                     <td>{fattura.tipo_documento}</td>
                                     <td>
                                         {fattura.data_fattura
-                                            ? new Date(fattura.data_fattura).toLocaleDateString()
+                                            ? new Date(fattura.data_fattura).toLocaleDateString('it-IT')
                                             : 'N/A'}
                                     </td>
                                     <td>
@@ -156,12 +155,14 @@ const FatturaList = ({ onSelectFattura }) => {
                                         >
                                             Dettagli
                                         </button>
-                                        <button
-                                            className="btn btn-select"
-                                            onClick={() => onSelectFattura && onSelectFattura(fattura._id)}
-                                        >
-                                            Seleziona
-                                        </button>
+                                        {onSelectFattura && (
+                                            <button
+                                                className="btn btn-select"
+                                                onClick={() => onSelectFattura(fattura._id)}
+                                            >
+                                                Seleziona
+                                            </button>
+                                        )}
                                         <button
                                             className="btn btn-delete"
                                             onClick={() => handleDelete(fattura._id)}
@@ -194,7 +195,9 @@ const FatturaList = ({ onSelectFattura }) => {
             </div>
             {creatingFattura && (
                 <FatturaEditor
-                    onSave={(newFattura) => {
+                    mode="Nuova"
+                    onSave={async (newFattura) => {
+                        await fatturaApi.createFattura(newFattura);
                         setCreatingFattura(false);
                         fetchFatture(currentPage, activeSearch, sortField, sortOrder);
                     }}

@@ -1,23 +1,19 @@
-import axios from 'axios';
+import { createResourceApi } from './resourceApi';
 
-const API_URL = `${process.env.REACT_APP_API_URL}/api/servizi`;
+const resource = createResourceApi('servizi', { defaultSortField: 'descrizione' });
 
 const servizioApi = {
-    createServizio: (data) => axios.post(API_URL, data),
-    getServizi: (page = 1, limit = 50, search = '', sortField = 'descrizione', sortOrder = 'asc') =>
-        axios.get(API_URL, { params: { page, limit, search, sortField, sortOrder } }),
-    getServizio: (id) => axios.get(`${API_URL}/${id}`),
-    updateServizio: (id, data) => axios.put(`${API_URL}/${id}`, data),
-    deleteServizio: (id) => axios.delete(`${API_URL}/${id}`),
-    associateLettura: (servizioId, letturaId) =>
-        axios.post(`${API_URL}/${servizioId}/lettura/${letturaId}`),
-    associateArticolo: (servizioId, articoloId) =>
-        axios.post(`${API_URL}/${servizioId}/articolo/${articoloId}`),
-    associateFattura: (servizioId, fatturaId) =>
-        axios.post(`${API_URL}/${servizioId}/fattura/${fatturaId}`),
-    getLettura: (id) => axios.get(`${API_URL}/${id}/lettura`),
-    getArticolo: (id) => axios.get(`${API_URL}/${id}/articolo`),
-    getFattura: (id) => axios.get(`${API_URL}/${id}/fattura`),
+    createServizio: resource.create,
+    getServizi: resource.list,
+    getServizio: resource.get,
+    updateServizio: resource.update,
+    deleteServizio: resource.remove,
+    associateLettura: (servizioId, letturaId) => resource.postRelation(servizioId, `lettura/${letturaId}`),
+    associateArticolo: (servizioId, articoloId) => resource.postRelation(servizioId, `articolo/${articoloId}`),
+    associateFattura: (servizioId, fatturaId) => resource.postRelation(servizioId, `fattura/${fatturaId}`),
+    getLettura: (id) => resource.getRelation(id, 'lettura'),
+    getArticolo: (id) => resource.getRelation(id, 'articolo'),
+    getFattura: (id) => resource.getRelation(id, 'fattura'),
 };
 
 export default servizioApi;

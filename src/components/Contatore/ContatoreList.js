@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import contatoreApi from '../../api/contatoreApi';
 import ContatoreEditor from '../shared/ContatoreEditor';
-import '../../styles/Contatore/ContatoreList.css';
 
 const ContatoreList = ({ onSelectContatore }) => {
     const [contatori, setContatori] = useState([]);
@@ -144,12 +143,14 @@ const ContatoreList = ({ onSelectContatore }) => {
                                         >
                                             Dettagli
                                         </button>
-                                        <button
-                                            className="btn btn-select"
-                                            onClick={() => onSelectContatore && onSelectContatore(contatore._id)}
-                                        >
-                                            Seleziona
-                                        </button>
+                                        {onSelectContatore && (
+                                            <button
+                                                className="btn btn-select"
+                                                onClick={() => onSelectContatore(contatore._id)}
+                                            >
+                                                Seleziona
+                                            </button>
+                                        )}
                                         <button
                                             className="btn btn-delete"
                                             onClick={() => handleDelete(contatore._id)}
@@ -182,7 +183,9 @@ const ContatoreList = ({ onSelectContatore }) => {
             </div>
             {creatingContatore && (
                 <ContatoreEditor
-                    onSave={(newContatore) => {
+                    mode="Nuovo"
+                    onSave={async (newContatore) => {
+                        await contatoreApi.createContatore(newContatore);
                         setCreatingContatore(false);
                         fetchContatori(currentPage, activeSearch, sortField, sortOrder);
                     }}

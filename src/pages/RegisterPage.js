@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import authApi from '../api/authApi';
 import ServerStatusIndicator from '../ServerStatusIndicator';
@@ -16,7 +17,7 @@ const RegisterPage = ({ history }) => {
             await authApi.register({ username, password });
             history.push('/login');
         } catch (err) {
-            const errorMessage = err.response?.data?.error || 'An unexpected error occurred during registration.';
+            const errorMessage = err.response?.data?.error || 'Errore durante la registrazione.';
             setError(errorMessage);
         }
     };
@@ -25,7 +26,7 @@ const RegisterPage = ({ history }) => {
         <div className="auth-page">
             <ServerStatusIndicator />
             <div className="auth-container">
-                <h2>Register</h2>
+                <h2>Crea account</h2>
                 {error && <p className="error-message">{error}</p>}
                 <form onSubmit={handleRegister}>
                     <div className="form-group">
@@ -50,12 +51,12 @@ const RegisterPage = ({ history }) => {
                     </div>
                     <div className="btn-back-container">
                         <button type="submit" className="btn btn-primary">
-                            Register
+                            Registrati
                         </button>
                     </div>
                 </form>
                 <div className="auth-footer">
-                    <a href="/login">Hai gia' un account? Log in</a>
+                    <Link to="/login">Hai gia' un account? Accedi</Link>
                 </div>
             </div>
         </div>

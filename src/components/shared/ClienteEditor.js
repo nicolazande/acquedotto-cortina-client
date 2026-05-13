@@ -4,7 +4,6 @@ const ClienteEditor = ({ cliente, onSave, onCancel, mode }) => {
     const [editFormData, setEditFormData] = useState({ ...cliente });
 
     useEffect(() => {
-        // Ensure dates are formatted as 'YYYY-MM-DD' for date inputs
         const formattedCliente = { 
             ...cliente,
             data_nascita: cliente?.data_nascita 

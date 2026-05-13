@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import articoloApi from '../../api/articoloApi';
 import ArticoloEditor from '../shared/ArticoloEditor';
-import '../../styles/Articolo/ArticoloList.css';
 
 const ArticoloList = ({ onSelectArticolo }) => {
     const [articoli, setArticoli] = useState([]);
@@ -138,12 +137,14 @@ const ArticoloList = ({ onSelectArticolo }) => {
                                         >
                                             Dettagli
                                         </button>
-                                        <button
-                                            className="btn btn-select"
-                                            onClick={() => onSelectArticolo && onSelectArticolo(articolo._id)}
-                                        >
-                                            Seleziona
-                                        </button>
+                                        {onSelectArticolo && (
+                                            <button
+                                                className="btn btn-select"
+                                                onClick={() => onSelectArticolo(articolo._id)}
+                                            >
+                                                Seleziona
+                                            </button>
+                                        )}
                                         <button
                                             className="btn btn-delete"
                                             onClick={() => handleDelete(articolo._id)}
@@ -176,7 +177,9 @@ const ArticoloList = ({ onSelectArticolo }) => {
             </div>
             {creatingArticolo && (
                 <ArticoloEditor
-                    onSave={(newArticolo) => {
+                    mode="Nuovo"
+                    onSave={async (newArticolo) => {
+                        await articoloApi.createArticolo(newArticolo);
                         setCreatingArticolo(false);
                         fetchArticoli(currentPage, activeSearch, sortField, sortOrder);
                     }}

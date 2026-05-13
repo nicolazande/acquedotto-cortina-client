@@ -4,7 +4,6 @@ const ServizioEditor = ({ servizio, onSave, onCancel, mode }) => {
     const [editFormData, setEditFormData] = useState({ ...servizio });
 
     useEffect(() => {
-        // Initialize the form data when the component is mounted or when servizio changes
         setEditFormData({ ...servizio });
     }, [servizio]);
 

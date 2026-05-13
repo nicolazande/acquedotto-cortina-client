@@ -7,7 +7,6 @@ import ScadenzaEditor from '../shared/ScadenzaEditor';
 import FatturaEditor from '../shared/FatturaEditor';
 import FatturaList from '../Fattura/FatturaList';
 
-import '../../styles/Scadenza/ScadenzaDetails.css';
 
 const ScadenzaDetails = () => {
     const { id: scadenzaId } = useParams();
@@ -143,7 +142,7 @@ const ScadenzaDetails = () => {
                             <tbody>
                                 <tr>
                                     <th>Scadenza</th>
-                                    <td>{scadenza.scadenza ? new Date(scadenza.scadenza).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{scadenza.scadenza ? new Date(scadenza.scadenza).toLocaleDateString('it-IT') : 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Saldo</th>
@@ -151,7 +150,7 @@ const ScadenzaDetails = () => {
                                 </tr>
                                 <tr>
                                     <th>Pagamento</th>
-                                    <td>{scadenza.pagamento ? new Date(scadenza.pagamento).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{scadenza.pagamento ? new Date(scadenza.pagamento).toLocaleDateString('it-IT') : 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Ritardo</th>
@@ -198,7 +197,6 @@ const ScadenzaDetails = () => {
                                 </button>
                             ))}
                         </div>
-                        {/* Tab Content */}
                         <div className={`tab-content ${activeTab === 'fattura' ? 'show' : ''}`}>
                             {activeTab === 'fattura' && (
                                 <div className="fattura-box">
@@ -241,7 +239,7 @@ const ScadenzaDetails = () => {
                                     <td>{fattura.ragione_sociale}</td>
                                     <td>{fattura.anno}</td>
                                     <td>{fattura.numero}</td>
-                                    <td>{new Date(fattura.data_fattura).toLocaleDateString()}</td>
+                                    <td>{new Date(fattura.data_fattura).toLocaleDateString('it-IT')}</td>
                                     <td><input type="checkbox" checked={fattura.confermata} readOnly /></td>
                                     <td>{fattura.codice}</td>
                                     <td>

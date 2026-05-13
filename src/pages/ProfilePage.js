@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import authApi from '../api/authApi';
 import '../styles/Auth.css';
 
-const ProfilePage = ({ history }) => {
-    const [userData, setUserData] = useState({});
+const ProfilePage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -15,19 +13,18 @@ const ProfilePage = ({ history }) => {
     const fetchProfile = async () => {
         try {
             const response = await authApi.getProfile();
-            setUserData(response.data);
-            setUsername(response.data.username); // Pre-fill username
-            setEmail(response.data.email); // Pre-fill email
-            setNumeroTelefono(response.data.numero_telefono); // Pre-fill phone number
+            setUsername(response.data.username || '');
+            setEmail(response.data.email || '');
+            setNumeroTelefono(response.data.numero_telefono || '');
         } catch (err) {
-            const errorMessage = err.response?.data?.error || 'Error fetching profile';
+            const errorMessage = err.response?.data?.error || 'Errore durante il recupero del profilo';
             setError(errorMessage);
         }
     };
 
     const handleUpdate = async (e) => {
         e.preventDefault();
-        setError(''); // Clear any existing errors
+        setError('');
         try {
             await authApi.updateProfile({
                 username,
@@ -36,9 +33,9 @@ const ProfilePage = ({ history }) => {
                 numero_telefono: numeroTelefono,
             });
             setIsEditing(false);
-            fetchProfile(); // Refresh profile data
+            fetchProfile();
         } catch (err) {
-            const errorMessage = err.response?.data?.error || 'Error updating profile';
+            const errorMessage = err.response?.data?.error || 'Errore durante il salvataggio del profilo';
             setError(errorMessage);
         }
     };
@@ -130,10 +127,6 @@ const ProfilePage = ({ history }) => {
             </div>
         </div>
     );
-};
-
-ProfilePage.propTypes = {
-    history: PropTypes.object.isRequired,
 };
 
 export default ProfilePage;

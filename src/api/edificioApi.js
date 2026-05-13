@@ -1,16 +1,15 @@
-import axios from 'axios';
+import { createResourceApi } from './resourceApi';
 
-const API_URL = `${process.env.REACT_APP_API_URL}/api/edifici`;
+const resource = createResourceApi('edifici', { defaultSortField: 'descrizione' });
 
 const edificioApi = {
-    createEdificio: (data) => axios.post(API_URL, data),
-    getEdifici: (page = 1, limit = 50, search = '', sortField = 'descrizione', sortOrder = 'asc') =>
-        axios.get(API_URL, { params: { page, limit, search, sortField, sortOrder } }),
-    getEdificio: (id) => axios.get(`${API_URL}/${id}`),
-    updateEdificio: (id, data) => axios.put(`${API_URL}/${id}`, data),
-    deleteEdificio: (id) => axios.delete(`${API_URL}/${id}`),
-    associateContatore: (edificioId, contatoreId) => axios.post(`${API_URL}/${edificioId}/contatori/${contatoreId}`),
-    getContatori: (id) => axios.get(`${API_URL}/${id}/contatori`),
+    createEdificio: resource.create,
+    getEdifici: resource.list,
+    getEdificio: resource.get,
+    updateEdificio: resource.update,
+    deleteEdificio: resource.remove,
+    associateContatore: (edificioId, contatoreId) => resource.postRelation(edificioId, `contatori/${contatoreId}`),
+    getContatori: (id) => resource.getRelation(id, 'contatori'),
 };
 
 export default edificioApi;

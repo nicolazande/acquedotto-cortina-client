@@ -4,14 +4,13 @@ const EdificioEditor = ({ edificio, onSave, onCancel, mode }) => {
     const [editFormData, setEditFormData] = useState({ ...edificio });
 
     useEffect(() => {
-        // Initialize edit form data with the provided edificio data
         setEditFormData({ ...edificio });
     }, [edificio]);
 
     const isReadOnly = mode === 'Visualizza';
 
     const handleEditChange = (e) => {
-        if (isReadOnly) return; // Prevent editing in 'Visualizza' mode
+        if (isReadOnly) return;
 
         const { name, value, type, checked } = e.target;
         setEditFormData((prevData) => ({

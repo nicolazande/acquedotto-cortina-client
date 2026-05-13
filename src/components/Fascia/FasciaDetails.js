@@ -7,7 +7,6 @@ import ListinoList from '../Listino/ListinoList';
 import FasciaEditor from '../shared/FasciaEditor';
 import ListinoEditor from '../shared/ListinoEditor';
 
-import '../../styles/Fascia/FasciaDetails.css';
 
 
 const FasciaDetails = () => {
@@ -161,17 +160,16 @@ const FasciaDetails = () => {
                                 </tr>
                                 <tr>
                                     <th>inizio</th>
-                                    <td>{fascia.inizio ? new Date(fascia.inizio).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{fascia.inizio ? new Date(fascia.inizio).toLocaleDateString('it-IT') : 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Scadenza</th>
-                                    <td>{fascia.scadenza ? new Date(fascia.scadenza).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{fascia.scadenza ? new Date(fascia.scadenza).toLocaleDateString('it-IT') : 'N/A'}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div className="tabs-container">
-                        {/* Tab Navigation */}
                         <div className="tabs">
                             {[
                                 { id: 'listino', label: 'Listino' },
@@ -185,7 +183,6 @@ const FasciaDetails = () => {
                                 </button>
                             ))}
                         </div>
-                        {/* Tab Content */}
                         <div className={`tab-content ${activeTab === 'listino' ? 'show' : ''}`}>
                             {activeTab === 'listino' && (
                                 <div className="listino-box">

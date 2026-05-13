@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import clienteApi from '../../api/clienteApi';
 import ClienteEditor from '../shared/ClienteEditor';
-import '../../styles/Cliente/ClienteList.css';
 
 const ClienteList = ({ onSelectCliente }) => {
     const [clienti, setClienti] = useState([]);
@@ -132,7 +131,7 @@ const ClienteList = ({ onSelectCliente }) => {
                                     <td>{cliente.cognome || '-'}</td>
                                     <td>
                                         {cliente.data_nascita
-                                            ? new Date(cliente.data_nascita).toLocaleDateString()
+                                            ? new Date(cliente.data_nascita).toLocaleDateString('it-IT')
                                             : '-'}
                                     </td>
                                     <td>
@@ -142,12 +141,14 @@ const ClienteList = ({ onSelectCliente }) => {
                                         >
                                             Dettagli
                                         </button>
-                                        <button
-                                            className="btn btn-select"
-                                            onClick={() => onSelectCliente && onSelectCliente(cliente._id)}
-                                        >
-                                            Seleziona
-                                        </button>
+                                        {onSelectCliente && (
+                                            <button
+                                                className="btn btn-select"
+                                                onClick={() => onSelectCliente(cliente._id)}
+                                            >
+                                                Seleziona
+                                            </button>
+                                        )}
                                         <button
                                             className="btn btn-delete"
                                             onClick={() => handleDelete(cliente._id)}
@@ -180,7 +181,9 @@ const ClienteList = ({ onSelectCliente }) => {
             </div>
             {creatingCliente && (
                 <ClienteEditor
-                    onSave={(newCliente) => {
+                    mode="Nuovo"
+                    onSave={async (newCliente) => {
+                        await clienteApi.createCliente(newCliente);
                         setCreatingCliente(false);
                         fetchClienti(currentPage, activeSearch, sortField, sortOrder);
                     }}

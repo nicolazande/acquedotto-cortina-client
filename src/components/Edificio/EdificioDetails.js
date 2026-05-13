@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import edificioApi from '../../api/edificioApi';
 import contatoreApi from '../../api/contatoreApi';
-import '../../styles/Edificio/EdificioDetails.css';
 import EdificioEditor from '../shared/EdificioEditor';
 import ContatoreEditor from '../shared/ContatoreEditor';
 import ContatoreList from '../Contatore/ContatoreList';
@@ -218,7 +217,6 @@ const EdificioDetails = () => {
                         </table>
                     </div>
                     <div className="tabs-container">
-                        {/* Tab Navigation */}
                         <div className="tabs">
                             {[
                                 { id: 'contatori', label: 'Contatori' },
@@ -232,7 +230,6 @@ const EdificioDetails = () => {
                                 </button>
                             ))}
                         </div>
-                        {/* Tab Content */}
                         <div className={`tab-content ${activeTab === 'contatori' ? 'show' : ''}`}>
                             {activeTab === 'contatori' && (
                                 <div className="contatori-box">

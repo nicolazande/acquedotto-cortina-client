@@ -4,7 +4,6 @@ const FasciaEditor = ({ fascia, onSave, onCancel, mode }) => {
     const [editFormData, setEditFormData] = useState({ ...fascia });
 
     useEffect(() => {
-        // Initialize the form data
         const formattedFascia = {
             ...fascia,
             inizio: fascia?.inizio ? new Date(fascia.inizio).toISOString().split('T')[0] : '',

@@ -1,16 +1,15 @@
-import axios from 'axios';
+import { createResourceApi } from './resourceApi';
 
-const API_URL = `${process.env.REACT_APP_API_URL}/api/fasce`;
+const resource = createResourceApi('fasce', { defaultSortField: 'tipo' });
 
 const fasciaApi = {
-    createFascia: (data) => axios.post(API_URL, data),
-    getFasce: (page = 1, limit = 50, search = '', sortField = 'tipo', sortOrder = 'asc') =>
-        axios.get(API_URL, { params: { page, limit, search, sortField, sortOrder } }),
-    getFascia: (id) => axios.get(`${API_URL}/${id}`),
-    updateFascia: (id, data) => axios.put(`${API_URL}/${id}`, data),
-    deleteFascia: (id) => axios.delete(`${API_URL}/${id}`),
-    associateListino: (fasciaId, listinoId) => axios.post(`${API_URL}/${fasciaId}/listini/${listinoId}`),
-    getListino: (id) => axios.get(`${API_URL}/${id}/listino`),
+    createFascia: resource.create,
+    getFasce: resource.list,
+    getFascia: resource.get,
+    updateFascia: resource.update,
+    deleteFascia: resource.remove,
+    associateListino: (fasciaId, listinoId) => resource.postRelation(fasciaId, `listini/${listinoId}`),
+    getListino: (id) => resource.getRelation(id, 'listino'),
 };
 
 export default fasciaApi;

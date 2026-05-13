@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import scadenzaApi from '../../api/scadenzaApi';
 import ScadenzaEditor from '../shared/ScadenzaEditor';
-import '../../styles/Scadenza/ScadenzaList.css';
 
 const ScadenzaList = ({ onSelectScadenza }) => {
     const [scadenze, setScadenze] = useState([]);
@@ -136,7 +135,7 @@ const ScadenzaList = ({ onSelectScadenza }) => {
                                 <tr key={scadenza._id}>
                                     <td>{scadenza.nome}</td>
                                     <td>{scadenza.cognome}</td>
-                                    <td>{scadenza.scadenza ? new Date(scadenza.scadenza).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{scadenza.scadenza ? new Date(scadenza.scadenza).toLocaleDateString('it-IT') : 'N/A'}</td>
                                     <td>{scadenza.ritardo} giorni</td>
                                     <td>{scadenza.totale.toFixed(2)} €</td>
                                     <td>
@@ -146,12 +145,14 @@ const ScadenzaList = ({ onSelectScadenza }) => {
                                         >
                                             Dettagli
                                         </button>
-                                        <button
-                                            className="btn btn-select"
-                                            onClick={() => onSelectScadenza && onSelectScadenza(scadenza._id)}
-                                        >
-                                            Seleziona
-                                        </button>
+                                        {onSelectScadenza && (
+                                            <button
+                                                className="btn btn-select"
+                                                onClick={() => onSelectScadenza(scadenza._id)}
+                                            >
+                                                Seleziona
+                                            </button>
+                                        )}
                                         <button
                                             className="btn btn-delete"
                                             onClick={() => handleDelete(scadenza._id)}
@@ -184,7 +185,9 @@ const ScadenzaList = ({ onSelectScadenza }) => {
             </div>
             {creatingScadenza && (
                 <ScadenzaEditor
-                    onSave={(newScadenza) => {
+                    mode="Nuova"
+                    onSave={async (newScadenza) => {
+                        await scadenzaApi.createScadenza(newScadenza);
                         setCreatingScadenza(false);
                         fetchScadenze(currentPage, activeSearch, sortField, sortOrder);
                     }}

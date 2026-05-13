@@ -5,7 +5,6 @@ import clienteApi from '../../api/clienteApi';
 import edificioApi from '../../api/edificioApi';
 import listinoApi from '../../api/listinoApi';
 import letturaApi from '../../api/letturaApi';
-import '../../styles/Contatore/ContatoreDetails.css';
 import ContatoreEditor from '../shared/ContatoreEditor'
 import ClienteList from '../Cliente/ClienteList';
 import ClienteEditor from '../shared/ClienteEditor'
@@ -256,7 +255,7 @@ const ContatoreDetails = () =>
     };
 
     const handleBackClick = () => {
-        history.goBack(); // Adjust the route as per your Clienti list URL
+        history.goBack();
     };
 
     useEffect(() =>
@@ -279,7 +278,7 @@ const ContatoreDetails = () =>
                     contatore={contatore}
                     onSave={handleEditContatore}
                     onCancel={() => setIsEditing(false)}
-                    mode="Modifica" // "Nuovo", "Visualizza", or "Modifica"
+                    mode="Modifica"
                 />
             ) : (
                 <>
@@ -352,11 +351,11 @@ const ContatoreDetails = () =>
                                 </tr>
                                 <tr>
                                     <th>Inizio</th>
-                                    <td>{contatore.inizio ? new Date(contatore.inizio).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{contatore.inizio ? new Date(contatore.inizio).toLocaleDateString('it-IT') : 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Scadenza</th>
-                                    <td>{contatore.scadenza ? new Date(contatore.scadenza).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{contatore.scadenza ? new Date(contatore.scadenza).toLocaleDateString('it-IT') : 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <th>Causale</th>
@@ -387,7 +386,6 @@ const ContatoreDetails = () =>
 
                     </div>
                     <div className="tabs-container">
-                        {/* Tab Navigation */}
                         <div className="tabs">
                             {[
                                 { id: 'cliente', label: 'Cliente' },
@@ -404,7 +402,6 @@ const ContatoreDetails = () =>
                                 </button>
                             ))}
                         </div>
-                        {/* Tab Content */}
                         <div className={`tab-content ${activeTab === 'cliente' ? 'show' : ''}`}>
                             {activeTab === 'cliente' && (
                                 <div className="cliente-box">
@@ -488,7 +485,7 @@ const ContatoreDetails = () =>
                             <tr>
                                 <td>{cliente.nome}</td>
                                 <td>{cliente.cognome}</td>
-                                <td>{cliente.data_nascita ? new Date(cliente.data_nascita).toLocaleDateString() : '-'}</td>
+                                <td>{cliente.data_nascita ? new Date(cliente.data_nascita).toLocaleDateString('it-IT') : '-'}</td>
                                 <td>
                                     <button
                                         onClick={() => history.push(`/clienti/${cliente._id}`)}
@@ -534,7 +531,7 @@ const ContatoreDetails = () =>
                             {
                                 letture.map((lettura) => (
                                     <tr key={lettura._id}>
-                                        <td>{new Date(lettura.data_lettura).toLocaleDateString()}</td>
+                                        <td>{new Date(lettura.data_lettura).toLocaleDateString('it-IT')}</td>
                                         <td>{lettura.consumo} {lettura.unita_misura}</td>
                                         <td>
                                             <input type="checkbox" checked={lettura.fatturata} readOnly />

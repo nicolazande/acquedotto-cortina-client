@@ -9,7 +9,6 @@ import ContatoreList from '../Contatore/ContatoreList';
 import FatturaList from '../Fattura/FatturaList';
 import FatturaEditor from '../shared/FatturaEditor';
 
-import '../../styles/Cliente/ClienteDetails.css';
 
 
 const ClienteDetails= () => 
@@ -234,7 +233,7 @@ const ClienteDetails= () =>
                                 </tr>
                                 <tr>
                                     <th>Data di Nascita</th>
-                                    <td>{cliente.data_nascita ? new Date(cliente.data_nascita).toLocaleDateString() : '-'}</td>
+                                    <td>{cliente.data_nascita ? new Date(cliente.data_nascita).toLocaleDateString('it-IT') : '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Comune di Nascita</th>
@@ -330,7 +329,7 @@ const ClienteDetails= () =>
                                 </tr>
                                 <tr>
                                     <th>Data Mandato SDD</th>
-                                    <td>{cliente.data_mandato_sdd ? new Date(cliente.data_mandato_sdd).toLocaleDateString() : '-'}</td>
+                                    <td>{cliente.data_mandato_sdd ? new Date(cliente.data_mandato_sdd).toLocaleDateString('it-IT') : '-'}</td>
                                 </tr>
                                 <tr>
                                     <th>Email PEC</th>
@@ -360,7 +359,6 @@ const ClienteDetails= () =>
                         </table>
                     </div>
                     <div className="tabs-container">
-                        {/* Tab Navigation */}
                         <div className="tabs">
                             {[
                                 { id: 'contatori', label: 'Contatori' },
@@ -375,7 +373,6 @@ const ClienteDetails= () =>
                                 </button>
                             ))}
                         </div>
-                        {/* Tab Content */}
                         <div className={`tab-content ${activeTab === 'contatori' ? 'show' : ''}`}>
                             {activeTab === 'contatori' && (
                                 <div className="contatori-box">
@@ -487,7 +484,7 @@ const ClienteDetails= () =>
                                     <tr key={fattura._id}>
                                         <td>{fattura.cliente ? `${cliente.nome} ${cliente.cognome}` : 'N/A'}</td>
                                         <td>{fattura.tipo_documento}</td>
-                                        <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString() : 'N/A'}</td>
+                                        <td>{fattura.data_fattura ? new Date(fattura.data_fattura).toLocaleDateString('it-IT') : 'N/A'}</td>
                                         <td>
                                             <input type="checkbox" checked={fattura.confermata} readOnly />
                                         </td>

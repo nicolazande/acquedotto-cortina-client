@@ -1,15 +1,42 @@
-/* styles/ServerStatusIndicator.css */
+.server-status-indicator {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 12px;
+    color: var(--color-muted);
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(217, 228, 230, 0.9);
+    border-radius: 999px;
+    box-shadow: 0 10px 24px rgba(22, 38, 45, 0.08);
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
 .status-circle {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    box-shadow: 0 0 0 5px rgba(184, 51, 58, 0.1);
 }
 
-.status-circle.green {
-    background-color: green;
+.status-label {
+    line-height: 1;
 }
 
-.status-circle.red {
-    background-color: red;
+.server-status-indicator.is-online .status-circle {
+    background: var(--color-success);
+    box-shadow: 0 0 0 5px rgba(37, 136, 95, 0.12);
+}
+
+.server-status-indicator.is-offline .status-circle {
+    background: var(--color-danger);
+}
+
+.home-hero .server-status-indicator {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: none;
 }

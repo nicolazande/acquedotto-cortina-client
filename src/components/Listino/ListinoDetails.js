@@ -3,7 +3,6 @@ import { useParams, useHistory } from 'react-router-dom';
 import listinoApi from '../../api/listinoApi';
 import fasciaApi from '../../api/fasciaApi';
 import contatoreApi from '../../api/contatoreApi';
-import '../../styles/Listino/ListinoDetails.css';
 import ListinoEditor from '../shared/ListinoEditor';
 import FasciaList from '../Fascia/FasciaList';
 import ContatoreList from '../Contatore/ContatoreList';
@@ -212,7 +211,6 @@ const ListinoDetails = () => {
                                 </button>
                             ))}
                         </div>
-                        {/* Tab Content */}
                         <div className={`tab-content ${activeTab === 'fasce' ? 'show' : ''}`}>
                             {activeTab === 'fasce' && (
                                 <div className="fasce-box">

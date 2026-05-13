@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import listinoApi from '../../api/listinoApi';
 import ListinoEditor from '../shared/ListinoEditor';
-import '../../styles/Listino/ListinoList.css';
 
 const ListinoList = ({ onSelectListino }) => {
     const [listini, setListini] = useState([]);
@@ -134,12 +133,14 @@ const ListinoList = ({ onSelectListino }) => {
                                         >
                                             Dettagli
                                         </button>
-                                        <button
-                                            className="btn btn-select"
-                                            onClick={() => onSelectListino && onSelectListino(listino._id)}
-                                        >
-                                            Seleziona
-                                        </button>
+                                        {onSelectListino && (
+                                            <button
+                                                className="btn btn-select"
+                                                onClick={() => onSelectListino(listino._id)}
+                                            >
+                                                Seleziona
+                                            </button>
+                                        )}
                                         <button
                                             className="btn btn-delete"
                                             onClick={() => handleDelete(listino._id)}
@@ -172,12 +173,13 @@ const ListinoList = ({ onSelectListino }) => {
             </div>
             {creatingListino && (
                 <ListinoEditor
-                    onSave={(newListino) => {
+                    mode="Nuovo"
+                    onSave={async (newListino) => {
+                        await listinoApi.createListino(newListino);
                         setCreatingListino(false);
                         fetchListini(currentPage, activeSearch, sortField, sortOrder);
                     }}
                     onCancel={() => setCreatingListino(false)}
-                    mode="Nuovo"
                 />
             )}
         </div>

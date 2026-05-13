@@ -4,7 +4,6 @@ const LetturaEditor = ({ lettura, onSave, onCancel, mode }) => {
     const [editFormData, setEditFormData] = useState({ ...lettura });
 
     useEffect(() => {
-        // Ensure dates are formatted as 'YYYY-MM-DD' for date inputs
         const formattedLettura = {
             ...lettura,
             data_lettura: lettura?.data_lettura

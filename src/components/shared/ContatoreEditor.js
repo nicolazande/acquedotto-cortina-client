@@ -4,7 +4,6 @@ const ContatoreEditor = ({ contatore, onSave, onCancel, mode }) => {
     const [editFormData, setEditFormData] = useState({ ...contatore });
 
     useEffect(() => {
-        // Format date fields as 'YYYY-MM-DD' for proper input compatibility
         const formattedContatore = {
             ...contatore,
             inizio: contatore?.inizio
@@ -20,7 +19,7 @@ const ContatoreEditor = ({ contatore, onSave, onCancel, mode }) => {
     const isReadOnly = mode === 'Visualizza';
 
     const handleEditChange = (e) => {
-        if (isReadOnly) return; // Prevent editing in 'Visualizza' mode
+        if (isReadOnly) return;
 
         const { name, value, type, checked } = e.target;
         setEditFormData((prevData) => ({

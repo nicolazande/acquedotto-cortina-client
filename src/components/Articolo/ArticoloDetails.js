@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import servizioApi from '../../api/servizioApi';
 import articoloApi from '../../api/articoloApi';
-import '../../styles/Articolo/ArticoloDetails.css';
 import ServizioEditor from '../shared/ServizioEditor';
 import ServizioList from '../Servizio/ServizioList';
 
@@ -155,7 +154,6 @@ const ArticoloDetails = () => {
                         </table>
                     </div>
                     <div className="tabs-container">
-                        {/* Tab Navigation */}
                         <div className="tabs">
                             {[
                                 { id: 'servizi', label: 'Servizi' },
@@ -169,7 +167,6 @@ const ArticoloDetails = () => {
                                 </button>
                             ))}
                         </div>
-                        {/* Tab Content */}
                         <div className={`tab-content ${activeTab === 'servizi' ? 'show' : ''}`}>
                             {activeTab === 'servizi' && (
                                 <div className="servizi-box">
@@ -209,7 +206,7 @@ const ArticoloDetails = () => {
                                 servizi.map((servizio) => (
                                     <tr key={servizio._id}>
                                         <td>{servizio.descrizione}</td>
-                                        <td>{new Date(servizio.data_lettura).toLocaleDateString()}</td>
+                                        <td>{new Date(servizio.data_lettura).toLocaleDateString('it-IT')}</td>
                                         <td>{servizio.valore_unitario.toFixed(2)} €</td>
                                         <td>
                                             <button

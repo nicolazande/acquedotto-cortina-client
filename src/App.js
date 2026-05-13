@@ -1,47 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
-import ClientePage from './pages/ClientePage';
-import ContatorePage from './pages/ContatorePage';
-import EdificioPage from './pages/EdificioPage';
-import LetturaPage from './pages/LetturaPage';
-import FatturaPage from './pages/FatturaPage';
-import ServizioPage from './pages/ServizioPage';
-import ArticoloPage from './pages/ArticoloPage';
-import ListinoPage from './pages/ListinoPage';
-import FasciaPage from './pages/FasciaPage';
-import ScadenzaPage from './pages/ScadenzaPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import './styles/App.css';
 
+import ClienteList from './components/Cliente/ClienteList';
 import ClienteDetails from './components/Cliente/ClienteDetails';
+import ContatoreList from './components/Contatore/ContatoreList';
 import ContatoreDetails from './components/Contatore/ContatoreDetails';
+import EdificioList from './components/Edificio/EdificioList';
 import EdificioDetails from './components/Edificio/EdificioDetails';
+import LetturaList from './components/Lettura/LetturaList';
 import LetturaDetails from './components/Lettura/LetturaDetails';
+import FatturaList from './components/Fattura/FatturaList';
 import FatturaDetails from './components/Fattura/FatturaDetails';
+import ServizioList from './components/Servizio/ServizioList';
 import ServizioDetails from './components/Servizio/ServizioDetails';
+import ArticoloList from './components/Articolo/ArticoloList';
 import ArticoloDetails from './components/Articolo/ArticoloDetails';
+import ListinoList from './components/Listino/ListinoList';
 import ListinoDetails from './components/Listino/ListinoDetails';
+import FasciaList from './components/Fascia/FasciaList';
 import FasciaDetails from './components/Fascia/FasciaDetails';
+import ScadenzaList from './components/Scadenza/ScadenzaList';
 import ScadenzaDetails from './components/Scadenza/ScadenzaDetails';
 import ProfilePage from './pages/ProfilePage';
 
+const protectedRoutes = [
+    { path: '/auth/profile', component: ProfilePage },
+    { path: '/contatori/:id', component: ContatoreDetails },
+    { path: '/contatori', component: ContatoreList },
+    { path: '/clienti/:id', component: ClienteDetails },
+    { path: '/clienti', component: ClienteList },
+    { path: '/edifici/:id', component: EdificioDetails },
+    { path: '/edifici', component: EdificioList },
+    { path: '/letture/:id', component: LetturaDetails },
+    { path: '/letture', component: LetturaList },
+    { path: '/fatture/:id', component: FatturaDetails },
+    { path: '/fatture', component: FatturaList },
+    { path: '/servizi/:id', component: ServizioDetails },
+    { path: '/servizi', component: ServizioList },
+    { path: '/articoli/:id', component: ArticoloDetails },
+    { path: '/articoli', component: ArticoloList },
+    { path: '/listini/:id', component: ListinoDetails },
+    { path: '/listini', component: ListinoList },
+    { path: '/fasce/:id', component: FasciaDetails },
+    { path: '/fasce', component: FasciaList },
+    { path: '/scadenze/:id', component: ScadenzaDetails },
+    { path: '/scadenze', component: ScadenzaList },
+    { path: '/', exact: true, component: HomePage },
+];
 
 const App = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(localStorage.getItem('token')));
 
     useEffect(() => {
-        // Check if the token exists in localStorage
-        const token = localStorage.getItem('token');
-        if (token) {
-            setIsAuthenticated(true);
-        }
-        else
-        {
-            handleLogout();
-        }
+        const syncAuthState = () => {
+            setIsAuthenticated(Boolean(localStorage.getItem('token')));
+        };
+
+        window.addEventListener('storage', syncAuthState);
+        return () => window.removeEventListener('storage', syncAuthState);
     }, []);
 
     const handleLogin = () => {
@@ -55,90 +76,32 @@ const App = () => {
 
     return (
         <Router>
-            <div className="App">
+            <div className={`App ${isAuthenticated ? 'is-authenticated' : 'is-public'}`}>
                 {isAuthenticated && <Navbar onLogout={handleLogout} />}
                 <div className="content">
                     <Switch>
-                        {/* Public Routes */}
-                        <Route path="/login">
-                            {isAuthenticated ? <Redirect to="/" /> : <LoginPage onLogin={handleLogin} />}
-                        </Route>
-                        <Route path="/register" component={RegisterPage} />
+                        <Route
+                            path="/login"
+                            render={(props) => (
+                                isAuthenticated ? <Redirect to="/" /> : <LoginPage {...props} onLogin={handleLogin} />
+                            )}
+                        />
+                        <Route
+                            path="/register"
+                            render={(props) => (
+                                isAuthenticated ? <Redirect to="/" /> : <RegisterPage {...props} />
+                            )}
+                        />
 
-                        {/* Protected Routes */}
-                        {isAuthenticated ? (
-                            <>
-                                {/* Routes for Contatori */}
-                                <Switch>
-                                    <Route path="/auth/profile" component={ProfilePage} />
-                                </Switch>
-
-                                {/* Routes for Contatori */}
-                                <Switch>
-                                    <Route path="/contatori/:id" render={(props) => <ContatoreDetails {...props} />} />
-                                    <Route path="/contatori" component={ContatorePage} />
-                                </Switch>
-
-                                {/* Routes for Clienti */}
-                                <Switch>
-                                    <Route path="/clienti/:id" render={(props) => <ClienteDetails {...props} />} />
-                                    <Route path="/clienti" component={ClientePage} />
-                                </Switch>
-
-                                {/* Routes for Clienti */}
-                                <Switch>
-                                    <Route path="/edifici/:id" render={(props) => <EdificioDetails {...props} />} />
-                                    <Route path="/edifici" component={EdificioPage} />
-                                </Switch>
-
-                                {/* Routes for Clienti */}
-                                <Switch>
-                                    <Route path="/letture/:id" render={(props) => <LetturaDetails {...props} />} />
-                                    <Route path="/letture" component={LetturaPage} />
-                                </Switch>
-
-                                {/* Routes for Clienti */}
-                                <Switch>
-                                    <Route path="/fatture/:id" render={(props) => <FatturaDetails {...props} />} />
-                                    <Route path="/fatture" component={FatturaPage} />
-                                </Switch>
-
-                                {/* Routes for Clienti */}
-                                <Switch>
-                                    <Route path="/servizi/:id" render={(props) => <ServizioDetails {...props} />} />
-                                    <Route path="/servizi" component={ServizioPage} />
-                                </Switch>
-
-                                {/* Routes for Clienti */}
-                                <Switch>
-                                    <Route path="/articoli/:id" render={(props) => <ArticoloDetails {...props} />} />
-                                    <Route path="/articoli" component={ArticoloPage} />
-                                </Switch>
-
-                                {/* Routes for Clienti */}
-                                <Switch>
-                                    <Route path="/listini/:id" render={(props) => <ListinoDetails {...props} />} />
-                                    <Route path="/listini" component={ListinoPage} />
-                                </Switch>
-
-                                {/* Routes for Clienti */}
-                                <Switch>
-                                    <Route path="/fasce/:id" render={(props) => <FasciaDetails {...props} />} />
-                                    <Route path="/fasce" component={FasciaPage} />
-                                </Switch>
-
-                                {/* Routes for Clienti */}
-                                <Switch>
-                                    <Route path="/scadenze/:id" render={(props) => <ScadenzaDetails {...props} />} />
-                                    <Route path="/scadenze" component={ScadenzaPage} />
-                                </Switch>
-
-                                {/* Other Routes */}
-                                <Route exact path="/" component={HomePage} />
-                            </>
-                        ) : (
-                            <Redirect to="/login" />
-                        )}
+                        {isAuthenticated && protectedRoutes.map(({ path, exact, component: Component }) => (
+                            <Route
+                                key={path}
+                                path={path}
+                                exact={exact}
+                                component={Component}
+                            />
+                        ))}
+                        <Redirect to={isAuthenticated ? '/' : '/login'} />
                     </Switch>
                 </div>
             </div>

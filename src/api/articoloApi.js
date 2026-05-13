@@ -1,16 +1,15 @@
-import axios from 'axios';
+import { createResourceApi } from './resourceApi';
 
-const API_URL = `${process.env.REACT_APP_API_URL}/api/articoli`;
+const resource = createResourceApi('articoli');
 
 const articoloApi = {
-    createArticolo: (data) => axios.post(API_URL, data),
-    getArticoli: (page = 1, limit = 50, search = '', sortField = '', sortOrder = 'asc') =>
-        axios.get(API_URL, { params: { page, limit, search, sortField, sortOrder } }),
-    getArticolo: (id) => axios.get(`${API_URL}/${id}`),
-    updateArticolo: (id, data) => axios.put(`${API_URL}/${id}`, data),
-    deleteArticolo: (id) => axios.delete(`${API_URL}/${id}`),
-    associateServizio: (articoloId, servizioId) => axios.post(`${API_URL}/${articoloId}/servizi/${servizioId}`),
-    getServizi: (id) => axios.get(`${API_URL}/${id}/servizi`),
+    createArticolo: resource.create,
+    getArticoli: resource.list,
+    getArticolo: resource.get,
+    updateArticolo: resource.update,
+    deleteArticolo: resource.remove,
+    associateServizio: (articoloId, servizioId) => resource.postRelation(articoloId, `servizi/${servizioId}`),
+    getServizi: (id) => resource.getRelation(id, 'servizi'),
 };
 
 export default articoloApi;

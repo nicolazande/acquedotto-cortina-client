@@ -1,8 +1,32 @@
 .App {
-    text-align: center;
+    min-height: 100vh;
+    text-align: left;
 }
 
 .content {
-    padding: 20px;
-    margin-top: 60px; /* Assicurati che il contenuto non si sovrapponga alla navbar */
+    width: calc(100% - var(--sidebar-width));
+    min-height: 100vh;
+    padding: 30px;
+    margin-left: var(--sidebar-width);
+}
+
+.App.is-public .content {
+    width: 100%;
+    min-height: 100vh;
+    padding: 0;
+    margin-left: 0;
+}
+
+@media (max-width: 1040px) {
+    .content {
+        width: 100%;
+        min-height: calc(100vh - var(--navbar-height));
+        padding: 16px;
+        margin-top: var(--navbar-height);
+        margin-left: 0;
+    }
+
+    .App.is-public .content {
+        margin-top: 0;
+    }
 }
