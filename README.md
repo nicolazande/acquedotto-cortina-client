@@ -54,3 +54,16 @@ Se la variabile non e' presente, le richieste usano `/api/...` e possono passare
 - `npm start`: avvio in sviluppo
 - `npm run build`: build di produzione
 - `npm test`: test runner CRA
+- `npm run test:smoke`: controlli veloci su URL API e navigazione contestuale
+
+Per controllare anche una build Netlify gia' pubblicata:
+
+```bash
+SMOKE_APP_URL=https://app.example.com npm run test:smoke
+```
+
+Netlify:
+
+```bash
+SMOKE_APP_URL=https://acquedotto-cortina-client.netlify.app npm run test:smoke
+```
