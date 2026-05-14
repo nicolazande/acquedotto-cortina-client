@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import RelationViewPage from './pages/RelationViewPage';
+import FeedbackProvider from './components/shared/FeedbackProvider';
 import './styles/App.css';
 
 import ClienteList from './components/Cliente/ClienteList';
@@ -77,37 +78,39 @@ const App = () => {
     };
 
     return (
-        <Router>
-            <div className={`App ${isAuthenticated ? 'is-authenticated' : 'is-public'}`}>
-                {isAuthenticated && <Navbar onLogout={handleLogout} />}
-                <div className="content">
-                    <Switch>
-                        <Route
-                            path="/login"
-                            render={(props) => (
-                                isAuthenticated ? <Redirect to="/" /> : <LoginPage {...props} onLogin={handleLogin} />
-                            )}
-                        />
-                        <Route
-                            path="/register"
-                            render={(props) => (
-                                isAuthenticated ? <Redirect to="/" /> : <RegisterPage {...props} />
-                            )}
-                        />
-
-                        {isAuthenticated && protectedRoutes.map(({ path, exact, component: Component }) => (
+        <FeedbackProvider>
+            <Router>
+                <div className={`App ${isAuthenticated ? 'is-authenticated' : 'is-public'}`}>
+                    {isAuthenticated && <Navbar onLogout={handleLogout} />}
+                    <div className="content">
+                        <Switch>
                             <Route
-                                key={path}
-                                path={path}
-                                exact={exact}
-                                component={Component}
+                                path="/login"
+                                render={(props) => (
+                                    isAuthenticated ? <Redirect to="/" /> : <LoginPage {...props} onLogin={handleLogin} />
+                                )}
                             />
-                        ))}
-                        <Redirect to={isAuthenticated ? '/' : '/login'} />
-                    </Switch>
+                            <Route
+                                path="/register"
+                                render={(props) => (
+                                    isAuthenticated ? <Redirect to="/" /> : <RegisterPage {...props} />
+                                )}
+                            />
+
+                            {isAuthenticated && protectedRoutes.map(({ path, exact, component: Component }) => (
+                                <Route
+                                    key={path}
+                                    path={path}
+                                    exact={exact}
+                                    component={Component}
+                                />
+                            ))}
+                            <Redirect to={isAuthenticated ? '/' : '/login'} />
+                        </Switch>
+                    </div>
                 </div>
-            </div>
-        </Router>
+            </Router>
+        </FeedbackProvider>
     );
 };
 

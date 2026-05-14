@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { formatFieldValue } from '../../utils/formatters';
+import { useFeedback } from './FeedbackProvider';
 
 const SLOT_SIZE = 10;
 
@@ -11,6 +12,7 @@ const ListPage = ({ config, onSelect }) => {
     const [creating, setCreating] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
     const [currentSlotStart, setCurrentSlotStart] = useState(1);
+    const { confirm, notify } = useFeedback();
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -30,10 +32,10 @@ const ListPage = ({ config, onSelect }) => {
             setRecords(response.data.data);
             setTotalPages(response.data.totalPages);
         } catch (error) {
-            alert(`Errore durante il recupero di ${config.title.toLowerCase()}`);
+            notify(`Errore durante il recupero di ${config.title.toLowerCase()}`, 'error');
             console.error(error);
         }
-    }, [activeSearch, config, currentPage, itemsPerPage, sortField, sortOrder]);
+    }, [activeSearch, config, currentPage, itemsPerPage, notify, sortField, sortOrder]);
 
     useEffect(() => {
         fetchRecords(currentPage, activeSearch, sortField, sortOrder);
@@ -54,15 +56,23 @@ const ListPage = ({ config, onSelect }) => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Sei sicuro di voler cancellare questo record?')) {
+        const confirmed = await confirm({
+            title: 'Cancella record',
+            message: 'Sei sicuro di voler cancellare questo record?',
+            confirmLabel: 'Cancella',
+            variant: 'danger',
+        });
+
+        if (!confirmed) {
             return;
         }
 
         try {
             await config.api.remove(id);
+            notify('Record cancellato con successo', 'success');
             fetchRecords(currentPage, activeSearch, sortField, sortOrder);
         } catch (error) {
-            alert('Errore durante la cancellazione');
+            notify('Errore durante la cancellazione', 'error');
             console.error(error);
         }
     };
@@ -103,9 +113,15 @@ const ListPage = ({ config, onSelect }) => {
         mode: config.createMode || 'Nuovo',
         onCancel: () => setCreating(false),
         onSave: async (newRecord) => {
-            await config.api.create(newRecord);
-            setCreating(false);
-            fetchRecords(currentPage, activeSearch, sortField, sortOrder);
+            try {
+                await config.api.create(newRecord);
+                setCreating(false);
+                notify('Record creato con successo', 'success');
+                fetchRecords(currentPage, activeSearch, sortField, sortOrder);
+            } catch (error) {
+                notify('Errore durante la creazione', 'error');
+                console.error(error);
+            }
         },
     };
 

@@ -6,6 +6,7 @@ import {
     responseData,
 } from '../config/relationViews';
 import { createContextBackSearch } from '../hooks/useContextBack';
+import { useFeedback } from '../components/shared/FeedbackProvider';
 
 const asArray = (value) => {
     if (!value) return [];
@@ -18,6 +19,7 @@ const RelationViewPage = () => {
     const { resource, id, relation } = useParams();
     const history = useHistory();
     const config = getRelationView(resource, relation);
+    const { notify } = useFeedback();
     const [parent, setParent] = useState(null);
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -47,11 +49,12 @@ const RelationViewPage = () => {
             setRecords(config.many === false ? asArray(related).filter(Boolean) : asArray(related));
         } catch (loadError) {
             setError('Impossibile caricare questa vista collegata.');
+            notify('Impossibile caricare questa vista collegata', 'error');
             console.error(loadError);
         } finally {
             setLoading(false);
         }
-    }, [config, id]);
+    }, [config, id, notify]);
 
     useEffect(() => {
         loadData();
@@ -82,9 +85,10 @@ const RelationViewPage = () => {
         try {
             await config.associate(id, selectedId);
             setSelecting(false);
+            notify('Record associato con successo', 'success');
             await loadData();
         } catch (associateError) {
-            alert('Errore durante l\'associazione.');
+            notify('Errore durante l\'associazione', 'error');
             console.error(associateError);
         }
     } };
@@ -96,9 +100,10 @@ const RelationViewPage = () => {
             try {
                 await config.createAndAssociate({ parentId: id, values });
                 setCreating(false);
+                notify('Record creato e associato con successo', 'success');
                 await loadData();
             } catch (createError) {
-                alert('Errore durante la creazione o associazione.');
+                notify('Errore durante la creazione o associazione', 'error');
                 console.error(createError);
             }
         },

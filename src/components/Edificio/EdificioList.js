@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import edificioApi from '../../api/edificioApi';
 import EdificioEditor from '../shared/EdificioEditor';
+import { useFeedback } from '../shared/FeedbackProvider';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -22,6 +23,7 @@ const EdificioList = ({ onSelectEdificio }) => {
     const mapRef = useRef(null);
     const markersRef = useRef({});
     const highlightedMarkerRef = useRef(null);
+    const { confirm, notify } = useFeedback();
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -99,21 +101,33 @@ const EdificioList = ({ onSelectEdificio }) => {
             setTotalPages(fetchedTotalPages);
             initializeMap(data);
         } catch (error) {
-            alert('Errore durante il recupero degli edifici');
+            notify('Errore durante il recupero degli edifici', 'error');
             console.error(error);
         }
-    }, [initializeMap]);
+    }, [initializeMap, notify]);
 
     useEffect(() => {
         fetchEdifici(currentPage, activeSearch, sortField, sortOrder);
     }, [currentPage, activeSearch, sortField, sortOrder, fetchEdifici]);
 
     const handleDelete = async (id) => {
+        const confirmed = await confirm({
+            title: 'Cancella edificio',
+            message: 'Sei sicuro di voler cancellare questo edificio?',
+            confirmLabel: 'Cancella',
+            variant: 'danger',
+        });
+
+        if (!confirmed) {
+            return;
+        }
+
         try {
             await edificioApi.deleteEdificio(id);
+            notify('Edificio cancellato con successo', 'success');
             fetchEdifici(currentPage, activeSearch, sortField, sortOrder);
         } catch (error) {
-            alert("Errore durante la cancellazione dell'edificio");
+            notify("Errore durante la cancellazione dell'edificio", 'error');
             console.error(error);
         }
     };
@@ -284,9 +298,15 @@ const EdificioList = ({ onSelectEdificio }) => {
                 <EdificioEditor
                     mode="Nuovo"
                     onSave={async (newEdificio) => {
-                        await edificioApi.createEdificio(newEdificio);
-                        setCreatingEdificio(false);
-                        fetchEdifici(currentPage, activeSearch, sortField, sortOrder);
+                        try {
+                            await edificioApi.createEdificio(newEdificio);
+                            setCreatingEdificio(false);
+                            notify('Edificio creato con successo', 'success');
+                            fetchEdifici(currentPage, activeSearch, sortField, sortOrder);
+                        } catch (error) {
+                            notify("Errore durante la creazione dell'edificio", 'error');
+                            console.error(error);
+                        }
                     }}
                     onCancel={() => setCreatingEdificio(false)}
                 />

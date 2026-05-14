@@ -3,10 +3,12 @@ import { useParams } from 'react-router-dom';
 import RelationLinkGrid from './RelationLinkGrid';
 import { useContextBack } from '../../hooks/useContextBack';
 import { formatFieldValue } from '../../utils/formatters';
+import { useFeedback } from './FeedbackProvider';
 
 const DetailPage = ({ config }) => {
     const { id } = useParams();
     const { goBack, backLabel } = useContextBack(config.listPath);
+    const { confirm, notify } = useFeedback();
     const [record, setRecord] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -18,12 +20,12 @@ const DetailPage = ({ config }) => {
             const response = await config.api.get(id);
             setRecord(response.data);
         } catch (error) {
-            alert(`Errore durante il recupero di ${config.title.toLowerCase()}`);
+            notify(`Errore durante il recupero di ${config.title.toLowerCase()}`, 'error');
             console.error(error);
         } finally {
             setIsLoading(false);
         }
-    }, [config, id]);
+    }, [config, id, notify]);
 
     useEffect(() => {
         setIsEditing(false);
@@ -35,24 +37,31 @@ const DetailPage = ({ config }) => {
             await config.api.update(id, updatedRecord);
             setIsEditing(false);
             await loadRecord();
-            alert('Record aggiornato con successo');
+            notify('Record aggiornato con successo', 'success');
         } catch (error) {
-            alert('Errore durante il salvataggio');
+            notify('Errore durante il salvataggio', 'error');
             console.error(error);
         }
     };
 
     const handleDelete = async () => {
-        if (!window.confirm('Sei sicuro di voler cancellare questo record?')) {
+        const confirmed = await confirm({
+            title: 'Cancella record',
+            message: 'Sei sicuro di voler cancellare questo record?',
+            confirmLabel: 'Cancella',
+            variant: 'danger',
+        });
+
+        if (!confirmed) {
             return;
         }
 
         try {
             await config.api.remove(id);
-            alert('Record cancellato con successo');
+            notify('Record cancellato con successo', 'success');
             goBack();
         } catch (error) {
-            alert('Errore durante la cancellazione');
+            notify('Errore durante la cancellazione', 'error');
             console.error(error);
         }
     };
