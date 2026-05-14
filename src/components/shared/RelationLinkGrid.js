@@ -1,0 +1,35 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { getRelationLinks } from '../../config/relationViews';
+
+const RelationLinkGrid = ({ resource, recordId, relations }) => {
+    const links = getRelationLinks(resource, relations);
+
+    if (!recordId || links.length === 0) {
+        return null;
+    }
+
+    return (
+        <section className="relation-link-panel" aria-label="Collegamenti">
+            <div className="relation-link-heading">
+                <span className="eyebrow">Relazioni</span>
+                <h3>Collegamenti</h3>
+            </div>
+            <div className="relation-link-grid">
+                {links.map((link) => (
+                    <Link
+                        className="relation-link-card"
+                        to={`/${resource}/${recordId}/${link.key}`}
+                        key={link.key}
+                    >
+                        <span className="relation-link-title">{link.title}</span>
+                        <span className="relation-link-description">{link.description}</span>
+                        <span className="relation-link-action">Apri vista</span>
+                    </Link>
+                ))}
+            </div>
+        </section>
+    );
+};
+
+export default RelationLinkGrid;

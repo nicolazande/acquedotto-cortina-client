@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
+import RelationViewPage from './pages/RelationViewPage';
 import './styles/App.css';
 
 import ClienteList from './components/Cliente/ClienteList';
@@ -30,6 +31,7 @@ import ProfilePage from './pages/ProfilePage';
 
 const protectedRoutes = [
     { path: '/auth/profile', component: ProfilePage },
+    { path: '/:resource/:id/:relation', exact: true, component: RelationViewPage },
     { path: '/contatori/:id', component: ContatoreDetails },
     { path: '/contatori', component: ContatoreList },
     { path: '/clienti/:id', component: ClienteDetails },
