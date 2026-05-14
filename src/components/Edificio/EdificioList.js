@@ -10,9 +10,9 @@ import {
     PageHeader,
     Pagination,
     SearchToolbar,
-    SortableHeader,
-    TableStateRow,
 } from '../shared/PageChrome';
+import RecordTable from '../shared/RecordTable';
+import { join } from '../../utils/formatters';
 import 'leaflet/dist/leaflet.css';
 
 const EdificioEditor = editorComponents.edificio;
@@ -24,6 +24,15 @@ const EDIFICIO_COLUMNS = [
     { label: 'Località', sortField: 'localita', value: (edificio) => edificio.localita },
     { label: 'Tipo', sortField: 'tipo', value: (edificio) => edificio.tipo },
 ];
+
+const EDIFICIO_SUMMARY = {
+    title: (edificio) => edificio.descrizione,
+    subtitle: (edificio) => edificio.indirizzo,
+    meta: (edificio) => [
+        { label: 'Località', value: join(edificio.cap, edificio.localita) },
+        { label: 'Tipo', value: edificio.tipo },
+    ],
+};
 
 const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' }) => {
     const [edifici, setEdifici] = useState([]);
@@ -146,83 +155,57 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
                     createLabel="Nuovo"
                 />
                 <div ref={mapElementRef} className="edificio-map"></div>
-                <div className="table-container">
-                    <table className="edificio-table">
-                        <thead>
-                            <tr>
-                                {EDIFICIO_COLUMNS.map((column) => (
-                                    <SortableHeader
-                                        key={column.label}
-                                        label={column.label}
-                                        field={column.sortField}
-                                        sortField={sortField}
-                                        sortOrder={sortOrder}
-                                        onSort={handleSort}
-                                    />
-                                ))}
-                                <th>Azioni</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {isLoading && (
-                                <TableStateRow colSpan={EDIFICIO_COLUMNS.length + 1}>
-                                    Caricamento...
-                                </TableStateRow>
-                            )}
-                            {!isLoading && edifici.length === 0 && (
-                                <TableStateRow colSpan={EDIFICIO_COLUMNS.length + 1}>
-                                    Nessun edificio trovato
-                                </TableStateRow>
-                            )}
-                            {!isLoading && edifici.map((edificio) => (
-                                <tr
-                                    key={edificio._id}
-                                    id={`row-${edificio._id}`}
-                                    className={`edificio-list-item ${highlightedRowId === edificio._id ? 'highlight' : ''}`}
-                                    onClick={() => handleRowClick(edificio._id)}
+                <RecordTable
+                    actions={(edificio) => (
+                        <>
+                            <button
+                                className="btn btn-dettagli"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    openEdificio(edificio._id);
+                                }}
+                            >
+                                <Icon name="eye" />
+                                Apri
+                            </button>
+                            {onSelectEdificio && (
+                                <button
+                                    className="btn btn-select"
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        onSelectEdificio(edificio._id);
+                                    }}
                                 >
-                                    {EDIFICIO_COLUMNS.map((column) => (
-                                        <td key={column.label}>{column.value(edificio)}</td>
-                                    ))}
-                                    <td>
-                                        <button
-                                            className="btn btn-dettagli"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                openEdificio(edificio._id);
-                                            }}
-                                        >
-                                            <Icon name="eye" />
-                                            Apri
-                                        </button>
-                                        {onSelectEdificio && (
-                                            <button
-                                                className="btn btn-select"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    onSelectEdificio(edificio._id);
-                                                }}
-                                            >
-                                                <Icon name="check" />
-                                                Seleziona
-                                            </button>
-                                        )}
-                                        <button
-                                            className="btn btn-delete"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDelete(edificio._id);
-                                            }}
-                                        >
-                                            <Icon name="trash" />
-                                            Elimina
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                    <Icon name="check" />
+                                    Seleziona
+                                </button>
+                            )}
+                            <button
+                                className="btn btn-delete"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleDelete(edificio._id);
+                                }}
+                            >
+                                <Icon name="trash" />
+                                Elimina
+                            </button>
+                        </>
+                    )}
+                    columns={EDIFICIO_COLUMNS}
+                    emptyMessage="Nessun edificio trovato"
+                    getRowClassName={(edificio) => `edificio-list-item ${highlightedRowId === edificio._id ? 'highlight' : ''}`}
+                    getRowId={(edificio) => `row-${edificio._id}`}
+                    isLoading={isLoading}
+                    mobileSummaryOnly
+                    onRowClick={(edificio) => handleRowClick(edificio._id)}
+                    onSort={handleSort}
+                    records={edifici}
+                    sortField={sortField}
+                    sortOrder={sortOrder}
+                    summary={EDIFICIO_SUMMARY}
+                    tableClassName="edificio-table"
+                />
                 <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}

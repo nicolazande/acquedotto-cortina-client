@@ -12,6 +12,7 @@ import {
 } from '../hooks/useContextBack';
 import { useFeedback } from '../components/shared/FeedbackProvider';
 import Icon from '../components/shared/Icon';
+import RecordTable from '../components/shared/RecordTable';
 
 const asArray = (value) => {
     if (!value) return [];
@@ -37,6 +38,18 @@ const RelationViewPage = () => {
         if (!config || !parent) return '';
         return config.parent.title(parent);
     }, [config, parent]);
+
+    const relationSummary = useMemo(() => {
+        if (!config) return null;
+
+        return {
+            title: (record) => config.target.title(record),
+            meta: (record) => config.columns.slice(0, 3).map((column) => ({
+                label: column.label,
+                value: renderRelationCell(column, record),
+            })),
+        };
+    }, [config]);
 
     const loadData = useCallback(async () => {
         if (!config) return;
@@ -160,36 +173,25 @@ const RelationViewPage = () => {
                     </div>
                 )}
                 {!loading && !error && records.length > 0 && (
-                    <div className="table-container relation-table-container">
-                        <table className="relation-table">
-                            <thead>
-                                <tr>
-                                    {config.columns.map((column) => (
-                                        <th key={column.label}>{column.label}</th>
-                                    ))}
-                                    <th>Azioni</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {records.map((record) => (
-                                    <tr key={getRecordId(record)}>
-                                        {config.columns.map((column) => (
-                                            <td key={column.label}>{renderRelationCell(column, record)}</td>
-                                        ))}
-                                        <td>
-                                            <Link
-                                                className="btn btn-details"
-                                                to={`${config.target.basePath}/${getRecordId(record)}${parentReturnSearch}`}
-                                            >
-                                                <Icon name="eye" />
-                                                Apri
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <RecordTable
+                        actions={(record) => (
+                            <Link
+                                className="btn btn-details"
+                                to={`${config.target.basePath}/${getRecordId(record)}${parentReturnSearch}`}
+                            >
+                                <Icon name="eye" />
+                                Apri
+                            </Link>
+                        )}
+                        columns={config.columns}
+                        containerClassName="relation-table-container"
+                        isLoading={loading}
+                        mobileSummaryOnly
+                        records={records}
+                        renderCell={(record, column) => renderRelationCell(column, record)}
+                        summary={relationSummary}
+                        tableClassName="relation-table"
+                    />
                 )}
             </section>
 

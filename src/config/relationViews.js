@@ -22,6 +22,8 @@ import {
 } from '../utils/formatters';
 
 const empty = EMPTY_VALUE;
+const filled = (value) => (value === empty ? '' : value);
+const personLabel = (record) => filled(fullName(record)) || record?.ragione_sociale || empty;
 const recordId = (record) => record && record._id;
 const createdRecordId = (response) => response?.data?._id;
 export const responseData = (response) => response.data;
@@ -49,7 +51,7 @@ export const resourceViews = {
         EditorComponent: editorComponents.cliente,
         editorProp: 'cliente',
         selectProp: 'onSelectCliente',
-        title: (record) => fullName(record) || record.ragione_sociale || empty,
+        title: personLabel,
     },
     contatori: {
         singular: 'Contatore',
@@ -133,7 +135,7 @@ export const resourceViews = {
         EditorComponent: editorComponents.scadenza,
         editorProp: 'scadenza',
         selectProp: 'onSelectScadenza',
-        title: (record) => join(fullName(record), formatDate(record.scadenza)),
+        title: (record) => join(personLabel(record), formatDate(record.scadenza)),
     },
     servizi: {
         singular: 'Servizio',

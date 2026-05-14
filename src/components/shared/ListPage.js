@@ -1,16 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { createContextBackSearch, getLocationPath } from '../../hooks/useContextBack';
-import { formatFieldValue } from '../../utils/formatters';
 import { useFeedback } from './FeedbackProvider';
 import Icon from './Icon';
 import {
     PageHeader,
     Pagination,
     SearchToolbar,
-    SortableHeader,
-    TableStateRow,
 } from './PageChrome';
+import RecordTable from './RecordTable';
 
 const ListPage = ({ config, onSelect, detailReturnLabel }) => {
     const [records, setRecords] = useState([]);
@@ -132,69 +130,45 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                     createClassName={`btn btn-new-${config.className}`}
                     createLabel={config.newLabel}
                 />
-                <div className="table-container">
-                    <table className={`${config.className}-table`}>
-                        <thead>
-                            <tr>
-                                {config.columns.map((column) => (
-                                    <SortableHeader
-                                        key={column.label}
-                                        label={column.label}
-                                        field={column.sortField}
-                                        sortField={sortField}
-                                        sortOrder={sortOrder}
-                                        onSort={handleSort}
-                                    />
-                                ))}
-                                <th>Azioni</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {isLoading && (
-                                <TableStateRow colSpan={config.columns.length + 1}>
-                                    Caricamento...
-                                </TableStateRow>
+                <RecordTable
+                    actions={(record) => (
+                        <>
+                            <button
+                                className="btn btn-details"
+                                onClick={() => history.push(`${config.detailPath}/${record._id}${detailReturnSearch}`)}
+                            >
+                                <Icon name="eye" />
+                                Apri
+                            </button>
+                            {onSelect && (
+                                <button
+                                    className="btn btn-select"
+                                    onClick={() => onSelect(record._id)}
+                                >
+                                    <Icon name="check" />
+                                    Seleziona
+                                </button>
                             )}
-                            {!isLoading && records.length === 0 && (
-                                <TableStateRow colSpan={config.columns.length + 1}>
-                                    Nessun record trovato
-                                </TableStateRow>
-                            )}
-                            {!isLoading && records.map((record) => (
-                                <tr key={record._id}>
-                                    {config.columns.map((column) => (
-                                        <td key={column.label}>{formatFieldValue(record, column)}</td>
-                                    ))}
-                                    <td>
-                                        <button
-                                            className="btn btn-details"
-                                            onClick={() => history.push(`${config.detailPath}/${record._id}${detailReturnSearch}`)}
-                                        >
-                                            <Icon name="eye" />
-                                            Apri
-                                        </button>
-                                        {onSelect && (
-                                            <button
-                                                className="btn btn-select"
-                                                onClick={() => onSelect(record._id)}
-                                            >
-                                                <Icon name="check" />
-                                                Seleziona
-                                            </button>
-                                        )}
-                                        <button
-                                            className="btn btn-delete"
-                                            onClick={() => handleDelete(record._id)}
-                                        >
-                                            <Icon name="trash" />
-                                            Elimina
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            <button
+                                className="btn btn-delete"
+                                onClick={() => handleDelete(record._id)}
+                            >
+                                <Icon name="trash" />
+                                Elimina
+                            </button>
+                        </>
+                    )}
+                    columns={config.columns}
+                    emptyMessage="Nessun record trovato"
+                    isLoading={isLoading}
+                    mobileSummaryOnly
+                    onSort={handleSort}
+                    records={records}
+                    sortField={sortField}
+                    sortOrder={sortOrder}
+                    summary={config.summary}
+                    tableClassName={`${config.className}-table`}
+                />
                 <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}

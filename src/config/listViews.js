@@ -8,9 +8,19 @@ import listinoApi from '../api/listinoApi';
 import scadenzaApi from '../api/scadenzaApi';
 import servizioApi from '../api/servizioApi';
 import { editorComponents } from '../components/shared/editorComponents';
-import { boolText, formatDate, formatMoney, fullName, join } from '../utils/formatters';
+import {
+    EMPTY_VALUE,
+    boolText,
+    formatDate,
+    formatMoney,
+    fullName,
+    join,
+} from '../utils/formatters';
 
 const api = (list, create, remove) => ({ list, create, remove });
+const filled = (value) => (value === EMPTY_VALUE ? '' : value);
+const personLabel = (record) => filled(fullName(record)) || record?.ragione_sociale || '';
+const statusText = (isInactive) => (isInactive ? 'Inattivo' : 'Attivo');
 
 export const listViews = {
     articoli: {
@@ -23,6 +33,10 @@ export const listViews = {
         api: api(articoloApi.getArticoli, articoloApi.createArticolo, articoloApi.deleteArticolo),
         defaultSortField: 'codice',
         defaultSortOrder: 'asc',
+        summary: {
+            title: (record) => join(record.codice, record.descrizione),
+            meta: (record) => [{ label: 'IVA', value: record.iva }],
+        },
         columns: [
             { label: 'Codice', sortField: 'codice', value: 'codice' },
             { label: 'Descrizione', sortField: 'descrizione', value: 'descrizione' },
@@ -39,6 +53,10 @@ export const listViews = {
         api: api(clienteApi.getClienti, clienteApi.createCliente, clienteApi.deleteCliente),
         defaultSortField: 'cognome',
         defaultSortOrder: 'asc',
+        summary: {
+            title: personLabel,
+            meta: (record) => [{ label: 'Nascita', value: formatDate(record.data_nascita) }],
+        },
         columns: [
             { label: 'Nome', sortField: 'nome', value: 'nome' },
             { label: 'Cognome', sortField: 'cognome', value: 'cognome' },
@@ -55,6 +73,15 @@ export const listViews = {
         api: api(contatoreApi.getContatori, contatoreApi.createContatore, contatoreApi.deleteContatore),
         defaultSortField: 'seriale',
         defaultSortOrder: 'asc',
+        summary: {
+            title: (record) => record.seriale || record.codice,
+            subtitle: (record) => record.nome_cliente,
+            meta: (record) => [
+                { label: 'Edificio', value: record.nome_edificio },
+                { label: 'Codice', value: record.codice },
+                { label: 'Stato', value: statusText(record.inattivo) },
+            ],
+        },
         columns: [
             { label: 'Edificio', sortField: 'nome_edificio', value: 'nome_edificio' },
             { label: 'Cliente', sortField: 'nome_cliente', value: 'nome_cliente' },
@@ -72,6 +99,13 @@ export const listViews = {
         api: api(fasciaApi.getFasce, fasciaApi.createFascia, fasciaApi.deleteFascia),
         defaultSortField: 'tipo',
         defaultSortOrder: 'asc',
+        summary: {
+            title: (record) => record.tipo,
+            meta: (record) => [
+                { label: 'Soglia', value: join(record.min, record.max) },
+                { label: 'Prezzo', value: formatMoney(record.prezzo) },
+            ],
+        },
         columns: [
             { label: 'Tipo', sortField: 'tipo', value: 'tipo' },
             { label: 'Minimo', sortField: 'min', value: 'min' },
@@ -90,6 +124,15 @@ export const listViews = {
         api: api(fatturaApi.getFatture, fatturaApi.createFattura, fatturaApi.deleteFattura),
         defaultSortField: 'data_fattura',
         defaultSortOrder: 'desc',
+        summary: {
+            title: (record) => join(record.tipo_documento, record.numero),
+            subtitle: (record) => personLabel(record.cliente) || record.ragione_sociale,
+            meta: (record) => [
+                { label: 'Data', value: formatDate(record.data_fattura) },
+                { label: 'Totale', value: formatMoney(record.totale_fattura) },
+                { label: 'Stato', value: record.confermata ? 'Confermata' : 'Da confermare' },
+            ],
+        },
         columns: [
             { label: 'Cliente', sortField: 'cliente.nome', value: (record) => fullName(record.cliente) },
             { label: 'Tipo Documento', sortField: 'tipo_documento', value: 'tipo_documento' },
@@ -108,6 +151,14 @@ export const listViews = {
         api: api(letturaApi.getLetture, letturaApi.createLettura, letturaApi.deleteLettura),
         defaultSortField: 'data_lettura',
         defaultSortOrder: 'desc',
+        summary: {
+            title: (record) => formatDate(record.data_lettura),
+            subtitle: (record) => join(record.consumo, record.unita_misura),
+            meta: (record) => [
+                { label: 'Tipo', value: record.tipo },
+                { label: 'Stato', value: record.fatturata ? 'Fatturata' : 'Da fatturare' },
+            ],
+        },
         columns: [
             { label: 'Data Lettura', sortField: 'data_lettura', value: 'data_lettura', format: formatDate },
             { label: 'Consumo', sortField: 'consumo', value: (record) => join(record.consumo, record.unita_misura) },
@@ -125,6 +176,10 @@ export const listViews = {
         api: api(listinoApi.getListini, listinoApi.createListino, listinoApi.deleteListino),
         defaultSortField: 'categoria',
         defaultSortOrder: 'asc',
+        summary: {
+            title: (record) => record.categoria,
+            subtitle: (record) => record.descrizione,
+        },
         columns: [
             { label: 'Categoria', sortField: 'categoria', value: 'categoria' },
             { label: 'Descrizione', sortField: 'descrizione', value: 'descrizione' },
@@ -142,6 +197,14 @@ export const listViews = {
         itemsPerPage: 100,
         defaultSortField: 'scadenza',
         defaultSortOrder: 'desc',
+        summary: {
+            title: (record) => personLabel(record) || join(record.nome, record.cognome),
+            subtitle: (record) => formatDate(record.scadenza),
+            meta: (record) => [
+                { label: 'Ritardo', value: `${record.ritardo || 0} giorni` },
+                { label: 'Totale', value: formatMoney(record.totale) },
+            ],
+        },
         columns: [
             { label: 'Nome', sortField: 'nome', value: 'nome' },
             { label: 'Cognome', sortField: 'cognome', value: 'cognome' },
@@ -160,6 +223,11 @@ export const listViews = {
         api: api(servizioApi.getServizi, servizioApi.createServizio, servizioApi.deleteServizio),
         defaultSortField: 'data_lettura',
         defaultSortOrder: 'desc',
+        summary: {
+            title: (record) => record.descrizione,
+            subtitle: (record) => formatDate(record.data_lettura),
+            meta: (record) => [{ label: 'Valore', value: formatMoney(record.valore_unitario) }],
+        },
         columns: [
             { label: 'Descrizione', sortField: 'descrizione', value: 'descrizione' },
             { label: 'Data Lettura', sortField: 'data_lettura', value: 'data_lettura', format: formatDate },
