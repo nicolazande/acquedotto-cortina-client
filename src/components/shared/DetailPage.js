@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import NoteAttachmentsPanel from './NoteAttachmentsPanel';
 import RelationLinkGrid from './RelationLinkGrid';
 import { useContextBack } from '../../hooks/useContextBack';
 import { formatFieldValue } from '../../utils/formatters';
@@ -75,6 +76,7 @@ const DetailPage = ({ config }) => {
     }
 
     const Editor = config.EditorComponent;
+    const hasNotes = config.fields.some((field) => field.value === 'note' || field.label.toLowerCase() === 'note');
     const editorProps = {
         [config.editorProp]: record,
         mode: 'Modifica',
@@ -114,6 +116,12 @@ const DetailPage = ({ config }) => {
                         recordId={id}
                         relations={config.relations}
                     />
+                    {hasNotes && (
+                        <NoteAttachmentsPanel
+                            resource={config.resource}
+                            recordId={id}
+                        />
+                    )}
                 </>
             )}
             <div className="btn-back-container">
