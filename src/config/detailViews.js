@@ -8,16 +8,7 @@ import letturaApi from '../api/letturaApi';
 import listinoApi from '../api/listinoApi';
 import scadenzaApi from '../api/scadenzaApi';
 import servizioApi from '../api/servizioApi';
-import ArticoloEditor from '../components/shared/ArticoloEditor';
-import ClienteEditor from '../components/shared/ClienteEditor';
-import ContatoreEditor from '../components/shared/ContatoreEditor';
-import EdificioEditor from '../components/shared/EdificioEditor';
-import FasciaEditor from '../components/shared/FasciaEditor';
-import FatturaEditor from '../components/shared/FatturaEditor';
-import LetturaEditor from '../components/shared/LetturaEditor';
-import ListinoEditor from '../components/shared/ListinoEditor';
-import ScadenzaEditor from '../components/shared/ScadenzaEditor';
-import ServizioEditor from '../components/shared/ServizioEditor';
+import { editorComponents } from '../components/shared/editorComponents';
 import {
     boolText,
     formatDate,
@@ -35,7 +26,7 @@ export const detailViews = {
         listPath: '/articoli',
         title: 'Dettagli Articolo',
         editorProp: 'articolo',
-        EditorComponent: ArticoloEditor,
+        EditorComponent: editorComponents.articolo,
         api: api(articoloApi.getArticolo, articoloApi.updateArticolo, articoloApi.deleteArticolo),
         relations: ['servizi'],
         fields: [
@@ -49,7 +40,7 @@ export const detailViews = {
         listPath: '/clienti',
         title: 'Dettagli Cliente',
         editorProp: 'cliente',
-        EditorComponent: ClienteEditor,
+        EditorComponent: editorComponents.cliente,
         api: api(clienteApi.getCliente, clienteApi.updateCliente, clienteApi.deleteCliente),
         relations: ['contatori', 'fatture'],
         fields: [
@@ -96,7 +87,7 @@ export const detailViews = {
         listPath: '/contatori',
         title: 'Dettagli Contatore',
         editorProp: 'contatore',
-        EditorComponent: ContatoreEditor,
+        EditorComponent: editorComponents.contatore,
         api: api(contatoreApi.getContatore, contatoreApi.updateContatore, contatoreApi.deleteContatore),
         relations: ['cliente', 'letture', 'edificio', 'listino'],
         fields: [
@@ -127,7 +118,7 @@ export const detailViews = {
         listPath: '/edifici',
         title: 'Dettagli Edificio',
         editorProp: 'edificio',
-        EditorComponent: EdificioEditor,
+        EditorComponent: editorComponents.edificio,
         api: api(edificioApi.getEdificio, edificioApi.updateEdificio, edificioApi.deleteEdificio),
         relations: ['contatori'],
         fields: [
@@ -155,7 +146,7 @@ export const detailViews = {
         listPath: '/fasce',
         title: 'Dettagli Fascia',
         editorProp: 'fascia',
-        EditorComponent: FasciaEditor,
+        EditorComponent: editorComponents.fascia,
         api: api(fasciaApi.getFascia, fasciaApi.updateFascia, fasciaApi.deleteFascia),
         relations: ['listino'],
         fields: [
@@ -172,7 +163,7 @@ export const detailViews = {
         listPath: '/fatture',
         title: 'Dettagli Fattura',
         editorProp: 'fattura',
-        EditorComponent: FatturaEditor,
+        EditorComponent: editorComponents.fattura,
         api: api(fatturaApi.getFattura, fatturaApi.updateFattura, fatturaApi.deleteFattura),
         relations: ['cliente', 'servizi', 'scadenza'],
         fields: [
@@ -199,7 +190,7 @@ export const detailViews = {
         listPath: '/letture',
         title: 'Dettagli Lettura',
         editorProp: 'lettura',
-        EditorComponent: LetturaEditor,
+        EditorComponent: editorComponents.lettura,
         api: api(letturaApi.getLettura, letturaApi.updateLettura, letturaApi.deleteLettura),
         relations: ['servizi', 'contatore'],
         fields: [
@@ -216,7 +207,7 @@ export const detailViews = {
         listPath: '/listini',
         title: 'Dettagli Listino',
         editorProp: 'listino',
-        EditorComponent: ListinoEditor,
+        EditorComponent: editorComponents.listino,
         api: api(listinoApi.getListino, listinoApi.updateListino, listinoApi.deleteListino),
         relations: ['fasce', 'contatori'],
         fields: [
@@ -229,7 +220,7 @@ export const detailViews = {
         listPath: '/scadenze',
         title: 'Dettagli Scadenza',
         editorProp: 'scadenza',
-        EditorComponent: ScadenzaEditor,
+        EditorComponent: editorComponents.scadenza,
         api: api(scadenzaApi.getScadenza, scadenzaApi.updateScadenza, scadenzaApi.deleteScadenza),
         relations: ['fattura'],
         fields: [
@@ -254,7 +245,7 @@ export const detailViews = {
         listPath: '/servizi',
         title: 'Dettagli Servizio',
         editorProp: 'servizio',
-        EditorComponent: ServizioEditor,
+        EditorComponent: editorComponents.servizio,
         api: api(servizioApi.getServizio, servizioApi.updateServizio, servizioApi.deleteServizio),
         relations: ['lettura', 'articolo', 'fattura'],
         fields: [

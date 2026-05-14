@@ -7,15 +7,7 @@ import letturaApi from '../api/letturaApi';
 import listinoApi from '../api/listinoApi';
 import scadenzaApi from '../api/scadenzaApi';
 import servizioApi from '../api/servizioApi';
-import ArticoloEditor from '../components/shared/ArticoloEditor';
-import ClienteEditor from '../components/shared/ClienteEditor';
-import ContatoreEditor from '../components/shared/ContatoreEditor';
-import FasciaEditor from '../components/shared/FasciaEditor';
-import FatturaEditor from '../components/shared/FatturaEditor';
-import LetturaEditor from '../components/shared/LetturaEditor';
-import ListinoEditor from '../components/shared/ListinoEditor';
-import ScadenzaEditor from '../components/shared/ScadenzaEditor';
-import ServizioEditor from '../components/shared/ServizioEditor';
+import { editorComponents } from '../components/shared/editorComponents';
 import { boolText, formatDate, formatMoney, fullName, join } from '../utils/formatters';
 
 const api = (list, create, remove) => ({ list, create, remove });
@@ -27,7 +19,7 @@ export const listViews = {
         detailPath: '/articoli',
         newLabel: 'Nuovo Articolo',
         editorProp: 'articolo',
-        EditorComponent: ArticoloEditor,
+        EditorComponent: editorComponents.articolo,
         api: api(articoloApi.getArticoli, articoloApi.createArticolo, articoloApi.deleteArticolo),
         defaultSortField: 'codice',
         defaultSortOrder: 'asc',
@@ -43,7 +35,7 @@ export const listViews = {
         detailPath: '/clienti',
         newLabel: 'Nuovo Cliente',
         editorProp: 'cliente',
-        EditorComponent: ClienteEditor,
+        EditorComponent: editorComponents.cliente,
         api: api(clienteApi.getClienti, clienteApi.createCliente, clienteApi.deleteCliente),
         defaultSortField: 'cognome',
         defaultSortOrder: 'asc',
@@ -59,7 +51,7 @@ export const listViews = {
         detailPath: '/contatori',
         newLabel: 'Nuovo Contatore',
         editorProp: 'contatore',
-        EditorComponent: ContatoreEditor,
+        EditorComponent: editorComponents.contatore,
         api: api(contatoreApi.getContatori, contatoreApi.createContatore, contatoreApi.deleteContatore),
         defaultSortField: 'seriale',
         defaultSortOrder: 'asc',
@@ -76,7 +68,7 @@ export const listViews = {
         detailPath: '/fasce',
         newLabel: 'Nuova Fascia',
         editorProp: 'fascia',
-        EditorComponent: FasciaEditor,
+        EditorComponent: editorComponents.fascia,
         api: api(fasciaApi.getFasce, fasciaApi.createFascia, fasciaApi.deleteFascia),
         defaultSortField: 'tipo',
         defaultSortOrder: 'asc',
@@ -94,7 +86,7 @@ export const listViews = {
         newLabel: 'Nuova Fattura',
         createMode: 'Nuova',
         editorProp: 'fattura',
-        EditorComponent: FatturaEditor,
+        EditorComponent: editorComponents.fattura,
         api: api(fatturaApi.getFatture, fatturaApi.createFattura, fatturaApi.deleteFattura),
         defaultSortField: 'data_fattura',
         defaultSortOrder: 'desc',
@@ -112,7 +104,7 @@ export const listViews = {
         detailPath: '/letture',
         newLabel: 'Nuova Lettura',
         editorProp: 'lettura',
-        EditorComponent: LetturaEditor,
+        EditorComponent: editorComponents.lettura,
         api: api(letturaApi.getLetture, letturaApi.createLettura, letturaApi.deleteLettura),
         defaultSortField: 'data_lettura',
         defaultSortOrder: 'desc',
@@ -129,7 +121,7 @@ export const listViews = {
         detailPath: '/listini',
         newLabel: 'Nuovo Listino',
         editorProp: 'listino',
-        EditorComponent: ListinoEditor,
+        EditorComponent: editorComponents.listino,
         api: api(listinoApi.getListini, listinoApi.createListino, listinoApi.deleteListino),
         defaultSortField: 'categoria',
         defaultSortOrder: 'asc',
@@ -145,7 +137,7 @@ export const listViews = {
         newLabel: 'Nuova Scadenza',
         createMode: 'Nuova',
         editorProp: 'scadenza',
-        EditorComponent: ScadenzaEditor,
+        EditorComponent: editorComponents.scadenza,
         api: api(scadenzaApi.getScadenze, scadenzaApi.createScadenza, scadenzaApi.deleteScadenza),
         itemsPerPage: 100,
         defaultSortField: 'scadenza',
@@ -164,7 +156,7 @@ export const listViews = {
         detailPath: '/servizi',
         newLabel: 'Nuovo Servizio',
         editorProp: 'servizio',
-        EditorComponent: ServizioEditor,
+        EditorComponent: editorComponents.servizio,
         api: api(servizioApi.getServizi, servizioApi.createServizio, servizioApi.deleteServizio),
         defaultSortField: 'data_lettura',
         defaultSortOrder: 'desc',

@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import edificioApi from '../../api/edificioApi';
-import EdificioEditor from '../shared/EdificioEditor';
+import { editorComponents } from '../shared/editorComponents';
 import { useFeedback } from '../shared/FeedbackProvider';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 const defaultMarkerIcon = L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' });
 const highlightedMarkerIcon = L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png' });
+const EdificioEditor = editorComponents.edificio;
 
 const EdificioList = ({ onSelectEdificio }) => {
     const [edifici, setEdifici] = useState([]);

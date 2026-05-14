@@ -6,53 +6,34 @@ import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import RelationViewPage from './pages/RelationViewPage';
 import FeedbackProvider from './components/shared/FeedbackProvider';
+import { detailComponents } from './components/shared/detailComponents';
+import { listComponents } from './components/shared/listComponents';
 import './styles/App.css';
-
-import ClienteList from './components/Cliente/ClienteList';
-import ClienteDetails from './components/Cliente/ClienteDetails';
-import ContatoreList from './components/Contatore/ContatoreList';
-import ContatoreDetails from './components/Contatore/ContatoreDetails';
-import EdificioList from './components/Edificio/EdificioList';
-import EdificioDetails from './components/Edificio/EdificioDetails';
-import LetturaList from './components/Lettura/LetturaList';
-import LetturaDetails from './components/Lettura/LetturaDetails';
-import FatturaList from './components/Fattura/FatturaList';
-import FatturaDetails from './components/Fattura/FatturaDetails';
-import ServizioList from './components/Servizio/ServizioList';
-import ServizioDetails from './components/Servizio/ServizioDetails';
-import ArticoloList from './components/Articolo/ArticoloList';
-import ArticoloDetails from './components/Articolo/ArticoloDetails';
-import ListinoList from './components/Listino/ListinoList';
-import ListinoDetails from './components/Listino/ListinoDetails';
-import FasciaList from './components/Fascia/FasciaList';
-import FasciaDetails from './components/Fascia/FasciaDetails';
-import ScadenzaList from './components/Scadenza/ScadenzaList';
-import ScadenzaDetails from './components/Scadenza/ScadenzaDetails';
 import ProfilePage from './pages/ProfilePage';
+
+const resourceRoutes = [
+    { resource: 'contatori', path: '/contatori' },
+    { resource: 'clienti', path: '/clienti' },
+    { resource: 'edifici', path: '/edifici' },
+    { resource: 'letture', path: '/letture' },
+    { resource: 'fatture', path: '/fatture' },
+    { resource: 'servizi', path: '/servizi' },
+    { resource: 'articoli', path: '/articoli' },
+    { resource: 'listini', path: '/listini' },
+    { resource: 'fasce', path: '/fasce' },
+    { resource: 'scadenze', path: '/scadenze' },
+];
+
+const entityRoutes = resourceRoutes.reduce((routes, { resource, path }) => ([
+    ...routes,
+    { path: `${path}/:id`, component: detailComponents[resource] },
+    { path, component: listComponents[resource] },
+]), []);
 
 const protectedRoutes = [
     { path: '/auth/profile', component: ProfilePage },
     { path: '/:resource/:id/:relation', exact: true, component: RelationViewPage },
-    { path: '/contatori/:id', component: ContatoreDetails },
-    { path: '/contatori', component: ContatoreList },
-    { path: '/clienti/:id', component: ClienteDetails },
-    { path: '/clienti', component: ClienteList },
-    { path: '/edifici/:id', component: EdificioDetails },
-    { path: '/edifici', component: EdificioList },
-    { path: '/letture/:id', component: LetturaDetails },
-    { path: '/letture', component: LetturaList },
-    { path: '/fatture/:id', component: FatturaDetails },
-    { path: '/fatture', component: FatturaList },
-    { path: '/servizi/:id', component: ServizioDetails },
-    { path: '/servizi', component: ServizioList },
-    { path: '/articoli/:id', component: ArticoloDetails },
-    { path: '/articoli', component: ArticoloList },
-    { path: '/listini/:id', component: ListinoDetails },
-    { path: '/listini', component: ListinoList },
-    { path: '/fasce/:id', component: FasciaDetails },
-    { path: '/fasce', component: FasciaList },
-    { path: '/scadenze/:id', component: ScadenzaDetails },
-    { path: '/scadenze', component: ScadenzaList },
+    ...entityRoutes,
     { path: '/', exact: true, component: HomePage },
 ];
 

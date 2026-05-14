@@ -1,4 +1,4 @@
-import React from 'react';
+import { isValidElement } from 'react';
 import articoloApi from '../api/articoloApi';
 import clienteApi from '../api/clienteApi';
 import contatoreApi from '../api/contatoreApi';
@@ -9,26 +9,8 @@ import letturaApi from '../api/letturaApi';
 import listinoApi from '../api/listinoApi';
 import scadenzaApi from '../api/scadenzaApi';
 import servizioApi from '../api/servizioApi';
-import ArticoloList from '../components/Articolo/ArticoloList';
-import ClienteList from '../components/Cliente/ClienteList';
-import ContatoreList from '../components/Contatore/ContatoreList';
-import EdificioList from '../components/Edificio/EdificioList';
-import FasciaList from '../components/Fascia/FasciaList';
-import FatturaList from '../components/Fattura/FatturaList';
-import LetturaList from '../components/Lettura/LetturaList';
-import ListinoList from '../components/Listino/ListinoList';
-import ScadenzaList from '../components/Scadenza/ScadenzaList';
-import ServizioList from '../components/Servizio/ServizioList';
-import ArticoloEditor from '../components/shared/ArticoloEditor';
-import ClienteEditor from '../components/shared/ClienteEditor';
-import ContatoreEditor from '../components/shared/ContatoreEditor';
-import EdificioEditor from '../components/shared/EdificioEditor';
-import FasciaEditor from '../components/shared/FasciaEditor';
-import FatturaEditor from '../components/shared/FatturaEditor';
-import LetturaEditor from '../components/shared/LetturaEditor';
-import ListinoEditor from '../components/shared/ListinoEditor';
-import ScadenzaEditor from '../components/shared/ScadenzaEditor';
-import ServizioEditor from '../components/shared/ServizioEditor';
+import { editorComponents } from '../components/shared/editorComponents';
+import { listComponents } from '../components/shared/listComponents';
 import {
     EMPTY_VALUE,
     boolText,
@@ -51,8 +33,8 @@ export const resourceViews = {
         basePath: '/articoli',
         get: articoloApi.getArticolo,
         create: articoloApi.createArticolo,
-        ListComponent: ArticoloList,
-        EditorComponent: ArticoloEditor,
+        ListComponent: listComponents.articoli,
+        EditorComponent: editorComponents.articolo,
         editorProp: 'articolo',
         selectProp: 'onSelectArticolo',
         title: (record) => join(record.codice, record.descrizione),
@@ -63,8 +45,8 @@ export const resourceViews = {
         basePath: '/clienti',
         get: clienteApi.getCliente,
         create: clienteApi.createCliente,
-        ListComponent: ClienteList,
-        EditorComponent: ClienteEditor,
+        ListComponent: listComponents.clienti,
+        EditorComponent: editorComponents.cliente,
         editorProp: 'cliente',
         selectProp: 'onSelectCliente',
         title: (record) => fullName(record) || record.ragione_sociale || empty,
@@ -75,8 +57,8 @@ export const resourceViews = {
         basePath: '/contatori',
         get: contatoreApi.getContatore,
         create: contatoreApi.createContatore,
-        ListComponent: ContatoreList,
-        EditorComponent: ContatoreEditor,
+        ListComponent: listComponents.contatori,
+        EditorComponent: editorComponents.contatore,
         editorProp: 'contatore',
         selectProp: 'onSelectContatore',
         title: (record) => join(record.codice, record.seriale, record.nome_cliente),
@@ -87,8 +69,8 @@ export const resourceViews = {
         basePath: '/edifici',
         get: edificioApi.getEdificio,
         create: edificioApi.createEdificio,
-        ListComponent: EdificioList,
-        EditorComponent: EdificioEditor,
+        ListComponent: listComponents.edifici,
+        EditorComponent: editorComponents.edificio,
         editorProp: 'edificio',
         selectProp: 'onSelectEdificio',
         title: (record) => join(record.descrizione, record.indirizzo),
@@ -99,8 +81,8 @@ export const resourceViews = {
         basePath: '/fasce',
         get: fasciaApi.getFascia,
         create: fasciaApi.createFascia,
-        ListComponent: FasciaList,
-        EditorComponent: FasciaEditor,
+        ListComponent: listComponents.fasce,
+        EditorComponent: editorComponents.fascia,
         editorProp: 'fascia',
         selectProp: 'onSelectFascia',
         title: (record) => join(record.tipo, `${record.min || 0}/${record.max || 0}`),
@@ -111,8 +93,8 @@ export const resourceViews = {
         basePath: '/fatture',
         get: fatturaApi.getFattura,
         create: fatturaApi.createFattura,
-        ListComponent: FatturaList,
-        EditorComponent: FatturaEditor,
+        ListComponent: listComponents.fatture,
+        EditorComponent: editorComponents.fattura,
         editorProp: 'fattura',
         selectProp: 'onSelectFattura',
         title: (record) => join(record.tipo_documento, record.numero, record.ragione_sociale),
@@ -123,8 +105,8 @@ export const resourceViews = {
         basePath: '/letture',
         get: letturaApi.getLettura,
         create: letturaApi.createLettura,
-        ListComponent: LetturaList,
-        EditorComponent: LetturaEditor,
+        ListComponent: listComponents.letture,
+        EditorComponent: editorComponents.lettura,
         editorProp: 'lettura',
         selectProp: 'onSelectLettura',
         title: (record) => join(formatDate(record.data_lettura), record.consumo),
@@ -135,8 +117,8 @@ export const resourceViews = {
         basePath: '/listini',
         get: listinoApi.getListino,
         create: listinoApi.createListino,
-        ListComponent: ListinoList,
-        EditorComponent: ListinoEditor,
+        ListComponent: listComponents.listini,
+        EditorComponent: editorComponents.listino,
         editorProp: 'listino',
         selectProp: 'onSelectListino',
         title: (record) => join(record.categoria, record.descrizione),
@@ -147,8 +129,8 @@ export const resourceViews = {
         basePath: '/scadenze',
         get: scadenzaApi.getScadenza,
         create: scadenzaApi.createScadenza,
-        ListComponent: ScadenzaList,
-        EditorComponent: ScadenzaEditor,
+        ListComponent: listComponents.scadenze,
+        EditorComponent: editorComponents.scadenza,
         editorProp: 'scadenza',
         selectProp: 'onSelectScadenza',
         title: (record) => join(fullName(record), formatDate(record.scadenza)),
@@ -159,8 +141,8 @@ export const resourceViews = {
         basePath: '/servizi',
         get: servizioApi.getServizio,
         create: servizioApi.createServizio,
-        ListComponent: ServizioList,
-        EditorComponent: ServizioEditor,
+        ListComponent: listComponents.servizi,
+        EditorComponent: editorComponents.servizio,
         editorProp: 'servizio',
         selectProp: 'onSelectServizio',
         title: (record) => join(record.descrizione, record.seriale),
@@ -514,5 +496,5 @@ export const getRelationLinks = (parentResource, relationKeys) => {
 
 export const renderRelationCell = (column, record) => {
     const value = column.value(record);
-    return React.isValidElement(value) ? value : value || empty;
+    return isValidElement(value) ? value : value || empty;
 };
