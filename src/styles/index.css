@@ -149,9 +149,10 @@ a {
 .relation-link-card {
     display: grid;
     min-height: 96px;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 30px minmax(0, 1fr);
     padding: 15px;
     align-content: start;
+    align-items: start;
     gap: 7px 10px;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -171,6 +172,11 @@ a {
     border: 1px solid var(--color-border);
     border-radius: 7px;
     font-size: 0.92rem;
+}
+
+.relation-link-icon .icon {
+    width: 15px;
+    height: 15px;
 }
 
 .relation-link-card:hover {
@@ -194,10 +200,16 @@ a {
     align-items: center;
     gap: 5px;
     grid-column: 2;
+    justify-self: start;
     color: var(--color-primary-strong);
     font-size: 0.84rem;
     font-weight: 900;
     text-transform: uppercase;
+}
+
+.relation-link-action .icon {
+    width: 13px;
+    height: 13px;
 }
 
 .relation-view-page {
@@ -238,6 +250,7 @@ a {
 .relation-view-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: flex-end;
     gap: 10px;
 }
@@ -382,6 +395,7 @@ a {
 .detail-page-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: flex-end;
     gap: 9px;
 }
@@ -581,11 +595,15 @@ a {
 .content table:not(.info-table) td:last-child {
     min-width: 178px;
     white-space: normal;
+    text-align: left;
 }
 
 .content table:not(.info-table) td:last-child .btn,
 .content table:not(.info-table) td:last-child button,
 .content table:not(.info-table) td:last-child a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-height: 32px;
     margin: 2px 4px 2px 0;
     padding: 6px 9px;
@@ -618,7 +636,7 @@ a {
     flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 6px;
     margin: 0;
     padding: 7px 11px;
     color: #ffffff;
@@ -640,7 +658,8 @@ a {
 .auth-container .btn .icon {
     width: 15px;
     height: 15px;
-    margin-top: 1px;
+    flex: 0 0 15px;
+    margin: 0;
 }
 
 .App .btn-prev,
@@ -1037,16 +1056,18 @@ input[type="checkbox"] {
     }
 
     .detail-page-actions {
-        justify-content: stretch;
+        justify-content: flex-start;
     }
 
     .detail-page-actions .btn {
-        flex: 1 1 130px;
+        flex: 0 1 auto;
+        min-width: 118px;
     }
 
     .relation-view-header,
     .relation-view-body {
         padding: 16px;
+        overflow: visible;
     }
 
     .relation-view-header,
@@ -1057,15 +1078,22 @@ input[type="checkbox"] {
 
     .relation-view-actions .btn,
     .relation-view-actions button {
-        flex: 1 1 160px;
+        flex: 1 1 150px;
+        justify-content: center;
     }
 
     .relation-modal {
+        align-items: flex-start;
+        overflow-y: auto;
         padding: 8px;
+        -webkit-overflow-scrolling: touch;
     }
 
     .relation-modal-content {
+        max-height: calc(100dvh - 16px);
+        overflow-y: auto;
         padding: 12px;
+        -webkit-overflow-scrolling: touch;
     }
 
     .relation-modal-header {
@@ -1139,8 +1167,9 @@ input[type="checkbox"] {
 
     .App .btn .icon,
     .auth-container .btn .icon {
-        width: 16px;
-        height: 16px;
+        width: 15px;
+        height: 15px;
+        flex-basis: 15px;
     }
 
     .App .btn-prev,
@@ -1152,7 +1181,7 @@ input[type="checkbox"] {
     .content table:not(.info-table) td:last-child button,
     .content table:not(.info-table) td:last-child a {
         min-height: 36px;
-        padding: 7px 10px;
+        padding: 7px 11px;
     }
 
     .btn-back-container .btn {
@@ -1184,6 +1213,16 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 640px) {
+    .relation-view-page,
+    .relation-view-body,
+    .relation-table-container {
+        min-height: 0;
+    }
+
+    .relation-table-container {
+        max-height: none;
+    }
+
     .content .table-container {
         overflow: visible;
         background: transparent;
@@ -1324,6 +1363,8 @@ input[type="checkbox"] {
         min-width: 0;
         flex-wrap: wrap;
         gap: 7px;
+        align-items: center;
+        justify-content: flex-start;
         padding-top: 11px;
         border-bottom: 0;
     }
@@ -1335,9 +1376,47 @@ input[type="checkbox"] {
     .content table:not(.info-table) tbody td:last-child .btn,
     .content table:not(.info-table) tbody td:last-child button,
     .content table:not(.info-table) tbody td:last-child a {
-        flex: 1 1 96px;
+        flex: 0 1 auto;
+        min-width: 94px;
         margin: 0;
         justify-content: center;
+    }
+
+    .relation-link-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .relation-link-card {
+        min-height: 0;
+        grid-template-columns: 28px minmax(0, 1fr);
+        padding: 13px;
+        gap: 5px 9px;
+    }
+
+    .relation-link-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+    }
+
+    .relation-link-icon .icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .relation-link-action {
+        margin-top: 2px;
+        font-size: 0.78rem;
+    }
+
+    .relation-link-action .icon {
+        width: 12px;
+        height: 12px;
+    }
+
+    .detail-page-actions,
+    .relation-view-actions {
+        justify-content: flex-start;
     }
 
     .content table:not(.info-table) tbody .table-state-row {
@@ -1354,5 +1433,16 @@ input[type="checkbox"] {
 
     .content table:not(.info-table) tbody .table-state-row td::before {
         content: none;
+    }
+}
+
+@media (max-width: 380px) {
+    .content table:not(.info-table) tbody td:last-child .btn,
+    .content table:not(.info-table) tbody td:last-child button,
+    .content table:not(.info-table) tbody td:last-child a,
+    .detail-page-actions .btn,
+    .relation-view-actions .btn,
+    .relation-view-actions button {
+        flex: 1 1 100%;
     }
 }
