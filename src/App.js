@@ -8,21 +8,15 @@ import RelationViewPage from './pages/RelationViewPage';
 import FeedbackProvider from './components/shared/FeedbackProvider';
 import { detailComponents } from './components/shared/detailComponents';
 import { listComponents } from './components/shared/listComponents';
+import { navigationItems } from './config/navigation';
 import './styles/App.css';
 import ProfilePage from './pages/ProfilePage';
 
-const resourceRoutes = [
-    { resource: 'contatori', path: '/contatori' },
-    { resource: 'clienti', path: '/clienti' },
-    { resource: 'edifici', path: '/edifici' },
-    { resource: 'letture', path: '/letture' },
-    { resource: 'fatture', path: '/fatture' },
-    { resource: 'servizi', path: '/servizi' },
-    { resource: 'articoli', path: '/articoli' },
-    { resource: 'listini', path: '/listini' },
-    { resource: 'fasce', path: '/fasce' },
-    { resource: 'scadenze', path: '/scadenze' },
-];
+const isResourceRoute = (item) => item.path !== '/' && !item.path.startsWith('/auth/');
+
+const resourceRoutes = navigationItems
+    .filter(isResourceRoute)
+    .map(({ path }) => ({ path, resource: path.replace(/^\//, '') }));
 
 const entityRoutes = resourceRoutes.reduce((routes, { resource, path }) => ([
     ...routes,

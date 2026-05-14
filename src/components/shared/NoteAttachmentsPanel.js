@@ -48,6 +48,38 @@ const readImageFile = (file) => new Promise((resolve, reject) => {
     image.src = objectUrl;
 });
 
+const AttachmentCard = ({ attachment, onDelete }) => {
+    const fileUrl = attachmentApi.fileUrl(attachment._id);
+
+    return (
+        <article className="note-attachment-card">
+            <a
+                href={fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="note-attachment-preview"
+            >
+                <img
+                    src={fileUrl}
+                    alt={attachment.filename}
+                    loading="lazy"
+                />
+            </a>
+            <div className="note-attachment-meta">
+                <strong>{attachment.filename}</strong>
+                <span>{formatDate(attachment.createdAt)}</span>
+            </div>
+            <button
+                type="button"
+                className="btn btn-delete"
+                onClick={() => onDelete(attachment)}
+            >
+                Elimina
+            </button>
+        </article>
+    );
+};
+
 const NoteAttachmentsPanel = ({ resource, recordId }) => {
     const { confirm, notify } = useFeedback();
     const fileInputRef = useRef(null);
@@ -151,31 +183,11 @@ const NoteAttachmentsPanel = ({ resource, recordId }) => {
             {!isLoading && attachments.length > 0 && (
                 <div className="note-attachments-grid">
                     {attachments.map((attachment) => (
-                        <article className="note-attachment-card" key={attachment._id}>
-                            <a
-                                href={attachmentApi.fileUrl(attachment._id)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="note-attachment-preview"
-                            >
-                                <img
-                                    src={attachmentApi.fileUrl(attachment._id)}
-                                    alt={attachment.filename}
-                                    loading="lazy"
-                                />
-                            </a>
-                            <div className="note-attachment-meta">
-                                <strong>{attachment.filename}</strong>
-                                <span>{formatDate(attachment.createdAt)}</span>
-                            </div>
-                            <button
-                                type="button"
-                                className="btn btn-delete"
-                                onClick={() => handleDelete(attachment)}
-                            >
-                                Elimina
-                            </button>
-                        </article>
+                        <AttachmentCard
+                            attachment={attachment}
+                            key={attachment._id}
+                            onDelete={handleDelete}
+                        />
                     ))}
                 </div>
             )}
