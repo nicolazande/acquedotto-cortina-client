@@ -1,9 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { getRelationLinks } from '../../config/relationViews';
+import { getContextBackSearch } from '../../hooks/useContextBack';
 
 const RelationLinkGrid = ({ resource, recordId, relations }) => {
+    const location = useLocation();
     const links = getRelationLinks(resource, relations);
+    const contextSearch = getContextBackSearch(location.search);
 
     if (!recordId || links.length === 0) {
         return null;
@@ -19,7 +22,7 @@ const RelationLinkGrid = ({ resource, recordId, relations }) => {
                 {links.map((link) => (
                     <Link
                         className="relation-link-card"
-                        to={`/${resource}/${recordId}/${link.key}`}
+                        to={`/${resource}/${recordId}/${link.key}${contextSearch}`}
                         key={link.key}
                     >
                         <span className="relation-link-title">{link.title}</span>

@@ -5,7 +5,11 @@ import { listViews } from '../../config/listViews';
 
 const createListComponent = (resourceKey, selectProp) => {
     const ListComponent = (props) => (
-        <ListPage config={listViews[resourceKey]} onSelect={props[selectProp]} />
+        <ListPage
+            config={listViews[resourceKey]}
+            detailReturnLabel={props.detailReturnLabel}
+            onSelect={props[selectProp]}
+        />
     );
 
     ListComponent.displayName = `${resourceKey}List`;

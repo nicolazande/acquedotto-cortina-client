@@ -1,11 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import {
     getRelationView,
     renderRelationCell,
     responseData,
 } from '../config/relationViews';
-import { createContextBackSearch } from '../hooks/useContextBack';
+import {
+    appendSearch,
+    createContextBackSearch,
+    getContextBackSearch,
+} from '../hooks/useContextBack';
 import { useFeedback } from '../components/shared/FeedbackProvider';
 
 const asArray = (value) => {
@@ -18,6 +22,7 @@ const getRecordId = (record) => record?._id;
 const RelationViewPage = () => {
     const { resource, id, relation } = useParams();
     const history = useHistory();
+    const location = useLocation();
     const config = getRelationView(resource, relation);
     const { notify } = useFeedback();
     const [parent, setParent] = useState(null);
@@ -77,21 +82,26 @@ const RelationViewPage = () => {
     const TargetList = config.target.ListComponent;
     const TargetEditor = config.target.EditorComponent;
     const parentPath = `${config.parent.basePath}/${id}`;
+    const inheritedContextSearch = getContextBackSearch(location.search);
+    const parentPathWithContext = appendSearch(parentPath, inheritedContextSearch);
     const parentReturnSearch = createContextBackSearch(
-        parentPath,
-        config.parent.singular.toLowerCase()
+        parentPathWithContext,
+        `scheda ${config.parent.singular.toLowerCase()}`
     );
-    const selectProps = { [config.target.selectProp]: async (selectedId) => {
-        try {
-            await config.associate(id, selectedId);
-            setSelecting(false);
-            notify('Record associato con successo', 'success');
-            await loadData();
-        } catch (associateError) {
-            notify('Errore durante l\'associazione', 'error');
-            console.error(associateError);
-        }
-    } };
+    const selectProps = {
+        detailReturnLabel: `vista ${config.title.toLowerCase()}`,
+        [config.target.selectProp]: async (selectedId) => {
+            try {
+                await config.associate(id, selectedId);
+                setSelecting(false);
+                notify('Record associato con successo', 'success');
+                await loadData();
+            } catch (associateError) {
+                notify('Errore durante l\'associazione', 'error');
+                console.error(associateError);
+            }
+        },
+    };
     const editorProps = {
         [config.target.editorProp]: config.defaultValues(parent || {}),
         mode: 'Nuovo',
@@ -118,7 +128,7 @@ const RelationViewPage = () => {
                     <p>{parentTitle || 'Record selezionato'}</p>
                 </div>
                 <div className="relation-view-actions">
-                    <Link className="btn btn-secondary" to={parentPath}>
+                    <Link className="btn btn-secondary" to={parentPathWithContext}>
                         Scheda principale
                     </Link>
                     <button className="btn btn-primary" onClick={() => setSelecting(true)}>

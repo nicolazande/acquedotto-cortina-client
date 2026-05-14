@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import edificioApi from '../../api/edificioApi';
+import { createContextBackSearch, getLocationPath } from '../../hooks/useContextBack';
 import { editorComponents } from '../shared/editorComponents';
 import { useFeedback } from '../shared/FeedbackProvider';
 import L from 'leaflet';
@@ -10,7 +11,7 @@ const defaultMarkerIcon = L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms
 const highlightedMarkerIcon = L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png' });
 const EdificioEditor = editorComponents.edificio;
 
-const EdificioList = ({ onSelectEdificio }) => {
+const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' }) => {
     const [edifici, setEdifici] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeSearch, setActiveSearch] = useState('');
@@ -28,6 +29,10 @@ const EdificioList = ({ onSelectEdificio }) => {
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
+    const detailReturnSearch = createContextBackSearch(
+        getLocationPath(location),
+        detailReturnLabel
+    );
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
     const sortField = queryParams.get('sortField') || 'descrizione';
     const sortOrder = queryParams.get('sortOrder') || 'asc';
@@ -179,7 +184,7 @@ const EdificioList = ({ onSelectEdificio }) => {
     };
 
     const handleDettagliClick = (edificioId) => {
-        history.push(`/edifici/${edificioId}`);
+        history.push(`/edifici/${edificioId}${detailReturnSearch}`);
     };
 
     return (

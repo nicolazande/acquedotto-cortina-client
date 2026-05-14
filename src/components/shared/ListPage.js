@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { createContextBackSearch, getLocationPath } from '../../hooks/useContextBack';
 import { formatFieldValue } from '../../utils/formatters';
 import { useFeedback } from './FeedbackProvider';
 
 const SLOT_SIZE = 10;
 
-const ListPage = ({ config, onSelect }) => {
+const ListPage = ({ config, onSelect, detailReturnLabel }) => {
     const [records, setRecords] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeSearch, setActiveSearch] = useState('');
@@ -16,6 +17,10 @@ const ListPage = ({ config, onSelect }) => {
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
+    const detailReturnSearch = createContextBackSearch(
+        getLocationPath(location),
+        detailReturnLabel || config.title.toLowerCase()
+    );
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
     const sortField = queryParams.get('sortField') || config.defaultSortField;
     const sortOrder = queryParams.get('sortOrder') || config.defaultSortOrder;
@@ -169,7 +174,7 @@ const ListPage = ({ config, onSelect }) => {
                                     <td>
                                         <button
                                             className="btn btn-details"
-                                            onClick={() => history.push(`${config.detailPath}/${record._id}`)}
+                                            onClick={() => history.push(`${config.detailPath}/${record._id}${detailReturnSearch}`)}
                                         >
                                             Dettagli
                                         </button>

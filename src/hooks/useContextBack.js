@@ -4,6 +4,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 const RETURN_TO_PARAM = 'returnTo';
 const RETURN_LABEL_PARAM = 'returnLabel';
 
+export const appendSearch = (path, search = '') => `${path}${search || ''}`;
+
 export const createContextBackSearch = (returnTo, returnLabel) => {
     const params = new URLSearchParams();
 
@@ -19,9 +21,25 @@ export const createContextBackSearch = (returnTo, returnLabel) => {
     return query ? `?${query}` : '';
 };
 
-const getBackLabel = (returnLabel, defaultLabel) => (
-    returnLabel ? `Torna alla scheda ${returnLabel}` : defaultLabel
-);
+export const getContextBackSearch = (search = '') => {
+    const params = new URLSearchParams(search);
+    return createContextBackSearch(params.get(RETURN_TO_PARAM), params.get(RETURN_LABEL_PARAM));
+};
+
+export const getLocationPath = (location) => appendSearch(location.pathname, location.search);
+
+const getBackLabel = (returnLabel, defaultLabel) => {
+    if (!returnLabel) return defaultLabel;
+
+    const normalizedLabel = returnLabel.toLowerCase();
+    const hasExplicitTarget = ['lista ', 'scheda ', 'vista '].some((prefix) => (
+        normalizedLabel.startsWith(prefix)
+    ));
+
+    return hasExplicitTarget
+        ? `Torna alla ${returnLabel}`
+        : `Torna alla scheda ${returnLabel}`;
+};
 
 export const useContextBack = (fallbackPath, defaultLabel = 'Indietro') => {
     const history = useHistory();
