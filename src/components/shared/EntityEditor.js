@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Icon from './Icon';
 
 const READ_ONLY_MODE = 'Visualizza';
 
@@ -103,10 +104,12 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
                     <div className="btn-container">
                         {!isReadOnly && (
                             <button type="submit" className="btn btn-save">
+                                <Icon name="check" />
                                 {mode === 'Modifica' ? 'Salva Modifiche' : config.createButtonLabel}
                             </button>
                         )}
                         <button type="button" className="btn btn-cancel" onClick={onCancel}>
+                            <Icon name="arrowLeft" />
                             {isReadOnly ? 'Chiudi' : 'Annulla'}
                         </button>
                     </div>

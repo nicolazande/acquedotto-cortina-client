@@ -14,7 +14,7 @@ const api = (list, create, remove) => ({ list, create, remove });
 
 export const listViews = {
     articoli: {
-        title: 'Lista Articoli',
+        title: 'Articoli',
         className: 'articolo',
         detailPath: '/articoli',
         newLabel: 'Nuovo Articolo',
@@ -30,7 +30,7 @@ export const listViews = {
         ],
     },
     clienti: {
-        title: 'Lista Clienti',
+        title: 'Clienti',
         className: 'cliente',
         detailPath: '/clienti',
         newLabel: 'Nuovo Cliente',
@@ -46,7 +46,7 @@ export const listViews = {
         ],
     },
     contatori: {
-        title: 'Lista Contatori',
+        title: 'Contatori',
         className: 'contatore',
         detailPath: '/contatori',
         newLabel: 'Nuovo Contatore',
@@ -63,7 +63,7 @@ export const listViews = {
         ],
     },
     fasce: {
-        title: 'Lista Fasce',
+        title: 'Fasce',
         className: 'fascia',
         detailPath: '/fasce',
         newLabel: 'Nuova Fascia',
@@ -80,7 +80,7 @@ export const listViews = {
         ],
     },
     fatture: {
-        title: 'Lista Fatture',
+        title: 'Fatture',
         className: 'fattura',
         detailPath: '/fatture',
         newLabel: 'Nuova Fattura',
@@ -99,7 +99,7 @@ export const listViews = {
         ],
     },
     letture: {
-        title: 'Lista Letture',
+        title: 'Letture',
         className: 'lettura',
         detailPath: '/letture',
         newLabel: 'Nuova Lettura',
@@ -116,7 +116,7 @@ export const listViews = {
         ],
     },
     listini: {
-        title: 'Lista Listini',
+        title: 'Listini',
         className: 'listino',
         detailPath: '/listini',
         newLabel: 'Nuovo Listino',
@@ -131,7 +131,7 @@ export const listViews = {
         ],
     },
     scadenze: {
-        title: 'Lista Scadenze',
+        title: 'Scadenze',
         className: 'scadenza',
         detailPath: '/scadenze',
         newLabel: 'Nuova Scadenza',
@@ -151,7 +151,7 @@ export const listViews = {
         ],
     },
     servizi: {
-        title: 'Lista Servizi',
+        title: 'Servizi',
         className: 'servizio',
         detailPath: '/servizi',
         newLabel: 'Nuovo Servizio',

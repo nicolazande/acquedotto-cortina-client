@@ -3,16 +3,23 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { createContextBackSearch, getLocationPath } from '../../hooks/useContextBack';
 import { formatFieldValue } from '../../utils/formatters';
 import { useFeedback } from './FeedbackProvider';
-
-const SLOT_SIZE = 10;
+import Icon from './Icon';
+import {
+    PageHeader,
+    Pagination,
+    SearchToolbar,
+    SortableHeader,
+    TableStateRow,
+} from './PageChrome';
 
 const ListPage = ({ config, onSelect, detailReturnLabel }) => {
     const [records, setRecords] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeSearch, setActiveSearch] = useState('');
     const [creating, setCreating] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [totalItems, setTotalItems] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
-    const [currentSlotStart, setCurrentSlotStart] = useState(1);
     const { confirm, notify } = useFeedback();
     const history = useHistory();
     const location = useLocation();
@@ -32,13 +39,19 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
         field = sortField,
         order = sortOrder
     ) => {
+        setIsLoading(true);
+
         try {
             const response = await config.api.list(page, itemsPerPage, search, field, order);
-            setRecords(response.data.data);
-            setTotalPages(response.data.totalPages);
+            const nextRecords = response.data.data || [];
+            setRecords(nextRecords);
+            setTotalItems(response.data.totalItems || nextRecords.length);
+            setTotalPages(response.data.totalPages || 1);
         } catch (error) {
             notify(`Errore durante il recupero di ${config.title.toLowerCase()}`, 'error');
             console.error(error);
+        } finally {
+            setIsLoading(false);
         }
     }, [activeSearch, config, currentPage, itemsPerPage, notify, sortField, sortOrder]);
 
@@ -82,36 +95,6 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
         }
     };
 
-    const handleSlotChange = (direction) => {
-        if (direction === 'prev' && currentSlotStart > 1) {
-            setCurrentSlotStart((prev) => Math.max(prev - SLOT_SIZE, 1));
-        } else if (direction === 'next' && currentSlotStart + SLOT_SIZE <= totalPages) {
-            setCurrentSlotStart((prev) => prev + SLOT_SIZE);
-        }
-    };
-
-    const renderSortIndicator = (field) => (
-        sortField === field ? (sortOrder === 'asc' ? '▲' : '▼') : ''
-    );
-
-    const renderPageButtons = () => {
-        const buttons = [];
-
-        for (let page = currentSlotStart; page < currentSlotStart + SLOT_SIZE && page <= totalPages; page += 1) {
-            buttons.push(
-                <button
-                    key={page}
-                    className={`page-button ${currentPage === page ? 'active' : ''}`}
-                    onClick={() => updateQuery(page)}
-                >
-                    {page}
-                </button>
-            );
-        }
-
-        return buttons;
-    };
-
     const Editor = config.EditorComponent;
     const editorProps = {
         [config.editorProp]: {},
@@ -133,40 +116,51 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
     return (
         <div className={`${config.className}-list-container`}>
             <div className={`${config.className}-list`}>
-                <h2>{config.title}</h2>
-                <div className="search-container">
-                    <div className="search-bar">
-                        <input
-                            type="text"
-                            placeholder="Cerca..."
-                            value={searchTerm}
-                            onChange={(event) => setSearchTerm(event.target.value)}
-                        />
-                        <button onClick={handleSearch} className="btn btn-search">
-                            Cerca
-                        </button>
-                        <button
-                            className={`btn btn-new-${config.className}`}
-                            onClick={() => setCreating(true)}
-                        >
-                            {config.newLabel}
-                        </button>
-                    </div>
-                </div>
+                <PageHeader
+                    className="list-page-heading"
+                    eyebrow="Archivio"
+                    title={config.title}
+                    countLabel={isLoading ? 'Caricamento' : `${totalItems} record`}
+                />
+                <SearchToolbar
+                    value={searchTerm}
+                    onChange={setSearchTerm}
+                    onSearch={handleSearch}
+                    onCreate={() => setCreating(true)}
+                    searchLabel={`Cerca ${config.title.toLowerCase()}`}
+                    placeholder={`Cerca ${config.title.toLowerCase()}...`}
+                    createClassName={`btn btn-new-${config.className}`}
+                    createLabel={config.newLabel}
+                />
                 <div className="table-container">
                     <table className={`${config.className}-table`}>
                         <thead>
                             <tr>
                                 {config.columns.map((column) => (
-                                    <th key={column.label} onClick={() => handleSort(column.sortField)}>
-                                        {column.label} {renderSortIndicator(column.sortField)}
-                                    </th>
+                                    <SortableHeader
+                                        key={column.label}
+                                        label={column.label}
+                                        field={column.sortField}
+                                        sortField={sortField}
+                                        sortOrder={sortOrder}
+                                        onSort={handleSort}
+                                    />
                                 ))}
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {records.map((record) => (
+                            {isLoading && (
+                                <TableStateRow colSpan={config.columns.length + 1}>
+                                    Caricamento...
+                                </TableStateRow>
+                            )}
+                            {!isLoading && records.length === 0 && (
+                                <TableStateRow colSpan={config.columns.length + 1}>
+                                    Nessun record trovato
+                                </TableStateRow>
+                            )}
+                            {!isLoading && records.map((record) => (
                                 <tr key={record._id}>
                                     {config.columns.map((column) => (
                                         <td key={column.label}>{formatFieldValue(record, column)}</td>
@@ -176,6 +170,7 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                                             className="btn btn-details"
                                             onClick={() => history.push(`${config.detailPath}/${record._id}${detailReturnSearch}`)}
                                         >
+                                            <Icon name="eye" />
                                             Dettagli
                                         </button>
                                         {onSelect && (
@@ -183,6 +178,7 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                                                 className="btn btn-select"
                                                 onClick={() => onSelect(record._id)}
                                             >
+                                                <Icon name="check" />
                                                 Seleziona
                                             </button>
                                         )}
@@ -190,6 +186,7 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                                             className="btn btn-delete"
                                             onClick={() => handleDelete(record._id)}
                                         >
+                                            <Icon name="trash" />
                                             Cancella
                                         </button>
                                     </td>
@@ -198,23 +195,11 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                         </tbody>
                     </table>
                 </div>
-                <div className="pagination">
-                    <button
-                        className="btn btn-prev"
-                        onClick={() => handleSlotChange('prev')}
-                        disabled={currentSlotStart === 1}
-                    >
-                        &larr;
-                    </button>
-                    {renderPageButtons()}
-                    <button
-                        className="btn btn-next"
-                        onClick={() => handleSlotChange('next')}
-                        disabled={currentSlotStart + SLOT_SIZE > totalPages}
-                    >
-                        &rarr;
-                    </button>
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={updateQuery}
+                />
             </div>
             {creating && <Editor {...editorProps} />}
         </div>

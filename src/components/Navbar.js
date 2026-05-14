@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { navigationItems } from '../config/navigation';
+import Icon from './shared/Icon';
 import '../styles/Navbar.css';
 
 const Navbar = ({ onLogout }) => {
@@ -42,12 +43,14 @@ const Navbar = ({ onLogout }) => {
                             activeClassName="active"
                             onClick={closeMenu}
                         >
+                            <Icon name={item.icon} />
                             {item.label}
                         </NavLink>
                     </li>
                 ))}
                 <li className="nav-item">
                     <button type="button" className="nav-link btn-logout" onClick={handleLogout}>
+                        <Icon name="arrowLeft" />
                         Logout
                     </button>
                 </li>

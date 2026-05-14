@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getRelationLinks } from '../../config/relationViews';
+import { getResourceIcon } from '../../config/resourceMeta';
 import { getContextBackSearch } from '../../hooks/useContextBack';
+import Icon from './Icon';
 
 const RelationLinkGrid = ({ resource, recordId, relations }) => {
     const location = useLocation();
@@ -25,9 +27,12 @@ const RelationLinkGrid = ({ resource, recordId, relations }) => {
                         to={`/${resource}/${recordId}/${link.key}${contextSearch}`}
                         key={link.key}
                     >
+                        <span className="relation-link-icon">
+                            <Icon name={getResourceIcon(link.targetResource)} />
+                        </span>
                         <span className="relation-link-title">{link.title}</span>
                         <span className="relation-link-description">{link.description}</span>
-                        <span className="relation-link-action">Apri vista</span>
+                        <span className="relation-link-action">Apri vista <Icon name="arrowRight" size={14} /></span>
                     </Link>
                 ))}
             </div>

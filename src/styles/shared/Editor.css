@@ -16,9 +16,9 @@
     width: min(940px, 100%);
     max-height: calc(100vh - 48px);
     overflow-y: auto;
-    padding: 26px;
+    padding: 28px;
     text-align: left;
-    background: var(--color-surface);
+    background: rgba(255, 255, 255, 0.96);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-float);
@@ -29,7 +29,7 @@
     position: absolute;
     inset: 0 0 auto;
     height: 3px;
-    background: linear-gradient(90deg, var(--color-primary), var(--color-violet), var(--color-accent));
+    background: var(--color-primary);
 }
 
 .modal-content h3 {
@@ -43,7 +43,7 @@
 .modal-content form {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px 16px;
+    gap: 15px 16px;
 }
 
 .form-group {
@@ -53,7 +53,7 @@
 
 .form-group label {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 7px;
     color: #344349;
     font-size: 0.86rem;
     font-weight: 850;
@@ -65,19 +65,13 @@
     margin-top: 7px;
 }
 
-.btn-container,
-.spacer-line {
+.btn-container {
     grid-column: 1 / -1;
 }
 
 .modal-content .btn-container {
     justify-content: flex-end;
     padding-top: 4px;
-}
-
-.spacer-line {
-    margin: 8px 0;
-    border-top: 1px solid var(--color-border);
 }
 
 .modal-content::-webkit-scrollbar {
@@ -101,7 +95,7 @@
 
     .modal-content {
         max-height: none;
-        padding: 18px;
+        padding: 20px;
     }
 
     .modal-content form {

@@ -11,6 +11,7 @@ import {
     getContextBackSearch,
 } from '../hooks/useContextBack';
 import { useFeedback } from '../components/shared/FeedbackProvider';
+import Icon from '../components/shared/Icon';
 
 const asArray = (value) => {
     if (!value) return [];
@@ -129,12 +130,15 @@ const RelationViewPage = () => {
                 </div>
                 <div className="relation-view-actions">
                     <Link className="btn btn-secondary" to={parentPathWithContext}>
+                        <Icon name="arrowLeft" />
                         Scheda principale
                     </Link>
                     <button className="btn btn-primary" onClick={() => setSelecting(true)}>
+                        <Icon name="check" />
                         Associa {config.target.singular}
                     </button>
                     <button className="btn btn-edit" onClick={() => setCreating(true)}>
+                        <Icon name="plus" />
                         Nuovo {config.target.singular}
                     </button>
                 </div>
@@ -176,6 +180,7 @@ const RelationViewPage = () => {
                                                 className="btn btn-details"
                                                 to={`${config.target.basePath}/${getRecordId(record)}${parentReturnSearch}`}
                                             >
+                                                <Icon name="eye" />
                                                 Apri scheda
                                             </Link>
                                         </td>
@@ -193,6 +198,7 @@ const RelationViewPage = () => {
                         <div className="relation-modal-header">
                             <h3>Associa {config.target.singular}</h3>
                             <button className="btn btn-cancel" onClick={() => setSelecting(false)}>
+                                <Icon name="arrowLeft" />
                                 Chiudi
                             </button>
                         </div>

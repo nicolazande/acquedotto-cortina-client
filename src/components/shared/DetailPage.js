@@ -5,6 +5,8 @@ import RelationLinkGrid from './RelationLinkGrid';
 import { useContextBack } from '../../hooks/useContextBack';
 import { formatFieldValue } from '../../utils/formatters';
 import { useFeedback } from './FeedbackProvider';
+import Icon from './Icon';
+import { PageHeader } from './PageChrome';
 
 const DetailPage = ({ config }) => {
     const { id } = useParams();
@@ -86,46 +88,52 @@ const DetailPage = ({ config }) => {
 
     return (
         <div className={`${config.resource}-details`}>
-            <h2>{config.title}</h2>
-            {isEditing ? (
-                <Editor {...editorProps} />
-            ) : (
-                <>
-                    <div className="table-container">
-                        <div className="search-container">
-                            <button onClick={() => setIsEditing(true)} className="btn btn-edit">
-                                Modifica
-                            </button>
-                            <button onClick={handleDelete} className="btn btn-delete">
-                                Cancella
-                            </button>
-                        </div>
-                        <table className="info-table">
-                            <tbody>
-                                {config.fields.map((field) => (
-                                    <tr key={field.label}>
-                                        <th>{field.label}</th>
-                                        <td>{formatFieldValue(record, field)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <RelationLinkGrid
-                        resource={config.resource}
-                        recordId={id}
-                        relations={config.relations}
-                    />
-                    {hasNotes && (
-                        <NoteAttachmentsPanel
-                            resource={config.resource}
-                            recordId={id}
-                        />
-                    )}
-                </>
+            <PageHeader
+                className="detail-page-heading"
+                eyebrow="Scheda"
+                title={config.title}
+                actions={(
+                    <>
+                        <button type="button" onClick={() => setIsEditing(true)} className="btn btn-edit">
+                            <Icon name="edit" />
+                            Modifica
+                        </button>
+                        <button type="button" onClick={handleDelete} className="btn btn-delete">
+                            <Icon name="trash" />
+                            Cancella
+                        </button>
+                    </>
+                )}
+            />
+            <div className="table-container detail-info-card">
+                <table className="info-table">
+                    <tbody>
+                        {config.fields.map((field) => (
+                            <tr key={field.label}>
+                                <th>{field.label}</th>
+                                <td>{formatFieldValue(record, field)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            <RelationLinkGrid
+                resource={config.resource}
+                recordId={id}
+                relations={config.relations}
+            />
+            {hasNotes && (
+                <NoteAttachmentsPanel
+                    resource={config.resource}
+                    recordId={id}
+                />
             )}
+            {isEditing && <Editor {...editorProps} />}
             <div className="btn-back-container">
-                <button onClick={goBack} className="btn btn-back">{backLabel}</button>
+                <button type="button" onClick={goBack} className="btn btn-back">
+                    <Icon name="arrowLeft" />
+                    {backLabel}
+                </button>
             </div>
         </div>
     );

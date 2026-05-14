@@ -1,30 +1,39 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import edificioApi from '../../api/edificioApi';
 import { createContextBackSearch, getLocationPath } from '../../hooks/useContextBack';
+import useEdificioMap from '../../hooks/useEdificioMap';
 import { editorComponents } from '../shared/editorComponents';
 import { useFeedback } from '../shared/FeedbackProvider';
-import L from 'leaflet';
+import Icon from '../shared/Icon';
+import {
+    PageHeader,
+    Pagination,
+    SearchToolbar,
+    SortableHeader,
+    TableStateRow,
+} from '../shared/PageChrome';
 import 'leaflet/dist/leaflet.css';
 
-const defaultMarkerIcon = L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' });
-const highlightedMarkerIcon = L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png' });
 const EdificioEditor = editorComponents.edificio;
+const itemsPerPage = 50;
+const EDIFICIO_COLUMNS = [
+    { label: 'Descrizione', sortField: 'descrizione', value: (edificio) => edificio.descrizione },
+    { label: 'Indirizzo', sortField: 'indirizzo', value: (edificio) => edificio.indirizzo },
+    { label: 'CAP', sortField: 'cap', value: (edificio) => edificio.cap },
+    { label: 'Località', sortField: 'localita', value: (edificio) => edificio.localita },
+    { label: 'Tipo', sortField: 'tipo', value: (edificio) => edificio.tipo },
+];
 
 const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' }) => {
     const [edifici, setEdifici] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeSearch, setActiveSearch] = useState('');
     const [creatingEdificio, setCreatingEdificio] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [highlightedRowId, setHighlightedRowId] = useState(null);
+    const [totalItems, setTotalItems] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
-    const [currentSlotStart, setCurrentSlotStart] = useState(1);
-    const itemsPerPage = 50;
-    const slotSize = 10;
-    const mapElementRef = useRef(null);
-    const mapRef = useRef(null);
-    const markersRef = useRef({});
-    const highlightedMarkerRef = useRef(null);
     const { confirm, notify } = useFeedback();
     const history = useHistory();
     const location = useLocation();
@@ -37,19 +46,6 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
     const sortField = queryParams.get('sortField') || 'descrizione';
     const sortOrder = queryParams.get('sortOrder') || 'asc';
 
-    const highlightMarker = useCallback((edificioId) => {
-        if (highlightedMarkerRef.current) {
-            highlightedMarkerRef.current.setIcon(defaultMarkerIcon);
-        }
-
-        const marker = markersRef.current[edificioId];
-        if (marker && mapRef.current) {
-            marker.setIcon(highlightedMarkerIcon);
-            mapRef.current.setView(marker.getLatLng(), 16);
-            highlightedMarkerRef.current = marker;
-        }
-    }, []);
-
     const scrollToEdificioRow = useCallback((edificioId) => {
         const row = document.getElementById(`row-${edificioId}`);
         if (row) {
@@ -57,58 +53,27 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
         }
     }, []);
 
-    const handleMarkerClick = useCallback((edificioId) => {
+    const handleMarkerSelect = useCallback((edificioId) => {
         setHighlightedRowId(edificioId);
-        highlightMarker(edificioId);
         scrollToEdificioRow(edificioId);
-    }, [highlightMarker, scrollToEdificioRow]);
-
-    const initializeMap = useCallback((data) => {
-        if (!mapElementRef.current) return;
-
-        if (!mapRef.current) {
-            const mapInstance = L.map(mapElementRef.current, {
-                center: [46.5396, 12.1357],
-                zoom: 10,
-                zoomControl: false,
-            });
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
-            }).addTo(mapInstance);
-
-            mapRef.current = mapInstance;
-        }
-
-        Object.values(markersRef.current).forEach((marker) => {
-            mapRef.current.removeLayer(marker);
-        });
-        markersRef.current = {};
-
-        data.forEach((edificio) => {
-            if (edificio.latitudine && edificio.longitudine) {
-                const marker = L.marker([edificio.latitudine, edificio.longitudine], {
-                    icon: defaultMarkerIcon,
-                })
-                    .addTo(mapRef.current)
-                    .bindPopup(`${edificio.descrizione}`);
-
-                marker.on('click', () => handleMarkerClick(edificio._id));
-                markersRef.current[edificio._id] = marker;
-            }
-        });
-    }, [handleMarkerClick]);
+    }, [scrollToEdificioRow]);
+    const { highlightMarker, initializeMap, mapElementRef } = useEdificioMap(handleMarkerSelect);
 
     const fetchEdifici = useCallback(async (page = 1, search = '', field = 'descrizione', order = 'asc') => {
+        setIsLoading(true);
+
         try {
             const response = await edificioApi.getEdifici(page, itemsPerPage, search, field, order);
-            const { data, totalPages: fetchedTotalPages } = response.data;
+            const { data = [], totalItems: fetchedTotalItems, totalPages: fetchedTotalPages = 1 } = response.data;
             setEdifici(data);
+            setTotalItems(fetchedTotalItems || data.length);
             setTotalPages(fetchedTotalPages);
             initializeMap(data);
         } catch (error) {
             notify('Errore durante il recupero degli edifici', 'error');
             console.error(error);
+        } finally {
+            setIsLoading(false);
         }
     }, [initializeMap, notify]);
 
@@ -144,38 +109,12 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
     };
 
     const handlePageChange = (pageNumber) => {
-        if (pageNumber >= 1 && pageNumber <= totalPages) {
-            history.push(`?page=${pageNumber}&sortField=${sortField}&sortOrder=${sortOrder}`);
-        }
-    };
-
-    const handleSlotChange = (direction) => {
-        if (direction === 'prev' && currentSlotStart > 1) {
-            setCurrentSlotStart((prev) => Math.max(prev - slotSize, 1));
-        } else if (direction === 'next' && currentSlotStart + slotSize <= totalPages) {
-            setCurrentSlotStart((prev) => prev + slotSize);
-        }
+        history.push(`?page=${pageNumber}&sortField=${sortField}&sortOrder=${sortOrder}`);
     };
 
     const handleSort = (field) => {
         const newOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
         history.push(`?page=1&sortField=${field}&sortOrder=${newOrder}`);
-    };
-
-    const renderPageButtons = () => {
-        const buttons = [];
-        for (let i = currentSlotStart; i < currentSlotStart + slotSize && i <= totalPages; i++) {
-            buttons.push(
-                <button
-                    key={i}
-                    className={`page-button ${currentPage === i ? 'active' : ''}`}
-                    onClick={() => handlePageChange(i)}
-                >
-                    {i}
-                </button>
-            );
-        }
-        return buttons;
     };
 
     const handleRowClick = (edificioId) => {
@@ -190,62 +129,61 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
     return (
         <div className="edificio-list-container">
             <div className="edificio-list">
-                <h2>Lista Edifici</h2>
-                <div className="search-container">
-                    <div className="search-bar">
-                        <input
-                            type="text"
-                            placeholder="Cerca..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <button onClick={handleSearch} className="btn btn-search">
-                            Cerca
-                        </button>
-                        <button
-                            className="btn btn-new-edificio"
-                            onClick={() => setCreatingEdificio(true)}
-                        >
-                            Crea Edificio
-                        </button>
-                    </div>
-                </div>
+                <PageHeader
+                    className="list-page-heading"
+                    eyebrow="Archivio"
+                    title="Edifici"
+                    countLabel={isLoading ? 'Caricamento' : `${totalItems} record`}
+                />
+                <SearchToolbar
+                    value={searchTerm}
+                    onChange={setSearchTerm}
+                    onSearch={handleSearch}
+                    onCreate={() => setCreatingEdificio(true)}
+                    searchLabel="Cerca edifici"
+                    placeholder="Cerca edifici..."
+                    createClassName="btn btn-new-edificio"
+                    createLabel="Crea Edificio"
+                />
                 <div ref={mapElementRef} className="edificio-map"></div>
                 <div className="table-container">
                     <table className="edificio-table">
                         <thead>
                             <tr>
-                                <th onClick={() => handleSort('descrizione')}>
-                                    Descrizione {sortField === 'descrizione' && (sortOrder === 'asc' ? '▲' : '▼')}
-                                </th>
-                                <th onClick={() => handleSort('indirizzo')}>
-                                    Indirizzo {sortField === 'indirizzo' && (sortOrder === 'asc' ? '▲' : '▼')}
-                                </th>
-                                <th onClick={() => handleSort('cap')}>
-                                    CAP {sortField === 'cap' && (sortOrder === 'asc' ? '▲' : '▼')}
-                                </th>
-                                <th onClick={() => handleSort('localita')}>
-                                    Località {sortField === 'localita' && (sortOrder === 'asc' ? '▲' : '▼')}
-                                </th>
-                                <th onClick={() => handleSort('tipo')}>
-                                    Tipo {sortField === 'tipo' && (sortOrder === 'asc' ? '▲' : '▼')}
-                                </th>
+                                {EDIFICIO_COLUMNS.map((column) => (
+                                    <SortableHeader
+                                        key={column.label}
+                                        label={column.label}
+                                        field={column.sortField}
+                                        sortField={sortField}
+                                        sortOrder={sortOrder}
+                                        onSort={handleSort}
+                                    />
+                                ))}
                                 <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {edifici.map((edificio) => (
+                            {isLoading && (
+                                <TableStateRow colSpan={EDIFICIO_COLUMNS.length + 1}>
+                                    Caricamento...
+                                </TableStateRow>
+                            )}
+                            {!isLoading && edifici.length === 0 && (
+                                <TableStateRow colSpan={EDIFICIO_COLUMNS.length + 1}>
+                                    Nessun edificio trovato
+                                </TableStateRow>
+                            )}
+                            {!isLoading && edifici.map((edificio) => (
                                 <tr
                                     key={edificio._id}
                                     id={`row-${edificio._id}`}
                                     className={`edificio-list-item ${highlightedRowId === edificio._id ? 'highlight' : ''}`}
                                     onClick={() => handleRowClick(edificio._id)}
                                 >
-                                    <td>{edificio.descrizione}</td>
-                                    <td>{edificio.indirizzo}</td>
-                                    <td>{edificio.cap}</td>
-                                    <td>{edificio.localita}</td>
-                                    <td>{edificio.tipo}</td>
+                                    {EDIFICIO_COLUMNS.map((column) => (
+                                        <td key={column.label}>{column.value(edificio)}</td>
+                                    ))}
                                     <td>
                                         <button
                                             className="btn btn-dettagli"
@@ -254,6 +192,7 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
                                                 handleDettagliClick(edificio._id);
                                             }}
                                         >
+                                            <Icon name="eye" />
                                             Dettagli
                                         </button>
                                         {onSelectEdificio && (
@@ -264,6 +203,7 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
                                                     onSelectEdificio(edificio._id);
                                                 }}
                                             >
+                                                <Icon name="check" />
                                                 Seleziona
                                             </button>
                                         )}
@@ -274,6 +214,7 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
                                                 handleDelete(edificio._id);
                                             }}
                                         >
+                                            <Icon name="trash" />
                                             Cancella
                                         </button>
                                     </td>
@@ -282,23 +223,11 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
                         </tbody>
                     </table>
                 </div>
-                <div className="pagination">
-                    <button
-                        className="btn btn-prev"
-                        onClick={() => handleSlotChange('prev')}
-                        disabled={currentSlotStart === 1}
-                    >
-                        &larr;
-                    </button>
-                    {renderPageButtons()}
-                    <button
-                        className="btn btn-next"
-                        onClick={() => handleSlotChange('next')}
-                        disabled={currentSlotStart + slotSize > totalPages}
-                    >
-                        &rarr;
-                    </button>
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
             </div>
             {creatingEdificio && (
                 <EdificioEditor

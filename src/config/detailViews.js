@@ -24,7 +24,7 @@ export const detailViews = {
     articoli: {
         resource: 'articoli',
         listPath: '/articoli',
-        title: 'Dettagli Articolo',
+        title: 'Articolo',
         editorProp: 'articolo',
         EditorComponent: editorComponents.articolo,
         api: api(articoloApi.getArticolo, articoloApi.updateArticolo, articoloApi.deleteArticolo),
@@ -38,7 +38,7 @@ export const detailViews = {
     clienti: {
         resource: 'clienti',
         listPath: '/clienti',
-        title: 'Dettagli Cliente',
+        title: 'Cliente',
         editorProp: 'cliente',
         EditorComponent: editorComponents.cliente,
         api: api(clienteApi.getCliente, clienteApi.updateCliente, clienteApi.deleteCliente),
@@ -85,7 +85,7 @@ export const detailViews = {
     contatori: {
         resource: 'contatori',
         listPath: '/contatori',
-        title: 'Dettagli Contatore',
+        title: 'Contatore',
         editorProp: 'contatore',
         EditorComponent: editorComponents.contatore,
         api: api(contatoreApi.getContatore, contatoreApi.updateContatore, contatoreApi.deleteContatore),
@@ -116,7 +116,7 @@ export const detailViews = {
     edifici: {
         resource: 'edifici',
         listPath: '/edifici',
-        title: 'Dettagli Edificio',
+        title: 'Edificio',
         editorProp: 'edificio',
         EditorComponent: editorComponents.edificio,
         api: api(edificioApi.getEdificio, edificioApi.updateEdificio, edificioApi.deleteEdificio),
@@ -144,7 +144,7 @@ export const detailViews = {
     fasce: {
         resource: 'fasce',
         listPath: '/fasce',
-        title: 'Dettagli Fascia',
+        title: 'Fascia',
         editorProp: 'fascia',
         EditorComponent: editorComponents.fascia,
         api: api(fasciaApi.getFascia, fasciaApi.updateFascia, fasciaApi.deleteFascia),
@@ -161,7 +161,7 @@ export const detailViews = {
     fatture: {
         resource: 'fatture',
         listPath: '/fatture',
-        title: 'Dettagli Fattura',
+        title: 'Fattura',
         editorProp: 'fattura',
         EditorComponent: editorComponents.fattura,
         api: api(fatturaApi.getFattura, fatturaApi.updateFattura, fatturaApi.deleteFattura),
@@ -188,7 +188,7 @@ export const detailViews = {
     letture: {
         resource: 'letture',
         listPath: '/letture',
-        title: 'Dettagli Lettura',
+        title: 'Lettura',
         editorProp: 'lettura',
         EditorComponent: editorComponents.lettura,
         api: api(letturaApi.getLettura, letturaApi.updateLettura, letturaApi.deleteLettura),
@@ -205,7 +205,7 @@ export const detailViews = {
     listini: {
         resource: 'listini',
         listPath: '/listini',
-        title: 'Dettagli Listino',
+        title: 'Listino',
         editorProp: 'listino',
         EditorComponent: editorComponents.listino,
         api: api(listinoApi.getListino, listinoApi.updateListino, listinoApi.deleteListino),
@@ -218,7 +218,7 @@ export const detailViews = {
     scadenze: {
         resource: 'scadenze',
         listPath: '/scadenze',
-        title: 'Dettagli Scadenza',
+        title: 'Scadenza',
         editorProp: 'scadenza',
         EditorComponent: editorComponents.scadenza,
         api: api(scadenzaApi.getScadenza, scadenzaApi.updateScadenza, scadenzaApi.deleteScadenza),
@@ -243,7 +243,7 @@ export const detailViews = {
     servizi: {
         resource: 'servizi',
         listPath: '/servizi',
-        title: 'Dettagli Servizio',
+        title: 'Servizio',
         editorProp: 'servizio',
         EditorComponent: editorComponents.servizio,
         api: api(servizioApi.getServizio, servizioApi.updateServizio, servizioApi.deleteServizio),

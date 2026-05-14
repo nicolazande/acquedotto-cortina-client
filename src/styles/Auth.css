@@ -6,7 +6,7 @@
     padding: 24px;
     overflow: hidden;
     background:
-        linear-gradient(130deg, rgba(8, 124, 137, 0.16), rgba(93, 95, 202, 0.08) 42%, rgba(198, 111, 50, 0.12)),
+        linear-gradient(130deg, rgba(8, 122, 138, 0.16), rgba(86, 89, 185, 0.08) 42%, rgba(183, 106, 53, 0.12)),
         linear-gradient(180deg, var(--color-page), var(--color-page-strong));
 }
 
@@ -30,7 +30,7 @@
 .auth-container {
     z-index: 1;
     width: min(100%, 460px);
-    padding: 30px;
+    padding: 32px;
     backdrop-filter: blur(16px);
 }
 
@@ -43,10 +43,10 @@
 
 .auth-container h2::before {
     content: "";
-    width: 12px;
+    width: 10px;
     height: 32px;
-    flex: 0 0 12px;
-    background: linear-gradient(180deg, var(--color-primary), var(--color-violet));
+    flex: 0 0 10px;
+    background: var(--color-primary);
     border-radius: 999px;
 }
 
@@ -121,6 +121,6 @@
     }
 
     .auth-container {
-        padding: 20px;
+        padding: 22px;
     }
 }

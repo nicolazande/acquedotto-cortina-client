@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import attachmentApi from '../../api/attachmentApi';
 import { formatDate } from '../../utils/formatters';
 import { useFeedback } from './FeedbackProvider';
+import Icon from './Icon';
 
 const MAX_IMAGE_SIDE = 1600;
 const IMAGE_QUALITY = 0.84;
@@ -158,6 +159,7 @@ const AttachmentCard = ({ attachment, onDelete }) => {
             </div>
             <div className="note-attachment-actions">
                 <a className="btn btn-secondary" href={fileUrl} target="_blank" rel="noopener noreferrer">
+                    <Icon name="eye" />
                     Apri
                 </a>
                 <button
@@ -165,6 +167,7 @@ const AttachmentCard = ({ attachment, onDelete }) => {
                     className="btn btn-delete"
                     onClick={() => onDelete(attachment)}
                 >
+                    <Icon name="trash" />
                     Elimina
                 </button>
             </div>
@@ -254,6 +257,7 @@ const NoteAttachmentsPanel = ({ resource, recordId }) => {
                     <h3>Allegati</h3>
                 </div>
                 <label className={`btn btn-primary note-attachment-upload ${isUploading ? 'is-disabled' : ''}`}>
+                    <Icon name="plus" />
                     {isUploading ? 'Caricamento...' : 'Aggiungi allegati'}
                     <input
                         ref={fileInputRef}
