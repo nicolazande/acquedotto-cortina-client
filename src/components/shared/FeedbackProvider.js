@@ -7,6 +7,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
+import Icon from './Icon';
 
 const FeedbackContext = createContext(null);
 
@@ -120,6 +121,7 @@ const FeedbackProvider = ({ children }) => {
                                 className="btn btn-cancel"
                                 onClick={() => closeConfirmation(false)}
                             >
+                                <Icon name="arrowLeft" />
                                 {confirmation.cancelLabel}
                             </button>
                             <button
@@ -127,6 +129,7 @@ const FeedbackProvider = ({ children }) => {
                                 className={`btn ${confirmation.variant === 'danger' ? 'btn-delete' : 'btn-primary'}`}
                                 onClick={() => closeConfirmation(true)}
                             >
+                                <Icon name={confirmation.variant === 'danger' ? 'trash' : 'check'} />
                                 {confirmation.confirmLabel}
                             </button>
                         </div>

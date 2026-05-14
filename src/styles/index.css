@@ -113,6 +113,7 @@ a {
     width: 1em;
     height: 1em;
     flex: 0 0 auto;
+    display: block;
 }
 
 .content [class$="-list"],
@@ -555,7 +556,17 @@ a {
 .content table:not(.info-table) td:last-child .btn,
 .content table:not(.info-table) td:last-child button,
 .content table:not(.info-table) td:last-child a {
-    margin: 3px 4px 3px 0;
+    min-height: 32px;
+    margin: 2px 4px 2px 0;
+    padding: 6px 9px;
+    gap: 6px;
+    font-size: 0.8rem;
+    vertical-align: middle;
+}
+
+.content table:not(.info-table) td:last-child .icon {
+    width: 14px;
+    height: 14px;
 }
 
 .table-state-row td {
@@ -577,7 +588,7 @@ a {
     flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 7px;
     margin: 0;
     padding: 7px 11px;
     color: #ffffff;
@@ -599,6 +610,18 @@ a {
 .auth-container .btn .icon {
     width: 15px;
     height: 15px;
+    margin-top: 1px;
+}
+
+.App .btn-prev,
+.App .btn-next {
+    width: 36px;
+    padding-inline: 0;
+}
+
+.App .btn-prev .icon,
+.App .btn-next .icon {
+    margin-top: 0;
 }
 
 .App .btn:hover,
@@ -1061,7 +1084,25 @@ input[type="checkbox"] {
     .App button.btn,
     .auth-container .btn,
     .App .page-button {
-        min-height: 42px;
+        min-height: 40px;
+    }
+
+    .App .btn .icon,
+    .auth-container .btn .icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .App .btn-prev,
+    .App .btn-next {
+        width: 40px;
+    }
+
+    .content table:not(.info-table) td:last-child .btn,
+    .content table:not(.info-table) td:last-child button,
+    .content table:not(.info-table) td:last-child a {
+        min-height: 36px;
+        padding: 7px 10px;
     }
 
     .btn-back-container .btn {

@@ -73,6 +73,7 @@ const RelationViewPage = () => {
                     <h2>Vista non disponibile</h2>
                     <p>La relazione richiesta non e configurata.</p>
                     <button className="btn btn-back" onClick={() => history.goBack()}>
+                        <Icon name="arrowLeft" />
                         Indietro
                     </button>
                 </div>

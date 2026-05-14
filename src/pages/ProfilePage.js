@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import authApi from '../api/authApi';
+import Icon from '../components/shared/Icon';
 import '../styles/Auth.css';
 
 const ProfilePage = () => {
@@ -105,6 +106,7 @@ const ProfilePage = () => {
                     {isEditing ? (
                         <>
                             <button type="button" className="btn btn-primary" onClick={handleUpdate}>
+                                <Icon name="check" />
                                 Salva
                             </button>
                             <button
@@ -112,6 +114,7 @@ const ProfilePage = () => {
                                 className="btn btn-secondary"
                                 onClick={() => setIsEditing(false)}
                             >
+                                <Icon name="arrowLeft" />
                                 Annulla
                             </button>
                         </>
@@ -120,6 +123,7 @@ const ProfilePage = () => {
                             className="btn btn-edit"
                             onClick={() => setIsEditing(true)}
                         >
+                            <Icon name="edit" />
                             Modifica
                         </button>
                     )}

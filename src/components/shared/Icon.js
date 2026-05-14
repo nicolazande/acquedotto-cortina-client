@@ -36,6 +36,7 @@ const Icon = ({ name, className = '', size = 16 }) => (
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
         focusable="false"
     >
         {(iconPaths[name] || iconPaths.dashboard).map((path) => <path d={path} key={path} />)}
