@@ -181,7 +181,7 @@ const RelationViewPage = () => {
                                                 to={`${config.target.basePath}/${getRecordId(record)}${parentReturnSearch}`}
                                             >
                                                 <Icon name="eye" />
-                                                Apri scheda
+                                                Apri
                                             </Link>
                                         </td>
                                     </tr>

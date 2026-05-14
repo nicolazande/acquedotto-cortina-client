@@ -18,7 +18,9 @@ const Navbar = ({ onLogout }) => {
         <nav className="navbar">
             <div className="navbar-brand">
                 <Link to="/" onClick={closeMenu}>
-                    <span className="navbar-mark" aria-hidden="true">AZ</span>
+                    <span className="navbar-mark" aria-hidden="true">
+                        <img src={`${process.env.PUBLIC_URL}/icon.ico`} alt="" />
+                    </span>
                     <span>Acquedotto Zuel</span>
                 </Link>
             </div>

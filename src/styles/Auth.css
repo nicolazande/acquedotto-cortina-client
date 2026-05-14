@@ -5,19 +5,11 @@
     place-items: center;
     padding: 24px;
     overflow: hidden;
-    background:
-        linear-gradient(130deg, rgba(8, 122, 138, 0.16), rgba(86, 89, 185, 0.08) 42%, rgba(183, 106, 53, 0.12)),
-        linear-gradient(180deg, var(--color-page), var(--color-page-strong));
+    background: var(--color-page);
 }
 
 .auth-page::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(90deg, rgba(17, 56, 61, 0.1), rgba(255, 255, 255, 0) 42%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0));
-    pointer-events: none;
+    display: none;
 }
 
 .auth-page > .server-status-indicator {
@@ -30,8 +22,7 @@
 .auth-container {
     z-index: 1;
     width: min(100%, 460px);
-    padding: 32px;
-    backdrop-filter: blur(16px);
+    padding: 30px;
 }
 
 .auth-container h2 {
@@ -43,9 +34,9 @@
 
 .auth-container h2::before {
     content: "";
-    width: 10px;
-    height: 32px;
-    flex: 0 0 10px;
+    width: 4px;
+    height: 28px;
+    flex: 0 0 4px;
     background: var(--color-primary);
     border-radius: 999px;
 }

@@ -122,7 +122,7 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
         highlightMarker(edificioId);
     };
 
-    const handleDettagliClick = (edificioId) => {
+    const openEdificio = (edificioId) => {
         history.push(`/edifici/${edificioId}${detailReturnSearch}`);
     };
 
@@ -133,7 +133,7 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
                     className="list-page-heading"
                     eyebrow="Archivio"
                     title="Edifici"
-                    countLabel={isLoading ? 'Caricamento' : `${totalItems} record`}
+                    countLabel={!isLoading && `${totalItems} record`}
                 />
                 <SearchToolbar
                     value={searchTerm}
@@ -143,7 +143,7 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
                     searchLabel="Cerca edifici"
                     placeholder="Cerca edifici..."
                     createClassName="btn btn-new-edificio"
-                    createLabel="Crea Edificio"
+                    createLabel="Nuovo"
                 />
                 <div ref={mapElementRef} className="edificio-map"></div>
                 <div className="table-container">
@@ -189,11 +189,11 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
                                             className="btn btn-dettagli"
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleDettagliClick(edificio._id);
+                                                openEdificio(edificio._id);
                                             }}
                                         >
                                             <Icon name="eye" />
-                                            Dettagli
+                                            Apri
                                         </button>
                                         {onSelectEdificio && (
                                             <button
@@ -215,7 +215,7 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
                                             }}
                                         >
                                             <Icon name="trash" />
-                                            Cancella
+                                            Elimina
                                         </button>
                                     </td>
                                 </tr>

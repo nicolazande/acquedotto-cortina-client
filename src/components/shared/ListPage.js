@@ -120,7 +120,7 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                     className="list-page-heading"
                     eyebrow="Archivio"
                     title={config.title}
-                    countLabel={isLoading ? 'Caricamento' : `${totalItems} record`}
+                    countLabel={!isLoading && `${totalItems} record`}
                 />
                 <SearchToolbar
                     value={searchTerm}
@@ -171,7 +171,7 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                                             onClick={() => history.push(`${config.detailPath}/${record._id}${detailReturnSearch}`)}
                                         >
                                             <Icon name="eye" />
-                                            Dettagli
+                                            Apri
                                         </button>
                                         {onSelect && (
                                             <button
@@ -187,7 +187,7 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                                             onClick={() => handleDelete(record._id)}
                                         >
                                             <Icon name="trash" />
-                                            Cancella
+                                            Elimina
                                         </button>
                                     </td>
                                 </tr>

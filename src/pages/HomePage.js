@@ -30,10 +30,6 @@ const HomePage = () => {
                     <span className="eyebrow">Acquedotto Zuel</span>
                     <h1 id="home-title">Panoramica</h1>
                     <p>Gestione ordinata di clienti, contatori, letture, fatture e scadenze.</p>
-                    <div className="home-hero-actions">
-                        <Link className="btn btn-primary" to="/clienti"><Icon name="users" />Clienti</Link>
-                        <Link className="btn btn-secondary" to="/fatture"><Icon name="invoice" />Fatture</Link>
-                    </div>
                 </div>
                 <ServerStatusIndicator />
             </section>

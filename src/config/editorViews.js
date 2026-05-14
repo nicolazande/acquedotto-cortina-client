@@ -7,7 +7,7 @@ export const editorViews = {
             create: 'Nuovo Articolo',
             view: 'Visualizza Articolo',
         },
-        createButtonLabel: 'Crea Articolo',
+        createButtonLabel: 'Crea',
         fields: [
             field('Codice', 'codice'),
             field('Descrizione', 'descrizione'),
@@ -20,7 +20,7 @@ export const editorViews = {
             create: 'Nuovo Cliente',
             view: 'Visualizza Cliente',
         },
-        createButtonLabel: 'Crea Cliente',
+        createButtonLabel: 'Crea',
         fields: [
             field('Ragione Sociale', 'ragione_sociale'),
             field('Nome', 'nome'),
@@ -66,7 +66,7 @@ export const editorViews = {
             create: 'Nuovo Contatore',
             view: 'Visualizza Contatore',
         },
-        createButtonLabel: 'Crea Contatore',
+        createButtonLabel: 'Crea',
         fields: [
             field('Tipo Contatore', 'tipo_contatore'),
             field('Codice', 'codice'),
@@ -93,7 +93,7 @@ export const editorViews = {
             create: 'Nuovo Edificio',
             view: 'Visualizza Edificio',
         },
-        createButtonLabel: 'Crea Edificio',
+        createButtonLabel: 'Crea',
         fields: [
             field('Descrizione', 'descrizione'),
             field('Indirizzo', 'indirizzo'),
@@ -121,7 +121,7 @@ export const editorViews = {
             create: 'Nuova Fascia',
             view: 'Visualizza Fascia',
         },
-        createButtonLabel: 'Crea Fascia',
+        createButtonLabel: 'Crea',
         fields: [
             field('Tipo', 'tipo'),
             field('Minimo', 'min', 'number'),
@@ -137,7 +137,7 @@ export const editorViews = {
             create: 'Nuova Fattura',
             view: 'Visualizza Fattura',
         },
-        createButtonLabel: 'Crea Fattura',
+        createButtonLabel: 'Crea',
         fields: [
             field('Tipo Documento', 'tipo_documento'),
             field('Ragione Sociale', 'ragione_sociale'),
@@ -162,7 +162,7 @@ export const editorViews = {
             create: 'Nuova Lettura',
             view: 'Visualizza Lettura',
         },
-        createButtonLabel: 'Crea Lettura',
+        createButtonLabel: 'Crea',
         fields: [
             field('Data Lettura', 'data_lettura', 'date'),
             field('Unita di Misura', 'unita_misura'),
@@ -178,7 +178,7 @@ export const editorViews = {
             create: 'Nuovo Listino',
             view: 'Visualizza Listino',
         },
-        createButtonLabel: 'Crea Listino',
+        createButtonLabel: 'Crea',
         fields: [
             field('Categoria', 'categoria'),
             field('Descrizione', 'descrizione'),
@@ -191,7 +191,7 @@ export const editorViews = {
             create: 'Nuova Scadenza',
             view: 'Visualizza Scadenza',
         },
-        createButtonLabel: 'Crea Scadenza',
+        createButtonLabel: 'Crea',
         fields: [
             field('Data Scadenza', 'scadenza', 'date'),
             field('Saldo', 'saldo', 'checkbox'),
@@ -211,7 +211,7 @@ export const editorViews = {
             create: 'Nuovo Servizio',
             view: 'Visualizza Servizio',
         },
-        createButtonLabel: 'Crea Servizio',
+        createButtonLabel: 'Crea',
         fields: [
             field('Descrizione', 'descrizione'),
             field('Valore', 'valore', 'number'),

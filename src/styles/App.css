@@ -6,7 +6,7 @@
 .content {
     width: calc(100% - var(--sidebar-width));
     min-height: 100vh;
-    padding: clamp(22px, 2.4vw, 36px);
+    padding: clamp(18px, 2vw, 30px);
     margin-left: var(--sidebar-width);
 }
 

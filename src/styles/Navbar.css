@@ -7,50 +7,45 @@
     display: flex;
     width: var(--sidebar-width);
     flex-direction: column;
-    gap: 18px;
-    padding: 18px 14px;
+    gap: 16px;
+    padding: 16px 12px;
     color: rgba(247, 252, 252, 0.9);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0)),
-        #10282e;
+    background: #10282e;
     border-right: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 18px 0 46px rgba(16, 25, 29, 0.18);
-}
-
-.navbar::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    height: 3px;
-    background: var(--color-primary);
+    box-shadow: 10px 0 28px rgba(16, 25, 29, 0.14);
 }
 
 .navbar-brand a {
     display: flex;
-    min-height: 54px;
+    min-height: 48px;
     align-items: center;
     gap: 12px;
     padding: 7px 8px;
     color: #ffffff;
-    font-size: 1rem;
+    font-size: 0.96rem;
     font-weight: 900;
     letter-spacing: 0;
 }
 
 .navbar-mark {
     display: inline-flex;
-    width: 42px;
-    height: 42px;
-    flex: 0 0 42px;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.1);
+    padding: 4px;
+    background: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: var(--radius);
-    box-shadow: 0 14px 30px rgba(3, 15, 18, 0.25);
-    font-size: 0.78rem;
-    font-weight: 900;
+    box-shadow: none;
+}
+
+.navbar-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .menu-toggle {
@@ -78,7 +73,7 @@
     min-height: 0;
     flex: 1;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     padding: 0;
     margin: 0;
     overflow-y: auto;
@@ -100,35 +95,35 @@
     position: relative;
     display: flex;
     width: 100%;
-    min-height: 43px;
+    min-height: 40px;
     align-items: center;
     justify-content: flex-start;
     gap: 10px;
-    padding: 10px 12px 10px 16px;
+    padding: 9px 11px 9px 15px;
     overflow: hidden;
     color: rgba(238, 248, 249, 0.74);
     background: transparent;
     border-radius: var(--radius);
-    font-size: 0.94rem;
-    font-weight: 850;
+    font-size: 0.9rem;
+    font-weight: 800;
     letter-spacing: 0;
     transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
 
 .navbar-nav .nav-link .icon {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
     color: rgba(238, 248, 249, 0.66);
 }
 
 .navbar-nav .nav-link::before {
     content: "";
     position: absolute;
-    top: 9px;
-    bottom: 9px;
-    left: 7px;
-    width: 3px;
-    background: var(--color-accent);
+    top: 10px;
+    bottom: 10px;
+    left: 6px;
+    width: 2px;
+    background: var(--color-primary);
     border-radius: 999px;
     opacity: 0;
     transition: opacity 150ms ease;
@@ -175,7 +170,7 @@
         padding: 8px 14px;
         border-right: 0;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 14px 34px rgba(16, 25, 29, 0.2);
+        box-shadow: 0 10px 28px rgba(16, 25, 29, 0.16);
     }
 
     .navbar-brand a {
@@ -184,9 +179,9 @@
     }
 
     .navbar-mark {
-        width: 38px;
-        height: 38px;
-        flex-basis: 38px;
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
     }
 
     .menu-toggle {

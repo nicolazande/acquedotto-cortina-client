@@ -105,7 +105,7 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
                         {!isReadOnly && (
                             <button type="submit" className="btn btn-save">
                                 <Icon name="check" />
-                                {mode === 'Modifica' ? 'Salva Modifiche' : config.createButtonLabel}
+                                {mode === 'Modifica' ? 'Salva' : config.createButtonLabel}
                             </button>
                         )}
                         <button type="button" className="btn btn-cancel" onClick={onCancel}>

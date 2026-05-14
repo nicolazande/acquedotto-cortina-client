@@ -98,10 +98,10 @@ const DetailPage = ({ config }) => {
                             <Icon name="edit" />
                             Modifica
                         </button>
-                        <button type="button" onClick={handleDelete} className="btn btn-delete">
-                            <Icon name="trash" />
-                            Cancella
-                        </button>
+                    <button type="button" onClick={handleDelete} className="btn btn-delete">
+                        <Icon name="trash" />
+                        Elimina
+                    </button>
                     </>
                 )}
             />
