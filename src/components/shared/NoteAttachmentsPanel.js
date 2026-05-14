@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import attachmentApi from '../../api/attachmentApi';
 import { formatDate } from '../../utils/formatters';
 import { useFeedback } from './FeedbackProvider';
-import Icon from './Icon';
+import Button from './Button';
 
 const MAX_IMAGE_SIDE = 1600;
 const IMAGE_QUALITY = 0.84;
@@ -158,18 +158,16 @@ const AttachmentCard = ({ attachment, onDelete }) => {
                 <span>{attachmentKind} - {formatFileSize(attachment.size)} - {formatDate(attachment.createdAt)}</span>
             </div>
             <div className="note-attachment-actions">
-                <a className="btn btn-secondary" href={fileUrl} target="_blank" rel="noopener noreferrer">
-                    <Icon name="eye" />
+                <Button href={fileUrl} target="_blank" rel="noopener noreferrer" variant="secondary" icon="eye">
                     Apri
-                </a>
-                <button
-                    type="button"
-                    className="btn btn-delete"
+                </Button>
+                <Button
+                    variant="delete"
+                    icon="trash"
                     onClick={() => onDelete(attachment)}
                 >
-                    <Icon name="trash" />
                     Elimina
-                </button>
+                </Button>
             </div>
         </article>
     );
@@ -256,8 +254,12 @@ const NoteAttachmentsPanel = ({ resource, recordId }) => {
                     <span className="eyebrow">Note</span>
                     <h3>Allegati</h3>
                 </div>
-                <label className={`btn btn-primary note-attachment-upload ${isUploading ? 'is-disabled' : ''}`}>
-                    <Icon name="plus" />
+                <Button
+                    as="label"
+                    className={`note-attachment-upload ${isUploading ? 'is-disabled' : ''}`}
+                    icon="plus"
+                    variant="primary"
+                >
                     {isUploading ? 'Caricamento...' : 'Aggiungi allegati'}
                     <input
                         ref={fileInputRef}
@@ -267,7 +269,7 @@ const NoteAttachmentsPanel = ({ resource, recordId }) => {
                         disabled={isUploading}
                         onChange={handleFiles}
                     />
-                </label>
+                </Button>
             </div>
 
             {isLoading && <div className="note-attachments-empty">Caricamento...</div>}

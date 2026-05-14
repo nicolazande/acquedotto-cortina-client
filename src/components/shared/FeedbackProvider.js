@@ -7,7 +7,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import Icon from './Icon';
+import Button from './Button';
 
 const FeedbackContext = createContext(null);
 
@@ -116,22 +116,20 @@ const FeedbackProvider = ({ children }) => {
                         <h3 id="feedback-dialog-title">{confirmation.title}</h3>
                         <p id="feedback-dialog-message">{confirmation.message}</p>
                         <div className="feedback-actions">
-                            <button
-                                type="button"
-                                className="btn btn-cancel"
+                            <Button
+                                variant="cancel"
+                                icon="arrowLeft"
                                 onClick={() => closeConfirmation(false)}
                             >
-                                <Icon name="arrowLeft" />
                                 {confirmation.cancelLabel}
-                            </button>
-                            <button
-                                type="button"
-                                className={`btn ${confirmation.variant === 'danger' ? 'btn-delete' : 'btn-primary'}`}
+                            </Button>
+                            <Button
+                                variant={confirmation.variant === 'danger' ? 'delete' : 'primary'}
+                                icon={confirmation.variant === 'danger' ? 'trash' : 'check'}
                                 onClick={() => closeConfirmation(true)}
                             >
-                                <Icon name={confirmation.variant === 'danger' ? 'trash' : 'check'} />
                                 {confirmation.confirmLabel}
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

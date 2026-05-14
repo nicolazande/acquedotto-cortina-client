@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Icon from './Icon';
+import Button, { ActionBar } from './Button';
 
 const READ_ONLY_MODE = 'Visualizza';
 
@@ -101,18 +101,16 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
                             })}
                         </div>
                     ))}
-                    <div className="btn-container">
+                    <ActionBar>
                         {!isReadOnly && (
-                            <button type="submit" className="btn btn-save">
-                                <Icon name="check" />
+                            <Button type="submit" variant="save" icon="check">
                                 {mode === 'Modifica' ? 'Salva' : config.createButtonLabel}
-                            </button>
+                            </Button>
                         )}
-                        <button type="button" className="btn btn-cancel" onClick={onCancel}>
-                            <Icon name="arrowLeft" />
+                        <Button variant="cancel" icon="arrowLeft" onClick={onCancel}>
                             {isReadOnly ? 'Chiudi' : 'Annulla'}
-                        </button>
-                    </div>
+                        </Button>
+                    </ActionBar>
                 </form>
             </div>
         </div>

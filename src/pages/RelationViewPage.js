@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import {
     getRelationView,
     renderRelationCell,
@@ -11,7 +11,7 @@ import {
     getContextBackSearch,
 } from '../hooks/useContextBack';
 import { useFeedback } from '../components/shared/FeedbackProvider';
-import Icon from '../components/shared/Icon';
+import Button from '../components/shared/Button';
 import RecordTable from '../components/shared/RecordTable';
 
 const asArray = (value) => {
@@ -85,10 +85,9 @@ const RelationViewPage = () => {
                 <div className="relation-view-empty">
                     <h2>Vista non disponibile</h2>
                     <p>La relazione richiesta non e configurata.</p>
-                    <button className="btn btn-back" onClick={() => history.goBack()}>
-                        <Icon name="arrowLeft" />
+                    <Button variant="back" icon="arrowLeft" onClick={() => history.goBack()}>
                         Indietro
-                    </button>
+                    </Button>
                 </div>
             </main>
         );
@@ -143,18 +142,15 @@ const RelationViewPage = () => {
                     <p>{parentTitle || 'Record selezionato'}</p>
                 </div>
                 <div className="relation-view-actions">
-                    <Link className="btn btn-secondary" to={parentPathWithContext}>
-                        <Icon name="arrowLeft" />
+                    <Button to={parentPathWithContext} variant="secondary" icon="arrowLeft">
                         Scheda principale
-                    </Link>
-                    <button className="btn btn-primary" onClick={() => setSelecting(true)}>
-                        <Icon name="check" />
+                    </Button>
+                    <Button variant="primary" icon="check" onClick={() => setSelecting(true)}>
                         Associa {config.target.singular}
-                    </button>
-                    <button className="btn btn-edit" onClick={() => setCreating(true)}>
-                        <Icon name="plus" />
+                    </Button>
+                    <Button variant="edit" icon="plus" onClick={() => setCreating(true)}>
                         Nuovo {config.target.singular}
-                    </button>
+                    </Button>
                 </div>
             </header>
 
@@ -175,13 +171,13 @@ const RelationViewPage = () => {
                 {!loading && !error && records.length > 0 && (
                     <RecordTable
                         actions={(record) => (
-                            <Link
-                                className="btn btn-details"
+                            <Button
+                                variant="details"
+                                icon="eye"
                                 to={`${config.target.basePath}/${getRecordId(record)}${parentReturnSearch}`}
                             >
-                                <Icon name="eye" />
                                 Apri
-                            </Link>
+                            </Button>
                         )}
                         columns={config.columns}
                         containerClassName="relation-table-container"
@@ -200,10 +196,9 @@ const RelationViewPage = () => {
                     <div className="relation-modal-content">
                         <div className="relation-modal-header">
                             <h3>Associa {config.target.singular}</h3>
-                            <button className="btn btn-cancel" onClick={() => setSelecting(false)}>
-                                <Icon name="arrowLeft" />
+                            <Button variant="cancel" icon="arrowLeft" onClick={() => setSelecting(false)}>
                                 Chiudi
-                            </button>
+                            </Button>
                         </div>
                         <TargetList {...selectProps} />
                     </div>

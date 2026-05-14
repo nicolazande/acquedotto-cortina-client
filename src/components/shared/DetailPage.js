@@ -5,7 +5,7 @@ import RelationLinkGrid from './RelationLinkGrid';
 import { useContextBack } from '../../hooks/useContextBack';
 import { formatFieldValue } from '../../utils/formatters';
 import { useFeedback } from './FeedbackProvider';
-import Icon from './Icon';
+import Button from './Button';
 import { PageHeader } from './PageChrome';
 
 const DetailPage = ({ config }) => {
@@ -94,14 +94,12 @@ const DetailPage = ({ config }) => {
                 title={config.title}
                 actions={(
                     <>
-                        <button type="button" onClick={() => setIsEditing(true)} className="btn btn-edit">
-                            <Icon name="edit" />
+                        <Button onClick={() => setIsEditing(true)} variant="edit" icon="edit">
                             Modifica
-                        </button>
-                    <button type="button" onClick={handleDelete} className="btn btn-delete">
-                        <Icon name="trash" />
-                        Elimina
-                    </button>
+                        </Button>
+                        <Button onClick={handleDelete} variant="delete" icon="trash">
+                            Elimina
+                        </Button>
                     </>
                 )}
             />
@@ -130,10 +128,9 @@ const DetailPage = ({ config }) => {
             )}
             {isEditing && <Editor {...editorProps} />}
             <div className="btn-back-container">
-                <button type="button" onClick={goBack} className="btn btn-back">
-                    <Icon name="arrowLeft" />
+                <Button onClick={goBack} variant="back" icon="arrowLeft">
                     {backLabel}
-                </button>
+                </Button>
             </div>
         </div>
     );

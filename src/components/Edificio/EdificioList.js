@@ -5,7 +5,7 @@ import { createContextBackSearch, getLocationPath } from '../../hooks/useContext
 import useEdificioMap from '../../hooks/useEdificioMap';
 import { editorComponents } from '../shared/editorComponents';
 import { useFeedback } from '../shared/FeedbackProvider';
-import Icon from '../shared/Icon';
+import Button from '../shared/Button';
 import {
     PageHeader,
     Pagination,
@@ -158,38 +158,38 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
                 <RecordTable
                     actions={(edificio) => (
                         <>
-                            <button
-                                className="btn btn-dettagli"
+                            <Button
+                                variant="details"
+                                icon="eye"
                                 onClick={(event) => {
                                     event.stopPropagation();
                                     openEdificio(edificio._id);
                                 }}
                             >
-                                <Icon name="eye" />
                                 Apri
-                            </button>
+                            </Button>
                             {onSelectEdificio && (
-                                <button
-                                    className="btn btn-select"
+                                <Button
+                                    variant="select"
+                                    icon="check"
                                     onClick={(event) => {
                                         event.stopPropagation();
                                         onSelectEdificio(edificio._id);
                                     }}
                                 >
-                                    <Icon name="check" />
                                     Seleziona
-                                </button>
+                                </Button>
                             )}
-                            <button
-                                className="btn btn-delete"
+                            <Button
+                                variant="delete"
+                                icon="trash"
                                 onClick={(event) => {
                                     event.stopPropagation();
                                     handleDelete(edificio._id);
                                 }}
                             >
-                                <Icon name="trash" />
                                 Elimina
-                            </button>
+                            </Button>
                         </>
                     )}
                     columns={EDIFICIO_COLUMNS}

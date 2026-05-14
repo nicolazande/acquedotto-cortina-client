@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { createContextBackSearch, getLocationPath } from '../../hooks/useContextBack';
 import { useFeedback } from './FeedbackProvider';
-import Icon from './Icon';
+import Button from './Button';
 import {
     PageHeader,
     Pagination,
@@ -133,29 +133,29 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                 <RecordTable
                     actions={(record) => (
                         <>
-                            <button
-                                className="btn btn-details"
+                            <Button
+                                variant="details"
+                                icon="eye"
                                 onClick={() => history.push(`${config.detailPath}/${record._id}${detailReturnSearch}`)}
                             >
-                                <Icon name="eye" />
                                 Apri
-                            </button>
+                            </Button>
                             {onSelect && (
-                                <button
-                                    className="btn btn-select"
+                                <Button
+                                    variant="select"
+                                    icon="check"
                                     onClick={() => onSelect(record._id)}
                                 >
-                                    <Icon name="check" />
                                     Seleziona
-                                </button>
+                                </Button>
                             )}
-                            <button
-                                className="btn btn-delete"
+                            <Button
+                                variant="delete"
+                                icon="trash"
                                 onClick={() => handleDelete(record._id)}
                             >
-                                <Icon name="trash" />
                                 Elimina
-                            </button>
+                            </Button>
                         </>
                     )}
                     columns={config.columns}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Icon from './Icon';
+import Button from './Button';
 
 const DEFAULT_SLOT_SIZE = 10;
 
@@ -43,14 +43,12 @@ export const SearchToolbar = ({
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
             />
-            <button type="submit" className="btn btn-search">
-                <Icon name="search" />
+            <Button type="submit" variant="search" icon="search">
                 Cerca
-            </button>
-            <button type="button" className={createClassName} onClick={onCreate}>
-                <Icon name="plus" />
+            </Button>
+            <Button type="button" className={createClassName} variant={null} icon="plus" onClick={onCreate}>
                 {createLabel}
-            </button>
+            </Button>
         </div>
     </form>
 );
@@ -98,14 +96,13 @@ export const Pagination = ({
 
     return (
         <div className="pagination">
-            <button
+            <Button
                 type="button"
-                className="btn btn-prev"
+                variant="prev"
+                icon="arrowLeft"
                 onClick={() => setSlotStart((start) => Math.max(start - slotSize, 1))}
                 disabled={slotStart === 1}
-            >
-                <Icon name="arrowLeft" />
-            </button>
+            />
             {pages.map((page) => (
                 <button
                     type="button"
@@ -116,14 +113,13 @@ export const Pagination = ({
                     {page}
                 </button>
             ))}
-            <button
+            <Button
                 type="button"
-                className="btn btn-next"
+                variant="next"
+                icon="arrowRight"
                 onClick={() => setSlotStart((start) => Math.min(start + slotSize, lastSlotStart))}
                 disabled={slotStart >= lastSlotStart}
-            >
-                <Icon name="arrowRight" />
-            </button>
+            />
         </div>
     );
 };

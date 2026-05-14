@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import authApi from '../api/authApi';
-import Icon from '../components/shared/Icon';
+import Button from '../components/shared/Button';
 import ServerStatusIndicator from '../ServerStatusIndicator';
 import '../styles/Auth.css';
 
@@ -53,10 +53,9 @@ const LoginPage = ({ onLogin, history }) => {
                         />
                     </div>
                     <div className="btn-back-container">
-                        <button type="submit" className="btn btn-primary">
-                            <Icon name="check" />
+                        <Button type="submit" variant="primary" icon="check">
                             Accedi
-                        </button>
+                        </Button>
                     </div>
                 </form>
                 <div className="auth-footer">
