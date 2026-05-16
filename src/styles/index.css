@@ -308,21 +308,25 @@ a {
     inset: 0;
     z-index: 1100;
     display: flex;
-    align-items: stretch;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
     padding: 18px;
     background: rgba(17, 24, 27, 0.46);
     backdrop-filter: blur(6px);
+    -webkit-overflow-scrolling: touch;
 }
 
 .relation-modal-content {
-    width: min(1120px, 100%);
+    width: min(1120px, calc(100vw - 36px));
+    max-height: calc(100dvh - 36px);
     overflow-y: auto;
     padding: 18px;
     background: var(--color-page);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-float);
+    -webkit-overflow-scrolling: touch;
 }
 
 .relation-modal-header {
@@ -1082,16 +1086,13 @@ input[type="checkbox"] {
 
     .relation-modal {
         align-items: flex-start;
-        overflow-y: auto;
         padding: 8px;
-        -webkit-overflow-scrolling: touch;
     }
 
     .relation-modal-content {
+        width: calc(100vw - 16px);
         max-height: calc(100dvh - 16px);
-        overflow-y: auto;
         padding: 12px;
-        -webkit-overflow-scrolling: touch;
     }
 
     .relation-modal-header {
