@@ -139,8 +139,10 @@ const RecordTable = ({
                                 </td>
                             ))}
                             {actions && (
-                                <td data-label={actionsLabel}>
-                                    {actions(record)}
+                                <td className="record-actions-cell" data-label={actionsLabel}>
+                                    <div className="record-actions">
+                                        {actions(record)}
+                                    </div>
                                 </td>
                             )}
                         </tr>

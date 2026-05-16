@@ -7,11 +7,12 @@ const getSlotStartForPage = (page, slotSize) => (
     Math.floor((Math.max(page, 1) - 1) / slotSize) * slotSize + 1
 );
 
-export const PageHeader = ({ eyebrow, title, countLabel, actions, className }) => (
+export const PageHeader = ({ eyebrow, title, description, countLabel, actions, className }) => (
     <div className={className}>
         <div>
             {eyebrow && <span className="eyebrow">{eyebrow}</span>}
             <h2>{title}</h2>
+            {description && <p className="page-description">{description}</p>}
         </div>
         {countLabel && <span className="list-page-count">{countLabel}</span>}
         {actions && <div className="detail-page-actions">{actions}</div>}

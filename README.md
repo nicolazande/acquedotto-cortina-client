@@ -7,7 +7,7 @@ Frontend React per il gestionale Acquedotto Zuel.
 - Clienti e dati amministrativi
 - Contatori, edifici e associazioni tra record
 - Letture, servizi, articoli, listini e fasce
-- Fatture e scadenze
+- Fatture, scadenze e generazione bozze da letture
 - Login, registrazione limitata e profilo admin
 
 ## Avvio locale
@@ -18,6 +18,13 @@ npm start
 ```
 
 Il client parte di default su `http://localhost:3000`.
+
+Puoi usare anche lo script locale, che imposta automaticamente il Node incluso
+nel workspace e installa le dipendenze se mancano:
+
+```bash
+./start-local.sh
+```
 
 ## Configurazione
 
@@ -47,6 +54,7 @@ Se la variabile non e' presente, le richieste usano `/api/...` e possono passare
 - `src/api/*Api.js`: client HTTP per le risorse
 - `src/pages`: pagine principali
 - `src/components`: liste, dettagli ed editor
+- `src/pages/BillingBatchPage.js`: anteprima clienti/letture pronte per fatturazione
 - `src/styles/index.css`: tema globale e componenti CRUD condivisi
 
 ## Script

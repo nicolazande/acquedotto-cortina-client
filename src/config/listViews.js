@@ -11,20 +11,32 @@ import { editorComponents } from '../components/shared/editorComponents';
 import {
     EMPTY_VALUE,
     boolText,
+    customerName,
     formatDate,
     formatMoney,
-    fullName,
+    invoiceStatus,
     join,
 } from '../utils/formatters';
 
 const api = (list, create, remove) => ({ list, create, remove });
 const filled = (value) => (value === EMPTY_VALUE ? '' : value);
-const personLabel = (record) => filled(fullName(record)) || record?.ragione_sociale || '';
+const personLabel = (record) => filled(customerName(record));
 const statusText = (isInactive) => (isInactive ? 'Inattivo' : 'Attivo');
+const isFixedTariff = (record) => String(record?.tipo || '').toLowerCase().includes('fisso');
+const tariffPrice = (value, record) => `${formatMoney(value)}${isFixedTariff(record) ? '' : '/m3'}`;
+const rangeLabel = (record) => join(`${record.min ?? 0} m3`, `${record.max ?? 0} m3`);
+const validityLabel = (record) => join(formatDate(record.inizio), formatDate(record.scadenza));
 
 export const listViews = {
     articoli: {
         title: 'Articoli',
+        eyebrow: 'Configurazione tariffaria',
+        description: 'Voci fiscali usate nelle righe fattura per distinguere consumi, quote fisse, allacciamenti e aliquote IVA.',
+        infoCards: [
+            { label: 'Voce', value: 'Codice articolo', text: 'Identifica la riga fattura.' },
+            { label: 'IVA', value: 'Aliquota applicata', text: 'Usata nel totale documento.' },
+            { label: 'Servizi', value: 'Righe collegate', text: 'Ogni servizio usa un articolo.' },
+        ],
         className: 'articolo',
         detailPath: '/articoli',
         newLabel: 'Nuovo',
@@ -58,8 +70,7 @@ export const listViews = {
             meta: (record) => [{ label: 'Nascita', value: formatDate(record.data_nascita) }],
         },
         columns: [
-            { label: 'Nome', sortField: 'nome', value: 'nome' },
-            { label: 'Cognome', sortField: 'cognome', value: 'cognome' },
+            { label: 'Cognome e nome', sortField: 'cognome', value: personLabel },
             { label: 'Nascita', sortField: 'data_nascita', value: 'data_nascita', format: formatDate },
         ],
     },
@@ -91,6 +102,13 @@ export const listViews = {
     },
     fasce: {
         title: 'Fasce',
+        eyebrow: 'Configurazione tariffaria',
+        description: 'Regole di prezzo per listino: soglie di consumo, quote fisse e periodo di validita.',
+        infoCards: [
+            { label: 'Listino', value: 'Tariffa padre', text: 'La fascia vale solo per quel listino.' },
+            { label: 'Soglia', value: 'Da / a m3', text: 'Divide il consumo in righe fattura.' },
+            { label: 'Prezzo', value: 'Unitario o fisso', text: 'Determina il totale della riga.' },
+        ],
         className: 'fascia',
         detailPath: '/fasce',
         newLabel: 'Nuova',
@@ -101,22 +119,26 @@ export const listViews = {
         defaultSortOrder: 'asc',
         summary: {
             title: (record) => record.tipo,
+            subtitle: (record) => record.listino?.categoria,
             meta: (record) => [
-                { label: 'Soglia', value: join(record.min, record.max) },
-                { label: 'Prezzo', value: formatMoney(record.prezzo) },
+                { label: 'Soglia', value: rangeLabel(record) },
+                { label: 'Prezzo', value: tariffPrice(record.prezzo, record) },
+                { label: 'Validita', value: validityLabel(record) },
             ],
         },
         columns: [
-            { label: 'Tipo', sortField: 'tipo', value: 'tipo' },
-            { label: 'Minimo', sortField: 'min', value: 'min' },
-            { label: 'Massimo', sortField: 'max', value: 'max' },
-            { label: 'Prezzo', sortField: 'prezzo', value: 'prezzo', format: formatMoney },
+            { label: 'Listino', value: 'listino.categoria' },
+            { label: 'Fascia', sortField: 'tipo', value: 'tipo' },
+            { label: 'Soglia', sortField: 'min', value: rangeLabel },
+            { label: 'Prezzo', sortField: 'prezzo', value: 'prezzo', format: tariffPrice },
+            { label: 'Validita', sortField: 'inizio', value: validityLabel },
         ],
     },
     fatture: {
         title: 'Fatture',
         className: 'fattura',
         detailPath: '/fatture',
+        generationPath: '/fatture/generazione',
         newLabel: 'Nuova',
         createMode: 'Nuova',
         editorProp: 'fattura',
@@ -130,14 +152,14 @@ export const listViews = {
             meta: (record) => [
                 { label: 'Data', value: formatDate(record.data_fattura) },
                 { label: 'Totale', value: formatMoney(record.totale_fattura) },
-                { label: 'Stato', value: record.confermata ? 'Confermata' : 'Da confermare' },
+                { label: 'Stato', value: invoiceStatus(record) },
             ],
         },
         columns: [
-            { label: 'Cliente', sortField: 'cliente.nome', value: (record) => fullName(record.cliente) },
+            { label: 'Cliente', sortField: 'cliente.nome', value: (record) => personLabel(record.cliente) },
             { label: 'Tipo Documento', sortField: 'tipo_documento', value: 'tipo_documento' },
             { label: 'Data', sortField: 'data_fattura', value: 'data_fattura', format: formatDate },
-            { label: 'Confermata', sortField: 'confermata', value: 'confermata', format: boolText },
+            { label: 'Stato', sortField: 'confermata', value: invoiceStatus },
             { label: 'Totale', sortField: 'totale_fattura', value: 'totale_fattura', format: formatMoney },
         ],
     },
@@ -168,6 +190,13 @@ export const listViews = {
     },
     listini: {
         title: 'Listini',
+        eyebrow: 'Configurazione tariffaria',
+        description: 'Categorie tariffarie assegnate ai contatori. Le fasce del listino determinano il costo delle letture.',
+        infoCards: [
+            { label: 'Categoria', value: 'Tariffa contatore', text: 'Es. domestico, produttivo, cantiere.' },
+            { label: 'Fasce', value: 'Regole collegate', text: 'Soglie e quote fisse applicate.' },
+            { label: 'Letture', value: 'Base calcolo', text: 'Il consumo viene diviso per fascia.' },
+        ],
         className: 'listino',
         detailPath: '/listini',
         newLabel: 'Nuovo',
@@ -226,12 +255,13 @@ export const listViews = {
         summary: {
             title: (record) => record.descrizione,
             subtitle: (record) => formatDate(record.data_lettura),
-            meta: (record) => [{ label: 'Valore', value: formatMoney(record.valore_unitario) }],
+            meta: (record) => [{ label: 'Totale', value: formatMoney(record.valore_unitario) }],
         },
         columns: [
             { label: 'Descrizione', sortField: 'descrizione', value: 'descrizione' },
             { label: 'Data Lettura', sortField: 'data_lettura', value: 'data_lettura', format: formatDate },
-            { label: 'Valore Unitario', sortField: 'valore_unitario', value: 'valore_unitario', format: formatMoney },
+            { label: 'Prezzo unitario', sortField: 'prezzo', value: 'prezzo', format: formatMoney },
+            { label: 'Totale riga', sortField: 'valore_unitario', value: 'valore_unitario', format: formatMoney },
         ],
     },
 };

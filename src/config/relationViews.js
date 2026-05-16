@@ -14,16 +14,18 @@ import { listComponents } from '../components/shared/listComponents';
 import {
     EMPTY_VALUE,
     boolText,
+    customerName,
+    formatCubicMeters,
     formatDate,
     formatMoney,
-    fullName,
+    invoiceStatus,
     join,
     text,
 } from '../utils/formatters';
 
 const empty = EMPTY_VALUE;
 const filled = (value) => (value === empty ? '' : value);
-const personLabel = (record) => filled(fullName(record)) || record?.ragione_sociale || empty;
+const personLabel = (record) => filled(customerName(record)) || empty;
 const recordId = (record) => record && record._id;
 const createdRecordId = (response) => response?.data?._id;
 export const responseData = (response) => response.data;
@@ -184,7 +186,7 @@ const relationList = [
         columns: [
             { label: 'Descrizione', value: (record) => text(record.descrizione) },
             { label: 'Data lettura', value: (record) => formatDate(record.data_lettura) },
-            { label: 'Valore', value: (record) => formatMoney(record.valore_unitario) },
+            { label: 'Totale', value: (record) => formatMoney(record.valore_unitario) },
         ],
     }),
     relation('clienti', 'contatori', {
@@ -195,7 +197,7 @@ const relationList = [
         associate: clienteApi.associateContatore,
         defaultValues: (parent) => ({
             cliente: recordId(parent),
-            nome_cliente: fullName(parent),
+            nome_cliente: personLabel(parent),
         }),
         columns: [
             { label: 'Edificio', value: (record) => text(record.nome_edificio) },
@@ -212,13 +214,13 @@ const relationList = [
         associate: clienteApi.associateFattura,
         defaultValues: (parent) => ({
             cliente: recordId(parent),
-            ragione_sociale: fullName(parent) || parent.ragione_sociale,
+            ragione_sociale: personLabel(parent),
         }),
         columns: [
             { label: 'Documento', value: (record) => join(record.tipo_documento, record.numero) },
             { label: 'Data', value: (record) => formatDate(record.data_fattura) },
             { label: 'Totale', value: (record) => formatMoney(record.totale_fattura) },
-            { label: 'Confermata', value: (record) => boolText(record.confermata) },
+            { label: 'Stato', value: invoiceStatus },
         ],
     }),
     relation('contatori', 'cliente', {
@@ -329,8 +331,10 @@ const relationList = [
         defaultValues: (parent) => ({ fattura: recordId(parent) }),
         columns: [
             { label: 'Descrizione', value: (record) => text(record.descrizione) },
-            { label: 'Data lettura', value: (record) => formatDate(record.data_lettura) },
-            { label: 'Valore', value: (record) => formatMoney(record.valore_unitario) },
+            { label: 'Lettura', value: (record) => formatDate(record.lettura?.data_lettura || record.data_lettura) },
+            { label: 'Quantita', value: (record) => formatCubicMeters(record.metri_cubi) },
+            { label: 'Unitario', value: (record) => formatMoney(record.prezzo) },
+            { label: 'Totale', value: (record) => formatMoney(record.valore_unitario) },
         ],
     }),
     relation('fatture', 'scadenza', {
@@ -347,7 +351,7 @@ const relationList = [
             totale: parent.totale_fattura,
         }),
         columns: [
-            { label: 'Cliente', value: (record) => fullName(record) },
+            { label: 'Cliente', value: personLabel },
             { label: 'Scadenza', value: (record) => formatDate(record.scadenza) },
             { label: 'Totale', value: (record) => formatMoney(record.totale) },
             { label: 'Saldo', value: (record) => boolText(record.saldo) },
@@ -381,7 +385,7 @@ const relationList = [
         columns: [
             { label: 'Descrizione', value: (record) => text(record.descrizione) },
             { label: 'Data lettura', value: (record) => formatDate(record.data_lettura) },
-            { label: 'Valore', value: (record) => formatMoney(record.valore_unitario) },
+            { label: 'Totale', value: (record) => formatMoney(record.valore_unitario) },
         ],
     }),
     relation('listini', 'fasce', {
@@ -393,8 +397,7 @@ const relationList = [
         defaultValues: (parent) => ({ listino: recordId(parent) }),
         columns: [
             { label: 'Tipo', value: (record) => text(record.tipo) },
-            { label: 'Minimo', value: (record) => text(record.min) },
-            { label: 'Massimo', value: (record) => text(record.max) },
+            { label: 'Soglia', value: (record) => join(`${record.min ?? 0} m3`, `${record.max ?? 0} m3`) },
             { label: 'Prezzo', value: (record) => formatMoney(record.prezzo) },
         ],
     }),
@@ -421,7 +424,7 @@ const relationList = [
         defaultValues: (parent) => ({
             scadenza: recordId(parent),
             totale_fattura: parent.totale,
-            ragione_sociale: fullName(parent),
+            ragione_sociale: personLabel(parent),
         }),
         columns: [
             { label: 'Documento', value: (record) => join(record.tipo_documento, record.numero) },

@@ -371,6 +371,15 @@ a {
     margin-bottom: 0;
 }
 
+.page-description {
+    max-width: 680px;
+    margin: 6px 0 0;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
 .content [class$="-list"] .eyebrow,
 .content > [class$="-details"] .eyebrow {
     margin-bottom: 4px;
@@ -390,6 +399,46 @@ a {
     font-size: 0.78rem;
     font-weight: 900;
     white-space: nowrap;
+}
+
+.configuration-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px;
+    margin: 0 0 16px;
+}
+
+.configuration-card {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+    padding: 13px 14px;
+    background: linear-gradient(180deg, #ffffff 0%, #f7faf9 100%);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(20, 35, 42, 0.04);
+}
+
+.configuration-card span {
+    color: var(--color-primary-strong);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.configuration-card strong {
+    color: var(--color-heading);
+    font-size: 0.98rem;
+    line-height: 1.25;
+}
+
+.configuration-card p {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.82rem;
+    font-weight: 650;
+    line-height: 1.35;
 }
 
 .detail-page-actions {
@@ -469,7 +518,7 @@ a {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
-    box-shadow: none;
+    box-shadow: 0 1px 2px rgba(20, 35, 42, 0.04);
     scrollbar-color: var(--color-border-strong) transparent;
 }
 
@@ -495,6 +544,7 @@ a {
     border-collapse: separate;
     border-spacing: 0;
     background: var(--color-surface);
+    font-variant-numeric: tabular-nums;
 }
 
 .content .info-table,
@@ -506,10 +556,11 @@ a {
 .content td,
 .auth-container th,
 .auth-container td {
-    padding: 12px 14px;
+    padding: 11px 14px;
     color: var(--color-text);
     border: 0;
     border-bottom: 1px solid var(--color-border);
+    line-height: 1.35;
     text-align: left;
     vertical-align: middle;
 }
@@ -518,7 +569,7 @@ a {
 .auth-container th,
 .auth-container td:first-child {
     color: #566970;
-    background: #f6f9fa;
+    background: #f7fafb;
     font-size: 0.76rem;
     font-weight: 850;
     letter-spacing: 0;
@@ -537,7 +588,7 @@ a {
 }
 
 .content table:not(.info-table) tbody td {
-    font-size: 0.92rem;
+    font-size: 0.9rem;
 }
 
 .content table:not(.info-table) tbody td:first-child {
@@ -564,15 +615,15 @@ a {
 }
 
 .content tbody tr {
-    transition: background-color 140ms ease;
+    transition: background-color 140ms ease, box-shadow 140ms ease;
 }
 
 .content table:not(.info-table) tbody tr:nth-child(even) {
-    background: #fbfdfd;
+    background: #fcfdfd;
 }
 
 .content table:not(.info-table) tbody tr:hover {
-    background: rgba(11, 114, 128, 0.055);
+    background: #f4fbfc;
 }
 
 .content table:not(.info-table) tbody tr.highlight {
@@ -592,21 +643,28 @@ a {
     user-select: none;
 }
 
-.content table:not(.info-table) td:last-child {
+.content table:not(.info-table) .record-actions-cell {
     min-width: 178px;
     white-space: normal;
     text-align: left;
 }
 
-.content table:not(.info-table) td:last-child .btn,
-.content table:not(.info-table) td:last-child button,
-.content table:not(.info-table) td:last-child a {
+.record-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.content table:not(.info-table) .record-actions .btn,
+.content table:not(.info-table) .record-actions button,
+.content table:not(.info-table) .record-actions a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-height: 32px;
     min-width: max-content;
-    margin: 2px 4px 2px 0;
+    margin: 0;
     padding: 6px 9px;
     gap: 6px;
     font-size: 0.8rem;
@@ -614,7 +672,7 @@ a {
     vertical-align: middle;
 }
 
-.content table:not(.info-table) td:last-child .icon {
+.content table:not(.info-table) .record-actions .icon {
     width: 14px;
     height: 14px;
 }
@@ -625,6 +683,103 @@ a {
     background: var(--color-surface-soft);
     font-weight: 800;
     text-align: center;
+}
+
+.billing-preview {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--color-border);
+}
+
+.billing-preview-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.billing-preview-actions,
+.billing-linked-invoices {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.billing-preview-heading h3 {
+    margin: 0;
+}
+
+.billing-preview-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+.billing-preview-summary span {
+    display: grid;
+    gap: 3px;
+    padding: 12px;
+    background: var(--color-surface-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+}
+
+.billing-preview-summary strong {
+    color: var(--color-heading);
+    font-size: 1.08rem;
+}
+
+.billing-preview-summary .is-ok {
+    border-color: rgba(8, 124, 137, 0.28);
+    background: #f2fbfa;
+}
+
+.billing-preview-summary .is-warning {
+    border-color: rgba(158, 92, 42, 0.28);
+    background: #fff8f1;
+}
+
+.billing-preview-summary small,
+.billing-preview-meta,
+.billing-preview-state {
+    color: var(--color-muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.billing-preview-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.billing-preview-meta span {
+    padding: 5px 9px;
+    background: var(--color-surface-soft);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+}
+
+.billing-preview-table table {
+    min-width: 620px;
+}
+
+.billing-batch-page {
+    display: grid;
+    gap: 16px;
+}
+
+.billing-batch-groups {
+    display: grid;
+    gap: 14px;
+}
+
+.billing-batch-group .billing-preview {
+    margin-top: 0;
 }
 
 .edificio-map {
@@ -879,6 +1034,25 @@ input[type="checkbox"] {
         width: fit-content;
     }
 
+    .configuration-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .billing-preview-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .billing-preview-actions,
+    .billing-linked-invoices {
+        justify-content: flex-start;
+    }
+
+    .billing-preview-actions .btn,
+    .billing-linked-invoices .btn {
+        flex: 1 1 150px;
+    }
+
     .detail-page-actions {
         justify-content: flex-start;
     }
@@ -978,13 +1152,13 @@ input[type="checkbox"] {
         font-size: 0.88rem;
     }
 
-    .content table:not(.info-table) td:last-child {
+    .content table:not(.info-table) .record-actions-cell {
         min-width: 160px;
     }
 
-    .content table:not(.info-table) td:last-child .btn,
-    .content table:not(.info-table) td:last-child button,
-    .content table:not(.info-table) td:last-child a {
+    .content table:not(.info-table) .record-actions .btn,
+    .content table:not(.info-table) .record-actions button,
+    .content table:not(.info-table) .record-actions a {
         min-height: 36px;
         padding: 7px 11px;
     }
@@ -1047,16 +1221,17 @@ input[type="checkbox"] {
 
     .content table:not(.info-table) tbody {
         display: grid;
-        gap: 10px;
+        gap: 12px;
     }
 
     .content table:not(.info-table) tbody tr {
         display: grid;
         overflow: hidden;
-        padding: 2px 12px;
+        padding: 4px 14px;
         background: var(--color-surface);
         border: 1px solid var(--color-border);
         border-radius: var(--radius);
+        box-shadow: 0 1px 2px rgba(20, 35, 42, 0.04);
     }
 
     .content table:not(.info-table) tbody tr:nth-child(even),
@@ -1071,11 +1246,12 @@ input[type="checkbox"] {
 
     .content table:not(.info-table) tbody td {
         display: grid;
-        grid-template-columns: minmax(92px, 38%) minmax(0, 1fr);
-        gap: 10px;
+        grid-template-columns: minmax(88px, 34%) minmax(0, 1fr);
+        gap: 12px;
         align-items: start;
-        padding: 9px 0;
+        padding: 8px 0;
         border-bottom: 1px solid var(--color-border);
+        line-height: 1.35;
         overflow-wrap: anywhere;
     }
 
@@ -1085,7 +1261,7 @@ input[type="checkbox"] {
 
     .content table:not(.info-table) tbody td.record-summary-cell {
         display: block;
-        padding: 12px 0;
+        padding: 12px 0 10px;
         color: var(--color-text);
         border-bottom: 1px solid var(--color-border);
     }
@@ -1096,7 +1272,7 @@ input[type="checkbox"] {
 
     .record-card-summary {
         display: grid;
-        gap: 7px;
+        gap: 6px;
     }
 
     .record-card-title {
@@ -1148,7 +1324,7 @@ input[type="checkbox"] {
     .content table:not(.info-table) tbody td::before {
         content: attr(data-label);
         color: var(--color-muted);
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         font-weight: 850;
         letter-spacing: 0;
         text-transform: uppercase;
@@ -1159,24 +1335,29 @@ input[type="checkbox"] {
         font-weight: 600;
     }
 
-    .content table:not(.info-table) tbody td:last-child {
+    .content table:not(.info-table) tbody .record-actions-cell {
         display: flex;
         min-width: 0;
-        flex-wrap: wrap;
-        gap: 7px;
         align-items: center;
         justify-content: flex-start;
-        padding-top: 11px;
+        padding-top: 12px;
         border-bottom: 0;
     }
 
-    .content table:not(.info-table) tbody td:last-child::before {
+    .content table:not(.info-table) tbody .record-actions-cell::before {
         content: none;
     }
 
-    .content table:not(.info-table) tbody td:last-child .btn,
-    .content table:not(.info-table) tbody td:last-child button,
-    .content table:not(.info-table) tbody td:last-child a {
+    .content table:not(.info-table) tbody .record-actions {
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 7px;
+    }
+
+    .content table:not(.info-table) tbody .record-actions .btn,
+    .content table:not(.info-table) tbody .record-actions button,
+    .content table:not(.info-table) tbody .record-actions a {
         flex: 0 1 auto;
         min-width: max-content;
         margin: 0;
@@ -1238,9 +1419,9 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 380px) {
-    .content table:not(.info-table) tbody td:last-child .btn,
-    .content table:not(.info-table) tbody td:last-child button,
-    .content table:not(.info-table) tbody td:last-child a {
+    .content table:not(.info-table) tbody .record-actions .btn,
+    .content table:not(.info-table) tbody .record-actions button,
+    .content table:not(.info-table) tbody .record-actions a {
         flex: 1 1 100%;
     }
 }

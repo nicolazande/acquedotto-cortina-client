@@ -8,12 +8,16 @@ import letturaApi from '../api/letturaApi';
 import listinoApi from '../api/listinoApi';
 import scadenzaApi from '../api/scadenzaApi';
 import servizioApi from '../api/servizioApi';
+import BillingPreviewPanel from '../components/shared/BillingPreviewPanel';
+import CustomerBillingPanel from '../components/shared/CustomerBillingPanel';
 import { editorComponents } from '../components/shared/editorComponents';
+import InvoiceVerificationPanel from '../components/shared/InvoiceVerificationPanel';
 import {
     boolText,
+    customerName,
     formatDate,
     formatMoney,
-    fullName,
+    invoiceStatus,
     join,
     text,
 } from '../utils/formatters';
@@ -43,6 +47,7 @@ export const detailViews = {
         EditorComponent: editorComponents.cliente,
         api: api(clienteApi.getCliente, clienteApi.updateCliente, clienteApi.deleteCliente),
         relations: ['contatori', 'fatture'],
+        panels: [CustomerBillingPanel],
         fields: [
             { label: 'Ragione Sociale', value: 'ragione_sociale' },
             { label: 'Cognome', value: 'cognome' },
@@ -109,7 +114,7 @@ export const detailViews = {
             { label: 'Note', value: 'note' },
             { label: 'Foto', value: 'foto' },
             { label: 'Listino', value: 'listino.descrizione' },
-            { label: 'Cliente', value: (record) => record.cliente ? fullName(record.cliente) : '' },
+            { label: 'Cliente', value: (record) => record.cliente ? customerName(record.cliente) : '' },
             { label: 'Edificio', value: 'edificio.descrizione' },
         ],
     },
@@ -150,9 +155,10 @@ export const detailViews = {
         api: api(fasciaApi.getFascia, fasciaApi.updateFascia, fasciaApi.deleteFascia),
         relations: ['listino'],
         fields: [
+            { label: 'Listino', value: 'listino.categoria' },
             { label: 'Tipo', value: 'tipo' },
-            { label: 'Minimo', value: 'min' },
-            { label: 'Massimo', value: 'max' },
+            { label: 'Soglia minima', value: 'min' },
+            { label: 'Soglia massima', value: 'max' },
             { label: 'Prezzo', value: 'prezzo', format: formatMoney },
             { label: 'Inizio', value: 'inizio', format: formatDate },
             { label: 'Scadenza', value: 'scadenza', format: formatDate },
@@ -166,10 +172,22 @@ export const detailViews = {
         EditorComponent: editorComponents.fattura,
         api: api(fatturaApi.getFattura, fatturaApi.updateFattura, fatturaApi.deleteFattura),
         relations: ['cliente', 'servizi', 'scadenza'],
+        actions: [
+            (record) => ({
+                href: fatturaApi.getPdfUrl(record._id),
+                icon: 'download',
+                label: 'PDF',
+                rel: 'noreferrer',
+                target: '_blank',
+                variant: 'secondary',
+            }),
+        ],
+        panels: [InvoiceVerificationPanel],
         fields: [
             { label: 'Tipo Documento', value: 'tipo_documento' },
             { label: 'Ragione Sociale', value: 'ragione_sociale' },
             { label: 'Confermata', value: 'confermata', format: boolText },
+            { label: 'Stato', value: invoiceStatus },
             { label: 'Anno', value: 'anno' },
             { label: 'Numero', value: 'numero' },
             { label: 'Data Fattura', value: 'data_fattura', format: formatDate },
@@ -182,7 +200,7 @@ export const detailViews = {
             { label: 'Data fattura elettronica', value: 'data_fattura_elettronica', format: formatDate },
             { label: 'Data invio fattura', value: 'data_invio_fattura', format: formatDate },
             { label: 'Tipo pagamento', value: 'tipo_pagamento' },
-            { label: 'Cliente', value: (record) => record.cliente ? fullName(record.cliente) : '' },
+            { label: 'Cliente', value: (record) => record.cliente ? customerName(record.cliente) : '' },
         ],
     },
     letture: {
@@ -193,6 +211,7 @@ export const detailViews = {
         EditorComponent: editorComponents.lettura,
         api: api(letturaApi.getLettura, letturaApi.updateLettura, letturaApi.deleteLettura),
         relations: ['servizi', 'contatore'],
+        panels: [BillingPreviewPanel],
         fields: [
             { label: 'Data Lettura', value: 'data_lettura', format: formatDate },
             { label: 'Consumo', value: (record) => join(record.consumo, record.unita_misura) },
@@ -253,8 +272,8 @@ export const detailViews = {
             { label: 'Tariffa', value: 'tipo_tariffa' },
             { label: 'Tipo attivita', value: 'tipo_attivita' },
             { label: 'Metri cubi', value: 'metri_cubi' },
-            { label: 'Prezzo', value: 'prezzo', format: formatMoney },
-            { label: 'Valore unitario', value: 'valore_unitario', format: formatMoney },
+            { label: 'Prezzo unitario', value: 'prezzo', format: formatMoney },
+            { label: 'Totale riga', value: 'valore_unitario', format: formatMoney },
             { label: 'Tipo quota', value: 'tipo_quota' },
             { label: 'Seriale condominio', value: 'seriale_condominio' },
             { label: 'Lettura precedente', value: 'lettura_precedente' },

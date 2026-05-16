@@ -110,16 +110,35 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
             }
         },
     };
+    const infoCards = config.infoCards || [];
+    const headerActions = config.generationPath ? (
+        <Button variant="secondary" icon="invoice" onClick={() => history.push(config.generationPath)}>
+            Genera da letture
+        </Button>
+    ) : null;
 
     return (
         <div className={`${config.className}-list-container`}>
             <div className={`${config.className}-list`}>
                 <PageHeader
                     className="list-page-heading"
-                    eyebrow="Archivio"
+                    eyebrow={config.eyebrow || 'Archivio'}
                     title={config.title}
+                    description={config.description}
                     countLabel={!isLoading && `${totalItems} record`}
+                    actions={headerActions}
                 />
+                {infoCards.length > 0 && (
+                    <div className="configuration-overview">
+                        {infoCards.map((card) => (
+                            <div className="configuration-card" key={card.label}>
+                                <span>{card.label}</span>
+                                <strong>{card.value}</strong>
+                                {card.text && <p>{card.text}</p>}
+                            </div>
+                        ))}
+                    </div>
+                )}
                 <SearchToolbar
                     value={searchTerm}
                     onChange={setSearchTerm}

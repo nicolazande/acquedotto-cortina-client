@@ -79,6 +79,10 @@ const DetailPage = ({ config }) => {
 
     const Editor = config.EditorComponent;
     const hasNotes = config.fields.some((field) => field.value === 'note' || field.label.toLowerCase() === 'note');
+    const panels = config.panels || [];
+    const actions = (config.actions || [])
+        .map((action) => (typeof action === 'function' ? action(record) : action))
+        .filter(Boolean);
     const editorProps = {
         [config.editorProp]: record,
         mode: 'Modifica',
@@ -94,6 +98,20 @@ const DetailPage = ({ config }) => {
                 title={config.title}
                 actions={(
                     <>
+                        {actions.map((action) => (
+                            <Button
+                                key={action.label}
+                                href={action.href}
+                                icon={action.icon}
+                                onClick={action.onClick}
+                                rel={action.rel}
+                                target={action.target}
+                                to={action.to}
+                                variant={action.variant || 'secondary'}
+                            >
+                                {action.label}
+                            </Button>
+                        ))}
                         <Button onClick={() => setIsEditing(true)} variant="edit" icon="edit">
                             Modifica
                         </Button>
@@ -120,6 +138,9 @@ const DetailPage = ({ config }) => {
                 recordId={id}
                 relations={config.relations}
             />
+            {panels.map((Panel) => (
+                <Panel key={Panel.displayName || Panel.name} record={record} recordId={id} />
+            ))}
             {hasNotes && (
                 <NoteAttachmentsPanel
                     resource={config.resource}

@@ -12,11 +12,37 @@ export const formatMoney = (value) => (
     Number.isFinite(Number(value)) ? `${Number(value).toFixed(2)} \u20ac` : EMPTY_VALUE
 );
 
+export const formatCubicMeters = (value) => (
+    Number.isFinite(Number(value)) ? `${Number(value)} m3` : EMPTY_VALUE
+);
+
 export const boolText = (value) => (value ? 'Si' : 'No');
 
-export const fullName = (record) => (
+export const invoiceStatus = (record) => {
+    if (record?.scadenza?.saldo) {
+        return 'Pagata';
+    }
+
+    if (record?.scadenza && !record.scadenza.saldo) {
+        return 'Da pagare';
+    }
+
+    if (record?.stato) {
+        return text(record.stato)
+            .replace(/_/g, ' ')
+            .replace(/^\w/, (char) => char.toUpperCase());
+    }
+
+    return record?.confermata ? 'Confermata' : 'Bozza';
+};
+
+const cleanNamePart = (value) => (value && value !== '.' ? value : '');
+
+export const customerName = (record) => (
     record && typeof record === 'object'
-        ? [record.nome, record.cognome].filter(Boolean).join(' ').trim()
+        ? record.ragione_sociale
+            || [cleanNamePart(record.cognome), cleanNamePart(record.nome)].filter(Boolean).join(' ').trim()
+            || EMPTY_VALUE
         : EMPTY_VALUE
 );
 

@@ -10,6 +10,8 @@ export const createResourceApi = (
     return {
         baseUrl,
         create: (data) => axios.post(baseUrl, data),
+        getCollection: (collectionPath, params) => axios.get(`${baseUrl}/${collectionPath}`, { params }),
+        postCollection: (collectionPath, data) => axios.post(`${baseUrl}/${collectionPath}`, data),
         list: (
             page = 1,
             limit = defaultLimit,
@@ -20,7 +22,7 @@ export const createResourceApi = (
         get: (id) => axios.get(`${baseUrl}/${id}`),
         update: (id, data) => axios.put(`${baseUrl}/${id}`, data),
         remove: (id) => axios.delete(`${baseUrl}/${id}`),
-        getRelation: (id, relationPath) => axios.get(`${baseUrl}/${id}/${relationPath}`),
-        postRelation: (id, relationPath) => axios.post(`${baseUrl}/${id}/${relationPath}`),
+        getRelation: (id, relationPath, config) => axios.get(`${baseUrl}/${id}/${relationPath}`, config),
+        postRelation: (id, relationPath, data) => axios.post(`${baseUrl}/${id}/${relationPath}`, data),
     };
 };

@@ -1,4 +1,13 @@
-const field = (label, name, type = 'text') => ({ label, name, type });
+import { customerName } from '../utils/formatters';
+
+const field = (label, name, type = 'text', options = {}) => ({ label, name, type, ...options });
+const referenceField = (label, name, resource, options = {}) => (
+    field(label, name, 'reference', { resource, ...options })
+);
+
+const cleanValue = (value) => (value === '-' ? '' : value);
+const clienteName = (record) => cleanValue(customerName(record)) || record?.nome_cliente || '';
+const buildingName = (record) => record?.descrizione || record?.nome_edificio || '';
 
 export const editorViews = {
     articolo: {
@@ -11,7 +20,7 @@ export const editorViews = {
         fields: [
             field('Codice', 'codice'),
             field('Descrizione', 'descrizione'),
-            field('IVA', 'iva', 'number'),
+            field('IVA', 'iva'),
         ],
     },
     cliente: {
@@ -68,11 +77,16 @@ export const editorViews = {
         },
         createButtonLabel: 'Crea',
         fields: [
+            referenceField('Cliente', 'cliente', 'clienti', {
+                copyTo: { nome_cliente: clienteName },
+            }),
+            referenceField('Edificio', 'edificio', 'edifici', {
+                copyTo: { nome_edificio: buildingName },
+            }),
+            referenceField('Listino', 'listino', 'listini'),
             field('Tipo Contatore', 'tipo_contatore'),
             field('Codice', 'codice'),
-            field('Nome Cliente', 'nome_cliente'),
             field('Seriale Interno', 'seriale_interno'),
-            field('Nome Edificio', 'nome_edificio'),
             field('Tipo Attivita', 'tipo_attivita'),
             field('Seriale', 'seriale'),
             field('Inattivo', 'inattivo', 'checkbox'),
@@ -123,9 +137,10 @@ export const editorViews = {
         },
         createButtonLabel: 'Crea',
         fields: [
+            referenceField('Listino', 'listino', 'listini'),
             field('Tipo', 'tipo'),
-            field('Minimo', 'min', 'number'),
-            field('Massimo', 'max', 'number'),
+            field('Soglia minima', 'min', 'number'),
+            field('Soglia massima', 'max', 'number'),
             field('Prezzo', 'prezzo', 'number'),
             field('Inizio', 'inizio', 'date'),
             field('Scadenza', 'scadenza', 'date'),
@@ -139,6 +154,13 @@ export const editorViews = {
         },
         createButtonLabel: 'Crea',
         fields: [
+            referenceField('Cliente', 'cliente', 'clienti', {
+                copyTo: {
+                    ragione_sociale: clienteName,
+                    nome_cliente: clienteName,
+                },
+            }),
+            referenceField('Scadenza', 'scadenza', 'scadenze'),
             field('Tipo Documento', 'tipo_documento'),
             field('Ragione Sociale', 'ragione_sociale'),
             field('Confermata', 'confermata', 'checkbox'),
@@ -164,6 +186,7 @@ export const editorViews = {
         },
         createButtonLabel: 'Crea',
         fields: [
+            referenceField('Contatore', 'contatore', 'contatori'),
             field('Data Lettura', 'data_lettura', 'date'),
             field('Unita di Misura', 'unita_misura'),
             field('Consumo', 'consumo', 'number'),
@@ -182,7 +205,6 @@ export const editorViews = {
         fields: [
             field('Categoria', 'categoria'),
             field('Descrizione', 'descrizione'),
-            field('Prezzo Base', 'prezzo_base', 'number'),
         ],
     },
     scadenza: {
@@ -213,12 +235,26 @@ export const editorViews = {
         },
         createButtonLabel: 'Crea',
         fields: [
+            referenceField('Fattura', 'fattura', 'fatture'),
+            referenceField('Lettura', 'lettura', 'letture', {
+                copyTo: { data_lettura: 'data_lettura' },
+            }),
+            referenceField('Articolo', 'articolo', 'articoli', {
+                copyTo: { descrizione: 'descrizione' },
+            }),
+            field('Riga', 'riga', 'number'),
             field('Descrizione', 'descrizione'),
-            field('Valore', 'valore', 'number'),
-            field('Tariffa', 'tariffa', 'number'),
-            field('m3', 'm3', 'number'),
-            field('Prezzo', 'prezzo', 'number'),
-            field('Seriale', 'seriale'),
+            field('Tariffa', 'tipo_tariffa'),
+            field('Tipo Attivita', 'tipo_attivita'),
+            field('Metri cubi', 'metri_cubi', 'number'),
+            field('Prezzo unitario', 'prezzo', 'number'),
+            field('Totale riga', 'valore_unitario', 'number'),
+            field('Tipo quota', 'tipo_quota'),
+            field('Seriale condominio', 'seriale_condominio'),
+            field('Lettura precedente', 'lettura_precedente'),
+            field('Lettura fatturazione', 'lettura_fatturazione'),
+            field('Data Lettura', 'data_lettura', 'date'),
+            field('Descrizione attivita', 'descrizione_attivita'),
         ],
     },
 };

@@ -4,8 +4,12 @@ const resource = createResourceApi('fatture');
 
 const fatturaApi = {
     createFattura: resource.create,
+    createFromReadings: (payload) => resource.postCollection('genera-da-letture', payload),
+    getGenerationPreview: (params) => resource.getCollection('generazione/anteprima', params),
     getFatture: resource.list,
     getFattura: resource.get,
+    getPdfUrl: (id) => `${resource.baseUrl}/${id}/pdf`,
+    verifyCalcolo: (id) => resource.getRelation(id, 'verifica-calcolo'),
     updateFattura: resource.update,
     deleteFattura: resource.remove,
     associateCliente: (fatturaId, clienteId) => resource.postRelation(fatturaId, `cliente/${clienteId}`),

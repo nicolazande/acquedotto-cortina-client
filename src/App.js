@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
+import BillingBatchPage from './pages/BillingBatchPage';
 import RelationViewPage from './pages/RelationViewPage';
 import FeedbackProvider from './components/shared/FeedbackProvider';
 import { detailComponents } from './components/shared/detailComponents';
@@ -26,6 +27,7 @@ const entityRoutes = resourceRoutes.reduce((routes, { resource, path }) => ([
 
 const protectedRoutes = [
     { path: '/auth/profile', component: ProfilePage },
+    { path: '/fatture/generazione', exact: true, component: BillingBatchPage },
     { path: '/:resource/:id/:relation', exact: true, component: RelationViewPage },
     ...entityRoutes,
     { path: '/', exact: true, component: HomePage },

@@ -6,6 +6,8 @@ const clienteApi = {
     createCliente: resource.create,
     getClienti: resource.list,
     getCliente: resource.get,
+    getFatturazionePreview: (id) => resource.getRelation(id, 'fatturazione'),
+    generateFattura: (id, payload = {}) => resource.postRelation(id, 'fatture/genera', payload),
     updateCliente: resource.update,
     deleteCliente: resource.remove,
     associateContatore: (clienteId, contatoreId) => resource.postRelation(clienteId, `contatori/${contatoreId}`),
