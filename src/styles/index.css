@@ -747,6 +747,40 @@ a {
     background: #fff8f1;
 }
 
+.billing-preview-summary .is-danger {
+    border-color: rgba(168, 56, 63, 0.28);
+    background: #fff5f6;
+}
+
+.invoice-check-message {
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-muted);
+    background: var(--color-surface-soft);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.invoice-check-message.is-ok {
+    color: var(--color-success-strong);
+    border-color: rgba(40, 120, 93, 0.24);
+    background: #f2fbf7;
+}
+
+.invoice-check-message.is-warning {
+    color: #76502d;
+    border-color: rgba(158, 92, 42, 0.28);
+    background: #fff8f1;
+}
+
+.invoice-check-message.is-danger {
+    color: var(--color-danger-strong);
+    border-color: rgba(168, 56, 63, 0.28);
+    background: #fff5f6;
+}
+
 .billing-preview-summary small,
 .billing-preview-meta,
 .billing-preview-state {
