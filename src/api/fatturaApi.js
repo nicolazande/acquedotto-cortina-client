@@ -6,6 +6,7 @@ const fatturaApi = {
     createFattura: resource.create,
     createFromReadings: (payload) => resource.postCollection('genera-da-letture', payload),
     getGenerationPreview: (params) => resource.getCollection('generazione/anteprima', params),
+    applyFixedCharge: (id) => resource.postRelation(id, 'quota-fissa'),
     getFatture: resource.list,
     getFattura: resource.get,
     getPdfUrl: (id) => `${resource.baseUrl}/${id}/pdf`,

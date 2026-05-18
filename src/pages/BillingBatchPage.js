@@ -2,22 +2,30 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import fatturaApi from '../api/fatturaApi';
 import {
+    canUseFixedCharge,
+    fixedChargeSelectionHelp,
+    isBillablePreview,
+    previewReadingId,
+    sumFixedCharges,
+} from '../utils/billingPreview';
+import {
     customerName,
-    formatCubicMeters,
-    formatDate,
     formatMoney,
-    join,
 } from '../utils/formatters';
-import BillingPanel, { BillingActions, BillingState, BillingSummary } from '../components/shared/BillingPanel';
+import BillingPanel, {
+    BillingActions,
+    BillingOption,
+    BillingState,
+    BillingSummary,
+} from '../components/shared/BillingPanel';
+import BillingReadingsTable from '../components/shared/BillingReadingsTable';
 import Button from '../components/shared/Button';
 import { PageHeader } from '../components/shared/PageChrome';
 import { useFeedback } from '../components/shared/FeedbackProvider';
 
-const isBillable = (preview) => !preview.error && preview.lines?.length > 0;
-const readingId = (preview) => preview.lettura?._id;
-
 const BillingBatchPage = () => {
     const [preview, setPreview] = useState(null);
+    const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [generatingCustomerId, setGeneratingCustomerId] = useState('');
     const [error, setError] = useState('');
@@ -27,13 +35,22 @@ const BillingBatchPage = () => {
     const readyGroups = useMemo(() => (
         preview?.clienti?.filter((group) => group.totals?.letture > 0) || []
     ), [preview]);
+    const fixedChargeRows = useMemo(() => (
+        readyGroups.flatMap((group) => group.previews || []).filter(canUseFixedCharge)
+    ), [readyGroups]);
+    const fixedChargeTotal = useMemo(() => (
+        sumFixedCharges(fixedChargeRows)
+    ), [fixedChargeRows]);
 
     const loadPreview = useCallback(async () => {
         setIsLoading(true);
         setError('');
 
         try {
-            const response = await fatturaApi.getGenerationPreview({ limit: 1000 });
+            const response = await fatturaApi.getGenerationPreview({
+                includeFixedCharge,
+                limit: 1000,
+            });
             setPreview(response.data);
         } catch (requestError) {
             setPreview(null);
@@ -41,14 +58,14 @@ const BillingBatchPage = () => {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [includeFixedCharge]);
 
     useEffect(() => {
         loadPreview();
     }, [loadPreview]);
 
     const handleGenerate = async (group) => {
-        const letture = group.previews.filter(isBillable).map(readingId).filter(Boolean);
+        const letture = group.previews.filter(isBillablePreview).map(previewReadingId).filter(Boolean);
         const confirmed = await confirm({
             title: 'Genera fattura',
             message: `Creo una bozza fattura per ${customerName(group.cliente)} con ${letture.length} letture?`,
@@ -62,7 +79,10 @@ const BillingBatchPage = () => {
         setGeneratingCustomerId(group.cliente?._id);
 
         try {
-            const response = await fatturaApi.createFromReadings({ letture });
+            const response = await fatturaApi.createFromReadings({
+                includeFixedCharge,
+                letture,
+            });
             const fatturaId = response.data?.fattura?._id;
             notify('Bozza fattura generata correttamente', 'success');
 
@@ -117,6 +137,13 @@ const BillingBatchPage = () => {
                                 Sono state lette solo le prime {preview.limit} letture non fatturate. Aumentare il limite API per un ciclo completo.
                             </BillingState>
                         )}
+                        <BillingOption
+                            checked={includeFixedCharge}
+                            disabled={fixedChargeRows.length === 0}
+                            help={fixedChargeSelectionHelp({ includeFixedCharge, total: fixedChargeTotal })}
+                            label="Quota fissa annuale"
+                            onChange={setIncludeFixedCharge}
+                        />
                     </>
                 )}
             </BillingPanel>
@@ -130,7 +157,7 @@ const BillingBatchPage = () => {
             <div className="billing-batch-groups">
                 {readyGroups.map((group) => {
                     const clienteId = group.cliente?._id;
-                    const billableRows = group.previews.filter(isBillable);
+                    const billableRows = group.previews.filter(isBillablePreview);
 
                     return (
                         <BillingPanel
@@ -165,30 +192,7 @@ const BillingBatchPage = () => {
                             ]}
                             />
 
-                            <div className="table-container billing-preview-table">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Data</th>
-                                            <th>Contatore</th>
-                                            <th>Consumo</th>
-                                            <th>Righe</th>
-                                            <th>Totale</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {billableRows.map((item) => (
-                                            <tr key={readingId(item)}>
-                                                <td data-label="Data">{formatDate(item.lettura?.data_lettura)}</td>
-                                                <td data-label="Contatore">{join(item.contatore?.seriale, item.contatore?.nome_edificio)}</td>
-                                                <td data-label="Consumo">{formatCubicMeters(item.billableConsumption)}</td>
-                                                <td data-label="Righe">{item.lines.length}</td>
-                                                <td data-label="Totale">{formatMoney(item.totals?.totale_fattura)}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                            <BillingReadingsTable rows={billableRows} />
 
                             {group.anomalies.length > 0 && (
                                 <BillingState>

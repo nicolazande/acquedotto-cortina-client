@@ -1,8 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import fatturaApi from '../../api/fatturaApi';
 import { formatCubicMeters, formatDate, formatMoney, join } from '../../utils/formatters';
-import BillingPanel, { BillingActions, BillingSummary } from './BillingPanel';
+import BillingPanel, {
+    BillingActions,
+    BillingMeta,
+    BillingOption,
+    BillingSummary,
+} from './BillingPanel';
 import Button from './Button';
+import { useFeedback } from './FeedbackProvider';
 
 const lineCode = (line) => line.articolo_dettaglio?.codice || line.articolo?.codice || line.articolo || '-';
 const lineLabel = (line) => join(line.tipo_tariffa, line.tipo_quota);
@@ -12,10 +18,47 @@ const money = (value) => Number(Number(value || 0).toFixed(2));
 const moneyDelta = (left, right) => money(money(left) - money(right));
 const isDifferent = (value) => Math.abs(money(value)) > MONEY_TOLERANCE;
 const formatDelta = (value) => `${money(value) > 0 ? '+' : ''}${formatMoney(value)}`;
+const hasMoney = (value) => isDifferent(value);
+
+const getFixedChargeHelp = (summary = {}) => {
+    const extraTotal = money(summary.extraImponibile);
+
+    if (summary.quotaFissaPresente) {
+        return `Presente nelle righe fattura: ${formatMoney(summary.quotaFissaImponibile)}.`;
+    }
+
+    if (summary.quotaFissaBlocco && !summary.quotaFissaApplicabile) {
+        return summary.quotaFissaBlocco;
+    }
+
+    if (money(summary.quotaFissaMancante) > MONEY_TOLERANCE) {
+        if (hasMoney(extraTotal)) {
+            return `Aggiunge ${formatMoney(summary.quotaFissaMancante)}. Restano righe extra/conguagli per ${formatDelta(extraTotal)}.`;
+        }
+        return `Non presente nella fattura. Clicca per aggiungere ${formatMoney(summary.quotaFissaMancante)}.`;
+    }
+
+    return 'Nessuna quota fissa salvata nella fattura.';
+};
 
 const getVerificationStatus = (summary = {}) => {
     const fatturaVsRighe = money(summary.deltaFattura);
     const fatturaVsListino = moneyDelta(summary.fatturaImponibile, summary.calcolatoImponibile);
+    const missingFixedCharge = money(summary.quotaFissaMancante);
+    const extraTotal = money(summary.extraImponibile);
+    const onlyMissingFixedCharge = (
+        missingFixedCharge > MONEY_TOLERANCE
+        && Math.abs(money(fatturaVsListino + missingFixedCharge)) <= MONEY_TOLERANCE
+    );
+    const extraAndMissingFixedCharge = (
+        hasMoney(extraTotal)
+        && missingFixedCharge > MONEY_TOLERANCE
+        && Math.abs(money(fatturaVsListino - extraTotal + missingFixedCharge)) <= MONEY_TOLERANCE
+    );
+    const onlyExtraLines = (
+        hasMoney(extraTotal)
+        && Math.abs(money(fatturaVsListino - extraTotal)) <= MONEY_TOLERANCE
+    );
 
     if (isDifferent(fatturaVsRighe)) {
         return {
@@ -23,6 +66,33 @@ const getVerificationStatus = (summary = {}) => {
             label: 'Errore righe',
             delta: fatturaVsListino,
             message: 'Il totale della fattura non coincide con le righe salvate. Controllare prima di inviare o ristampare.',
+        };
+    }
+
+    if (extraAndMissingFixedCharge) {
+        return {
+            className: 'is-warning',
+            label: 'Conguaglio + fisso',
+            delta: fatturaVsListino,
+            message: `La differenza è spiegata da righe extra/conguagli per ${formatDelta(extraTotal)} e dalla quota fissa non presente per ${formatMoney(missingFixedCharge)}.`,
+        };
+    }
+
+    if (onlyExtraLines) {
+        return {
+            className: 'is-warning',
+            label: 'Conguaglio',
+            delta: fatturaVsListino,
+            message: `La differenza è spiegata da righe extra/conguagli salvati in fattura per ${formatDelta(extraTotal)}.`,
+        };
+    }
+
+    if (onlyMissingFixedCharge) {
+        return {
+            className: 'is-warning',
+            label: 'Fisso non selezionato',
+            delta: fatturaVsListino,
+            message: 'La differenza coincide con la quota fissa annuale: la fattura salvata non la contiene. Nelle anteprime puoi abilitarla con la checkbox dedicata.',
         };
     }
 
@@ -43,10 +113,36 @@ const getVerificationStatus = (summary = {}) => {
     };
 };
 
+const sectionTitle = (children) => (
+    <h4 className="billing-preview-section-title">{children}</h4>
+);
+
+const getSummaryItems = (summary) => [
+    { label: 'Imponibile fattura', value: formatMoney(summary.fatturaImponibile) },
+    { label: 'Imponibile listino', value: formatMoney(summary.calcolatoImponibile) },
+    hasMoney(summary.extraImponibile) && {
+        label: 'Righe extra / conguagli',
+        value: formatDelta(summary.extraImponibile),
+        className: 'is-warning',
+    },
+    money(summary.quotaFissaMancante) > MONEY_TOLERANCE && {
+        label: 'Fisso mancante',
+        value: formatMoney(summary.quotaFissaMancante),
+        className: 'is-warning',
+    },
+    summary.quotaFissaPresente && {
+        label: 'Fisso incluso',
+        value: formatMoney(summary.quotaFissaImponibile),
+        className: 'is-ok',
+    },
+];
+
 const InvoiceVerificationPanel = ({ recordId }) => {
     const [verification, setVerification] = useState(null);
+    const [isApplyingFixedCharge, setIsApplyingFixedCharge] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    const { confirm, notify } = useFeedback();
 
     const loadVerification = useCallback(async () => {
         setIsLoading(true);
@@ -67,8 +163,42 @@ const InvoiceVerificationPanel = ({ recordId }) => {
         loadVerification();
     }, [loadVerification]);
 
+    const handleFixedChargeChange = async (checked) => {
+        if (!checked || !summary?.quotaFissaApplicabile || isApplyingFixedCharge) {
+            return;
+        }
+
+        const confirmed = await confirm({
+            title: 'Aggiungi quota fissa',
+            message: `Aggiungo la quota fissa annuale alla fattura e ricalcolo i totali? Importo stimato: ${formatMoney(summary.quotaFissaMancante)}.`,
+            confirmLabel: 'Aggiungi',
+        });
+
+        if (!confirmed) {
+            return;
+        }
+
+        setIsApplyingFixedCharge(true);
+        try {
+            await fatturaApi.applyFixedCharge(recordId);
+            notify('Quota fissa aggiunta e totali aggiornati', 'success');
+            await loadVerification();
+        } catch (requestError) {
+            notify(requestError.response?.data?.error || 'Impossibile aggiungere la quota fissa', 'error');
+            await loadVerification();
+        } finally {
+            setIsApplyingFixedCharge(false);
+        }
+    };
+
     const summary = verification?.summary;
     const status = getVerificationStatus(summary);
+    const fixedChargeDisabled = Boolean(
+        isApplyingFixedCharge
+        || summary?.quotaFissaPresente
+        || !summary?.quotaFissaApplicabile
+    );
+    const extraLines = verification?.servizi?.filter((line) => !line.lettura) || [];
     const calculatedLines = verification?.calculations?.flatMap((item) => (
         item.lines.map((line) => ({
             ...line,
@@ -95,25 +225,76 @@ const InvoiceVerificationPanel = ({ recordId }) => {
         >
             {verification && (
                 <>
-                    <BillingSummary items={[
-                        {
-                            label: 'Stato calcolo',
-                            value: status.label,
-                            className: status.className,
-                        },
-                        { label: 'Scostamento', value: formatDelta(status.delta), className: status.className },
-                        { label: 'Letture collegate', value: summary.letture },
-                        { label: 'Righe servizio', value: summary.righe },
-                        { label: 'Righe da listino', value: summary.righeCalcolate },
-                        { label: 'Imponibile fattura', value: formatMoney(summary.fatturaImponibile) },
-                        { label: 'Imponibile listino', value: formatMoney(summary.calcolatoImponibile) },
-                    ]}
-                    />
+                    <div className={`invoice-check-overview ${status.className}`}>
+                        <div className="invoice-check-status">
+                            <div className="invoice-check-title">
+                                <span className="eyebrow">Stato verifica</span>
+                                <strong>{status.label}</strong>
+                            </div>
+                            <p>{status.message}</p>
+                        </div>
+                        <div className="invoice-check-delta">
+                            <small>Scostamento</small>
+                            <strong>{formatDelta(status.delta)}</strong>
+                        </div>
+                    </div>
 
-                    <p className={`invoice-check-message ${status.className}`}>
-                        {status.message}
-                    </p>
+                    <BillingSummary items={getSummaryItems(summary)} />
 
+                    <div className="invoice-check-controls">
+                        <div className="invoice-check-meta">
+                            <span className="eyebrow">Dati verificati</span>
+                            <BillingMeta items={[
+                                join('Letture', summary.letture),
+                                join('Righe fattura', summary.righe),
+                                join('Righe listino', summary.righeCalcolate),
+                            ]}
+                            />
+                        </div>
+
+                        <div className="invoice-check-fixed">
+                            <span className="eyebrow">Quota fissa annuale</span>
+                            <BillingOption
+                                checked={Boolean(summary.quotaFissaPresente)}
+                                disabled={fixedChargeDisabled}
+                                help={getFixedChargeHelp(summary)}
+                                label={summary.quotaFissaPresente ? 'Fisso selezionato' : 'Fisso non selezionato'}
+                                onChange={handleFixedChargeChange}
+                            />
+                        </div>
+                    </div>
+
+                    {extraLines.length > 0 && (
+                        <>
+                            {sectionTitle('Righe extra e conguagli')}
+                            <div className="table-container billing-preview-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Descrizione</th>
+                                            <th>Articolo</th>
+                                            <th>Quantità</th>
+                                            <th>Prezzo</th>
+                                            <th>Totale</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {extraLines.map((line) => (
+                                            <tr key={line._id}>
+                                                <td data-label="Descrizione">{line.descrizione || lineLabel(line)}</td>
+                                                <td data-label="Articolo">{lineCode(line)}</td>
+                                                <td data-label="Quantità">{formatCubicMeters(line.metri_cubi)}</td>
+                                                <td data-label="Prezzo">{formatMoney(line.prezzo)}</td>
+                                                <td data-label="Totale">{formatMoney(line.valore_unitario)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </>
+                    )}
+
+                    {sectionTitle('Letture fatturate')}
                     <div className="table-container billing-preview-table">
                         <table>
                             <thead>
@@ -137,6 +318,7 @@ const InvoiceVerificationPanel = ({ recordId }) => {
                         </table>
                     </div>
 
+                    {sectionTitle('Calcolo listino')}
                     <div className="table-container billing-preview-table">
                         <table>
                             <thead>

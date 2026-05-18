@@ -1,17 +1,28 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import clienteApi from '../../api/clienteApi';
-import { formatCubicMeters, formatDate, formatMoney, join } from '../../utils/formatters';
-import BillingPanel, { BillingActions, BillingState, BillingSummary } from './BillingPanel';
+import {
+    canUseFixedCharge,
+    fixedChargeSelectionHelp,
+    isBillablePreview,
+    previewReadingId,
+    sumFixedCharges,
+} from '../../utils/billingPreview';
+import { formatMoney } from '../../utils/formatters';
+import BillingPanel, {
+    BillingActions,
+    BillingOption,
+    BillingState,
+    BillingSummary,
+} from './BillingPanel';
+import BillingReadingsTable from './BillingReadingsTable';
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
-
-const getPreviewId = (preview) => preview.lettura?._id;
-const isBillable = (preview) => !preview.error && preview.lines?.length > 0;
 
 const CustomerBillingPanel = ({ recordId }) => {
     const [preview, setPreview] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
+    const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState('');
@@ -19,25 +30,31 @@ const CustomerBillingPanel = ({ recordId }) => {
     const { confirm, notify } = useFeedback();
 
     const billablePreviews = useMemo(() => (
-        preview?.previews?.filter(isBillable) || []
+        preview?.previews?.filter(isBillablePreview) || []
     ), [preview]);
 
     const selectedTotal = useMemo(() => (
         billablePreviews
-            .filter((item) => selectedIds.includes(getPreviewId(item)))
+            .filter((item) => selectedIds.includes(previewReadingId(item)))
             .reduce((total, item) => total + Number(item.totals?.totale_fattura || 0), 0)
     ), [billablePreviews, selectedIds]);
+    const fixedChargeRows = useMemo(() => (
+        billablePreviews.filter(canUseFixedCharge)
+    ), [billablePreviews]);
+    const fixedChargeTotal = useMemo(() => (
+        sumFixedCharges(fixedChargeRows, selectedIds)
+    ), [fixedChargeRows, selectedIds]);
 
     const loadPreview = useCallback(async () => {
         setIsLoading(true);
         setError('');
 
         try {
-            const response = await clienteApi.getFatturazionePreview(recordId);
+            const response = await clienteApi.getFatturazionePreview(recordId, { includeFixedCharge });
             const nextPreview = response.data;
             const nextBillableIds = (nextPreview.previews || [])
-                .filter(isBillable)
-                .map(getPreviewId);
+                .filter(isBillablePreview)
+                .map(previewReadingId);
             setPreview(nextPreview);
             setSelectedIds(nextBillableIds);
         } catch (requestError) {
@@ -46,7 +63,7 @@ const CustomerBillingPanel = ({ recordId }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [recordId]);
+    }, [includeFixedCharge, recordId]);
 
     useEffect(() => {
         loadPreview();
@@ -73,7 +90,10 @@ const CustomerBillingPanel = ({ recordId }) => {
 
         setIsGenerating(true);
         try {
-            const response = await clienteApi.generateFattura(recordId, { letture: selectedIds });
+            const response = await clienteApi.generateFattura(recordId, {
+                includeFixedCharge,
+                letture: selectedIds,
+            });
             const fatturaId = response.data?.fattura?._id;
             notify('Fattura cliente generata correttamente', 'success');
             if (fatturaId) {
@@ -120,44 +140,23 @@ const CustomerBillingPanel = ({ recordId }) => {
                 ]}
                 />
 
+                <BillingOption
+                    checked={includeFixedCharge}
+                    disabled={fixedChargeRows.length === 0}
+                    help={fixedChargeSelectionHelp({ includeFixedCharge, total: fixedChargeTotal })}
+                    label="Quota fissa annuale"
+                    onChange={setIncludeFixedCharge}
+                />
+
                 {billablePreviews.length === 0 ? (
                     <BillingState>Non ci sono letture non fatturate pronte per questo cliente.</BillingState>
                 ) : (
-                    <div className="table-container billing-preview-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Sel.</th>
-                                    <th>Data</th>
-                                    <th>Contatore</th>
-                                    <th>Consumo</th>
-                                    <th>Righe</th>
-                                    <th>Totale</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {billablePreviews.map((item) => {
-                                    const id = getPreviewId(item);
-                                    return (
-                                        <tr key={id}>
-                                            <td data-label="Sel.">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedIds.includes(id)}
-                                                    onChange={() => toggleSelection(id)}
-                                                />
-                                            </td>
-                                            <td data-label="Data">{formatDate(item.lettura?.data_lettura)}</td>
-                                            <td data-label="Contatore">{join(item.contatore?.seriale, item.contatore?.nome_edificio)}</td>
-                                            <td data-label="Consumo">{formatCubicMeters(item.billableConsumption)}</td>
-                                            <td data-label="Righe">{item.lines.length}</td>
-                                            <td data-label="Totale">{formatMoney(item.totals?.totale_fattura)}</td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                    <BillingReadingsTable
+                        rows={billablePreviews}
+                        selectable
+                        selectedIds={selectedIds}
+                        onToggleSelection={toggleSelection}
+                    />
                 )}
             </>
         </BillingPanel>

@@ -8,9 +8,32 @@ export const BillingState = ({ children }) => (
     <p className="billing-preview-state">{children}</p>
 );
 
+export const BillingOption = ({
+    checked,
+    disabled,
+    help,
+    label,
+    onChange = () => {},
+    readOnly = false,
+}) => (
+    <label className={`billing-preview-option ${disabled ? 'is-disabled' : ''} ${readOnly ? 'is-readonly' : ''}`}>
+        <input
+            type="checkbox"
+            checked={checked}
+            disabled={disabled}
+            readOnly={readOnly}
+            onChange={readOnly ? undefined : (event) => onChange(event.target.checked)}
+        />
+        <span>
+            <strong>{label}</strong>
+            {help && <small>{help}</small>}
+        </span>
+    </label>
+);
+
 export const BillingSummary = ({ items }) => (
     <div className="billing-preview-summary">
-        {items.map((item) => (
+        {items.filter(Boolean).map((item) => (
             <span className={item.className} key={item.label}>
                 <strong>{item.value}</strong>
                 <small>{item.label}</small>

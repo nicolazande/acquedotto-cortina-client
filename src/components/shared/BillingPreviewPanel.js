@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import fatturaApi from '../../api/fatturaApi';
+import { fixedChargePreviewHelp } from '../../utils/billingPreview';
 import letturaApi from '../../api/letturaApi';
 import {
     formatCubicMeters,
@@ -9,12 +10,18 @@ import {
     invoiceStatus,
     join,
 } from '../../utils/formatters';
-import BillingPanel, { BillingActions, BillingMeta, BillingSummary } from './BillingPanel';
+import BillingPanel, {
+    BillingActions,
+    BillingMeta,
+    BillingOption,
+    BillingSummary,
+} from './BillingPanel';
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
 
 const BillingPreviewPanel = ({ recordId }) => {
     const [calculation, setCalculation] = useState(null);
+    const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState('');
@@ -26,7 +33,7 @@ const BillingPreviewPanel = ({ recordId }) => {
         setError('');
 
         try {
-            const response = await letturaApi.getCalcolo(recordId);
+            const response = await letturaApi.getCalcolo(recordId, { includeFixedCharge });
             setCalculation(response.data);
         } catch (requestError) {
             setCalculation(null);
@@ -34,7 +41,7 @@ const BillingPreviewPanel = ({ recordId }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [recordId]);
+    }, [includeFixedCharge, recordId]);
 
     useEffect(() => {
         loadCalculation();
@@ -43,6 +50,13 @@ const BillingPreviewPanel = ({ recordId }) => {
     const linkedInvoices = calculation?.linkedInvoices || [];
     const isAlreadyBilled = Boolean(calculation?.lettura?.fatturata || linkedInvoices.length > 0);
     const canGenerate = calculation && calculation.lines?.length > 0 && !isAlreadyBilled;
+    const fixedCharge = calculation?.fixedCharge || {};
+    const fixedOptionDisabled = Boolean(
+        isAlreadyBilled
+        || fixedCharge.alreadyBilled
+        || fixedCharge.alreadySelected
+        || !fixedCharge.available
+    );
 
     const handleGenerateInvoice = async () => {
         if (!calculation) {
@@ -61,7 +75,10 @@ const BillingPreviewPanel = ({ recordId }) => {
 
         setIsGenerating(true);
         try {
-            const response = await fatturaApi.createFromReadings({ letture: [recordId] });
+            const response = await fatturaApi.createFromReadings({
+                includeFixedCharge,
+                letture: [recordId],
+            });
             const fatturaId = response.data?.fattura?._id;
             notify('Fattura generata correttamente', 'success');
             if (fatturaId) {
@@ -115,6 +132,14 @@ const BillingPreviewPanel = ({ recordId }) => {
                         join('Data', formatDate(calculation.lettura?.data_lettura)),
                         isAlreadyBilled && 'Gia fatturata',
                     ]}
+                    />
+
+                    <BillingOption
+                        checked={includeFixedCharge}
+                        disabled={fixedOptionDisabled}
+                        help={fixedChargePreviewHelp(fixedCharge, includeFixedCharge)}
+                        label="Quota fissa annuale"
+                        onChange={setIncludeFixedCharge}
                     />
 
                     {linkedInvoices.length > 0 && (
