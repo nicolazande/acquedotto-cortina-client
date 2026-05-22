@@ -14,6 +14,7 @@ import {
     customerName,
     formatDate,
     formatMoney,
+    isInvoiceLocked,
     invoiceStatus,
     join,
 } from '../utils/formatters';
@@ -139,11 +140,14 @@ export const listViews = {
         className: 'fattura',
         detailPath: '/fatture',
         generationPath: '/fatture/generazione',
+        controlPath: '/fatture/controlli',
         newLabel: 'Nuova',
         createMode: 'Nuova',
         editorProp: 'fattura',
         EditorComponent: editorComponents.fattura,
         api: api(fatturaApi.getFatture, fatturaApi.createFattura, fatturaApi.deleteFattura),
+        isLocked: isInvoiceLocked,
+        lockedMessage: 'Fattura confermata',
         defaultSortField: 'data_fattura',
         defaultSortOrder: 'desc',
         summary: {

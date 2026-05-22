@@ -111,10 +111,19 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
         },
     };
     const infoCards = config.infoCards || [];
-    const headerActions = config.generationPath ? (
-        <Button variant="secondary" icon="invoice" onClick={() => history.push(config.generationPath)}>
-            Genera da letture
-        </Button>
+    const headerActions = (config.controlPath || config.generationPath) ? (
+        <>
+            {config.controlPath && (
+                <Button variant="secondary" icon="dashboard" onClick={() => history.push(config.controlPath)}>
+                    Controlli
+                </Button>
+            )}
+            {config.generationPath && (
+                <Button variant="secondary" icon="invoice" onClick={() => history.push(config.generationPath)}>
+                    Genera da letture
+                </Button>
+            )}
+        </>
     ) : null;
 
     return (
@@ -168,13 +177,15 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                                     Seleziona
                                 </Button>
                             )}
-                            <Button
-                                variant="delete"
-                                icon="trash"
-                                onClick={() => handleDelete(record._id)}
-                            >
-                                Elimina
-                            </Button>
+                            {!config.isLocked?.(record) && (
+                                <Button
+                                    variant="delete"
+                                    icon="trash"
+                                    onClick={() => handleDelete(record._id)}
+                                >
+                                    Elimina
+                                </Button>
+                            )}
                         </>
                     )}
                     columns={config.columns}

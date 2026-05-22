@@ -24,5 +24,6 @@ export const createResourceApi = (
         remove: (id) => axios.delete(`${baseUrl}/${id}`),
         getRelation: (id, relationPath, config) => axios.get(`${baseUrl}/${id}/${relationPath}`, config),
         postRelation: (id, relationPath, data) => axios.post(`${baseUrl}/${id}/${relationPath}`, data),
+        putRelation: (id, relationPath, data) => axios.put(`${baseUrl}/${id}/${relationPath}`, data),
     };
 };

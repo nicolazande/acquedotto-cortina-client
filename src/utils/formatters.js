@@ -36,6 +36,10 @@ export const invoiceStatus = (record) => {
     return record?.confermata ? 'Confermata' : 'Bozza';
 };
 
+export const isInvoiceLocked = (record) => (
+    record?.confermata === true || String(record?.stato || '').toLowerCase() === 'confermata'
+);
+
 const cleanNamePart = (value) => (value && value !== '.' ? value : '');
 
 export const customerName = (record) => (

@@ -4,7 +4,7 @@ import { navigationItems } from '../config/navigation';
 import Icon from './shared/Icon';
 import '../styles/Navbar.css';
 
-const Navbar = ({ onLogout }) => {
+const Navbar = ({ items = navigationItems, onLogout }) => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleMenu = () => setMenuOpen((open) => !open);
@@ -36,7 +36,7 @@ const Navbar = ({ onLogout }) => {
                 <span aria-hidden="true"></span>
             </button>
             <ul className={`navbar-nav ${menuOpen ? 'active' : ''}`}>
-                {navigationItems.map((item) => (
+                {items.map((item) => (
                     <li className="nav-item" key={item.path}>
                         <NavLink
                             exact={item.path === '/'}

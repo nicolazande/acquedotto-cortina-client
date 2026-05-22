@@ -5,11 +5,14 @@ import RegisterPage from './pages/RegisterPage';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import BillingBatchPage from './pages/BillingBatchPage';
+import CustomerPortalPage from './pages/CustomerPortalPage';
+import InvoiceControlPage from './pages/InvoiceControlPage';
 import RelationViewPage from './pages/RelationViewPage';
 import FeedbackProvider from './components/shared/FeedbackProvider';
 import { detailComponents } from './components/shared/detailComponents';
 import { listComponents } from './components/shared/listComponents';
 import { navigationItems } from './config/navigation';
+import authApi from './api/authApi';
 import './styles/App.css';
 import ProfilePage from './pages/ProfilePage';
 
@@ -28,43 +31,98 @@ const entityRoutes = resourceRoutes.reduce((routes, { resource, path }) => ([
 const protectedRoutes = [
     { path: '/auth/profile', component: ProfilePage },
     { path: '/fatture/generazione', exact: true, component: BillingBatchPage },
+    { path: '/fatture/controlli', exact: true, component: InvoiceControlPage },
     { path: '/:resource/:id/:relation', exact: true, component: RelationViewPage },
     ...entityRoutes,
     { path: '/', exact: true, component: HomePage },
 ];
 
+const customerNavigationItems = [
+    {
+        path: '/area-cliente',
+        label: 'Area clienti',
+        icon: 'dashboard',
+    },
+    {
+        path: '/auth/profile',
+        label: 'Profilo',
+        icon: 'admin',
+    },
+];
+
+const customerRoutes = [
+    { path: '/area-cliente', exact: true, component: CustomerPortalPage },
+    { path: '/auth/profile', component: ProfilePage },
+];
+
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(localStorage.getItem('token')));
+    const [profile, setProfile] = useState(null);
+    const [isProfileLoading, setIsProfileLoading] = useState(() => Boolean(localStorage.getItem('token')));
+
+    const loadProfile = async () => {
+        const response = await authApi.getProfile();
+        setProfile(response.data);
+        return response.data;
+    };
 
     useEffect(() => {
-        const syncAuthState = () => {
-            setIsAuthenticated(Boolean(localStorage.getItem('token')));
+        const syncAuthState = async () => {
+            const hasToken = Boolean(localStorage.getItem('token'));
+            setIsAuthenticated(hasToken);
+            setProfile(null);
+
+            if (!hasToken) {
+                setIsProfileLoading(false);
+                return;
+            }
+
+            setIsProfileLoading(true);
+            try {
+                await loadProfile();
+            } catch (error) {
+                localStorage.removeItem('token');
+                setIsAuthenticated(false);
+            } finally {
+                setIsProfileLoading(false);
+            }
         };
 
+        syncAuthState();
         window.addEventListener('storage', syncAuthState);
         return () => window.removeEventListener('storage', syncAuthState);
     }, []);
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         setIsAuthenticated(true);
+        const nextProfile = await loadProfile();
+        setIsProfileLoading(false);
+        return nextProfile;
     };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        setProfile(null);
         setIsAuthenticated(false);
     };
+
+    const isCustomer = profile?.role === 'cliente';
+    const activeRoutes = isCustomer ? customerRoutes : protectedRoutes;
+    const defaultPath = isCustomer ? '/area-cliente' : '/';
 
     return (
         <FeedbackProvider>
             <Router>
                 <div className={`App ${isAuthenticated ? 'is-authenticated' : 'is-public'}`}>
-                    {isAuthenticated && <Navbar onLogout={handleLogout} />}
+                    {isAuthenticated && !isProfileLoading && (
+                        <Navbar items={isCustomer ? customerNavigationItems : navigationItems} onLogout={handleLogout} />
+                    )}
                     <div className="content">
                         <Switch>
                             <Route
                                 path="/login"
                                 render={(props) => (
-                                    isAuthenticated ? <Redirect to="/" /> : <LoginPage {...props} onLogin={handleLogin} />
+                                    isAuthenticated ? <Redirect to={defaultPath} /> : <LoginPage {...props} onLogin={handleLogin} />
                                 )}
                             />
                             <Route
@@ -74,7 +132,11 @@ const App = () => {
                                 )}
                             />
 
-                            {isAuthenticated && protectedRoutes.map(({ path, exact, component: Component }) => (
+                            {isAuthenticated && isProfileLoading && (
+                                <Route render={() => <div>Caricamento profilo...</div>} />
+                            )}
+
+                            {isAuthenticated && !isProfileLoading && activeRoutes.map(({ path, exact, component: Component }) => (
                                 <Route
                                     key={path}
                                     path={path}
@@ -82,7 +144,7 @@ const App = () => {
                                     component={Component}
                                 />
                             ))}
-                            <Redirect to={isAuthenticated ? '/' : '/login'} />
+                            <Redirect to={isAuthenticated ? defaultPath : '/login'} />
                         </Switch>
                     </div>
                 </div>

@@ -609,6 +609,17 @@ a {
     margin-bottom: 4px;
 }
 
+.detail-lock-notice {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    color: var(--color-primary-strong);
+    background: var(--color-primary-soft);
+    border: 1px solid rgba(11, 114, 128, 0.22);
+    border-radius: var(--radius);
+    font-size: 0.86rem;
+    font-weight: 800;
+}
+
 .detail-info-card .info-table th {
     width: min(34%, 260px);
 }
@@ -979,6 +990,155 @@ a {
     gap: 16px;
 }
 
+.invoice-control-page {
+    display: grid;
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    gap: 16px;
+}
+
+.invoice-control-page .billing-preview {
+    margin-top: 0;
+}
+
+.invoice-control-year {
+    width: 96px;
+    min-height: 36px;
+    padding: 7px 10px;
+    color: var(--color-heading);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius);
+    font-size: 0.84rem;
+    font-weight: 800;
+}
+
+.invoice-control-row.is-danger {
+    background: #fff8f8;
+}
+
+.invoice-control-row.is-warning {
+    background: #fffdf5;
+}
+
+.invoice-control-row.is-info {
+    background: #f8fbfd;
+}
+
+.invoice-audit-panel .billing-preview-table table,
+.invoice-control-panel .billing-preview-table table {
+    min-width: 760px;
+}
+
+.customer-portal-page {
+    display: grid;
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    gap: 16px;
+}
+
+.customer-portal-page .billing-preview {
+    margin-top: 0;
+}
+
+.customer-portal-access-form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    align-items: end;
+}
+
+.customer-portal-access-form.is-compact {
+    grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
+}
+
+.customer-portal-access-actions {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.customer-portal-access-form.is-compact .customer-portal-access-actions {
+    grid-column: auto;
+}
+
+.customer-portal-access-actions .btn {
+    width: auto;
+}
+
+.customer-portal-account {
+    display: grid;
+    gap: 14px;
+}
+
+.portal-status {
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.portal-status.is-active {
+    color: var(--color-success-strong);
+    background: #eef8f4;
+    border-color: rgba(40, 120, 93, 0.24);
+}
+
+.portal-status.is-disabled {
+    color: var(--color-danger-strong);
+    background: #fff2f3;
+    border-color: rgba(168, 56, 63, 0.24);
+}
+
+.customer-portal-reset-form {
+    display: grid;
+    grid-template-columns: minmax(220px, 360px) auto;
+    align-items: end;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-border);
+}
+
+.customer-portal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 10px;
+}
+
+.customer-portal-card {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+    padding: 13px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+}
+
+.customer-portal-card strong {
+    color: var(--color-heading);
+    font-size: 0.96rem;
+    line-height: 1.28;
+}
+
+.customer-portal-card span,
+.customer-portal-card small {
+    color: var(--color-muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
 .billing-batch-groups {
     display: grid;
     gap: 14px;
@@ -1063,12 +1223,15 @@ a {
 
 .note-attachment-preview {
     display: grid;
+    width: 100%;
     aspect-ratio: 16 / 10;
     overflow: hidden;
     place-items: center;
     color: var(--color-primary);
     background: var(--color-surface-muted);
+    border: 0;
     border-radius: 6px;
+    cursor: pointer;
 }
 
 .note-attachment-preview img {
@@ -1271,6 +1434,21 @@ input[type="checkbox"] {
     .invoice-check-controls {
         display: grid;
         grid-template-columns: 1fr;
+    }
+
+    .customer-portal-access-form {
+        grid-template-columns: 1fr;
+    }
+
+    .customer-portal-access-form.is-compact,
+    .customer-portal-reset-form {
+        grid-template-columns: 1fr;
+    }
+
+    .customer-portal-access-actions .btn,
+    .customer-portal-reset-form .btn {
+        flex: 1 1 150px;
+        width: 100%;
     }
 
     .detail-page-actions {

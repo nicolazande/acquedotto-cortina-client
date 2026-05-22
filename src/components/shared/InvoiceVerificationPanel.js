@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import fatturaApi from '../../api/fatturaApi';
-import { formatCubicMeters, formatDate, formatMoney, join } from '../../utils/formatters';
+import {
+    formatCubicMeters,
+    formatDate,
+    formatMoney,
+    isInvoiceLocked,
+    join,
+} from '../../utils/formatters';
 import BillingPanel, {
     BillingActions,
     BillingMeta,
@@ -20,11 +26,15 @@ const isDifferent = (value) => Math.abs(money(value)) > MONEY_TOLERANCE;
 const formatDelta = (value) => `${money(value) > 0 ? '+' : ''}${formatMoney(value)}`;
 const hasMoney = (value) => isDifferent(value);
 
-const getFixedChargeHelp = (summary = {}) => {
+const getFixedChargeHelp = (summary = {}, locked = false) => {
     const extraTotal = money(summary.extraImponibile);
 
     if (summary.quotaFissaPresente) {
         return `Presente nelle righe fattura: ${formatMoney(summary.quotaFissaImponibile)}.`;
+    }
+
+    if (locked) {
+        return 'Fattura confermata: la quota fissa non puo essere modificata direttamente.';
     }
 
     if (summary.quotaFissaBlocco && !summary.quotaFissaApplicabile) {
@@ -137,7 +147,7 @@ const getSummaryItems = (summary) => [
     },
 ];
 
-const InvoiceVerificationPanel = ({ recordId }) => {
+const InvoiceVerificationPanel = ({ record, recordId }) => {
     const [verification, setVerification] = useState(null);
     const [isApplyingFixedCharge, setIsApplyingFixedCharge] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -193,8 +203,10 @@ const InvoiceVerificationPanel = ({ recordId }) => {
 
     const summary = verification?.summary;
     const status = getVerificationStatus(summary);
+    const locked = isInvoiceLocked(record);
     const fixedChargeDisabled = Boolean(
         isApplyingFixedCharge
+        || locked
         || summary?.quotaFissaPresente
         || !summary?.quotaFissaApplicabile
     );
@@ -257,7 +269,7 @@ const InvoiceVerificationPanel = ({ recordId }) => {
                             <BillingOption
                                 checked={Boolean(summary.quotaFissaPresente)}
                                 disabled={fixedChargeDisabled}
-                                help={getFixedChargeHelp(summary)}
+                                help={getFixedChargeHelp(summary, locked)}
                                 label={summary.quotaFissaPresente ? 'Fisso selezionato' : 'Fisso non selezionato'}
                                 onChange={handleFixedChargeChange}
                             />

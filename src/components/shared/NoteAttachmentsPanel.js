@@ -131,34 +131,66 @@ const getAttachmentKind = (attachment) => {
 };
 
 const AttachmentCard = ({ attachment, onDelete }) => {
-    const fileUrl = attachmentApi.fileUrl(attachment._id);
+    const [fileUrl, setFileUrl] = useState('');
     const isImage = attachment.contentType.startsWith('image/');
     const attachmentKind = getAttachmentKind(attachment);
 
+    useEffect(() => {
+        let objectUrl = '';
+        let isMounted = true;
+
+        attachmentApi.file(attachment._id)
+            .then((response) => {
+                objectUrl = URL.createObjectURL(new Blob([response.data], { type: attachment.contentType }));
+                if (isMounted) {
+                    setFileUrl(objectUrl);
+                } else {
+                    URL.revokeObjectURL(objectUrl);
+                }
+            })
+            .catch(() => {
+                if (isMounted) {
+                    setFileUrl('');
+                }
+            });
+
+        return () => {
+            isMounted = false;
+            if (objectUrl) {
+                URL.revokeObjectURL(objectUrl);
+            }
+        };
+    }, [attachment._id, attachment.contentType]);
+
+    const handleOpen = () => attachmentApi.openFile(attachment._id, attachment.filename);
+
     return (
         <article className="note-attachment-card">
-            <a
-                href={fileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+            <button
+                type="button"
                 className="note-attachment-preview"
+                onClick={handleOpen}
             >
                 {isImage ? (
-                    <img
-                        src={fileUrl}
-                        alt={attachment.filename}
-                        loading="lazy"
-                    />
+                    fileUrl ? (
+                        <img
+                            src={fileUrl}
+                            alt={attachment.filename}
+                            loading="lazy"
+                        />
+                    ) : (
+                        <span className="note-attachment-filetype">IMG</span>
+                    )
                 ) : (
                     <span className="note-attachment-filetype">{attachmentKind}</span>
                 )}
-            </a>
+            </button>
             <div className="note-attachment-meta">
                 <strong>{attachment.filename}</strong>
                 <span>{attachmentKind} - {formatFileSize(attachment.size)} - {formatDate(attachment.createdAt)}</span>
             </div>
             <div className="note-attachment-actions">
-                <Button href={fileUrl} target="_blank" rel="noopener noreferrer" variant="secondary" icon="eye">
+                <Button variant="secondary" icon="eye" onClick={handleOpen}>
                     Apri
                 </Button>
                 <Button

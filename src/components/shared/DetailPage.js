@@ -80,6 +80,8 @@ const DetailPage = ({ config }) => {
     const Editor = config.EditorComponent;
     const hasNotes = config.fields.some((field) => field.value === 'note' || field.label.toLowerCase() === 'note');
     const panels = config.panels || [];
+    const isLocked = Boolean(config.isLocked?.(record));
+    const lockedMessage = config.lockedMessage || 'Record bloccato';
     const actions = (config.actions || [])
         .map((action) => (typeof action === 'function' ? action(record) : action))
         .filter(Boolean);
@@ -112,15 +114,28 @@ const DetailPage = ({ config }) => {
                                 {action.label}
                             </Button>
                         ))}
-                        <Button onClick={() => setIsEditing(true)} variant="edit" icon="edit">
+                        <Button
+                            onClick={() => setIsEditing(true)}
+                            variant="edit"
+                            icon="edit"
+                            disabled={isLocked}
+                            title={isLocked ? lockedMessage : undefined}
+                        >
                             Modifica
                         </Button>
-                        <Button onClick={handleDelete} variant="delete" icon="trash">
+                        <Button
+                            onClick={handleDelete}
+                            variant="delete"
+                            icon="trash"
+                            disabled={isLocked}
+                            title={isLocked ? lockedMessage : undefined}
+                        >
                             Elimina
                         </Button>
                     </>
                 )}
             />
+            {isLocked && <div className="detail-lock-notice">{lockedMessage}</div>}
             <div className="table-container detail-info-card">
                 <table className="info-table">
                     <tbody>
@@ -147,7 +162,7 @@ const DetailPage = ({ config }) => {
                     recordId={id}
                 />
             )}
-            {isEditing && <Editor {...editorProps} />}
+            {isEditing && !isLocked && <Editor {...editorProps} />}
             <div className="btn-back-container">
                 <Button onClick={goBack} variant="back" icon="arrowLeft">
                     {backLabel}

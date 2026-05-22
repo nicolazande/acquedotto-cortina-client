@@ -9,6 +9,8 @@ const ProfilePage = () => {
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
     const [numeroTelefono, setNumeroTelefono] = useState('');
+    const [role, setRole] = useState('');
+    const [cliente, setCliente] = useState(null);
     const [error, setError] = useState('');
 
     const fetchProfile = async () => {
@@ -17,6 +19,8 @@ const ProfilePage = () => {
             setUsername(response.data.username || '');
             setEmail(response.data.email || '');
             setNumeroTelefono(response.data.numero_telefono || '');
+            setRole(response.data.role || 'admin');
+            setCliente(response.data.cliente || null);
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'Errore durante il recupero del profilo';
             setError(errorMessage);
@@ -52,6 +56,16 @@ const ProfilePage = () => {
                 {error && <p className="error-message">{error}</p>}
                 <table className="profile-table">
                     <tbody>
+                        <tr>
+                            <td>Tipo account</td>
+                            <td>{role === 'cliente' ? 'Cliente' : 'Amministratore'}</td>
+                        </tr>
+                        {cliente && (
+                            <tr>
+                                <td>Cliente collegato</td>
+                                <td>{cliente.ragione_sociale || [cliente.cognome, cliente.nome].filter(Boolean).join(' ')}</td>
+                            </tr>
+                        )}
                         <tr>
                             <td>Username</td>
                             <td>

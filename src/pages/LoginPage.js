@@ -17,8 +17,8 @@ const LoginPage = ({ onLogin, history }) => {
         try {
             const response = await authApi.login({ username, password });
             localStorage.setItem('token', response.data.token);
-            onLogin();
-            history.push('/');
+            const profile = await onLogin();
+            history.push(profile?.role === 'cliente' ? '/area-cliente' : '/');
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'Credenziali non valide';
             setError(errorMessage);

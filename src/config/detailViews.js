@@ -9,14 +9,17 @@ import listinoApi from '../api/listinoApi';
 import scadenzaApi from '../api/scadenzaApi';
 import servizioApi from '../api/servizioApi';
 import BillingPreviewPanel from '../components/shared/BillingPreviewPanel';
+import CustomerPortalAccessPanel from '../components/shared/CustomerPortalAccessPanel';
 import CustomerBillingPanel from '../components/shared/CustomerBillingPanel';
 import { editorComponents } from '../components/shared/editorComponents';
+import InvoiceAuditPanel from '../components/shared/InvoiceAuditPanel';
 import InvoiceVerificationPanel from '../components/shared/InvoiceVerificationPanel';
 import {
     boolText,
     customerName,
     formatDate,
     formatMoney,
+    isInvoiceLocked,
     invoiceStatus,
     join,
     text,
@@ -47,7 +50,7 @@ export const detailViews = {
         EditorComponent: editorComponents.cliente,
         api: api(clienteApi.getCliente, clienteApi.updateCliente, clienteApi.deleteCliente),
         relations: ['contatori', 'fatture'],
-        panels: [CustomerBillingPanel],
+        panels: [CustomerPortalAccessPanel, CustomerBillingPanel],
         fields: [
             { label: 'Ragione Sociale', value: 'ragione_sociale' },
             { label: 'Cognome', value: 'cognome' },
@@ -172,17 +175,17 @@ export const detailViews = {
         EditorComponent: editorComponents.fattura,
         api: api(fatturaApi.getFattura, fatturaApi.updateFattura, fatturaApi.deleteFattura),
         relations: ['cliente', 'servizi', 'scadenza'],
+        isLocked: isInvoiceLocked,
+        lockedMessage: 'Fattura confermata: modifiche, cancellazione e righe servizio sono bloccate.',
         actions: [
             (record) => ({
-                href: fatturaApi.getPdfUrl(record._id),
                 icon: 'download',
                 label: 'PDF',
-                rel: 'noreferrer',
-                target: '_blank',
+                onClick: () => fatturaApi.openPdf(record._id),
                 variant: 'secondary',
             }),
         ],
-        panels: [InvoiceVerificationPanel],
+        panels: [InvoiceVerificationPanel, InvoiceAuditPanel],
         fields: [
             { label: 'Tipo Documento', value: 'tipo_documento' },
             { label: 'Ragione Sociale', value: 'ragione_sociale' },

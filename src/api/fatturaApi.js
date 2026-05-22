@@ -1,15 +1,23 @@
 import { createResourceApi } from './resourceApi';
+import axios from 'axios';
+import { openBlobResponse } from './downloadFile';
 
 const resource = createResourceApi('fatture');
 
 const fatturaApi = {
     createFattura: resource.create,
     createFromReadings: (payload) => resource.postCollection('genera-da-letture', payload),
+    getControls: (params = {}) => resource.getCollection('controlli', params),
     getGenerationPreview: (params) => resource.getCollection('generazione/anteprima', params),
     applyFixedCharge: (id) => resource.postRelation(id, 'quota-fissa'),
     getFatture: resource.list,
     getFattura: resource.get,
     getPdfUrl: (id) => `${resource.baseUrl}/${id}/pdf`,
+    openPdf: async (id) => {
+        const response = await axios.get(`${resource.baseUrl}/${id}/pdf`, { responseType: 'blob' });
+        openBlobResponse(response, `fattura-${id}.pdf`);
+    },
+    getAuditLog: (id) => resource.getRelation(id, 'audit'),
     verifyCalcolo: (id) => resource.getRelation(id, 'verifica-calcolo'),
     updateFattura: resource.update,
     deleteFattura: resource.remove,
