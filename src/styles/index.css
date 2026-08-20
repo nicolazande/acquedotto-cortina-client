@@ -1543,6 +1543,69 @@ input[type="checkbox"] {
     }
 }
 
+/* Schermata mostrata quando un errore imprevisto interrompe l'interfaccia.
+   Prima al suo posto restava una pagina bianca, senza spiegazioni. */
+.error-boundary {
+    max-width: 640px;
+    margin: 40px auto;
+    padding: 24px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid #b4632c;
+    border-radius: var(--radius);
+}
+
+.error-boundary h1 {
+    margin: 0 0 10px;
+    color: var(--color-heading);
+    font-size: 1.25rem;
+}
+
+.error-boundary p {
+    margin: 0 0 16px;
+    color: var(--color-muted);
+    line-height: 1.5;
+}
+
+.error-boundary-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.error-boundary-actions button {
+    min-height: 38px;
+    padding: 8px 16px;
+    color: #fff;
+    background: var(--color-primary);
+    border: 0;
+    border-radius: var(--radius);
+    font: inherit;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.error-boundary-actions a {
+    color: var(--color-primary);
+    font-weight: 750;
+}
+
+.error-boundary details {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+}
+
+.error-boundary pre {
+    margin: 8px 0 0;
+    padding: 10px;
+    overflow-x: auto;
+    background: var(--color-surface-soft);
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+}
+
 @media (max-width: 1040px) {
     .content > [class$="-list-container"],
     .content > [class$="-details"],

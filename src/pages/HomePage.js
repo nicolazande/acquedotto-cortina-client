@@ -40,6 +40,25 @@ const DashboardPanel = ({ actions, children, title }) => (
     </section>
 );
 
+// La risposta del server viene normalizzata prima dell'uso: se l'interfaccia e
+// piu recente del server pubblicato, mancherebbero delle sezioni e leggerle
+// direttamente farebbe crollare l'intera pagina. Meglio mostrare cio che c'e.
+export const normalizza = (dati) => ({
+    letture: { daFatturare: dati?.letture?.daFatturare ?? 0 },
+    fatture: { bozze: dati?.fatture?.bozze ?? 0 },
+    incassi: {
+        aperte: { quante: dati?.incassi?.aperte?.quante ?? 0, totale: dati?.incassi?.aperte?.totale ?? 0 },
+        scadute: {
+            quante: dati?.incassi?.scadute?.quante ?? 0,
+            totale: dati?.incassi?.scadute?.totale ?? 0,
+            ritardoMassimo: dati?.incassi?.scadute?.ritardoMassimo ?? 0,
+        },
+    },
+    scaduto: { fasce: dati?.scaduto?.fasce ?? [] },
+    daSollecitare: dati?.daSollecitare ?? [],
+    attivita: dati?.attivita ?? [],
+});
+
 // Le scadenze non saldate sono spesso tutte gia scadute: ripetere due volte lo
 // stesso numero sembrerebbe un errore, meglio dirlo a parole.
 const dettaglioIncassi = ({ aperte, scadute }) => {
@@ -71,7 +90,7 @@ const HomePage = () => {
 
         try {
             const response = await panoramicaApi.get();
-            setPanoramica(response.data);
+            setPanoramica(normalizza(response.data));
         } catch (requestError) {
             setPanoramica(null);
             setError(requestError.response?.data?.error || 'Riepilogo non disponibile.');
@@ -138,6 +157,7 @@ const HomePage = () => {
 
             {!isLoading && panoramica && (
                 <div className="dashboard-grid">
+                    {panoramica.scaduto.fasce.length > 0 && (
                     <DashboardPanel
                         title="Anzianita del credito scaduto"
                         actions={(
@@ -148,14 +168,19 @@ const HomePage = () => {
                     >
                         <AgingBars fasce={panoramica.scaduto.fasce} />
                     </DashboardPanel>
+                    )}
 
+                    {panoramica.daSollecitare.length > 0 && (
                     <DashboardPanel title="Da sollecitare">
                         <FollowUpList voci={panoramica.daSollecitare} />
                     </DashboardPanel>
+                    )}
 
+                    {panoramica.attivita.length > 0 && (
                     <DashboardPanel title="Ultime modifiche">
                         <ActivityList voci={panoramica.attivita} />
                     </DashboardPanel>
+                    )}
                 </div>
             )}
 
