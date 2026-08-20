@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import fatturaApi from '../api/fatturaApi';
 import {
@@ -29,6 +29,11 @@ const BillingBatchPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [generatingCustomerId, setGeneratingCustomerId] = useState('');
     const [error, setError] = useState('');
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [bulk, setBulk] = useState(null);
+    // Il flag di interruzione sta in un ref perche il ciclo in corso deve
+    // vederlo cambiare senza aspettare un nuovo render.
+    const stopRequested = useRef(false);
     const history = useHistory();
     const { confirm, notify } = useFeedback();
 
@@ -52,6 +57,7 @@ const BillingBatchPage = () => {
                 limit: 1000,
             });
             setPreview(response.data);
+            setSelectedIds([]);
         } catch (requestError) {
             setPreview(null);
             setError(requestError.response?.data?.error || 'Anteprima generazione non disponibile.');
@@ -63,6 +69,98 @@ const BillingBatchPage = () => {
     useEffect(() => {
         loadPreview();
     }, [loadPreview]);
+
+    const groupReadingIds = (group) => (
+        group.previews.filter(isBillablePreview).map(previewReadingId).filter(Boolean)
+    );
+
+    const toggleSelection = (clienteId) => {
+        setSelectedIds((correnti) => (
+            correnti.includes(clienteId)
+                ? correnti.filter((id) => id !== clienteId)
+                : [...correnti, clienteId]
+        ));
+    };
+
+    const selectedGroups = readyGroups.filter((group) => selectedIds.includes(group.cliente?._id));
+    const allSelected = readyGroups.length > 0 && selectedIds.length === readyGroups.length;
+    const selectedTotal = selectedGroups.reduce(
+        (totale, group) => totale + Number(group.totals?.totale_fattura || 0),
+        0
+    );
+
+    const toggleSelectAll = () => {
+        setSelectedIds(allSelected ? [] : readyGroups.map((group) => group.cliente?._id).filter(Boolean));
+    };
+
+    // Le fatture si generano una alla volta di proposito: la quota fissa annuale
+    // e unica per contatore, quindi ogni generazione deve vedere quelle gia
+    // salvate. In parallelo due clienti potrebbero riceverla entrambi.
+    const handleGenerateSelected = async () => {
+        const confirmed = await confirm({
+            title: 'Genera bozze',
+            message: `Creo ${selectedGroups.length} bozze fattura per un totale previsto di ${formatMoney(selectedTotal)}?`,
+            confirmLabel: 'Genera',
+        });
+
+        if (!confirmed) {
+            return;
+        }
+
+        stopRequested.current = false;
+        setBulk({ done: 0, total: selectedGroups.length, running: true, created: [], failed: [] });
+
+        const created = [];
+        const failed = [];
+
+        for (const group of selectedGroups) {
+            if (stopRequested.current) {
+                break;
+            }
+
+            const nome = customerName(group.cliente);
+
+            try {
+                const response = await fatturaApi.createFromReadings({
+                    includeFixedCharge,
+                    letture: groupReadingIds(group),
+                });
+                created.push({ nome, fatturaId: response.data?.fattura?._id });
+            } catch (requestError) {
+                failed.push({
+                    nome,
+                    motivo: requestError.response?.data?.error || 'errore imprevisto',
+                });
+            }
+
+            setBulk({
+                done: created.length + failed.length,
+                total: selectedGroups.length,
+                running: true,
+                created: [...created],
+                failed: [...failed],
+            });
+        }
+
+        const interrotta = stopRequested.current;
+        setBulk({
+            done: created.length + failed.length,
+            total: selectedGroups.length,
+            running: false,
+            interrotta,
+            created,
+            failed,
+        });
+
+        if (created.length > 0) {
+            notify(`${created.length} bozze create`, 'success');
+        }
+        if (failed.length > 0) {
+            notify(`${failed.length} clienti non fatturati: controlla il riepilogo`, 'error');
+        }
+
+        await loadPreview();
+    };
 
     const handleGenerate = async (group) => {
         const letture = group.previews.filter(isBillablePreview).map(previewReadingId).filter(Boolean);
@@ -144,9 +242,83 @@ const BillingBatchPage = () => {
                             label="Quota fissa annuale"
                             onChange={setIncludeFixedCharge}
                         />
+
+                        {readyGroups.length > 0 && (
+                            <div className="billing-bulk-bar">
+                                <BillingOption
+                                    checked={allSelected}
+                                    label={allSelected ? 'Deseleziona tutti' : 'Seleziona tutti'}
+                                    help={selectedGroups.length > 0
+                                        ? `${selectedGroups.length} clienti selezionati · ${formatMoney(selectedTotal)}`
+                                        : 'Nessun cliente selezionato'}
+                                    onChange={toggleSelectAll}
+                                />
+                                <BillingActions>
+                                    {bulk?.running ? (
+                                        <>
+                                            <span className="billing-bulk-progress">
+                                                Generazione {bulk.done} di {bulk.total}...
+                                            </span>
+                                            <Button
+                                                variant="cancel"
+                                                icon="close"
+                                                onClick={() => { stopRequested.current = true; }}
+                                            >
+                                                Interrompi
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <Button
+                                            variant="primary"
+                                            icon="invoice"
+                                            disabled={selectedGroups.length === 0}
+                                            onClick={handleGenerateSelected}
+                                        >
+                                            {selectedGroups.length > 0
+                                                ? `Genera ${selectedGroups.length} bozze`
+                                                : 'Genera le selezionate'}
+                                        </Button>
+                                    )}
+                                </BillingActions>
+                            </div>
+                        )}
                     </>
                 )}
             </BillingPanel>
+
+            {bulk && !bulk.running && (
+                <BillingPanel
+                    className="billing-bulk-report"
+                    eyebrow="Esito"
+                    title={bulk.interrotta ? 'Generazione interrotta' : 'Generazione completata'}
+                    actions={(
+                        <BillingActions>
+                            <Button variant="secondary" icon="close" onClick={() => setBulk(null)}>
+                                Chiudi
+                            </Button>
+                        </BillingActions>
+                    )}
+                >
+                    <BillingSummary items={[
+                        { label: 'Bozze create', value: bulk.created.length },
+                        { label: 'Non riuscite', value: bulk.failed.length },
+                    ]}
+                    />
+                    {bulk.failed.length > 0 && (
+                        <ul className="billing-bulk-failures">
+                            {bulk.failed.map((esito) => (
+                                <li key={esito.nome}>
+                                    <strong>{esito.nome}</strong>
+                                    <span>{esito.motivo}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                    {bulk.failed.length === 0 && bulk.created.length > 0 && (
+                        <BillingState>Tutte le bozze selezionate sono state create.</BillingState>
+                    )}
+                </BillingPanel>
+            )}
 
             {!isLoading && readyGroups.length === 0 && !error && (
                 <BillingPanel title="Nessuna fattura pronta">
@@ -167,6 +339,11 @@ const BillingBatchPage = () => {
                             title={customerName(group.cliente)}
                             actions={(
                                 <BillingActions>
+                                    <BillingOption
+                                        checked={selectedIds.includes(clienteId)}
+                                        label="Seleziona"
+                                        onChange={() => toggleSelection(clienteId)}
+                                    />
                                     <Button
                                         variant="details"
                                         icon="eye"
@@ -178,7 +355,7 @@ const BillingBatchPage = () => {
                                         variant="primary"
                                         icon="invoice"
                                         onClick={() => handleGenerate(group)}
-                                        disabled={generatingCustomerId === clienteId}
+                                        disabled={generatingCustomerId === clienteId || bulk?.running}
                                     >
                                         {generatingCustomerId === clienteId ? 'Generazione...' : 'Genera bozza'}
                                     </Button>

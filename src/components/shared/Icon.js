@@ -8,6 +8,7 @@ const iconPaths = {
     building: ['M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16', 'M9 7h1', 'M14 7h1', 'M9 11h1', 'M14 11h1', 'M9 21v-5h6v5'],
     calendar: ['M7 3v3', 'M17 3v3', 'M4 8h16', 'M5 5h14a1 1 0 0 1 1 1v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1Z'],
     check: ['m5 12 4 4L19 6'],
+    close: ['M6 6l12 12', 'm18 6-12 12'],
     dashboard: ['M4 4h7v7H4Z', 'M13 4h7v5h-7Z', 'M13 11h7v9h-7Z', 'M4 13h7v7H4Z'],
     download: ['M12 3v12', 'm7-7-7 7-7-7', 'M5 21h14'],
     edit: ['M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z', 'm13 7 4 4'],
