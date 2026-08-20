@@ -16,3 +16,17 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# L'HTML non va mai riusato dalla cache: contiene i riferimenti ai file della build
+# corrente, che cambiano nome a ogni pubblicazione. Una copia vecchia punterebbe a
+# file non piu esistenti e la pagina resterebbe bianca.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# I file con l'impronta nel nome sono immutabili e si possono tenere per sempre.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

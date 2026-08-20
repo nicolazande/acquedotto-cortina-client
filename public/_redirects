@@ -1,1 +1,10 @@
-/* /index.html 200
+# I file statici devono rispondere 404 se non esistono, non essere assorbiti dalla
+# regola generale: un browser che chiede un asset di una build vecchia altrimenti
+# riceve l'HTML dell'applicazione con codice 200, prova a eseguirlo come
+# JavaScript e mostra una pagina bianca senza alcun errore visibile.
+/assets/*    /assets/:splat    404
+/static/*    /static/:splat    404
+
+# Tutti gli altri indirizzi appartengono all'applicazione: le rotte sono gestite
+# dal browser, quindi vanno servite con index.html.
+/*           /index.html       200
