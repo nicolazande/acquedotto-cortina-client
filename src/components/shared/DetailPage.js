@@ -16,6 +16,8 @@ const DetailPage = ({ config }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    const isLocked = Boolean(record && config.isLocked?.(record));
+
     const loadRecord = useCallback(async () => {
         setIsLoading(true);
 
@@ -35,36 +37,61 @@ const DetailPage = ({ config }) => {
         loadRecord();
     }, [loadRecord]);
 
+    // Un documento gia emesso non e immutabile per sempre: si puo correggere, ma
+    // solo dichiarandolo. La conferma viaggia con la richiesta e il server la
+    // registra nel giornale delle modifiche.
+    const chiediSblocco = async (azione) => confirm({
+        title: 'Documento gia emesso',
+        message: `${config.lockedMessage || 'Questo documento risulta confermato'}. `
+            + `Vuoi ${azione} lo stesso? L'operazione resta registrata.`,
+        confirmLabel: 'Procedi',
+        variant: 'danger',
+    });
+
     const handleSave = async (updatedRecord) => {
         try {
-            await config.api.update(id, updatedRecord);
+            await config.api.update(id, isLocked
+                ? { ...updatedRecord, sbloccoConfermato: true }
+                : updatedRecord);
             setIsEditing(false);
             await loadRecord();
-            notify('Record aggiornato con successo', 'success');
+            notify(isLocked
+                ? 'Documento emesso aggiornato: la modifica e stata registrata'
+                : 'Record aggiornato con successo', 'success');
         } catch (error) {
-            notify('Errore durante il salvataggio', 'error');
+            notify(error.response?.data?.error || 'Errore durante il salvataggio', 'error');
             console.error(error);
         }
     };
 
+    const handleEdit = async () => {
+        if (isLocked && !(await chiediSblocco('modificarlo'))) {
+            return;
+        }
+
+        setIsEditing(true);
+    };
+
     const handleDelete = async () => {
-        const confirmed = await confirm({
-            title: 'Cancella record',
-            message: 'Sei sicuro di voler cancellare questo record?',
-            confirmLabel: 'Cancella',
-            variant: 'danger',
-        });
+        const confirmed = isLocked
+            ? await chiediSblocco('cancellarlo')
+            : await confirm({
+                title: 'Cancella record',
+                message: 'Sei sicuro di voler cancellare questo record?',
+                confirmLabel: 'Cancella',
+                variant: 'danger',
+            });
 
         if (!confirmed) {
             return;
         }
 
         try {
-            await config.api.remove(id);
+            await config.api.remove(id, isLocked ? { sbloccoConfermato: true } : undefined);
             notify('Record cancellato con successo', 'success');
             goBack();
         } catch (error) {
-            notify('Errore durante la cancellazione', 'error');
+            notify(error.response?.data?.error || 'Errore durante la cancellazione', 'error');
             console.error(error);
         }
     };
@@ -80,7 +107,6 @@ const DetailPage = ({ config }) => {
     const Editor = config.EditorComponent;
     const hasNotes = config.fields.some((field) => field.value === 'note' || field.label.toLowerCase() === 'note');
     const panels = config.panels || [];
-    const isLocked = Boolean(config.isLocked?.(record));
     const lockedMessage = config.lockedMessage || 'Record bloccato';
     const actions = (config.actions || [])
         .map((action) => (typeof action === 'function' ? action(record) : action))
@@ -115,11 +141,10 @@ const DetailPage = ({ config }) => {
                             </Button>
                         ))}
                         <Button
-                            onClick={() => setIsEditing(true)}
+                            onClick={handleEdit}
                             variant="edit"
                             icon="edit"
-                            disabled={isLocked}
-                            title={isLocked ? lockedMessage : undefined}
+                            title={isLocked ? `${lockedMessage}: la modifica richiede conferma` : undefined}
                         >
                             Modifica
                         </Button>
@@ -127,15 +152,18 @@ const DetailPage = ({ config }) => {
                             onClick={handleDelete}
                             variant="delete"
                             icon="trash"
-                            disabled={isLocked}
-                            title={isLocked ? lockedMessage : undefined}
+                            title={isLocked ? `${lockedMessage}: la cancellazione richiede conferma` : undefined}
                         >
                             Elimina
                         </Button>
                     </>
                 )}
             />
-            {isLocked && <div className="detail-lock-notice">{lockedMessage}</div>}
+            {isLocked && (
+                <div className="detail-lock-notice">
+                    {lockedMessage}. Modifica e cancellazione restano possibili con conferma esplicita e vengono registrate.
+                </div>
+            )}
             <div className="table-container detail-info-card">
                 <table className="info-table">
                     <tbody>
@@ -162,7 +190,7 @@ const DetailPage = ({ config }) => {
                     recordId={id}
                 />
             )}
-            {isEditing && !isLocked && <Editor {...editorProps} />}
+            {isEditing && <Editor {...editorProps} />}
             <div className="btn-back-container">
                 <Button onClick={goBack} variant="back" icon="arrowLeft">
                     {backLabel}

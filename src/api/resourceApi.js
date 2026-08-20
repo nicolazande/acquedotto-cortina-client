@@ -29,7 +29,9 @@ export const createResourceApi = (
         }),
         get: (id) => axios.get(`${baseUrl}/${id}`),
         update: (id, data) => axios.put(`${baseUrl}/${id}`, data),
-        remove: (id) => axios.delete(`${baseUrl}/${id}`),
+        // I parametri servono per la conferma di sblocco di un documento gia emesso:
+        // la cancellazione non ha corpo, quindi viaggia nell'indirizzo.
+        remove: (id, params) => axios.delete(`${baseUrl}/${id}`, params ? { params } : undefined),
         getRelation: (id, relationPath, config) => axios.get(`${baseUrl}/${id}/${relationPath}`, config),
         postRelation: (id, relationPath, data) => axios.post(`${baseUrl}/${id}/${relationPath}`, data),
         putRelation: (id, relationPath, data) => axios.put(`${baseUrl}/${id}/${relationPath}`, data),
