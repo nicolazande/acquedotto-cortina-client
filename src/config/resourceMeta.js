@@ -1,4 +1,4 @@
-export const resourceIcons = {
+const resourceIcons = {
     articoli: 'article',
     clienti: 'users',
     contatori: 'gauge',

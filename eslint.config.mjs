@@ -43,10 +43,20 @@ export default [
     },
     {
         // Gli script di supporto girano in Node, non nel browser.
-        files: ['scripts/**/*.js', '*.mjs'],
+        files: ['scripts/**/*.js'],
         languageOptions: {
             ecmaVersion: 2022,
             sourceType: 'commonjs',
+            globals: { ...globals.node },
+        },
+        rules: { ...js.configs.recommended.rules },
+    },
+    {
+        // I file di configurazione sono moduli ES, non CommonJS.
+        files: ['*.mjs'],
+        languageOptions: {
+            ecmaVersion: 2022,
+            sourceType: 'module',
             globals: { ...globals.node },
         },
         rules: { ...js.configs.recommended.rules },

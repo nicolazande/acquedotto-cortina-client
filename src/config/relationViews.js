@@ -30,7 +30,7 @@ const recordId = (record) => record && record._id;
 const createdRecordId = (response) => response?.data?._id;
 export const responseData = (response) => response.data;
 
-export const resourceViews = {
+const resourceViews = {
     articoli: {
         singular: 'Articolo',
         plural: 'Articoli',
