@@ -1,14 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { primaryNavigationItems } from '../config/navigation';
+import { itemsByGroup } from '../config/navigation';
 import panoramicaApi from '../api/panoramicaApi';
 import { formatMoney, formatNumber } from '../utils/formatters';
 import Icon from '../components/shared/Icon';
 import '../styles/HomePage.css';
 import ServerStatusIndicator from '../ServerStatusIndicator';
-
-const featuredPaths = ['/clienti', '/contatori', '/edifici', '/letture', '/fatture', '/scadenze'];
-const archivePaths = ['/servizi', '/articoli', '/listini', '/fasce'];
 
 const renderHomeCard = (item) => (
     <Link className="home-card" to={item.path} key={item.path}>
@@ -88,8 +85,11 @@ const HomePage = () => {
         caricaPanoramica();
     }, [caricaPanoramica]);
 
-    const featuredItems = primaryNavigationItems.filter((item) => featuredPaths.includes(item.path));
-    const archiveItems = primaryNavigationItems.filter((item) => archivePaths.includes(item.path));
+    // I gruppi sono dichiarati una volta sola in config/navigation: prima la home
+    // ripeteva gli stessi percorsi in due elenchi scritti a mano, che potevano
+    // divergere dal menu senza che nulla lo segnalasse.
+    const featuredItems = itemsByGroup('lavoro');
+    const archiveItems = itemsByGroup('configurazione');
     const ritardo = panoramica ? dettaglioRitardo(panoramica.incassi.scadute.ritardoMassimo) : '';
 
     return (

@@ -7,7 +7,9 @@ import FeedbackProvider from './components/shared/FeedbackProvider';
 import PageLoading from './components/shared/PageLoading';
 import { detailComponents } from './components/shared/detailComponents';
 import { listComponents } from './components/shared/listComponents';
-import { navigationItems } from './config/navigation';
+// navigationItems genera le rotte (comprese quelle nascoste dal menu),
+// visibleNavigationItems alimenta la barra di navigazione.
+import { navigationItems, visibleNavigationItems } from './config/navigation';
 import authApi from './api/authApi';
 import './styles/App.css';
 
@@ -120,7 +122,7 @@ const App = () => {
             <Router>
                 <div className={`App ${isAuthenticated ? 'is-authenticated' : 'is-public'}`}>
                     {isAuthenticated && !isProfileLoading && (
-                        <Navbar items={isCustomer ? customerNavigationItems : navigationItems} onLogout={handleLogout} />
+                        <Navbar items={isCustomer ? customerNavigationItems : visibleNavigationItems} onLogout={handleLogout} />
                     )}
                     <div className="content">
                         <Suspense fallback={<PageLoading />}>

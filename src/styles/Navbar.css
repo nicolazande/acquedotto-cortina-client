@@ -159,6 +159,25 @@
     background: var(--color-danger);
 }
 
+/* Separatore fra gruppi di voci: distingue la gestione quotidiana dalle tariffe,
+   che si toccano poche volte l'anno. */
+.nav-item-group-start {
+    position: relative;
+    margin-left: 10px;
+    padding-left: 10px;
+}
+
+.nav-item-group-start::before {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 1px;
+    height: 18px;
+    content: '';
+    background: var(--color-border);
+    transform: translateY(-50%);
+}
+
 @media (max-width: 1040px) {
     .navbar {
         right: 0;
@@ -228,6 +247,20 @@
     .navbar-nav .nav-link .icon {
         width: 16px;
         height: 16px;
+    }
+}
+
+@media (max-width: 1040px) {
+    .nav-item-group-start {
+        margin-left: 0;
+        padding-left: 0;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid var(--color-border);
+    }
+
+    .nav-item-group-start::before {
+        display: none;
     }
 }
 

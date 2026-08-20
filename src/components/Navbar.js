@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { navigationItems } from '../config/navigation';
+import { visibleNavigationItems } from '../config/navigation';
 import Icon from './shared/Icon';
 import '../styles/Navbar.css';
 
-const Navbar = ({ items = navigationItems, onLogout }) => {
+// Le voci arrivano gia divise per gruppo. Il separatore fra gestione quotidiana
+// e tariffe evita che dodici voci allo stesso livello sembrino tutte equivalenti.
+const Navbar = ({ items = visibleNavigationItems, onLogout }) => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleMenu = () => setMenuOpen((open) => !open);
@@ -36,8 +38,13 @@ const Navbar = ({ items = navigationItems, onLogout }) => {
                 <span aria-hidden="true"></span>
             </button>
             <ul className={`navbar-nav ${menuOpen ? 'active' : ''}`}>
-                {items.map((item) => (
-                    <li className="nav-item" key={item.path}>
+                {items.map((item, indice) => (
+                    <li
+                        className={`nav-item${
+                            indice > 0 && item.group !== items[indice - 1].group ? ' nav-item-group-start' : ''
+                        }`}
+                        key={item.path}
+                    >
                         <NavLink
                             exact={item.path === '/'}
                             to={item.path}
