@@ -168,14 +168,142 @@
     line-height: 1.42;
 }
 
+/* Riepilogo in cima alla panoramica: pochi numeri, ognuno cliccabile e
+   collegato alla lista che permette di agire. */
+.home-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.home-stat {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    padding: 14px;
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-border-strong, var(--color-border));
+    border-radius: var(--radius);
+    transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.home-stat:hover {
+    border-color: rgba(11, 114, 128, 0.34);
+    box-shadow: var(--shadow-subtle);
+    transform: translateY(-1px);
+}
+
+/* Un solo accento cromatico, riservato a cio che richiede un intervento. */
+.home-stat-attenzione {
+    border-left-color: #b4632c;
+}
+
+.home-stat-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.home-stat-mark {
+    display: inline-grid;
+    width: 26px;
+    height: 26px;
+    flex: 0 0 auto;
+    place-items: center;
+    color: var(--color-primary);
+    background: var(--color-surface-soft);
+    border: 1px solid var(--color-border);
+    border-radius: 7px;
+    font-size: 0.85rem;
+}
+
+.home-stat-label {
+    color: var(--color-muted);
+    font-size: 0.78rem;
+    font-weight: 850;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+}
+
+.home-stat-value {
+    color: var(--color-heading);
+    font-size: 1.5rem;
+    font-weight: 850;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+}
+
+.home-stat-detail {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+    line-height: 1.35;
+}
+
+.home-stats-error {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 12px 14px;
+    color: var(--color-muted);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+}
+
+/* Segnaposto durante il caricamento: evita che la pagina salti quando
+   arrivano i numeri. */
+.home-stat.is-loading {
+    gap: 10px;
+    pointer-events: none;
+}
+
+.skeleton-line {
+    height: 12px;
+    background: linear-gradient(90deg, var(--color-surface-soft) 25%, #eef3f4 37%, var(--color-surface-soft) 63%);
+    background-size: 400% 100%;
+    border-radius: 6px;
+    animation: skeleton-shimmer 1.4s ease infinite;
+}
+
+.skeleton-line-short {
+    width: 45%;
+}
+
+.skeleton-line-wide {
+    width: 70%;
+    height: 22px;
+}
+
+@keyframes skeleton-shimmer {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-line {
+        animation: none;
+    }
+}
+
 @media (max-width: 1180px) {
     .home-grid-primary,
-    .home-grid-compact {
+    .home-grid-compact,
+    .home-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 640px) {
+    /* Su telefono i numeri vanno uno sotto l'altro: affiancati diventerebbero
+       illeggibili proprio dove servono di piu. */
+    .home-stats {
+        grid-template-columns: 1fr;
+    }
+
     .homepage {
         gap: 14px;
     }

@@ -8,8 +8,23 @@ export const formatDate = (value) => (
     value ? new Date(value).toLocaleDateString('it-IT') : EMPTY_VALUE
 );
 
+// Formato italiano: 1.234,56 EUR. Prima gli importi uscivano come "1234.56",
+// in disaccordo con il PDF della fattura, che usa gia la virgola decimale.
+const currencyFormatter = new Intl.NumberFormat('it-IT', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+});
+
 export const formatMoney = (value) => (
-    Number.isFinite(Number(value)) ? `${Number(value).toFixed(2)} \u20ac` : EMPTY_VALUE
+    Number.isFinite(Number(value)) ? currencyFormatter.format(Number(value)) : EMPTY_VALUE
+);
+
+const numberFormatter = new Intl.NumberFormat('it-IT');
+
+export const formatNumber = (value) => (
+    Number.isFinite(Number(value)) ? numberFormatter.format(Number(value)) : EMPTY_VALUE
 );
 
 export const formatCubicMeters = (value) => (
