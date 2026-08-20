@@ -17,18 +17,25 @@ const currencyFormatter = new Intl.NumberFormat('it-IT', {
     maximumFractionDigits: 2,
 });
 
+// Un valore assente non e zero: Number(null) e Number('') valgono 0, quindi
+// senza questo controllo un importo mancante veniva mostrato come "0,00 EUR" e
+// diventava indistinguibile da un importo davvero nullo.
 export const formatMoney = (value) => (
-    Number.isFinite(Number(value)) ? currencyFormatter.format(Number(value)) : EMPTY_VALUE
+    !isEmptyValue(value) && Number.isFinite(Number(value))
+        ? currencyFormatter.format(Number(value))
+        : EMPTY_VALUE
 );
 
 const numberFormatter = new Intl.NumberFormat('it-IT');
 
 export const formatNumber = (value) => (
-    Number.isFinite(Number(value)) ? numberFormatter.format(Number(value)) : EMPTY_VALUE
+    !isEmptyValue(value) && Number.isFinite(Number(value))
+        ? numberFormatter.format(Number(value))
+        : EMPTY_VALUE
 );
 
 export const formatCubicMeters = (value) => (
-    Number.isFinite(Number(value)) ? `${Number(value)} m3` : EMPTY_VALUE
+    !isEmptyValue(value) && Number.isFinite(Number(value)) ? `${Number(value)} m3` : EMPTY_VALUE
 );
 
 export const boolText = (value) => (value ? 'Si' : 'No');

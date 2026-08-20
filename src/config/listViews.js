@@ -1,6 +1,7 @@
 import articoloApi from '../api/articoloApi';
 import clienteApi from '../api/clienteApi';
 import contatoreApi from '../api/contatoreApi';
+import edificioApi from '../api/edificioApi';
 import fasciaApi from '../api/fasciaApi';
 import fatturaApi from '../api/fatturaApi';
 import letturaApi from '../api/letturaApi';
@@ -109,6 +110,32 @@ export const listViews = {
             { label: 'Cliente', sortField: 'nome_cliente', value: 'nome_cliente' },
             { label: 'Seriale', sortField: 'seriale', value: 'seriale' },
             { label: 'Inattivo', sortField: 'inattivo', value: 'inattivo', format: boolText },
+        ],
+    },
+    edifici: {
+        title: 'Edifici',
+        className: 'edificio',
+        detailPath: '/edifici',
+        newLabel: 'Nuovo',
+        editorProp: 'edificio',
+        EditorComponent: editorComponents.edificio,
+        api: api(edificioApi.getEdifici, edificioApi.createEdificio, edificioApi.deleteEdificio),
+        defaultSortField: 'descrizione',
+        defaultSortOrder: 'asc',
+        summary: {
+            title: (record) => record.descrizione,
+            subtitle: (record) => record.indirizzo,
+            meta: (record) => [
+                { label: 'Localita', value: join(record.cap, record.localita) },
+                { label: 'Tipo', value: record.tipo },
+            ],
+        },
+        columns: [
+            { label: 'Descrizione', sortField: 'descrizione', value: 'descrizione' },
+            { label: 'Indirizzo', sortField: 'indirizzo', value: 'indirizzo' },
+            { label: 'CAP', sortField: 'cap', value: 'cap' },
+            { label: 'Localita', sortField: 'localita', value: 'localita' },
+            { label: 'Tipo', sortField: 'tipo', value: 'tipo' },
         ],
     },
     fasce: {

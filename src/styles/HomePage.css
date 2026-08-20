@@ -261,34 +261,6 @@
     pointer-events: none;
 }
 
-.skeleton-line {
-    height: 12px;
-    background: linear-gradient(90deg, var(--color-surface-soft) 25%, #eef3f4 37%, var(--color-surface-soft) 63%);
-    background-size: 400% 100%;
-    border-radius: 6px;
-    animation: skeleton-shimmer 1.4s ease infinite;
-}
-
-.skeleton-line-short {
-    width: 45%;
-}
-
-.skeleton-line-wide {
-    width: 70%;
-    height: 22px;
-}
-
-@keyframes skeleton-shimmer {
-    0% { background-position: 100% 50%; }
-    100% { background-position: 0 50%; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .skeleton-line {
-        animation: none;
-    }
-}
-
 @media (max-width: 1180px) {
     .home-grid-primary,
     .home-grid-compact,

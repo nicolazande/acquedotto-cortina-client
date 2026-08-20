@@ -35,6 +35,13 @@ export default [
         },
     },
     {
+        // I test girano con Vitest: le sue globali non esistono nel codice applicativo.
+        files: ['src/**/*.test.js'],
+        languageOptions: {
+            globals: { describe: 'readonly', expect: 'readonly', test: 'readonly', vi: 'readonly' },
+        },
+    },
+    {
         // Gli script di supporto girano in Node, non nel browser.
         files: ['scripts/**/*.js', '*.mjs'],
         languageOptions: {

@@ -11,6 +11,8 @@
     "build": "vite build",
     "preview": "vite preview --port 3000",
     "lint": "eslint src",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:smoke": "node scripts/smoke-client.js"
   },
   "dependencies": {
@@ -39,6 +41,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^17.11.0",
-    "vite": "^6.4.3"
+    "vite": "^6.4.3",
+    "vitest": "^3.2.7"
   }
 }

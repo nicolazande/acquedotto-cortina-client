@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { createContextBackSearch, getLocationPath } from '../../hooks/useContextBack';
 import { useFeedback } from './FeedbackProvider';
@@ -11,7 +11,20 @@ import {
 } from './PageChrome';
 import RecordTable from './RecordTable';
 
-const ListPage = ({ config, onSelect, detailReturnLabel }) => {
+// `beforeTable` e i callback sulle righe sono i punti di estensione usati dalla
+// lista edifici, che ha una mappa sopra la tabella. Senza di essi quella pagina
+// riscriveva per intero ricerca, paginazione, creazione e cancellazione, e
+// restava indietro a ogni miglioramento fatto qui.
+const ListPage = ({
+    beforeTable,
+    config,
+    detailReturnLabel,
+    getRowClassName,
+    getRowId,
+    onRecordsLoaded,
+    onRowClick,
+    onSelect,
+}) => {
     const [records, setRecords] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeSearch, setActiveSearch] = useState('');
@@ -20,6 +33,10 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
     const [totalItems, setTotalItems] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const { confirm, notify } = useFeedback();
+    // Tenuto in un ref: cosi un callback ricreato a ogni render dal componente
+    // padre non fa ripartire il caricamento in continuazione.
+    const onRecordsLoadedRef = useRef(onRecordsLoaded);
+    onRecordsLoadedRef.current = onRecordsLoaded;
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -48,6 +65,7 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
             setRecords(nextRecords);
             setTotalItems(response.data.totalItems || nextRecords.length);
             setTotalPages(response.data.totalPages || 1);
+            onRecordsLoadedRef.current?.(nextRecords);
         } catch (error) {
             notify(`Errore durante il recupero di ${config.title.toLowerCase()}`, 'error');
             console.error(error);
@@ -202,7 +220,11 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                     createClassName={`btn btn-new-${config.className}`}
                     createLabel={config.newLabel}
                 />
+                {beforeTable}
                 <RecordTable
+                    getRowClassName={getRowClassName}
+                    getRowId={getRowId}
+                    onRowClick={onRowClick}
                     actions={(record) => (
                         <>
                             <Button

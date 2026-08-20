@@ -22,6 +22,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Test unitari
+        run: npm test
+
       # La build e il controllo piu utile del client: fallisce su qualunque
       # errore di sintassi o import non risolto.
       - name: Build di produzione
