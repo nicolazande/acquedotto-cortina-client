@@ -27,6 +27,13 @@ export default defineConfig({
         // Netlify pubblica questa cartella: mantenere il nome evita di toccare il deploy.
         outDir: 'build',
         sourcemap: false,
+
+        // Vite 6 compilerebbe per browser molto recenti (Chrome 107, Safari 16).
+        // Il gestionale si usa anche da telefoni non nuovi: un iPhone fermo a iOS 15
+        // non riuscirebbe nemmeno a leggere il file e mostrerebbe una pagina bianca,
+        // senza alcun messaggio. Questa soglia copre i browser dal 2020 in poi e
+        // costa pochissimo in dimensione.
+        target: ['es2019', 'safari13', 'chrome80', 'firefox78', 'edge88'],
     },
 
     // In build il codice passa da esbuild prima dell'analisi degli import:
