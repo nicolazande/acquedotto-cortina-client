@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import './styles/ServerStatusIndicator.css';
 import authApi from './api/authApi';
+import { APP_VERSION } from './version';
 
 const ServerStatusIndicator = () => {
     const [isServerAvailable, setIsServerAvailable] = useState(false);
+    // La versione del server viene mostrata nel suggerimento: client e server
+    // stanno su due servizi distinti e si aggiornano in momenti diversi, quindi
+    // poter leggere al volo cosa gira davvero evita diagnosi a tentativi.
+    const [versione, setVersione] = useState('');
 
     useEffect(() => {
         // Il controllo prosegue anche dopo il primo esito positivo: prima l'intervallo
@@ -11,10 +16,12 @@ const ServerStatusIndicator = () => {
         // per sempre anche se il server cadeva subito dopo.
         const checkServerStatus = async () => {
             try {
-                await authApi.healthCheck();
+                const risposta = await authApi.healthCheck();
                 setIsServerAvailable(true);
+                setVersione(risposta?.data?.version || '');
             } catch {
                 setIsServerAvailable(false);
+                setVersione('');
             }
         };
 
@@ -25,13 +32,16 @@ const ServerStatusIndicator = () => {
     }, []);
 
     const statusLabel = isServerAvailable ? 'API online' : 'API offline';
+    const dettaglio = [statusLabel, versione && `server ${versione}`, `interfaccia ${APP_VERSION}`]
+        .filter(Boolean)
+        .join(' · ');
 
     return (
         <div
             className={`server-status-indicator ${isServerAvailable ? 'is-online' : 'is-offline'}`}
             role="status"
-            aria-label={statusLabel}
-            title={statusLabel}
+            aria-label={dettaglio}
+            title={dettaglio}
         >
             <span className="status-circle" aria-hidden="true" />
             <span className="status-label">API</span>

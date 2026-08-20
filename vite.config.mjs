@@ -1,7 +1,16 @@
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+const { version } = JSON.parse(readFileSync('./package.json', 'utf8'));
+
 export default defineConfig({
+    // La versione finisce dentro il codice compilato: serve a capire quale build
+    // sta girando davvero nel browser di chi segnala un problema.
+    define: {
+        __APP_VERSION__: JSON.stringify(version),
+    },
+
     plugins: [
         // Il progetto tiene il JSX dentro file .js (eredita da Create React App):
         // senza questo "include" il plugin ignorerebbe quasi tutti i componenti.
