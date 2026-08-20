@@ -6,19 +6,19 @@ const ServerStatusIndicator = () => {
     const [isServerAvailable, setIsServerAvailable] = useState(false);
 
     useEffect(() => {
-        let intervalId;
-
+        // Il controllo prosegue anche dopo il primo esito positivo: prima l'intervallo
+        // veniva fermato appena l'API rispondeva, e l'indicatore restava su "online"
+        // per sempre anche se il server cadeva subito dopo.
         const checkServerStatus = async () => {
             try {
                 await authApi.healthCheck();
                 setIsServerAvailable(true);
-                clearInterval(intervalId);
-            } catch (error) {
+            } catch {
                 setIsServerAvailable(false);
             }
         };
 
-        intervalId = setInterval(checkServerStatus, 5000);
+        const intervalId = setInterval(checkServerStatus, 5000);
         checkServerStatus();
 
         return () => clearInterval(intervalId);
