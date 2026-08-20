@@ -19,6 +19,9 @@ npm start
 
 Il client parte di default su `http://localhost:3000`.
 
+Il progetto usa **Vite**: l'avvio e quasi immediato e le modifiche si vedono
+senza ricaricare la pagina.
+
 Puoi usare anche lo script locale, che imposta automaticamente il Node incluso
 nel workspace e installa le dipendenze se mancano:
 
@@ -34,6 +37,9 @@ Crea un file `.env` partendo da `.env.example`.
 REACT_APP_API_URL=http://localhost:5000
 ```
 
+Sono accettati sia `VITE_API_URL` sia `REACT_APP_API_URL`: il secondo e mantenuto
+per non dover riconfigurare l'hosting gia in uso.
+
 `REACT_APP_API_URL` deve indicare la base del server, senza obbligo di aggiungere `/api`.
 Il codice normalizza anche il caso in cui venga inserito per errore `http://localhost:5000/api`.
 
@@ -47,8 +53,16 @@ Nel server aggiungi l'origine del client in `CLIENT_ORIGINS`, altrimenti il brow
 
 Se la variabile non e' presente, le richieste usano `/api/...` e possono passare dal proxy CRA configurato in `package.json`.
 
+## Documentazione
+
+L'architettura del client e descritta in
+[docs/architettura.md](docs/architettura.md): spiega il sistema guidato dalla
+configurazione, la navigazione contestuale e le soglie del responsive.
+
 ## Struttura utile
 
+- `vite.config.mjs`: configurazione di build, proxy di sviluppo e variabili d'ambiente
+- `index.html`: punto di ingresso dell'applicazione (nella radice, non in `public/`)
 - `src/config/navigation.js`: voci di menu e dashboard
 - `src/api/baseUrl.js`: costruzione centralizzata degli URL API
 - `src/api/*Api.js`: client HTTP per le risorse
@@ -59,9 +73,10 @@ Se la variabile non e' presente, le richieste usano `/api/...` e possono passare
 
 ## Script
 
-- `npm start`: avvio in sviluppo
-- `npm run build`: build di produzione
-- `npm test`: test runner CRA
+- `npm start` (o `npm run dev`): avvio in sviluppo su `http://localhost:3000`
+- `npm run build`: build di produzione nella cartella `build/`
+- `npm run preview`: serve in locale la build di produzione
+- `npm run lint`: controllo statico del codice
 - `npm run test:smoke`: controlli veloci su URL API e navigazione contestuale
 
 Per controllare anche una build Netlify gia' pubblicata:
