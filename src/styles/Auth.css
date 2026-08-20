@@ -101,6 +101,19 @@
     display: none;
 }
 
+/* Avviso neutro: usato quando la sessione viene chiusa dal server. */
+.notice-message {
+    margin: 0 0 16px;
+    padding: 10px 12px;
+    color: var(--color-heading, #14232a);
+    background: var(--color-surface-soft, #f2f6f7);
+    border: 1px solid var(--color-border, #d9e2e5);
+    border-radius: var(--radius, 10px);
+    font-size: 0.9rem;
+    font-weight: 650;
+    line-height: 1.35;
+}
+
 @media (max-width: 560px) {
     .auth-page {
         padding: 16px;

@@ -80,7 +80,7 @@ const App = () => {
             setIsProfileLoading(true);
             try {
                 await loadProfile();
-            } catch (error) {
+            } catch {
                 localStorage.removeItem('token');
                 setIsAuthenticated(false);
             } finally {

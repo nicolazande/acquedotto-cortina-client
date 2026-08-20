@@ -57,8 +57,15 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
         fetchRecords(currentPage, activeSearch, sortField, sortOrder);
     }, [activeSearch, currentPage, fetchRecords, sortField, sortOrder]);
 
+    // Riscrive solo i parametri di pagina e ordinamento: quelli di contesto
+    // (returnTo / returnLabel) devono sopravvivere, altrimenti ordinare o cambiare
+    // pagina dentro una lista aperta da un'altra scheda fa perdere il tasto "Torna a".
     const updateQuery = (page, field = sortField, order = sortOrder) => {
-        history.push(`?page=${page}&sortField=${field}&sortOrder=${order}`);
+        const params = new URLSearchParams(location.search);
+        params.set('page', page);
+        params.set('sortField', field || '');
+        params.set('sortOrder', order || '');
+        history.push(`?${params.toString()}`);
     };
 
     const handleSearch = () => {

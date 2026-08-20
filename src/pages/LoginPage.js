@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import authApi from '../api/authApi';
+import { consumeSessionMessage } from '../services/auth';
 import Button from '../components/shared/Button';
 import ServerStatusIndicator from '../ServerStatusIndicator';
 import '../styles/Auth.css';
@@ -10,6 +11,13 @@ const LoginPage = ({ onLogin, history }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [notice, setNotice] = useState('');
+
+    // Se la sessione e stata chiusa dal server (token scaduto, account disabilitato)
+    // l'utente arriva qui senza sapere perche: il motivo viene mostrato una volta sola.
+    useEffect(() => {
+        setNotice(consumeSessionMessage());
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -30,6 +38,7 @@ const LoginPage = ({ onLogin, history }) => {
             <ServerStatusIndicator />
             <div className="auth-container">
                 <h2>Accedi</h2>
+                {notice && !error && <p className="notice-message">{notice}</p>}
                 {error && <p className="error-message">{error}</p>}
                 <form onSubmit={handleLogin}>
                     <div className="form-group">
