@@ -2,6 +2,21 @@ import React from 'react';
 import { EMPTY_VALUE, formatFieldValue, isEmptyValue } from '../../utils/formatters';
 import { SortableHeader, TableStateRow } from './PageChrome';
 
+// Righe segnaposto durante il caricamento: mantengono l'altezza della tabella,
+// cosi la pagina non salta quando i dati arrivano. Un testo "Caricamento..."
+// faceva collassare la lista e poi riespandere.
+const SkeletonRows = ({ colSpan, rows = 5 }) => (
+    <>
+        {Array.from({ length: rows }, (_, indice) => (
+            <tr className="table-skeleton-row" key={indice} aria-hidden="true">
+                <td colSpan={colSpan}>
+                    <span className="skeleton-line" />
+                </td>
+            </tr>
+        ))}
+    </>
+);
+
 const defaultRecordKey = (record) => record._id;
 
 const getSummaryValue = (getter, record) => (
@@ -73,6 +88,7 @@ const RecordTable = ({
     columns,
     containerClassName = '',
     emptyMessage = 'Nessun record trovato',
+    emptyHint,
     getRecordKey = defaultRecordKey,
     getRowClassName,
     getRowId,
@@ -116,10 +132,20 @@ const RecordTable = ({
                 </thead>
                 <tbody>
                     {isLoading && (
-                        <TableStateRow colSpan={colSpan}>{loadingMessage}</TableStateRow>
+                        <>
+                            <TableStateRow colSpan={colSpan}>
+                                <span className="visually-hidden">{loadingMessage}</span>
+                            </TableStateRow>
+                            <SkeletonRows colSpan={colSpan} />
+                        </>
                     )}
                     {!isLoading && records.length === 0 && (
-                        <TableStateRow colSpan={colSpan}>{emptyMessage}</TableStateRow>
+                        <TableStateRow colSpan={colSpan}>
+                            <span className="table-empty">
+                                <strong>{emptyMessage}</strong>
+                                {emptyHint && <span>{emptyHint}</span>}
+                            </span>
+                        </TableStateRow>
                     )}
                     {!isLoading && records.map((record) => (
                         <tr

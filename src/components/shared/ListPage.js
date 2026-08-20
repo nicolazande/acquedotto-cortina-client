@@ -116,6 +116,22 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
         }
     };
 
+    // Uno stato vuoto utile dice perche non c'e niente e cosa fare, invece del
+    // generico "nessun record trovato" che lascia l'utente a chiedersi se
+    // l'applicazione sia rotta.
+    const vistaAttiva = (config.views || []).find((vista) => vista.value === activeView);
+    const nomeRisorsa = config.title.toLowerCase();
+    const emptyMessage = activeSearch
+        ? `Nessun risultato per "${activeSearch}"`
+        : vistaAttiva
+            ? `Nessun record nella vista "${vistaAttiva.label.toLowerCase()}"`
+            : `Nessun record fra ${nomeRisorsa}`;
+    const emptyHint = activeSearch
+        ? 'Prova con un altro termine oppure svuota la ricerca.'
+        : vistaAttiva
+            ? 'Cambia filtro per vedere gli altri record.'
+            : `Usa il pulsante in alto per creare il primo record.`;
+
     const Editor = config.EditorComponent;
     const editorProps = {
         [config.editorProp]: {},
@@ -217,7 +233,8 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                         </>
                     )}
                     columns={config.columns}
-                    emptyMessage="Nessun record trovato"
+                    emptyMessage={emptyMessage}
+                    emptyHint={emptyHint}
                     isLoading={isLoading}
                     mobileSummaryOnly
                     onSort={handleSort}

@@ -1433,6 +1433,40 @@ input[type="checkbox"] {
     outline-offset: 2px;
 }
 
+/* Righe segnaposto durante il caricamento della lista. */
+.table-skeleton-row td {
+    padding: 14px 12px;
+}
+
+.table-skeleton-row .skeleton-line {
+    display: block;
+    width: 100%;
+    height: 14px;
+}
+
+.table-skeleton-row:nth-child(odd) .skeleton-line {
+    width: 82%;
+}
+
+/* Lo stato vuoto spiega il motivo e suggerisce l'azione successiva. */
+.table-empty {
+    display: grid;
+    gap: 4px;
+    justify-items: center;
+    padding: 12px 0;
+    text-align: center;
+}
+
+.table-empty strong {
+    color: var(--color-heading);
+    font-size: 0.95rem;
+}
+
+.table-empty span {
+    color: var(--color-muted);
+    font-size: 0.87rem;
+}
+
 @media (max-width: 1040px) {
     .content > [class$="-list-container"],
     .content > [class$="-details"],
