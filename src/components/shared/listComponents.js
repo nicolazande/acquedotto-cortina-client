@@ -1,7 +1,21 @@
-import React from 'react';
-import EdificioList from '../Edificio/EdificioList';
+import React, { lazy, Suspense } from 'react';
 import ListPage from './ListPage';
+import PageLoading from './PageLoading';
 import { listViews } from '../../config/listViews';
+
+// La lista edifici porta con se Leaflet e il suo CSS, che pesano piu di tutto il
+// resto dell'applicazione. Caricarla su richiesta evita di farli scaricare a chi
+// non apre mai la mappa. Il confine Suspense e qui dentro, cosi chi usa il
+// componente non deve saperne nulla.
+const EdificioListLazy = lazy(() => import('../Edificio/EdificioList'));
+
+const EdificioList = (props) => (
+    <Suspense fallback={<PageLoading label="Caricamento mappa edifici..." />}>
+        <EdificioListLazy {...props} />
+    </Suspense>
+);
+
+EdificioList.displayName = 'edificiList';
 
 const createListComponent = (resourceKey, selectProp) => {
     const ListComponent = (props) => (

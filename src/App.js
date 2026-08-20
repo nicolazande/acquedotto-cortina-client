@@ -1,20 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
-import BillingBatchPage from './pages/BillingBatchPage';
-import CustomerPortalPage from './pages/CustomerPortalPage';
-import InvoiceControlPage from './pages/InvoiceControlPage';
-import RelationViewPage from './pages/RelationViewPage';
 import FeedbackProvider from './components/shared/FeedbackProvider';
+import PageLoading from './components/shared/PageLoading';
 import { detailComponents } from './components/shared/detailComponents';
 import { listComponents } from './components/shared/listComponents';
 import { navigationItems } from './config/navigation';
 import authApi from './api/authApi';
 import './styles/App.css';
-import ProfilePage from './pages/ProfilePage';
+
+// Pagine caricate solo quando servono davvero: login e panoramica restano
+// immediate perche sono le prime cose che si vedono, il resto arriva su richiesta
+// e non pesa sul primo caricamento.
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const BillingBatchPage = lazy(() => import('./pages/BillingBatchPage'));
+const CustomerPortalPage = lazy(() => import('./pages/CustomerPortalPage'));
+const InvoiceControlPage = lazy(() => import('./pages/InvoiceControlPage'));
+const RelationViewPage = lazy(() => import('./pages/RelationViewPage'));
 
 const isResourceRoute = (item) => item.path !== '/' && !item.path.startsWith('/auth/');
 
@@ -118,6 +123,7 @@ const App = () => {
                         <Navbar items={isCustomer ? customerNavigationItems : navigationItems} onLogout={handleLogout} />
                     )}
                     <div className="content">
+                        <Suspense fallback={<PageLoading />}>
                         <Switch>
                             <Route
                                 path="/login"
@@ -146,6 +152,7 @@ const App = () => {
                             ))}
                             <Redirect to={isAuthenticated ? defaultPath : '/login'} />
                         </Switch>
+                        </Suspense>
                     </div>
                 </div>
             </Router>
