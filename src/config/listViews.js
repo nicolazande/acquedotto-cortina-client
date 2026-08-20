@@ -187,7 +187,7 @@ export const listViews = {
         },
         columns: [
             { label: 'Data Lettura', sortField: 'data_lettura', value: 'data_lettura', format: formatDate },
-            { label: 'Consumo', sortField: 'consumo', value: (record) => join(record.consumo, record.unita_misura) },
+            { label: 'Lettura contatore', sortField: 'consumo', value: (record) => join(record.consumo, record.unita_misura) },
             { label: 'Fatturata', sortField: 'fatturata', value: 'fatturata', format: boolText },
             { label: 'Tipo', sortField: 'tipo', value: 'tipo' },
         ],

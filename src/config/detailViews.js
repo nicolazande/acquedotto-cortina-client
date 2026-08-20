@@ -107,7 +107,7 @@ export const detailViews = {
             { label: 'Tipo Attivita', value: 'tipo_attivita' },
             { label: 'Seriale', value: 'seriale' },
             { label: 'Inattivo', value: 'inattivo', format: boolText },
-            { label: 'Consumo', value: 'consumo' },
+            { label: 'Quota riparto (%)', value: 'consumo' },
             { label: 'Subentro', value: 'subentro', format: boolText },
             { label: 'Sostituzione', value: 'sostituzione', format: boolText },
             { label: 'Condominiale', value: 'condominiale', format: boolText },
@@ -217,7 +217,7 @@ export const detailViews = {
         panels: [BillingPreviewPanel],
         fields: [
             { label: 'Data Lettura', value: 'data_lettura', format: formatDate },
-            { label: 'Consumo', value: (record) => join(record.consumo, record.unita_misura) },
+            { label: 'Lettura contatore', value: (record) => join(record.consumo, record.unita_misura) },
             { label: 'Fatturata', value: 'fatturata', format: boolText },
             { label: 'Tipo', value: 'tipo' },
             { label: 'Note', value: 'note' },

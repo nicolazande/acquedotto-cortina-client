@@ -246,7 +246,7 @@ const relationList = [
         defaultValues: (parent) => ({ contatore: recordId(parent) }),
         columns: [
             { label: 'Data', value: (record) => formatDate(record.data_lettura) },
-            { label: 'Consumo', value: (record) => join(record.consumo, record.unita_misura) },
+            { label: 'Lettura contatore', value: (record) => join(record.consumo, record.unita_misura) },
             { label: 'Tipo', value: (record) => text(record.tipo) },
             { label: 'Fatturata', value: (record) => boolText(record.fatturata) },
         ],
@@ -442,7 +442,7 @@ const relationList = [
         defaultValues: () => ({}),
         columns: [
             { label: 'Data', value: (record) => formatDate(record.data_lettura) },
-            { label: 'Consumo', value: (record) => join(record.consumo, record.unita_misura) },
+            { label: 'Lettura contatore', value: (record) => join(record.consumo, record.unita_misura) },
             { label: 'Tipo', value: (record) => text(record.tipo) },
         ],
     }),
