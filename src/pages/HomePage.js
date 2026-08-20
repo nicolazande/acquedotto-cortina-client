@@ -3,9 +3,13 @@ import { Link } from 'react-router-dom';
 import { itemsByGroup } from '../config/navigation';
 import panoramicaApi from '../api/panoramicaApi';
 import { formatMoney, formatNumber } from '../utils/formatters';
+import ActivityList from '../components/dashboard/ActivityList';
+import AgingBars from '../components/dashboard/AgingBars';
+import FollowUpList from '../components/dashboard/FollowUpList';
+import StatCard from '../components/dashboard/StatCard';
 import Icon from '../components/shared/Icon';
-import '../styles/HomePage.css';
 import ServerStatusIndicator from '../ServerStatusIndicator';
+import '../styles/HomePage.css';
 
 const renderHomeCard = (item) => (
     <Link className="home-card" to={item.path} key={item.path}>
@@ -18,27 +22,26 @@ const renderHomeCard = (item) => (
     </Link>
 );
 
-const StatCard = ({ icon, label, to, tone = 'neutral', value, detail }) => (
-    <Link className={`home-stat home-stat-${tone}`} to={to}>
-        <span className="home-stat-head">
-            <span className="home-stat-mark"><Icon name={icon} /></span>
-            <span className="home-stat-label">{label}</span>
-        </span>
-        <strong className="home-stat-value">{value}</strong>
-        <span className="home-stat-detail">{detail}</span>
-    </Link>
-);
-
 const StatSkeleton = () => (
-    <span className="home-stat is-loading" aria-hidden="true">
+    <span className="stat-card is-loading" aria-hidden="true">
         <span className="skeleton-line skeleton-line-short" />
         <span className="skeleton-line skeleton-line-wide" />
         <span className="skeleton-line" />
     </span>
 );
 
-// Le scadenze non saldate sono spesso tutte gia scadute: in quel caso ripetere
-// due volte lo stesso numero confonde, meglio dirlo a parole.
+const DashboardPanel = ({ actions, children, title }) => (
+    <section className="dashboard-panel">
+        <div className="dashboard-panel-head">
+            <h2>{title}</h2>
+            {actions}
+        </div>
+        {children}
+    </section>
+);
+
+// Le scadenze non saldate sono spesso tutte gia scadute: ripetere due volte lo
+// stesso numero sembrerebbe un errore, meglio dirlo a parole.
 const dettaglioIncassi = ({ aperte, scadute }) => {
     if (aperte.quante === 0) {
         return 'Nessuna scadenza aperta';
@@ -56,10 +59,6 @@ const dettaglioIncassi = ({ aperte, scadute }) => {
 
     return `${scadenze}, di cui ${formatNumber(scadute.quante)} scadute`;
 };
-
-const dettaglioRitardo = (giorni) => (
-    giorni > 0 ? `ritardo massimo ${formatNumber(giorni)} giorni` : ''
-);
 
 const HomePage = () => {
     const [panoramica, setPanoramica] = useState(null);
@@ -85,12 +84,9 @@ const HomePage = () => {
         caricaPanoramica();
     }, [caricaPanoramica]);
 
-    // I gruppi sono dichiarati una volta sola in config/navigation: prima la home
-    // ripeteva gli stessi percorsi in due elenchi scritti a mano, che potevano
-    // divergere dal menu senza che nulla lo segnalasse.
-    const featuredItems = itemsByGroup('lavoro');
-    const archiveItems = itemsByGroup('configurazione');
-    const ritardo = panoramica ? dettaglioRitardo(panoramica.incassi.scadute.ritardoMassimo) : '';
+    const gestione = itemsByGroup('lavoro');
+    const tariffe = itemsByGroup('configurazione');
+    const scadute = panoramica?.incassi.scadute;
 
     return (
         <div className="homepage">
@@ -103,22 +99,20 @@ const HomePage = () => {
                 <ServerStatusIndicator />
             </section>
 
-            <section className="home-stats" aria-label="Riepilogo">
-                {isLoading && [1, 2, 3].map((key) => <StatSkeleton key={key} />)}
+            <section className="stat-row" aria-label="Riepilogo">
+                {isLoading && [1, 2, 3].map((chiave) => <StatSkeleton key={chiave} />)}
 
-                {!isLoading && error && (
-                    <p className="home-stats-error" role="status">{error}</p>
-                )}
+                {!isLoading && error && <p className="dashboard-error" role="status">{error}</p>}
 
                 {!isLoading && panoramica && (
                     <>
                         <StatCard
                             icon="calendar"
                             label="Da incassare"
-                            to={panoramica.incassi.scadute.quante > 0 ? '/scadenze?vista=scadute' : '/scadenze?vista=aperte'}
-                            tone={panoramica.incassi.scadute.quante > 0 ? 'attenzione' : 'neutral'}
+                            to={scadute.quante > 0 ? '/scadenze?vista=scadute' : '/scadenze?vista=aperte'}
+                            tone={scadute.quante > 0 ? 'attenzione' : 'neutral'}
                             value={formatMoney(panoramica.incassi.aperte.totale)}
-                            detail={[dettaglioIncassi(panoramica.incassi), ritardo].filter(Boolean).join(' · ')}
+                            detail={dettaglioIncassi(panoramica.incassi)}
                         />
                         <StatCard
                             icon="reading"
@@ -142,16 +136,39 @@ const HomePage = () => {
                 )}
             </section>
 
-            <section className="home-grid home-grid-primary" aria-label="Aree principali">
-                {featuredItems.map(renderHomeCard)}
+            {!isLoading && panoramica && (
+                <div className="dashboard-grid">
+                    <DashboardPanel
+                        title="Anzianita del credito scaduto"
+                        actions={(
+                            <Link className="dashboard-link" to="/scadenze?vista=scadute">
+                                Apri scadenze <Icon name="arrowRight" size={14} />
+                            </Link>
+                        )}
+                    >
+                        <AgingBars fasce={panoramica.scaduto.fasce} />
+                    </DashboardPanel>
+
+                    <DashboardPanel title="Da sollecitare">
+                        <FollowUpList voci={panoramica.daSollecitare} />
+                    </DashboardPanel>
+
+                    <DashboardPanel title="Ultime modifiche">
+                        <ActivityList voci={panoramica.attivita} />
+                    </DashboardPanel>
+                </div>
+            )}
+
+            <section className="home-grid home-grid-primary" aria-label="Gestione">
+                {gestione.map(renderHomeCard)}
             </section>
 
-            <section className="home-panel" aria-label="Archivi e tariffe">
+            <section className="home-panel" aria-label="Tariffe">
                 <div className="home-panel-heading">
-                    <h2>Archivi e tariffe</h2>
+                    <h2>Tariffe</h2>
                 </div>
                 <div className="home-grid home-grid-compact">
-                    {archiveItems.map(renderHomeCard)}
+                    {tariffe.map(renderHomeCard)}
                 </div>
             </section>
         </div>

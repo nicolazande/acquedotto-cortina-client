@@ -1,5 +1,7 @@
 import { pathIcons } from './resourceMeta';
 
+// L'ordine dell'array e anche l'ordine del menu: le voci sono raggruppate per
+// come si usano, quindi devono restare contigue per gruppo.
 export const navigationItems = [
     {
         path: '/',
@@ -44,6 +46,13 @@ export const navigationItems = [
         description: 'Documenti, importi, scadenze e conferme di emissione.',
     },
     {
+        path: '/scadenze',
+        group: 'lavoro',
+        label: 'Scadenze',
+        icon: pathIcons['/scadenze'],
+        description: 'Date di pagamento e stato delle fatture collegate.',
+    },
+    {
         path: '/servizi',
         label: 'Servizi',
         icon: pathIcons['/servizi'],
@@ -74,13 +83,6 @@ export const navigationItems = [
         label: 'Fasce',
         icon: pathIcons['/fasce'],
         description: 'Soglie e prezzi collegati ai listini acqua.',
-    },
-    {
-        path: '/scadenze',
-        group: 'lavoro',
-        label: 'Scadenze',
-        icon: pathIcons['/scadenze'],
-        description: 'Date di pagamento e stato delle fatture collegate.',
     },
     {
         path: '/auth/profile',

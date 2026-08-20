@@ -168,15 +168,15 @@
     line-height: 1.42;
 }
 
-/* Riepilogo in cima alla panoramica: pochi numeri, ognuno cliccabile e
-   collegato alla lista che permette di agire. */
-.home-stats {
+/* --- Riepilogo in cima alla panoramica ------------------------------------
+   Pochi numeri, ognuno cliccabile e collegato alla lista che permette di agire. */
+.stat-row {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
 }
 
-.home-stat {
+.stat-card {
     display: grid;
     align-content: start;
     gap: 8px;
@@ -184,30 +184,30 @@
     color: var(--color-text);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-left: 3px solid var(--color-border-strong, var(--color-border));
+    border-left: 3px solid var(--color-border-strong);
     border-radius: var(--radius);
     transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }
 
-.home-stat:hover {
+.stat-card:hover {
     border-color: rgba(11, 114, 128, 0.34);
     box-shadow: var(--shadow-subtle);
     transform: translateY(-1px);
 }
 
 /* Un solo accento cromatico, riservato a cio che richiede un intervento. */
-.home-stat-attenzione {
-    border-left-color: #b4632c;
+.stat-card-attenzione {
+    border-left-color: var(--color-accent);
 }
 
-.home-stat-head {
+.stat-card-head {
     display: flex;
     align-items: center;
     gap: 8px;
     min-width: 0;
 }
 
-.home-stat-mark {
+.stat-card-mark {
     display: inline-grid;
     width: 26px;
     height: 26px;
@@ -220,60 +220,289 @@
     font-size: 0.85rem;
 }
 
-.home-stat-label {
+.stat-card-label {
     color: var(--color-muted);
     font-size: 0.78rem;
     font-weight: 850;
-    letter-spacing: 0;
     text-transform: uppercase;
     overflow-wrap: anywhere;
 }
 
-.home-stat-value {
+.stat-card-value {
     color: var(--color-heading);
     font-size: 1.5rem;
     font-weight: 850;
     line-height: 1.1;
     overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
 }
 
-.home-stat-detail {
+.stat-card-detail {
     color: var(--color-muted);
     font-size: 0.85rem;
     line-height: 1.35;
 }
 
-.home-stats-error {
-    grid-column: 1 / -1;
-    margin: 0;
-    padding: 12px 14px;
-    color: var(--color-muted);
+.stat-card.is-loading {
+    gap: 10px;
+    pointer-events: none;
+}
+
+/* --- Pannelli del cruscotto ---------------------------------------------- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+}
+
+.dashboard-panel {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    /* Un elemento di griglia non scende sotto la larghezza del proprio contenuto
+       senza questo: la tabella con importi non divisibili spingeva il pannello
+       fuori dalla colonna e la colonna importo finiva tagliata. */
+    min-width: 0;
+    padding: 14px;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
-    font-size: 0.9rem;
 }
 
-/* Segnaposto durante il caricamento: evita che la pagina salti quando
-   arrivano i numeri. */
-.home-stat.is-loading {
+/* Il primo pannello occupa la riga intera insieme al secondo, il terzo si
+   distende sotto: l'elenco delle modifiche e piu leggibile largo. */
+.dashboard-panel:last-child {
+    grid-column: 1 / -1;
+}
+
+.dashboard-panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
     gap: 10px;
-    pointer-events: none;
+}
+
+.dashboard-panel-head h2 {
+    margin: 0;
+    color: var(--color-heading);
+    font-size: 0.98rem;
+    letter-spacing: 0;
+}
+
+.dashboard-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-primary);
+    font-size: 0.85rem;
+    font-weight: 750;
+}
+
+.dashboard-empty,
+.dashboard-error {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.88rem;
+}
+
+.dashboard-error {
+    grid-column: 1 / -1;
+    padding: 12px 14px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+}
+
+/* --- Anzianita del credito -----------------------------------------------
+   Fasce ordinali: una sola tinta a gradazione crescente, cosi l'ordine si legge
+   nel colore. Rampa verificata per monotonia di luminosita e contrasto minimo
+   2:1 sull'estremo chiaro. La tabella e anche la vista alternativa al grafico. */
+.aging {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+}
+
+.aging-row {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+    padding: 6px 8px;
+    border-radius: var(--radius);
+}
+
+.aging-row:hover {
+    background: var(--color-surface-soft);
+}
+
+.aging-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+}
+
+.aging-label {
+    color: var(--color-text);
+    font-size: 0.85rem;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+}
+
+.aging-value {
+    color: var(--color-heading);
+    font-size: 0.9rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.aging-plot {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.aging-track {
+    display: block;
+    min-width: 0;
+    height: 14px;
+    background: var(--color-surface-muted);
+    border-radius: 2px;
+}
+
+.aging-bar {
+    display: block;
+    height: 100%;
+    /* Estremita arrotondata sul lato del dato, squadrata sulla linea di base. */
+    border-radius: 0 4px 4px 0;
+    transition: width 320ms ease;
+}
+
+/* Rampa ordinale: piu la fascia e vecchia, piu il colore e scuro. */
+.aging-1 { background: #6aacb8; }
+.aging-2 { background: #3a90a0; }
+.aging-3 { background: #0e7183; }
+.aging-4 { background: #064e59; }
+
+.aging-count {
+    color: var(--color-muted);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* --- Solleciti e attivita ------------------------------------------------ */
+.followup-list,
+.activity-list {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.followup-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2px 10px;
+    padding: 8px 10px;
+    color: var(--color-text);
+    border-radius: var(--radius);
+}
+
+.followup-row:hover {
+    background: var(--color-surface-soft);
+}
+
+.followup-name {
+    color: var(--color-heading);
+    font-size: 0.9rem;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+.followup-meta {
+    grid-column: 1;
+    color: var(--color-muted);
+    font-size: 0.8rem;
+}
+
+.followup-amount {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    color: var(--color-heading);
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.activity-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 0;
+    font-size: 0.85rem;
+}
+
+.activity-row + .activity-row {
+    border-top: 1px solid var(--color-border);
+}
+
+.activity-when {
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.activity-what {
+    color: var(--color-text);
+    overflow-wrap: anywhere;
+}
+
+.activity-who {
+    color: var(--color-muted);
+    font-weight: 750;
+    white-space: nowrap;
 }
 
 @media (max-width: 1180px) {
     .home-grid-primary,
     .home-grid-compact,
-    .home-stats {
+    .stat-row {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-panel:last-child {
+        grid-column: auto;
     }
 }
 
 @media (max-width: 640px) {
     /* Su telefono i numeri vanno uno sotto l'altro: affiancati diventerebbero
        illeggibili proprio dove servono di piu. */
-    .home-stats {
+    .stat-row {
         grid-template-columns: 1fr;
+    }
+
+    /* La colonna con l'etichetta della fascia si stringe, la barra resta leggibile. */
+    .aging-value {
+        font-size: 0.8rem;
+    }
+
+    .activity-row {
+        grid-template-columns: 1fr;
+        gap: 2px;
     }
 
     .homepage {
