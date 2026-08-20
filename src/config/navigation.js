@@ -93,25 +93,9 @@ export const navigationItems = [
     },
 ];
 
-export const primaryNavigationItems = navigationItems.filter(
-    (item) => item.path !== '/auth/profile' && !item.hidden
-);
-
-// Voci mostrate nel menu, divise per come si usano davvero: le anagrafiche e i
-// documenti si toccano ogni giorno, le tariffe due volte l'anno.
+// Voci mostrate nel menu. L'ordine dell'array raggruppa gia le voci per uso, e
+// la barra di navigazione separa i gruppi leggendo `item.group`.
 export const visibleNavigationItems = navigationItems.filter((item) => !item.hidden);
 
-export const navigationGroups = [
-    {
-        id: 'lavoro',
-        label: 'Gestione',
-        items: visibleNavigationItems.filter((item) => item.group === 'lavoro'),
-    },
-    {
-        id: 'configurazione',
-        label: 'Tariffe',
-        items: visibleNavigationItems.filter((item) => item.group === 'configurazione'),
-    },
-];
 
 export const itemsByGroup = (id) => visibleNavigationItems.filter((item) => item.group === id);

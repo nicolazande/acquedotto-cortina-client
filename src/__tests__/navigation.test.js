@@ -1,9 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import {
     itemsByGroup,
-    navigationGroups,
     navigationItems,
-    primaryNavigationItems,
     visibleNavigationItems,
 } from '../config/navigation';
 
@@ -25,13 +23,14 @@ describe('navigazione', () => {
         });
     });
 
-    test('i gruppi coprono tutte le voci visibili tranne panoramica e profilo', () => {
-        const raggruppate = navigationGroups.flatMap((gruppo) => gruppo.items.map((item) => item.path));
-        const attese = visibleNavigationItems
-            .filter((item) => !['panoramica', 'sistema'].includes(item.group))
-            .map((item) => item.path);
+    test('le voci restano raggruppate e contigue nel menu', () => {
+        // La barra di navigazione mostra le voci nell'ordine dell'array e separa i
+        // gruppi al cambio: se l'ordine si mescolasse, "Scadenze" ricomparirebbe
+        // in mezzo alle tariffe come e gia successo una volta.
+        const gruppi = visibleNavigationItems.map((voce) => voce.group);
+        const cambi = gruppi.filter((g, i) => i === 0 || g !== gruppi[i - 1]);
 
-        expect(raggruppate.sort()).toEqual(attese.sort());
+        expect(cambi).toEqual([...new Set(gruppi)]);
     });
 
     test('la divisione riflette l uso: documenti ogni giorno, tariffe di rado', () => {
@@ -41,11 +40,6 @@ describe('navigazione', () => {
         expect(itemsByGroup('configurazione').map((i) => i.path)).toEqual(
             ['/articoli', '/listini', '/fasce']
         );
-    });
-
-    test('primaryNavigationItems esclude profilo e voci nascoste', () => {
-        expect(primaryNavigationItems.some((item) => item.path === '/auth/profile')).toBe(false);
-        expect(primaryNavigationItems.some((item) => item.hidden)).toBe(false);
     });
 
     test('le rotte coprono anche le voci nascoste dal menu', () => {

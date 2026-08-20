@@ -65,14 +65,11 @@
 
 .App .btn-primary,
 .App .btn-details,
-.App .btn-dettagli,
-.App .btn-view,
 .App .btn[class*="btn-show-"] {
     background: var(--color-primary);
 }
 
 .App .btn-details,
-.App .btn-dettagli,
 .App .btn-delete,
 .App .btn-cancel {
     min-width: 86px;
