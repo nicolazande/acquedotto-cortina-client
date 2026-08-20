@@ -8,7 +8,7 @@
 [build.environment]
   # Vite 6 supporta Node 18, 20 e 22 ma NON 19 e 21: senza questo vincolo un
   # cambio del valore predefinito di Netlify farebbe fallire la build.
-  NODE_VERSION = "20"
+  NODE_VERSION = "24"
 
 # Le rotte dell'applicazione sono gestite dal client: qualunque percorso deve
 # restituire index.html. Duplica public/_redirects, che resta come riserva.
