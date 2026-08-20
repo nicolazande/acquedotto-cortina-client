@@ -1,0 +1,18 @@
+# Configurazione della build come codice: prima dipendeva solo dalle impostazioni
+# scritte nel pannello Netlify, quindi non era verificabile ne ripristinabile.
+
+[build]
+  command = "npm run build"
+  publish = "build"
+
+[build.environment]
+  # Vite 6 supporta Node 18, 20 e 22 ma NON 19 e 21: senza questo vincolo un
+  # cambio del valore predefinito di Netlify farebbe fallire la build.
+  NODE_VERSION = "20"
+
+# Le rotte dell'applicazione sono gestite dal client: qualunque percorso deve
+# restituire index.html. Duplica public/_redirects, che resta come riserva.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
