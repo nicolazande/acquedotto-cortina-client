@@ -12,13 +12,21 @@ export const createResourceApi = (
         create: (data) => axios.post(baseUrl, data),
         getCollection: (collectionPath, params) => axios.get(`${baseUrl}/${collectionPath}`, { params }),
         postCollection: (collectionPath, data) => axios.post(`${baseUrl}/${collectionPath}`, data),
+        // `vista` seleziona uno dei filtri predefiniti dichiarati dal server
+        // (per esempio le scadenze scadute): il client sceglie fra quelli, non
+        // compone interrogazioni proprie.
         list: (
             page = 1,
             limit = defaultLimit,
             search = '',
             sortField = defaultSortField,
-            sortOrder = defaultSortOrder
-        ) => axios.get(baseUrl, { params: { page, limit, search, sortField, sortOrder } }),
+            sortOrder = defaultSortOrder,
+            vista = ''
+        ) => axios.get(baseUrl, {
+            params: {
+                page, limit, search, sortField, sortOrder, ...(vista ? { vista } : {}),
+            },
+        }),
         get: (id) => axios.get(`${baseUrl}/${id}`),
         update: (id, data) => axios.put(`${baseUrl}/${id}`, data),
         remove: (id) => axios.delete(`${baseUrl}/${id}`),

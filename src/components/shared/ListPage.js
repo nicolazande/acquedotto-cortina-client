@@ -7,6 +7,7 @@ import {
     PageHeader,
     Pagination,
     SearchToolbar,
+    ViewFilters,
 } from './PageChrome';
 import RecordTable from './RecordTable';
 
@@ -29,18 +30,20 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
     const currentPage = parseInt(queryParams.get('page') || '1', 10);
     const sortField = queryParams.get('sortField') || config.defaultSortField;
     const sortOrder = queryParams.get('sortOrder') || config.defaultSortOrder;
+    const activeView = queryParams.get('vista') || '';
     const itemsPerPage = config.itemsPerPage || 50;
 
     const fetchRecords = useCallback(async (
         page = currentPage,
         search = activeSearch,
         field = sortField,
-        order = sortOrder
+        order = sortOrder,
+        view = activeView
     ) => {
         setIsLoading(true);
 
         try {
-            const response = await config.api.list(page, itemsPerPage, search, field, order);
+            const response = await config.api.list(page, itemsPerPage, search, field, order, view);
             const nextRecords = response.data.data || [];
             setRecords(nextRecords);
             setTotalItems(response.data.totalItems || nextRecords.length);
@@ -51,11 +54,11 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [activeSearch, config, currentPage, itemsPerPage, notify, sortField, sortOrder]);
+    }, [activeSearch, activeView, config, currentPage, itemsPerPage, notify, sortField, sortOrder]);
 
     useEffect(() => {
-        fetchRecords(currentPage, activeSearch, sortField, sortOrder);
-    }, [activeSearch, currentPage, fetchRecords, sortField, sortOrder]);
+        fetchRecords(currentPage, activeSearch, sortField, sortOrder, activeView);
+    }, [activeSearch, activeView, currentPage, fetchRecords, sortField, sortOrder]);
 
     // Riscrive solo i parametri di pagina e ordinamento: quelli di contesto
     // (returnTo / returnLabel) devono sopravvivere, altrimenti ordinare o cambiare
@@ -71,6 +74,19 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
     const handleSearch = () => {
         setActiveSearch(searchTerm);
         updateQuery(1);
+    };
+
+    // Cambiare filtro riporta alla prima pagina: restare sulla pagina 7 di una
+    // lista che ora ne ha due mostrerebbe un elenco vuoto.
+    const handleViewChange = (view) => {
+        const params = new URLSearchParams(location.search);
+        params.set('page', 1);
+        if (view) {
+            params.set('vista', view);
+        } else {
+            params.delete('vista');
+        }
+        history.push(`?${params.toString()}`);
     };
 
     const handleSort = (field) => {
@@ -93,7 +109,7 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
         try {
             await config.api.remove(id);
             notify('Record cancellato con successo', 'success');
-            fetchRecords(currentPage, activeSearch, sortField, sortOrder);
+            fetchRecords(currentPage, activeSearch, sortField, sortOrder, activeView);
         } catch (error) {
             notify('Errore durante la cancellazione', 'error');
             console.error(error);
@@ -110,7 +126,7 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                 await config.api.create(newRecord);
                 setCreating(false);
                 notify('Record creato con successo', 'success');
-                fetchRecords(currentPage, activeSearch, sortField, sortOrder);
+                fetchRecords(currentPage, activeSearch, sortField, sortOrder, activeView);
             } catch (error) {
                 notify('Errore durante la creazione', 'error');
                 console.error(error);
@@ -155,6 +171,11 @@ const ListPage = ({ config, onSelect, detailReturnLabel }) => {
                         ))}
                     </div>
                 )}
+                <ViewFilters
+                    views={config.views}
+                    activeView={activeView}
+                    onChange={handleViewChange}
+                />
                 <SearchToolbar
                     value={searchTerm}
                     onChange={setSearchTerm}

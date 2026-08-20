@@ -115,7 +115,7 @@ const HomePage = () => {
                         <StatCard
                             icon="calendar"
                             label="Da incassare"
-                            to="/scadenze"
+                            to={panoramica.incassi.scadute.quante > 0 ? '/scadenze?vista=scadute' : '/scadenze?vista=aperte'}
                             tone={panoramica.incassi.scadute.quante > 0 ? 'attenzione' : 'neutral'}
                             value={formatMoney(panoramica.incassi.aperte.totale)}
                             detail={[dettaglioIncassi(panoramica.incassi), ritardo].filter(Boolean).join(' · ')}
@@ -132,7 +132,7 @@ const HomePage = () => {
                         <StatCard
                             icon="invoice"
                             label="Fatture in bozza"
-                            to="/fatture"
+                            to="/fatture?vista=bozze"
                             value={formatNumber(panoramica.fatture.bozze)}
                             detail={panoramica.fatture.bozze > 0
                                 ? 'Da controllare e confermare'

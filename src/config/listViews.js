@@ -57,6 +57,11 @@ export const listViews = {
         ],
     },
     clienti: {
+        views: [
+            { value: 'soci', label: 'Soci' },
+            { value: 'con-email', label: 'Con email' },
+            { value: 'fatturazione-elettronica', label: 'Fattura elettronica' },
+        ],
         title: 'Clienti',
         className: 'cliente',
         detailPath: '/clienti',
@@ -76,6 +81,11 @@ export const listViews = {
         ],
     },
     contatori: {
+        views: [
+            { value: 'attivi', label: 'Attivi' },
+            { value: 'inattivi', label: 'Inattivi' },
+            { value: 'condominiali', label: 'Condominiali' },
+        ],
         title: 'Contatori',
         className: 'contatore',
         detailPath: '/contatori',
@@ -136,6 +146,11 @@ export const listViews = {
         ],
     },
     fatture: {
+        views: [
+            { value: 'bozze', label: 'Bozze' },
+            { value: 'confermate', label: 'Confermate' },
+            { value: 'senza-scadenza', label: 'Senza scadenza' },
+        ],
         title: 'Fatture',
         className: 'fattura',
         detailPath: '/fatture',
@@ -168,6 +183,10 @@ export const listViews = {
         ],
     },
     letture: {
+        views: [
+            { value: 'da-fatturare', label: 'Da fatturare' },
+            { value: 'fatturate', label: 'Fatturate' },
+        ],
         title: 'Letture',
         className: 'lettura',
         detailPath: '/letture',
@@ -219,6 +238,12 @@ export const listViews = {
         ],
     },
     scadenze: {
+        views: [
+            { value: 'scadute', label: 'Scadute' },
+            { value: 'aperte', label: 'Da incassare' },
+            { value: 'in-arrivo', label: 'In arrivo' },
+            { value: 'saldate', label: 'Saldate' },
+        ],
         title: 'Scadenze',
         className: 'scadenza',
         detailPath: '/scadenze',

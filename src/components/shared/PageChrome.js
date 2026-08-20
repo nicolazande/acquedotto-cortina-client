@@ -124,3 +124,34 @@ export const Pagination = ({
         </div>
     );
 };
+
+// Filtri predefiniti della lista: poche scelte, quelle che si usano davvero.
+// La vista attiva vive nell'indirizzo, quindi il collegamento e condivisibile e
+// il tasto "indietro" del browser funziona come ci si aspetta.
+export const ViewFilters = ({ views = [], activeView = '', onChange, allLabel = 'Tutte' }) => {
+    if (!views.length) {
+        return null;
+    }
+
+    const opzioni = [{ value: '', label: allLabel }, ...views];
+
+    return (
+        <div className="view-filters" role="group" aria-label="Filtri">
+            {opzioni.map((opzione) => {
+                const attiva = opzione.value === activeView;
+
+                return (
+                    <button
+                        type="button"
+                        key={opzione.value || 'tutte'}
+                        className={`view-filter${attiva ? ' is-active' : ''}`}
+                        aria-pressed={attiva}
+                        onClick={() => onChange(opzione.value)}
+                    >
+                        {opzione.label}
+                    </button>
+                );
+            })}
+        </div>
+    );
+};
