@@ -55,9 +55,13 @@ Se la variabile non e' presente, le richieste usano `/api/...` e possono passare
 
 ## Documentazione
 
-L'architettura del client e descritta in
-[docs/architettura.md](docs/architettura.md): spiega il sistema guidato dalla
-configurazione, la navigazione contestuale e le soglie del responsive.
+| Documento | Per chi |
+|-----------|---------|
+| [docs/manuale/manuale-utente.pdf](docs/manuale/manuale-utente.pdf) | **chi usa il gestionale**: proprietario, segreteria |
+| [docs/architettura.md](docs/architettura.md) | chi sviluppa: sistema guidato dalla configurazione, navigazione contestuale, soglie del responsive |
+
+Il manuale utente si aggiorna modificando `docs/manuale/manuale.md` e rigenerando il
+PDF con `npm run manuale`. Istruzioni in [docs/manuale/README.md](docs/manuale/README.md).
 
 ## Struttura utile
 

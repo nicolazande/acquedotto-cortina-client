@@ -10,6 +10,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --port 3000",
+    "manuale": "node scripts/genera-manuale.js",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -41,6 +42,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^17.11.0",
+    "marked": "^18.0.10",
     "vite": "^6.4.3",
     "vitest": "^3.2.7"
   }
