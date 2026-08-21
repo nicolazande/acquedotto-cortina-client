@@ -41,7 +41,7 @@ const DetailPage = ({ config }) => {
     // solo dichiarandolo. La conferma viaggia con la richiesta e il server la
     // registra nel giornale delle modifiche.
     const chiediSblocco = async (azione) => confirm({
-        title: 'Documento gia emesso',
+        title: 'Documento già emesso',
         message: `${config.lockedMessage || 'Questo documento risulta confermato'}. `
             + `Vuoi ${azione} lo stesso? L'operazione resta registrata.`,
         confirmLabel: 'Procedi',

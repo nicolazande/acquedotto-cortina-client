@@ -7,7 +7,7 @@ const messaggiSessione = {
     token_expired: 'Sessione scaduta: accedi di nuovo.',
     account_disabled: 'Account disabilitato: contatta un amministratore.',
     invalid_token: 'Sessione non valida: accedi di nuovo.',
-    user_not_found: 'Utente non piu disponibile: accedi di nuovo.',
+    user_not_found: 'Utente non più disponibile: accedi di nuovo.',
 };
 
 axios.interceptors.request.use(

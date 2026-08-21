@@ -126,7 +126,7 @@ export const listViews = {
             title: (record) => record.descrizione,
             subtitle: (record) => record.indirizzo,
             meta: (record) => [
-                { label: 'Localita', value: join(record.cap, record.localita) },
+                { label: 'Località', value: join(record.cap, record.localita) },
                 { label: 'Tipo', value: record.tipo },
             ],
         },
@@ -134,7 +134,7 @@ export const listViews = {
             { label: 'Descrizione', sortField: 'descrizione', value: 'descrizione' },
             { label: 'Indirizzo', sortField: 'indirizzo', value: 'indirizzo' },
             { label: 'CAP', sortField: 'cap', value: 'cap' },
-            { label: 'Localita', sortField: 'localita', value: 'localita' },
+            { label: 'Località', sortField: 'localita', value: 'localita' },
             { label: 'Tipo', sortField: 'tipo', value: 'tipo' },
         ],
     },

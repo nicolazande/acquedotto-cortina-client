@@ -1,7 +1,7 @@
 import React from 'react';
 import { formatMoney, formatNumber } from '../../utils/formatters';
 
-// Anzianita del credito scaduto.
+// Anzianità del credito scaduto.
 //
 // Ogni fascia e una riga a due livelli: etichetta e importo sopra, barra e
 // conteggio sotto. Impaginare con una tabella costringeva le colonne a una

@@ -19,7 +19,7 @@ https://acquedotto-cortina-client.netlify.app
 
 Conviene salvarlo fra i preferiti del browser.
 
-## Chi puo fare cosa
+## Chi può fare cosa
 
 Esistono due tipi di accesso.
 
@@ -28,8 +28,8 @@ Esistono due tipi di accesso.
 | Amministratore | Proprietario, segreteria | Tutto il gestionale |
 | Cliente | I clienti dell'acquedotto | Solo i propri dati: contatori, letture, fatture |
 
-Gli accessi dei clienti si creano dalla scheda del singolo cliente, come spiegato piu
-avanti. Il cliente non puo modificare nulla: puo solo consultare e scaricare le proprie
+Gli accessi dei clienti si creano dalla scheda del singolo cliente, come spiegato più
+avanti. Il cliente non può modificare nulla: può solo consultare e scaricare le proprie
 fatture.
 
 > **Nota.** I dati sono conservati online e restano disponibili da qualunque
@@ -45,7 +45,7 @@ All'apertura compare la schermata di accesso: si inseriscono nome utente e passw
 si preme **Accedi**.
 
 In alto a destra c'e un piccolo indicatore con la scritta **API**: quando il pallino e
-verde il gestionale sta comunicando correttamente con il server. Se e rosso, vedere il
+verde il gestionale sta comunicando correttamente con il server. Se è rosso, vedere il
 capitolo *Se qualcosa non funziona*.
 
 Passandoci sopra il puntatore compaiono le versioni in uso, per esempio
@@ -55,8 +55,8 @@ problema: vanno riportate insieme alla descrizione.
 ## La sessione scade
 
 Per sicurezza l'accesso resta valido **otto ore**. Dopo, il gestionale riporta alla
-schermata di accesso spiegando che la sessione e scaduta: basta rientrare con le stesse
-credenziali. Il lavoro gia salvato non si perde mai, perche ogni modifica viene
+schermata di accesso spiegando che la sessione è scaduta: basta rientrare con le stesse
+credenziali. Il lavoro già salvato non si perde mai, perché ogni modifica viene
 registrata nel momento in cui si preme il pulsante di salvataggio.
 
 ## Uscire
@@ -71,13 +71,13 @@ utente, email, numero di telefono e password.
 
 ---
 
-# Come e fatto il gestionale
+# Com'è fatto il gestionale
 
 ## Il menu
 
-Il menu a sinistra e diviso in due parti, separate da una linea.
+Il menu a sinistra è diviso in due parti, separate da una linea.
 
-- **La parte alta e il lavoro di tutti i giorni:** Clienti, Contatori, Edifici, Letture,
+- **La parte alta è il lavoro di tutti i giorni:** Clienti, Contatori, Edifici, Letture,
   Fatture, Scadenze.
 - **La parte bassa riguarda le tariffe:** Articoli, Listini, Fasce. Sono le voci che si
   toccano una o due volte l'anno, quando cambiano i prezzi.
@@ -86,31 +86,35 @@ Su telefono il menu si apre con il pulsante a tre righe in alto a destra.
 
 ## La panoramica
 
-La prima schermata, **Panoramica**, e il punto di partenza della giornata. In alto
-mostra tre numeri, e ognuno e cliccabile e porta direttamente all'elenco corrispondente:
+La prima schermata, **Panoramica**, è il punto di partenza della giornata. In alto
+mostra tre numeri, e ognuno è cliccabile e porta direttamente all'elenco corrispondente:
 
-- **Da incassare** — quanto denaro e ancora da riscuotere e su quante scadenze;
+- **Da incassare** — quanto denaro è ancora da riscuotere e su quante scadenze;
 - **Letture da fatturare** — quante letture aspettano di diventare fattura;
 - **Fatture in bozza** — quante fatture sono state create ma non ancora confermate.
 
 Sotto ci sono tre riquadri:
 
-- **Anzianita del credito scaduto**, che mostra da quanto tempo aspettano i soldi non
-  ancora incassati, diviso in quattro fasce. Piu la barra e scura, piu il credito e
+- **Anzianità del credito scaduto**, che mostra da quanto tempo aspettano i soldi non
+  ancora incassati, diviso in quattro fasce. Più la barra è scura, più il credito è
   vecchio e difficile da recuperare.
-- **Da sollecitare**, con i cinque crediti scaduti piu grossi: sono le telefonate da
+- **Da sollecitare**, con i cinque crediti scaduti più grossi: sono le telefonate da
   fare per prime. Ogni riga porta alla scheda del cliente.
 - **Ultime modifiche**, che mostra chi ha cambiato cosa e quando.
+
+![La schermata Panoramica: i tre numeri in alto, l'anzianità del credito a sinistra, i solleciti a destra e le ultime modifiche in basso.](immagini/panoramica.png)
+
+*La Panoramica: i tre numeri in alto portano alla lista corrispondente; sotto, l'anzianità del credito, i solleciti da fare e le ultime modifiche registrate.*
 
 ## Gli elenchi
 
 Tutte le voci del menu funzionano allo stesso modo.
 
 **I filtri** sono i pulsanti arrotondati sopra l'elenco: scelgono cosa vedere. Per
-esempio, in Scadenze si puo scegliere fra *Scadute*, *Da incassare*, *In arrivo* e
-*Saldate*. Il filtro attivo e evidenziato; **Tutte** toglie il filtro.
+esempio, in Scadenze si può scegliere fra *Scadute*, *Da incassare*, *In arrivo* e
+*Saldate*. Il filtro attivo è evidenziato; **Tutte** toglie il filtro.
 
-**La ricerca** e la casella accanto: si scrive una parola e si preme il pulsante di
+**La ricerca** è la casella accanto: si scrive una parola e si preme il pulsante di
 ricerca. Cerca in tutti i campi della scheda, quindi funziona con un cognome, un
 indirizzo, un numero di matricola.
 
@@ -120,8 +124,12 @@ inverte l'ordine.
 **Le pagine** si scorrono con i pulsanti in fondo all'elenco.
 
 > **Suggerimento.** L'indirizzo nella barra del browser tiene conto di filtro, pagina e
-> ordinamento. Si puo quindi salvare fra i preferiti una vista usata spesso, per esempio
+> ordinamento. Si può quindi salvare fra i preferiti una vista usata spesso, per esempio
 > le scadenze scadute, e ritrovarla con un clic.
+
+![L'elenco delle scadenze con il filtro *Scadute* attivo: i pulsanti dei filtri sopra la ricerca, e la colonna del ritardo calcolata giorno per giorno.](immagini/scadenze.png)
+
+*L'elenco delle scadenze con il filtro «Scadute» attivo. La colonna del ritardo è calcolata ogni giorno, non memorizzata.*
 
 **Apri** entra nella scheda del record. **Elimina** lo cancella, sempre chiedendo
 conferma. **Nuovo** crea una scheda vuota.
@@ -130,7 +138,7 @@ conferma. **Nuovo** crea una scheda vuota.
 
 La scheda mostra tutti i dati di un record e, sotto, i collegamenti alle schede
 correlate: dal cliente si arriva ai suoi contatori e alle sue fatture, dal contatore alle
-sue letture, e cosi via.
+sue letture, e così via.
 
 Il pulsante in fondo riporta indietro e ricorda da dove si e arrivati: se si e aperta la
 scheda di un contatore partendo da un cliente, dira *Torna alla scheda cliente*.
@@ -158,7 +166,7 @@ fatturazione, recapiti, codice fiscale e partita IVA, modalita di pagamento, IBA
 ## Creare un cliente
 
 Si preme **Nuovo** e si compilano i campi. Per una persona fisica si usano *Cognome* e
-*Nome*; per una societa si compila *Ragione sociale*, che ha la precedenza ovunque
+*Nome*; per una società si compila *Ragione sociale*, che ha la precedenza ovunque
 compaia il nome del cliente.
 
 Sono importanti anche:
@@ -171,16 +179,16 @@ Sono importanti anche:
 ## Dare a un cliente l'accesso all'area riservata
 
 Nella scheda del cliente c'e il riquadro **Accesso portale**. Si inseriscono un nome
-utente e una password provvisoria di almeno otto caratteri, e l'accesso e creato. Il
-cliente potra cambiare la password da solo dopo il primo ingresso.
+utente e una password provvisoria di almeno otto caratteri, e l'accesso è creato. Il
+cliente potrà cambiare la password da solo dopo il primo ingresso.
 
-Dallo stesso riquadro si puo in seguito **disattivare** l'accesso, senza cancellare
-nulla: il cliente non potra piu entrare, ma i suoi dati restano.
+Dallo stesso riquadro si può in seguito **disattivare** l'accesso, senza cancellare
+nulla: il cliente non potrà più entrare, ma i suoi dati restano.
 
 ## Vedere quanto c'e da fatturare per un cliente
 
 Sempre nella scheda, il riquadro **Calcolo fattura** mostra le letture del cliente non
-ancora fatturate e quanto verrebbe la fattura. Da li si puo generare direttamente la
+ancora fatturate e quanto verrebbe la fattura. Da li si può generare direttamente la
 bozza per quel singolo cliente.
 
 ---
@@ -192,7 +200,7 @@ bozza per quel singolo cliente.
 Ogni contatore e collegato a tre cose: il **cliente** che lo usa, l'**edificio** dove si
 trova e il **listino** con cui si calcolano i suoi consumi.
 
-> **Attenzione.** Un contatore senza listino non puo essere fatturato: al momento della
+> **Attenzione.** Un contatore senza listino non può essere fatturato: al momento della
 > generazione il gestionale si ferma e lo segnala. Conviene verificarlo appena si
 > inserisce un contatore nuovo.
 
@@ -204,8 +212,8 @@ vuoto.
 
 ## Edifici
 
-Gli edifici raccolgono i dati dell'immobile: indirizzo, localita, dati catastali, numero
-di unita abitative, posti letto.
+Gli edifici raccolgono i dati dell'immobile: indirizzo, località, dati catastali, numero
+di unità abitative, posti letto.
 
 Se l'edificio ha latitudine e longitudine, compare sulla **mappa** in cima all'elenco.
 Cliccando un segnaposto sulla mappa la riga corrispondente viene evidenziata
@@ -227,17 +235,17 @@ fatture.
 ## Inserire una lettura
 
 Si preme **Nuovo** dall'elenco Letture, oppure si parte dalla scheda del contatore, che
-e piu sicuro perche il contatore risulta gia collegato. Si compilano:
+e più sicuro perché il contatore risulta già collegato. Si compilano:
 
 - **Data lettura** — il giorno del rilevamento;
 - **Lettura contatore** — il numero letto sul quadrante;
-- **Unita di misura** — normalmente `m3`;
+- **Unità di misura** — normalmente `m3`;
 - **Tipo** e **Note** — facoltativi, utili per annotare letture stimate o anomalie.
 
 ## Filtri
 
 - **Da fatturare** — le letture che entreranno nella prossima fatturazione;
-- **Fatturate** — quelle gia diventate fattura.
+- **Fatturate** — quelle già diventate fattura.
 
 Una lettura risulta *fatturata* automaticamente quando viene inclusa in una fattura.
 Se quella fattura viene cancellata, la lettura torna disponibile.
@@ -246,7 +254,7 @@ Se quella fattura viene cancellata, la lettura torna disponibile.
 
 # Fatturare
 
-E l'operazione piu importante, e conviene farla nell'ordine descritto qui.
+È l'operazione più importante, e conviene farla nell'ordine descritto qui.
 
 ## 1. Controllare cosa e pronto
 
@@ -260,7 +268,7 @@ il numero di anomalie.
 ## 2. Decidere la quota fissa
 
 L'interruttore **Quota fissa annuale** decide se includere la quota fissa nelle fatture
-che si stanno per generare. Il gestionale sa gia quali contatori l'hanno gia pagata
+che si stanno per generare. Il gestionale sa già quali contatori l'hanno già pagata
 nell'anno in corso e non la applica due volte.
 
 ## 3. Generare
@@ -272,26 +280,30 @@ il gestionale apre direttamente la fattura creata.
 
 **Molti clienti insieme:** si spuntano le caselle *Seleziona* dei clienti desiderati,
 oppure si usa *Seleziona tutti* in cima, e si preme **Genera N bozze**. Il gestionale
-procede un cliente alla volta mostrando l'avanzamento, e si puo **interrompere** in
-qualsiasi momento: le fatture gia create restano.
+procede un cliente alla volta mostrando l'avanzamento, e si può **interrompere** in
+qualsiasi momento: le fatture già create restano.
 
 Alla fine compare un riepilogo con quante bozze sono state create e, soprattutto,
 **l'elenco dei clienti non fatturati con il motivo**. Un cliente che fallisce non blocca
 gli altri.
 
+![La pagina di generazione: in alto il riepilogo e l'interruttore della quota fissa, poi la selezione multipla e il riquadro di ogni cliente pronto.](immagini/generazione.png)
+
+*La generazione: in alto il riepilogo e l'interruttore della quota fissa, poi la selezione dei clienti da fatturare insieme.*
+
 ## 4. Se un cliente da errore
 
-I motivi piu comuni sono:
+I motivi più comuni sono:
 
 | Messaggio | Cosa significa | Cosa fare |
 |-----------|----------------|-----------|
 | Il listino non ha fasce consumo valide per questa data | Il listino del contatore non ha tariffe valide al giorno della lettura | Aggiungere o correggere le fasce del listino |
-| Il listino copre X mc su Y mc | Le fasce non coprono tutto il consumo | Estendere la fascia piu alta |
+| Il listino copre X mc su Y mc | Le fasce non coprono tutto il consumo | Estendere la fascia più alta |
 | Articolo ACQUA mancante | Manca una voce obbligatoria del catalogo articoli | Contattare l'assistenza |
 | La lettura deve avere un contatore con listino associato | Il contatore non ha un listino | Aprire il contatore e assegnarlo |
 | Questa lettura usa un riparto condominiale | Va calcolata sul contatore condominiale | Trattare la lettura manualmente |
 
-Le fatture generate nascono sempre come **bozza**: nulla e definitivo finche non si
+Le fatture generate nascono sempre come **bozza**: nulla e definitivo finché non si
 conferma.
 
 ---
@@ -300,8 +312,8 @@ conferma.
 
 ## Bozza e confermata
 
-Una fattura nasce **bozza**: si puo correggere e cancellare liberamente. Quando i dati
-sono giusti la si **conferma**, e da quel momento e un documento emesso.
+Una fattura nasce **bozza**: si può correggere e cancellare liberamente. Quando i dati
+sono giusti la si **conferma**, e da quel momento è un documento emesso.
 
 Una fattura confermata resta protetta: modificarla o cancellarla richiede una
 **conferma esplicita**, e il gestionale registra chi lo ha fatto e quando. Serve per
@@ -324,14 +336,14 @@ inviare, con i dati della cooperativa, gli estremi bancari e il dettaglio delle 
 
 Nella scheda della fattura, il riquadro **Calcolo fattura** confronta le righe salvate
 con quello che il listino attuale produrrebbe oggi e segnala le differenze. Da qui si
-puo anche aggiungere la quota fissa se manca ed e dovuta.
+può anche aggiungere la quota fissa se manca ed e dovuta.
 
 Il riquadro **Storico modifiche** elenca ogni intervento sulla fattura, con l'autore.
 
 ## Cancellare una fattura
 
 Cancellando una fattura il gestionale rimuove anche le sue righe e la scadenza
-collegata, e **rimette le letture fra quelle da fatturare**. E l'operazione da usare
+collegata, e **rimette le letture fra quelle da fatturare**. È l'operazione da usare
 quando una bozza e sbagliata: si cancella e si rigenera.
 
 ---
@@ -342,10 +354,10 @@ Ogni fattura genera una **scadenza**: e li che si tiene traccia dei pagamenti.
 
 I filtri sono:
 
-- **Scadute** — la data e passata e non risultano pagate. E l'elenco da cui partire.
+- **Scadute** — la data è passata e non risultano pagate. È l'elenco da cui partire.
 - **Da incassare** — tutte le non pagate, comprese quelle non ancora scadute.
 - **In arrivo** — non ancora scadute.
-- **Saldate** — gia incassate.
+- **Saldate** — già incassate.
 
 ## Registrare un pagamento
 
@@ -354,11 +366,11 @@ smette di crescere e si ferma ai giorni effettivi.
 
 ## Il ritardo
 
-Il campo **Ritardo** e calcolato dal gestionale e non si modifica a mano: per le
+Il campo **Ritardo** è calcolato dal gestionale e non si modifica a mano: per le
 scadenze non pagate cresce ogni giorno, per quelle pagate resta fermo ai giorni fra
 scadenza e pagamento.
 
-Il campo **Solleciti** serve ad annotare quanti avvisi sono gia stati mandati.
+Il campo **Solleciti** serve ad annotare quanti avvisi sono già stati mandati.
 
 ---
 
@@ -370,7 +382,7 @@ tutti i clienti.
 ## Articoli
 
 Il catalogo delle voci fiscali, ognuna con la propria aliquota IVA. Alcuni codici sono
-**obbligatori** perche il calcolo li usa: `ACQUA` e `ACQUAF` per i consumi e la quota
+**obbligatori** perché il calcolo li usa: `ACQUA` e `ACQUAF` per i consumi e la quota
 fissa, `COND` e `CONDF` per i contatori condominiali, `GG_DELAY` per la mora.
 
 > **Attenzione.** Non cancellare ne rinominare questi codici: senza di loro la
@@ -378,13 +390,13 @@ fissa, `COND` e `CONDF` per i contatori condominiali, `GG_DELAY` per la mora.
 
 ## Listini
 
-Un listino e un piano tariffario, per esempio *domestico residente* o *societa*. Non
+Un listino è un piano tariffario, per esempio *domestico residente* o *società*. Non
 contiene prezzi: raccoglie le fasce. Ogni contatore e collegato a un listino.
 
 ## Fasce
 
 Le fasce sono gli scaglioni di consumo con il relativo prezzo. Ogni fascia ha un minimo,
-un massimo, un prezzo e un periodo di validita.
+un massimo, un prezzo e un periodo di validità.
 
 Gli estremi sono **inclusivi** e le fasce devono essere **contigue**: se una arriva a
 100, la successiva parte da 101. Un buco fra le fasce fa fallire la fatturazione con il
@@ -399,10 +411,10 @@ Il modo corretto per aumentare una tariffa da una certa data **non** e modificar
 fascia esistente, ma:
 
 1. mettere una **data di scadenza** alla fascia in vigore, per esempio il 31 dicembre;
-2. creare una **nuova fascia** con gli stessi estremi, il prezzo nuovo e la validita che
+2. creare una **nuova fascia** con gli stessi estremi, il prezzo nuovo e la validità che
    inizia il giorno dopo.
 
-Cosi le fatture vecchie restano ricalcolabili con le tariffe di allora, e le nuove usano
+Così le fatture vecchie restano ricalcolabili con le tariffe di allora, e le nuove usano
 il prezzo aggiornato.
 
 > **Ogni modifica alle tariffe viene registrata.** Il gestionale conserva chi ha
@@ -418,10 +430,10 @@ credenziali, e vede una schermata sola con:
 
 - i propri dati anagrafici e i recapiti;
 - i propri contatori;
-- le proprie letture piu recenti;
+- le proprie letture più recenti;
 - le proprie fatture, con l'importo ancora da pagare in evidenza e il **PDF scaricabile**.
 
-Il cliente non puo modificare nulla e non vede in alcun modo i dati degli altri clienti.
+Il cliente non può modificare nulla e non vede in alcun modo i dati degli altri clienti.
 
 ---
 
@@ -435,12 +447,12 @@ quota fissa dovuta e mancante o un cliente non collegato.
 
 ## Una volta al mese
 
-Aprire la panoramica e guardare l'**anzianita del credito**. Se la fascia *oltre un anno*
-cresce, e il momento di intervenire sui solleciti.
+Aprire la panoramica e guardare l'**anzianità del credito**. Se la fascia *oltre un anno*
+cresce, è il momento di intervenire sui solleciti.
 
 ## Prima di una fatturazione importante
 
-Controllare che i listini abbiano fasce valide per l'anno in corso: e la causa piu
+Controllare che i listini abbiano fasce valide per l'anno in corso: è la causa più
 frequente di generazioni fallite.
 
 ---
@@ -453,7 +465,7 @@ riavvio: attendere un minuto e ricaricare la pagina. Se il problema resta, conta
 l'assistenza.
 
 **Mi chiede di accedere di nuovo.**
-La sessione dura otto ore, poi scade. E normale: basta rientrare.
+La sessione dura otto ore, poi scade. È normale: basta rientrare.
 
 **Un elenco sembra vuoto.**
 Molto probabilmente e attivo un filtro o una ricerca. Il gestionale lo dice sotto
@@ -461,12 +473,12 @@ l'elenco, per esempio *Nessun record nella vista "scadute"*: premere **Tutte** o
 svuotare la casella di ricerca.
 
 **Non riesco a modificare una fattura.**
-E confermata. Si puo comunque intervenire: il gestionale chiede una conferma esplicita e
+È confermata. Si può comunque intervenire: il gestionale chiede una conferma esplicita e
 registra l'operazione.
 
 **Ho cancellato per sbaglio una fattura.**
-Le letture collegate sono tornate disponibili, quindi si puo rigenerare la fattura dalla
-pagina di generazione. Il numero, pero, non viene riusato: la nuova fattura avra il
+Le letture collegate sono tornate disponibili, quindi si può rigenerare la fattura dalla
+pagina di generazione. Il numero, però, non viene riusato: la nuova fattura avrà il
 numero successivo.
 
 **Il totale di una fattura non torna.**
@@ -479,7 +491,7 @@ risolve. Se si ripete sempre nello stesso punto, va segnalato: nella schermata,
 sotto *Dettaglio tecnico*, c'e il messaggio da riportare all'assistenza.
 
 **La pagina resta bianca.**
-Quasi sempre e il browser che sta riusando una versione vecchia. Si risolve con un
+Quasi sempre è il browser che sta riusando una versione vecchia. Si risolve con un
 ricaricamento forzato: **Ctrl+Shift+R** (su Mac Cmd+Shift+R). In alternativa si apre
 il gestionale in una finestra anonima per verificare.
 
@@ -491,8 +503,8 @@ il gestionale in una finestra anonima per verificare.
 
 > **Importante.** Il travaso dei dati dal gestionale precedente a questo — anagrafiche,
 > contatori, letture, storico delle fatture — **non va eseguito da soli**. E
-> un'operazione delicata: un import ripetuto puo duplicare i dati o rendere fatturabili
-> consumi gia fatturati.
+> un'operazione delicata: un import ripetuto può duplicare i dati o rendere fatturabili
+> consumi già fatturati.
 >
 > **Per qualunque aggiornamento o migrazione dal sistema attuale verso quello nuovo,
 > contattare Nicola Zandegiacomo, che se ne occupa direttamente.**

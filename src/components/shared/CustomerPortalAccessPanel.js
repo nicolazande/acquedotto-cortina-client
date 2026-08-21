@@ -105,7 +105,7 @@ const CustomerPortalAccessPanel = ({ record, recordId }) => {
         if (!nextActive) {
             const confirmed = await confirm({
                 title: 'Disattiva accesso cliente',
-                message: 'Il cliente non potra piu accedere alla propria area fino a riattivazione.',
+                message: 'Il cliente non potrà più accedere alla propria area fino a riattivazione.',
                 confirmLabel: 'Disattiva',
                 variant: 'danger',
             });

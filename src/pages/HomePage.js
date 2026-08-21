@@ -159,7 +159,7 @@ const HomePage = () => {
                 <div className="dashboard-grid">
                     {panoramica.scaduto.fasce.length > 0 && (
                     <DashboardPanel
-                        title="Anzianita del credito scaduto"
+                        title="Anzianità del credito scaduto"
                         actions={(
                             <Link className="dashboard-link" to="/scadenze?vista=scadute">
                                 Apri scadenze <Icon name="arrowRight" size={14} />

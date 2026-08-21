@@ -255,14 +255,14 @@ const relationList = [
         title: 'Edificio',
         targetResource: 'edifici',
         many: false,
-        description: 'Unita o indirizzo in cui e installato il contatore.',
+        description: 'Unità o indirizzo in cui è installato il contatore.',
         getRelated: contatoreApi.getEdificio,
         associate: contatoreApi.associateEdificio,
         defaultValues: () => ({}),
         columns: [
             { label: 'Descrizione', value: (record) => text(record.descrizione) },
             { label: 'Indirizzo', value: (record) => join(record.indirizzo, record.numero) },
-            { label: 'Localita', value: (record) => text(record.localita) },
+            { label: 'Località', value: (record) => text(record.localita) },
         ],
     }),
     relation('contatori', 'listino', {

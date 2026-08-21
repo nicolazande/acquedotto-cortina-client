@@ -6,6 +6,7 @@ Il manuale destinato a chi usa il gestionale (proprietario, segreteria) vive qui
 |------|-------|
 | `manuale.md` | **il testo**: e l'unico file da modificare per aggiornare il manuale |
 | `stile.css` | impaginazione per la stampa su A4 |
+| `immagini/` | le schermate riprese dall'interfaccia |
 | `manuale-utente.pdf` | il PDF generato, quello da consegnare |
 
 ## Aggiornare il manuale
@@ -19,6 +20,29 @@ npm run manuale
 
 Copertina, impaginazione e data di aggiornamento sono automatiche: la data che compare
 in copertina e quella del giorno in cui si rigenera il file.
+
+## Le schermate
+
+Si inseriscono come immagini Markdown, con una riga in corsivo sotto che fa da
+didascalia:
+
+```text
+![Testo alternativo](immagini/panoramica.png)
+
+*Didascalia che spiega cosa guardare nella schermata.*
+```
+
+Le immagini vengono **incorporate** nel PDF, non collegate: il file si puo
+spostare o inviare senza portarsi dietro la cartella.
+
+Per rifarle basta aprire il gestionale e catturare la finestra del browser a una
+larghezza di circa 1280 pixel, salvando il PNG in `immagini/`.
+
+## Ortografia
+
+Il manuale e destinato a chi usa il gestionale: gli accenti vanno scritti
+correttamente (e, puo, gia, piu, perche, cosi, attivita, localita, unita).
+Nel codice sorgente vale invece la convenzione opposta, senza accenti.
 
 ## Come si scrive il testo
 

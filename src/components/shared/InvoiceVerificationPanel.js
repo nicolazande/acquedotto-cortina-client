@@ -34,7 +34,7 @@ const getFixedChargeHelp = (summary = {}, locked = false) => {
     }
 
     if (locked) {
-        return 'Fattura confermata: la quota fissa non puo essere modificata direttamente.';
+        return 'Fattura confermata: la quota fissa non può essere modificata direttamente.';
     }
 
     if (summary.quotaFissaBlocco && !summary.quotaFissaApplicabile) {

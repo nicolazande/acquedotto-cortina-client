@@ -29,7 +29,7 @@ export const navigationItems = [
         group: 'lavoro',
         label: 'Edifici',
         icon: pathIcons['/edifici'],
-        description: 'Unita immobiliari e collegamenti ai contatori installati.',
+        description: 'Unità immobiliari e collegamenti ai contatori installati.',
     },
     {
         path: '/letture',

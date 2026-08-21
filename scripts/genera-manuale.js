@@ -44,6 +44,24 @@ const dataItaliana = () => new Date().toLocaleDateString('it-IT', {
     day: '2-digit', month: 'long', year: 'numeric',
 });
 
+// Le immagini vengono incorporate nel documento invece di essere collegate.
+// Un percorso relativo si romperebbe: l'HTML temporaneo vive in una sottocartella,
+// e un browser installato in modo isolato potrebbe comunque non raggiungerle.
+const incorporaImmagini = (html) => html.replace(
+    /<img([^>]*?)src="(?!data:)([^"]+)"/g,
+    (originale, attributi, percorso) => {
+        const file = path.join(CARTELLA, percorso);
+
+        if (!fs.existsSync(file)) {
+            throw new Error(`Immagine non trovata: ${percorso} (attesa in ${file})`);
+        }
+
+        const tipo = path.extname(file).slice(1).toLowerCase() === 'jpg' ? 'jpeg' : path.extname(file).slice(1).toLowerCase();
+        const dati = fs.readFileSync(file).toString('base64');
+        return `<img${attributi}src="data:image/${tipo};base64,${dati}"`;
+    }
+);
+
 const costruisciHtml = (markdown, css) => `<!doctype html>
 <html lang="it">
 <head>
@@ -58,7 +76,7 @@ const costruisciHtml = (markdown, css) => `<!doctype html>
     <p class="sottotitolo">Gestionale clienti, contatori, letture e fatturazione</p>
     <p class="data">Aggiornato al ${dataItaliana()}</p>
 </section>
-${marked.parse(markdown)}
+${incorporaImmagini(marked.parse(markdown))}
 </body>
 </html>`;
 

@@ -134,6 +134,25 @@ pre {
 
 pre code { padding: 0; background: none; border: 0; }
 
+/* --- Schermate ---
+   Riprese dall'interfaccia reale. Il bordo le distingue dal testo e la didascalia
+   sotto spiega cosa guardare. Non devono spezzarsi fra due pagine. */
+img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 4mm 0 1.5mm;
+    border: 0.5pt solid var(--bordo);
+    border-radius: 3pt;
+    page-break-inside: avoid;
+}
+
+/* La didascalia e il testo alternativo dell'immagine, reso da marked come
+   paragrafo con dentro solo l'immagine. */
+p:has(> img) {
+    page-break-inside: avoid;
+}
+
 /* --- Tabelle --- */
 table {
     width: 100%;
