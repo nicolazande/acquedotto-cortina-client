@@ -48,6 +48,10 @@ In alto a destra c'e un piccolo indicatore con la scritta **API**: quando il pal
 verde il gestionale sta comunicando correttamente con il server. Se e rosso, vedere il
 capitolo *Se qualcosa non funziona*.
 
+Passandoci sopra il puntatore compaiono le versioni in uso, per esempio
+*API online - server 2.0.0 - interfaccia 2.0.0*. Sono utili quando si segnala un
+problema: vanno riportate insieme alla descrizione.
+
 ## La sessione scade
 
 Per sicurezza l'accesso resta valido **otto ore**. Dopo, il gestionale riporta alla
@@ -469,6 +473,16 @@ numero successivo.
 Aprire la fattura e guardare il riquadro *Calcolo fattura*: confronta le righe salvate
 con quelle che il listino produrrebbe oggi e indica dove sta la differenza.
 
+**Compare la schermata "Qualcosa e andato storto".**
+Un errore ha interrotto la pagina. Il pulsante **Ricarica la pagina** di solito
+risolve. Se si ripete sempre nello stesso punto, va segnalato: nella schermata,
+sotto *Dettaglio tecnico*, c'e il messaggio da riportare all'assistenza.
+
+**La pagina resta bianca.**
+Quasi sempre e il browser che sta riusando una versione vecchia. Si risolve con un
+ricaricamento forzato: **Ctrl+Shift+R** (su Mac Cmd+Shift+R). In alternativa si apre
+il gestionale in una finestra anonima per verificare.
+
 ---
 
 # Assistenza e aggiornamenti
@@ -492,7 +506,8 @@ Quando si segnala un problema, aiuta molto indicare:
 
 - cosa si stava facendo e su quale schermata;
 - il messaggio comparso, copiato o fotografato;
-- il cliente, la fattura o la lettura interessati, con anno e numero.
+- il cliente, la fattura o la lettura interessati, con anno e numero;
+- le versioni indicate dall'indicatore **API** in alto a destra.
 
 ## Questo manuale
 
