@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { itemsByGroup } from '../config/navigation';
 import panoramicaApi from '../api/panoramicaApi';
@@ -9,6 +9,7 @@ import FollowUpList from '../components/dashboard/FollowUpList';
 import StatCard from '../components/dashboard/StatCard';
 import Icon from '../components/shared/Icon';
 import ServerStatusIndicator from '../ServerStatusIndicator';
+import useRemoteData from '../hooks/useRemoteData';
 import '../styles/HomePage.css';
 
 const renderHomeCard = (item) => (
@@ -101,28 +102,10 @@ const dettaglioConsegne = ({ automatiche, daStampare, errori }) => {
 };
 
 const HomePage = () => {
-    const [panoramica, setPanoramica] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    const caricaPanoramica = useCallback(async () => {
-        setIsLoading(true);
-        setError('');
-
-        try {
-            const response = await panoramicaApi.get();
-            setPanoramica(normalizza(response.data));
-        } catch (requestError) {
-            setPanoramica(null);
-            setError(requestError.response?.data?.error || 'Riepilogo non disponibile.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        caricaPanoramica();
-    }, [caricaPanoramica]);
+    const richiesta = useCallback(async () => normalizza((await panoramicaApi.get()).data), []);
+    const { dati: panoramica, error, isLoading } = useRemoteData(richiesta, {
+        messaggioErrore: 'Riepilogo non disponibile.',
+    });
 
     const gestione = itemsByGroup('lavoro');
     const tariffe = itemsByGroup('configurazione');

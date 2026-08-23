@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import fatturaApi from '../../api/fatturaApi';
 import { formatDate } from '../../utils/formatters';
 import BillingPanel, { BillingState } from './BillingPanel';
 import RecordTable from './RecordTable';
+import useRemoteData from '../../hooks/useRemoteData';
 
 const actionLabel = (action = '') => action
     .replace(/^fattura\./, '')
@@ -17,27 +18,14 @@ const changedFields = (record) => (
 );
 
 const InvoiceAuditPanel = ({ recordId }) => {
-    const [logs, setLogs] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    const loadLogs = useCallback(async () => {
-        setIsLoading(true);
-        setError('');
-
-        try {
-            const response = await fatturaApi.getAuditLog(recordId);
-            setLogs(response.data || []);
-        } catch (requestError) {
-            setError(requestError.response?.data?.error || 'Storico modifiche non disponibile.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, [recordId]);
-
-    useEffect(() => {
-        loadLogs();
-    }, [loadLogs]);
+    const richiesta = useCallback(
+        async () => (await fatturaApi.getAuditLog(recordId)).data || [],
+        [recordId]
+    );
+    const { dati: logs, error, isLoading } = useRemoteData(richiesta, {
+        messaggioErrore: 'Storico modifiche non disponibile.',
+        iniziale: [],
+    });
 
     return (
         <BillingPanel

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import consegnaApi from '../api/consegnaApi';
 import BillingPanel, { BillingActions, BillingState, BillingSummary } from '../components/shared/BillingPanel';
@@ -7,6 +7,7 @@ import { PageHeader, Pagination, ViewFilters } from '../components/shared/PageCh
 import RecordTable from '../components/shared/RecordTable';
 import { useFeedback } from '../components/shared/FeedbackProvider';
 import useRemoteAction from '../hooks/useRemoteAction';
+import useRemoteData from '../hooks/useRemoteData';
 import {
     canaleLabel,
     confermaInvio,
@@ -27,6 +28,8 @@ const VISTE = [
 ];
 
 const PER_PAGINA = 50;
+
+const VUOTO = { consegne: [], pagine: 1, riepilogo: null };
 
 const riepilogoItems = (riepilogo) => {
     const stati = riepilogo?.perStato || {};
@@ -85,38 +88,30 @@ const esitoTesto = (record) => record.ultimo_errore || record.note || EMPTY_VALU
 const ConsegnePage = () => {
     const history = useHistory();
     const { confirm } = useFeedback();
-    const [riepilogo, setRiepilogo] = useState(null);
-    const [consegne, setConsegne] = useState([]);
     const [vista, setVista] = useState('in-coda');
     const [pagina, setPagina] = useState(1);
-    const [pagine, setPagine] = useState(1);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
 
-    const carica = useCallback(async () => {
-        setIsLoading(true);
-        setError('');
+    // Elenco e riepilogo arrivano insieme: sono due richieste ma una sola
+    // schermata, e mostrarne una aggiornata accanto all'altra vecchia
+    // confonderebbe i conteggi.
+    const richiesta = useCallback(async () => {
+        const [elenco, sintesi] = await Promise.all([
+            consegnaApi.getConsegne(pagina, PER_PAGINA, '', 'createdAt', 'desc', vista),
+            consegnaApi.getRiepilogo(),
+        ]);
 
-        try {
-            const [elenco, sintesi] = await Promise.all([
-                consegnaApi.getConsegne(pagina, PER_PAGINA, '', 'createdAt', 'desc', vista),
-                consegnaApi.getRiepilogo(),
-            ]);
-            setConsegne(elenco.data.data || []);
-            setPagine(elenco.data.totalPages || 1);
-            setRiepilogo(sintesi.data);
-        } catch (richiesta) {
-            setConsegne([]);
-            setError(richiesta.response?.data?.error || 'Elenco consegne non disponibile.');
-        } finally {
-            setIsLoading(false);
-        }
+        return {
+            consegne: elenco.data.data || [],
+            pagine: elenco.data.totalPages || 1,
+            riepilogo: sintesi.data,
+        };
     }, [pagina, vista]);
 
-    useEffect(() => {
-        carica();
-    }, [carica]);
-
+    const { dati, error, isLoading, ricarica: carica } = useRemoteData(richiesta, {
+        messaggioErrore: 'Elenco consegne non disponibile.',
+        iniziale: VUOTO,
+    });
+    const { consegne, pagine, riepilogo } = dati;
     const { esegui, isWorking } = useRemoteAction(carica);
 
     const handlePianifica = async () => {

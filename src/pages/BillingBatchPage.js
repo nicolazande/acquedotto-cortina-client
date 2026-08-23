@@ -22,12 +22,12 @@ import BillingReadingsTable from '../components/shared/BillingReadingsTable';
 import Button from '../components/shared/Button';
 import { PageHeader } from '../components/shared/PageChrome';
 import { useFeedback } from '../components/shared/FeedbackProvider';
+import useInvoiceGeneration from '../hooks/useInvoiceGeneration';
 
 const BillingBatchPage = () => {
     const [preview, setPreview] = useState(null);
     const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
-    const [generatingCustomerId, setGeneratingCustomerId] = useState('');
     const [error, setError] = useState('');
     const [selectedIds, setSelectedIds] = useState([]);
     const [bulk, setBulk] = useState(null);
@@ -69,6 +69,8 @@ const BillingBatchPage = () => {
     useEffect(() => {
         loadPreview();
     }, [loadPreview]);
+
+    const { genera, inCorso: generatingCustomerId } = useInvoiceGeneration(loadPreview);
 
     const groupReadingIds = (group) => (
         group.previews.filter(isBillablePreview).map(previewReadingId).filter(Boolean)
@@ -174,26 +176,10 @@ const BillingBatchPage = () => {
             return;
         }
 
-        setGeneratingCustomerId(group.cliente?._id);
-
-        try {
-            const response = await fatturaApi.createFromReadings({
-                includeFixedCharge,
-                letture,
-            });
-            const fatturaId = response.data?.fattura?._id;
-            notify('Bozza fattura generata correttamente', 'success');
-
-            if (fatturaId) {
-                history.push(`/fatture/${fatturaId}`);
-            } else {
-                await loadPreview();
-            }
-        } catch (requestError) {
-            notify(requestError.response?.data?.error || 'Errore durante la generazione della fattura', 'error');
-        } finally {
-            setGeneratingCustomerId('');
-        }
+        await genera(group.cliente?._id, () => fatturaApi.createFromReadings({
+            includeFixedCharge,
+            letture,
+        }));
     };
 
     return (

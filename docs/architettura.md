@@ -61,13 +61,26 @@ Quando si apre una scheda da un'altra scheda, l'URL porta con se `returnTo` e
 "Torna alla scheda cliente" invece di un generico "Indietro". Ordinamento e
 paginazione preservano questi parametri.
 
-## Operazioni che cambiano qualcosa
+## Parlare con il server
 
-`hooks/useRemoteAction.js` tiene insieme i tre passaggi che vanno sempre
-insieme: esegui, avvisa dell'esito, rileggi. Senza la rilettura finale
-l'interfaccia resta a mostrare lo stato precedente e sembra che non sia
-successo niente; `isWorking` disabilita i pulsanti mentre l'operazione e in
-corso, cosi non parte due volte.
+Tre hook, perche erano tre schemi riscritti in ogni pagina che li usava.
+
+| Hook                       | Tiene insieme                                                     |
+|----------------------------|-------------------------------------------------------------------|
+| `useRemoteData`            | carico, chiedo, tengo il risultato o l'errore, smetto di caricare  |
+| `useRemoteAction`          | eseguo, avviso dell'esito, rileggo cio che e cambiato              |
+| `useInvoiceGeneration`     | genero la bozza, apro la fattura creata oppure rileggo l'anteprima |
+
+`useRemoteData` vuole una funzione memorizzata con `useCallback`: le sue
+dipendenze sono anche quelle del caricamento, quindi cambiando l'anno o la
+pagina i dati vengono richiesti di nuovo. Dopo un errore i dati precedenti
+vengono scartati: mostrarli accanto a un messaggio di errore farebbe credere che
+siano aggiornati.
+
+`useRemoteAction` rilegge anche quando l'operazione fallisce - senza, la
+schermata resta a mostrare lo stato precedente e sembra che non sia successo
+niente - e `isWorking` disabilita i pulsanti mentre e in corso, cosi non parte
+due volte.
 
 ## Autenticazione
 

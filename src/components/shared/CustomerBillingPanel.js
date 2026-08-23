@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import clienteApi from '../../api/clienteApi';
 import {
     canUseFixedCharge,
@@ -18,16 +17,15 @@ import BillingPanel, {
 import BillingReadingsTable from './BillingReadingsTable';
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
+import useInvoiceGeneration from '../../hooks/useInvoiceGeneration';
 
 const CustomerBillingPanel = ({ recordId }) => {
     const [preview, setPreview] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
     const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
-    const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState('');
-    const history = useHistory();
-    const { confirm, notify } = useFeedback();
+    const { confirm } = useFeedback();
 
     const billablePreviews = useMemo(() => (
         preview?.previews?.filter(isBillablePreview) || []
@@ -69,6 +67,8 @@ const CustomerBillingPanel = ({ recordId }) => {
         loadPreview();
     }, [loadPreview]);
 
+    const { genera, inCorso: isGenerating } = useInvoiceGeneration(loadPreview);
+
     const toggleSelection = (id) => {
         setSelectedIds((currentIds) => (
             currentIds.includes(id)
@@ -88,24 +88,10 @@ const CustomerBillingPanel = ({ recordId }) => {
             return;
         }
 
-        setIsGenerating(true);
-        try {
-            const response = await clienteApi.generateFattura(recordId, {
-                includeFixedCharge,
-                letture: selectedIds,
-            });
-            const fatturaId = response.data?.fattura?._id;
-            notify('Fattura cliente generata correttamente', 'success');
-            if (fatturaId) {
-                history.push(`/fatture/${fatturaId}`);
-            } else {
-                await loadPreview();
-            }
-        } catch (requestError) {
-            notify(requestError.response?.data?.error || 'Errore durante la generazione della fattura', 'error');
-        } finally {
-            setIsGenerating(false);
-        }
+        await genera(true, () => clienteApi.generateFattura(recordId, {
+            includeFixedCharge,
+            letture: selectedIds,
+        }));
     };
 
     return (

@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import customerPortalApi from '../api/customerPortalApi';
 import BillingPanel, { BillingState, BillingSummary } from '../components/shared/BillingPanel';
 import Button from '../components/shared/Button';
 import { PageHeader } from '../components/shared/PageChrome';
 import RecordTable from '../components/shared/RecordTable';
 import { formatCubicMeters, formatDate, formatMoney, invoiceStatus, join } from '../utils/formatters';
+import useRemoteData from '../hooks/useRemoteData';
 
 const addressOf = (cliente = {}) => join(
     cliente.indirizzo_residenza && `${cliente.indirizzo_residenza}${cliente.numero_residenza ? ` ${cliente.numero_residenza}` : ''}`,
@@ -47,28 +48,13 @@ const readingSummary = {
 };
 
 const CustomerPortalPage = () => {
-    const [dashboard, setDashboard] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    const loadDashboard = useCallback(async () => {
-        setIsLoading(true);
-        setError('');
-
-        try {
-            const response = await customerPortalApi.getDashboard();
-            setDashboard(response.data);
-        } catch (requestError) {
-            setDashboard(null);
-            setError(requestError.response?.data?.error || 'Area clienti non disponibile.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        loadDashboard();
-    }, [loadDashboard]);
+    const richiesta = useCallback(async () => (await customerPortalApi.getDashboard()).data, []);
+    const {
+        dati: dashboard,
+        error,
+        isLoading,
+        ricarica: loadDashboard,
+    } = useRemoteData(richiesta, { messaggioErrore: 'Area clienti non disponibile.' });
 
     if (isLoading) {
         return <div className="page-stack">Caricamento area clienti...</div>;

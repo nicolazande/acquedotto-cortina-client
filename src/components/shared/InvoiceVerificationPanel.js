@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import fatturaApi from '../../api/fatturaApi';
 import {
     formatCubicMeters,
@@ -15,6 +15,7 @@ import BillingPanel, {
 } from './BillingPanel';
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
+import useRemoteData from '../../hooks/useRemoteData';
 
 const lineCode = (line) => line.articolo_dettaglio?.codice || line.articolo?.codice || line.articolo || '-';
 const lineLabel = (line) => join(line.tipo_tariffa, line.tipo_quota);
@@ -148,30 +149,19 @@ const getSummaryItems = (summary) => [
 ];
 
 const InvoiceVerificationPanel = ({ record, recordId }) => {
-    const [verification, setVerification] = useState(null);
     const [isApplyingFixedCharge, setIsApplyingFixedCharge] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
     const { confirm, notify } = useFeedback();
 
-    const loadVerification = useCallback(async () => {
-        setIsLoading(true);
-        setError('');
-
-        try {
-            const response = await fatturaApi.verifyCalcolo(recordId);
-            setVerification(response.data);
-        } catch (requestError) {
-            setVerification(null);
-            setError(requestError.response?.data?.error || 'Verifica calcolo non disponibile.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, [recordId]);
-
-    useEffect(() => {
-        loadVerification();
-    }, [loadVerification]);
+    const richiesta = useCallback(
+        async () => (await fatturaApi.verifyCalcolo(recordId)).data,
+        [recordId]
+    );
+    const {
+        dati: verification,
+        error,
+        isLoading,
+        ricarica: loadVerification,
+    } = useRemoteData(richiesta, { messaggioErrore: 'Verifica calcolo non disponibile.' });
 
     const handleFixedChargeChange = async (checked) => {
         if (!checked || !summary?.quotaFissaApplicabile || isApplyingFixedCharge) {

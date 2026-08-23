@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import consegnaApi from '../../api/consegnaApi';
 import fatturaApi from '../../api/fatturaApi';
 import { canaleLabel, confermaInvio, statoLabel, tipoLabel } from '../../config/deliveryModes';
@@ -7,6 +7,7 @@ import BillingPanel, { BillingActions, BillingState } from './BillingPanel';
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
 import useRemoteAction from '../../hooks/useRemoteAction';
+import useRemoteData from '../../hooks/useRemoteData';
 
 // Le consegne gia registrate, indicizzate per tipo: al piano manca lo stato,
 // che esiste solo dopo che la fattura e stata messa in coda.
@@ -27,29 +28,13 @@ const dettaglio = (voce, registrata) => (
 
 const InvoiceDeliveryPanel = ({ recordId }) => {
     const { confirm } = useFeedback();
-    const [piano, setPiano] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    const carica = useCallback(async () => {
-        setIsLoading(true);
-        setError('');
-
-        try {
-            const risposta = await fatturaApi.getConsegne(recordId);
-            setPiano(risposta.data);
-        } catch (richiesta) {
-            setPiano(null);
-            setError(richiesta.response?.data?.error || 'Piano di consegna non disponibile.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, [recordId]);
-
-    useEffect(() => {
-        carica();
-    }, [carica]);
-
+    const richiesta = useCallback(
+        async () => (await fatturaApi.getConsegne(recordId)).data,
+        [recordId]
+    );
+    const { dati: piano, error, isLoading, ricarica: carica } = useRemoteData(richiesta, {
+        messaggioErrore: 'Piano di consegna non disponibile.',
+    });
     const { esegui, isWorking } = useRemoteAction(carica);
 
     const handlePrepara = () => esegui(

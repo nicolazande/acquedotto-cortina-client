@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import fatturaApi from '../api/fatturaApi';
 import BillingPanel, { BillingActions, BillingSummary, BillingState } from '../components/shared/BillingPanel';
 import Button from '../components/shared/Button';
 import { PageHeader } from '../components/shared/PageChrome';
 import RecordTable from '../components/shared/RecordTable';
+import useRemoteData from '../hooks/useRemoteData';
 import {
     EMPTY_VALUE,
     customerName,
@@ -54,28 +55,17 @@ const summaryItems = (summary) => [
 const InvoiceControlPage = () => {
     const history = useHistory();
     const [year, setYear] = useState(String(currentYear));
-    const [controls, setControls] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
 
-    const loadControls = useCallback(async () => {
-        setIsLoading(true);
-        setError('');
-
-        try {
-            const response = await fatturaApi.getControls({ year, limit: 200 });
-            setControls(response.data);
-        } catch (requestError) {
-            setControls(null);
-            setError(requestError.response?.data?.error || 'Controlli fatture non disponibili.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, [year]);
-
-    useEffect(() => {
-        loadControls();
-    }, [loadControls]);
+    const richiesta = useCallback(
+        async () => (await fatturaApi.getControls({ year, limit: 200 })).data,
+        [year]
+    );
+    const {
+        dati: controls,
+        error,
+        isLoading,
+        ricarica: loadControls,
+    } = useRemoteData(richiesta, { messaggioErrore: 'Controlli fatture non disponibili.' });
 
     const summary = controls?.summary || {};
     const issues = controls?.issues || [];
