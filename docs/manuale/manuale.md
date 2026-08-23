@@ -78,7 +78,7 @@ utente, email, numero di telefono e password.
 Il menu a sinistra è diviso in due parti, separate da una linea.
 
 - **La parte alta è il lavoro di tutti i giorni:** Clienti, Contatori, Edifici, Letture,
-  Fatture, Scadenze.
+  Fatture, Consegne, Scadenze.
 - **La parte bassa riguarda le tariffe:** Articoli, Listini, Fasce. Sono le voci che si
   toccano una o due volte l'anno, quando cambiano i prezzi.
 
@@ -87,10 +87,12 @@ Su telefono il menu si apre con il pulsante a tre righe in alto a destra.
 ## La panoramica
 
 La prima schermata, **Panoramica**, è il punto di partenza della giornata. In alto
-mostra tre numeri, e ognuno è cliccabile e porta direttamente all'elenco corrispondente:
+mostra quattro numeri, e ognuno è cliccabile e porta direttamente all'elenco
+corrispondente:
 
 - **Da incassare** — quanto denaro è ancora da riscuotere e su quante scadenze;
 - **Letture da fatturare** — quante letture aspettano di diventare fattura;
+- **Fatture da consegnare** — quante fatture sono state emesse ma non ancora recapitate;
 - **Fatture in bozza** — quante fatture sono state create ma non ancora confermate.
 
 Sotto ci sono tre riquadri:
@@ -102,9 +104,9 @@ Sotto ci sono tre riquadri:
   fare per prime. Ogni riga porta alla scheda del cliente.
 - **Ultime modifiche**, che mostra chi ha cambiato cosa e quando.
 
-![La schermata Panoramica: i tre numeri in alto, l'anzianità del credito a sinistra, i solleciti a destra e le ultime modifiche in basso.](immagini/panoramica.png)
+![La schermata Panoramica: i numeri in alto, l'anzianità del credito a sinistra, i solleciti a destra e le ultime modifiche in basso.](immagini/panoramica.png)
 
-*La Panoramica: i tre numeri in alto portano alla lista corrispondente; sotto, l'anzianità del credito, i solleciti da fare e le ultime modifiche registrate.*
+*La Panoramica: i numeri in alto portano alla lista corrispondente; sotto, l'anzianità del credito, i solleciti da fare e le ultime modifiche registrate.*
 
 ## Gli elenchi
 
@@ -174,7 +176,12 @@ Sono importanti anche:
 - **Destinazione e indirizzo di fatturazione**, se la fattura va spedita a un indirizzo
   diverso dalla residenza;
 - **Pagamento** e **IBAN**, se il cliente paga con addebito;
-- **Email**, indispensabile per dargli accesso all'area riservata.
+- **Email**, indispensabile per dargli accesso all'area riservata e per potergli
+  mandare la fattura per posta elettronica;
+- **Consegna copia**, cioè come riceve la fattura: posta, email, PEC, sportello o
+  niente. Vedi il capitolo *Consegnare le fatture*;
+- **Codice destinatario** e **Email PEC**, che sono i recapiti della fattura
+  elettronica: li comunica il cliente, non si inventano.
 
 ## Dare a un cliente l'accesso all'area riservata
 
@@ -348,6 +355,128 @@ quando una bozza e sbagliata: si cancella e si rigenera.
 
 ---
 
+# Consegnare le fatture
+
+Confermare una fattura non la fa uscire dal gestionale. La consegna è un passo a parte,
+e la pagina **Consegne** è il posto dove si vede chi deve ancora ricevere la sua
+fattura, per quale strada, e cosa è già partito.
+
+## Le due strade di una fattura
+
+Una fattura può uscire due volte, e le due uscite sono cose diverse.
+
+- **La copia di cortesia** è la fattura che il cliente riceve per leggerla e pagarla:
+  per posta, per email, per PEC, oppure ritirata allo sportello. Questa è una **scelta
+  vostra**, e si imposta sul cliente.
+- **La fattura elettronica** è il documento valido ai fini fiscali, che viaggia
+  attraverso il Sistema di Interscambio dell'Agenzia delle Entrate. Qui **non c'è nulla
+  da scegliere**: la strada la decide il cliente, in base al codice destinatario o alla
+  PEC che ha comunicato. Il gestionale la ricava da solo dai suoi dati.
+
+> **Attenzione.** Le due cose non si sostituiscono a vicenda. Mandare la copia per email
+> non toglie l'obbligo della fattura elettronica, e viceversa.
+
+## Scegliere come consegnare a un cliente
+
+Nella scheda del cliente, il campo **Consegna copia** è una tendina con cinque scelte:
+
+| Scelta | Cosa comporta |
+|--------|----------------|
+| **Cartacea postale** | La fattura va stampata e spedita. È l'impostazione attuale di tutti i clienti. |
+| **Email** | Il gestionale invia il PDF all'indirizzo email del cliente. |
+| **PEC** | Come sopra, ma alla casella PEC. |
+| **Ritiro allo sportello** | La fattura va stampata e tenuta a disposizione. |
+| **Nessuna copia** | Nessun invio: resta solo la fattura elettronica. |
+
+Nell'elenco dei clienti i filtri **Consegna: email** e **Consegna: posta** mostrano a
+colpo d'occhio chi riceve cosa.
+
+> **Prima di passare all'email serve un indirizzo.** Oggi solo 213 clienti su 900 ne
+> hanno uno in anagrafica. Se si sceglie Email per un cliente che non ha l'indirizzo, il
+> gestionale non inventa nulla: lo segnala fra le consegne bloccate e non manda niente.
+
+## La pagina Consegne
+
+Si apre dal menu, voce **Consegne**, oppure dal numero *Fatture da consegnare* nella
+Panoramica. È divisa in due parti.
+
+**In alto lo stato**: quante consegne sono in coda, quante da stampare, quante già
+inviate, quante hanno dato errore. Sopra i numeri, un riquadro colorato dice in che
+modalità si trova il gestionale in questo momento.
+
+**Sotto l'elenco**, con i filtri:
+
+- **In coda** — tutto quello che deve ancora uscire;
+- **Da stampare** — le fatture cartacee e quelle da ritirare: è la lista di lavoro
+  dello sportello;
+- **Automatiche** — quelle che partono da sole (email e PEC);
+- **Errori** — quelle che non sono riuscite, con il motivo scritto accanto;
+- **Inviate** — quello che è già uscito, con la data.
+
+![La pagina Consegne: in alto lo stato dell'invio e i conteggi, sotto l'elenco filtrabile delle consegne con le azioni su ogni riga.](immagini/consegne.png)
+
+*La pagina Consegne. Il riquadro giallo in alto avvisa che il gestionale è in modalità prova e non sta inviando nulla; i numeri sotto contano cosa resta da fare.*
+
+## I quattro pulsanti
+
+**Prepara** cerca le fatture confermate che non hanno ancora una consegna e le mette in
+elenco, ognuna con il recapito del suo cliente. Non manda niente: serve solo a costruire
+la lista di cosa andrebbe fatto.
+
+**Invia** percorre la lista e recapita quello che può, cioè le email e le PEC, con il
+PDF della fattura allegato. Le fatture cartacee restano in elenco: quelle le stampa e le
+imbuca una persona.
+
+**Verifica posta** controlla che il gestionale riesca a parlare con il server di posta,
+senza spedire nulla a nessuno.
+
+**Aggiorna** rilegge l'elenco, utile dopo aver corretto qualcosa in anagrafica.
+
+Su ogni riga dell'elenco ci sono poi:
+
+- **Evasa** — per dichiarare fatta a mano una consegna: la busta imbucata, la fattura
+  ritirata allo sportello;
+- **Riprova** — per rimettere in coda una consegna finita in errore, dopo aver corretto
+  il problema (di solito un indirizzo sbagliato);
+- **Annulla** — per togliere dalla lista una consegna che non va più fatta. La fattura
+  resta invariata.
+
+## Niente parte per sbaglio
+
+Finché il server di posta non è configurato, il gestionale lavora in **modalità prova**:
+premendo *Invia* le consegne vengono registrate, i conteggi sono reali, ma **nessun
+messaggio esce**. Il riquadro in alto lo dice a chiare lettere, e il pulsante si chiama
+*Prova invio* invece di *Invia*.
+
+È voluto: una spedizione a centinaia di clienti partita per errore non si annulla.
+
+Quando si sarà pronti a inviare davvero, la configurazione del server di posta va fatta
+da chi cura il sistema — vedi *Assistenza e aggiornamenti* in fondo al manuale.
+
+## La singola fattura
+
+Nella scheda di ogni fattura il riquadro **Dove va questa fattura** mostra la stessa
+cosa per quel solo documento: i canali previsti, i recapiti, cosa è già partito e
+quando. Da lì si può preparare e inviare la singola fattura, senza passare dall'elenco.
+
+Se la fattura è ancora una bozza il riquadro lo dice: **una bozza non si consegna**, va
+prima confermata.
+
+## Come stanno le cose oggi
+
+Alla consegna di questo manuale il gestionale è predisposto ma **non invia nulla**:
+
+- tutti i clienti sono impostati su *Cartacea postale*;
+- la fattura elettronica non è ancora attiva su nessun cliente, perché va prima deciso
+  come l'acquedotto la trasmette (commercialista, portale dell'Agenzia, oppure canale
+  proprio);
+- il server di posta non è configurato, quindi la modalità è quella di prova.
+
+Tutto il resto è già al suo posto: quando le decisioni saranno prese, si tratta di
+accendere gli interruttori, non di rifare il lavoro.
+
+---
+
 # Scadenze e incassi
 
 Ogni fattura genera una **scadenza**: e li che si tiene traccia dei pagamenti.
@@ -445,6 +574,10 @@ Dopo aver generato le bozze, aprire **Fatture** e usare **Controlli**: il gestio
 elenca le fatture con anomalie, per esempio un totale che non corrisponde alle righe, una
 quota fissa dovuta e mancante o un cliente non collegato.
 
+Dopo aver confermato le fatture, aprire **Consegne** e premere **Prepara**: l'elenco
+mostra quante buste ci sono da stampare e quante fatture partono da sole. Il filtro
+*Errori* segnala i clienti a cui manca il recapito.
+
 ## Una volta al mese
 
 Aprire la panoramica e guardare l'**anzianità del credito**. Se la fascia *oltre un anno*
@@ -454,6 +587,9 @@ cresce, è il momento di intervenire sui solleciti.
 
 Controllare che i listini abbiano fasce valide per l'anno in corso: è la causa più
 frequente di generazioni fallite.
+
+Se si è passati all'invio per email, controllare anche il riquadro in alto nella pagina
+**Consegne**: dice se il gestionale sta inviando davvero oppure se è in modalità prova.
 
 ---
 
@@ -508,6 +644,15 @@ il gestionale in una finestra anonima per verificare.
 >
 > **Per qualunque aggiornamento o migrazione dal sistema attuale verso quello nuovo,
 > contattare Nicola Zandegiacomo, che se ne occupa direttamente.**
+
+## Per attivare l'invio automatico delle fatture
+
+Perché le fatture partano davvero per email servono due cose che non si impostano
+dall'interfaccia: un server di posta configurato e la decisione su come l'acquedotto
+trasmette le fatture elettroniche al Sistema di Interscambio.
+
+**Anche per questo il riferimento è Nicola Zandegiacomo.** Fino ad allora il gestionale
+resta in modalità prova e non manda niente a nessuno.
 
 ## Per tutto il resto
 

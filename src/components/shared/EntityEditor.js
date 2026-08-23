@@ -114,6 +114,31 @@ const renderField = ({
         );
     }
 
+    if (field.type === 'select') {
+        const valore = formData[field.name] ?? '';
+        // Un valore salvato che non compare fra le opzioni (per esempio una
+        // modalita scritta a mano prima che il campo diventasse una tendina)
+        // resta selezionabile: altrimenti il primo salvataggio lo cambierebbe
+        // senza che nessuno lo abbia deciso.
+        const opzioni = field.options.some((opzione) => opzione.value === valore) || valore === ''
+            ? field.options
+            : [{ value: valore, label: valore }, ...field.options];
+
+        return (
+            <select
+                name={field.name}
+                onChange={onChange}
+                disabled={isReadOnly}
+                value={valore}
+            >
+                {!field.required && <option value="">-</option>}
+                {opzioni.map((opzione) => (
+                    <option key={opzione.value} value={opzione.value}>{opzione.label}</option>
+                ))}
+            </select>
+        );
+    }
+
     if (field.type === 'textarea') {
         return (
             <textarea

@@ -172,7 +172,10 @@
    Pochi numeri, ognuno cliccabile e collegato alla lista che permette di agire. */
 .stat-row {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    /* Le schede si dispongono da sole: aggiungerne una non costringe a
+       ricontare le colonne, e su schermi stretti vanno a capo prima che il
+       testo diventi illeggibile. */
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
     gap: 10px;
 }
 

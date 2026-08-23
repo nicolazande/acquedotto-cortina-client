@@ -12,7 +12,9 @@ import BillingPreviewPanel from '../components/shared/BillingPreviewPanel';
 import CustomerPortalAccessPanel from '../components/shared/CustomerPortalAccessPanel';
 import CustomerBillingPanel from '../components/shared/CustomerBillingPanel';
 import { editorComponents } from '../components/shared/editorComponents';
+import { modalitaLabel } from './deliveryModes';
 import InvoiceAuditPanel from '../components/shared/InvoiceAuditPanel';
+import InvoiceDeliveryPanel from '../components/shared/InvoiceDeliveryPanel';
 import InvoiceVerificationPanel from '../components/shared/InvoiceVerificationPanel';
 import {
     boolText,
@@ -75,7 +77,7 @@ export const detailViews = {
             { label: 'Nazione di Fatturazione', value: 'nazione_fatturazione' },
             { label: 'Codice Fiscale', value: 'codice_fiscale' },
             { label: 'Partita IVA', value: 'partita_iva' },
-            { label: 'Stampa di cortesia', value: 'stampa_cortesia' },
+            { label: 'Consegna copia', value: 'stampa_cortesia', format: modalitaLabel },
             { label: 'Telefono', value: 'telefono' },
             { label: 'Cellulare', value: 'cellulare' },
             { label: 'Cellulare 2', value: 'cellulare2' },
@@ -194,7 +196,7 @@ export const detailViews = {
                 variant: 'secondary',
             }),
         ],
-        panels: [InvoiceVerificationPanel, InvoiceAuditPanel],
+        panels: [InvoiceVerificationPanel, InvoiceDeliveryPanel, InvoiceAuditPanel],
         fields: [
             { label: 'Tipo Documento', value: 'tipo_documento' },
             { label: 'Ragione Sociale', value: 'ragione_sociale' },

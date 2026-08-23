@@ -62,6 +62,8 @@ export const listViews = {
             { value: 'soci', label: 'Soci' },
             { value: 'con-email', label: 'Con email' },
             { value: 'fatturazione-elettronica', label: 'Fattura elettronica' },
+            { value: 'consegna-email', label: 'Consegna: email' },
+            { value: 'consegna-postale', label: 'Consegna: posta' },
         ],
         title: 'Clienti',
         className: 'cliente',

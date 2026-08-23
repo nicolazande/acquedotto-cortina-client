@@ -1,9 +1,11 @@
+import { modalitaOptions } from './deliveryModes';
 import { customerName } from '../utils/formatters';
 
 const field = (label, name, type = 'text', options = {}) => ({ label, name, type, ...options });
 const referenceField = (label, name, resource, options = {}) => (
     field(label, name, 'reference', { resource, ...options })
 );
+const selectField = (label, name, options) => field(label, name, 'select', { options });
 
 const cleanValue = (value) => (value === '-' ? '' : value);
 const clienteName = (record) => cleanValue(customerName(record)) || record?.nome_cliente || '';
@@ -64,6 +66,10 @@ export const editorViews = {
             field('Email PEC', 'email_pec', 'email'),
             field('Codice Destinatario', 'codice_destinatario'),
             field('Fattura Elettronica', 'fattura_elettronica', 'checkbox'),
+            // Come riceve la copia di cortesia. Il canale della fattura
+            // elettronica non e qui perche non si sceglie: lo deduce il sistema
+            // dal codice destinatario e dalla PEC.
+            selectField('Consegna copia', 'stampa_cortesia', modalitaOptions),
             field('Codice ERP', 'codice_cliente_erp'),
             field('IBAN', 'iban'),
             field('Note', 'note', 'textarea'),

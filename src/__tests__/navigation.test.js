@@ -35,7 +35,7 @@ describe('navigazione', () => {
 
     test('la divisione riflette l uso: documenti ogni giorno, tariffe di rado', () => {
         expect(itemsByGroup('lavoro').map((i) => i.path)).toEqual(
-            ['/clienti', '/contatori', '/edifici', '/letture', '/fatture', '/scadenze']
+            ['/clienti', '/contatori', '/edifici', '/letture', '/fatture', '/consegne', '/scadenze']
         );
         expect(itemsByGroup('configurazione').map((i) => i.path)).toEqual(
             ['/articoli', '/listini', '/fasce']
@@ -51,6 +51,22 @@ describe('navigazione', () => {
             .map((item) => item.path);
 
         expect(rotte).toContain('/servizi');
+    });
+
+    test('le voci con pagina propria non generano le rotte delle risorse', () => {
+        // App.js costruisce elenco e scheda per ogni voce di risorsa. Le consegne
+        // sono un cruscotto, non una risorsa: se finissero in quell'elenco la
+        // rotta punterebbe a un componente inesistente e la pagina crollerebbe.
+        const consegne = navigationItems.find((item) => item.path === '/consegne');
+
+        expect(consegne.standalone).toBe(true);
+
+        const risorse = navigationItems
+            .filter((item) => item.path !== '/' && !item.path.startsWith('/auth/') && !item.standalone)
+            .map((item) => item.path);
+
+        expect(risorse).not.toContain('/consegne');
+        expect(risorse).toContain('/fatture');
     });
 
     test('ogni voce ha etichetta e icona', () => {

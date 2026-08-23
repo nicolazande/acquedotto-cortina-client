@@ -21,9 +21,12 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const BillingBatchPage = lazy(() => import('./pages/BillingBatchPage'));
 const CustomerPortalPage = lazy(() => import('./pages/CustomerPortalPage'));
 const InvoiceControlPage = lazy(() => import('./pages/InvoiceControlPage'));
+const ConsegnePage = lazy(() => import('./pages/ConsegnePage'));
 const RelationViewPage = lazy(() => import('./pages/RelationViewPage'));
 
-const isResourceRoute = (item) => item.path !== '/' && !item.path.startsWith('/auth/');
+// Le voci `standalone` hanno una pagina propria invece dell'elenco e della
+// scheda generati dalla configurazione delle risorse.
+const isResourceRoute = (item) => item.path !== '/' && !item.path.startsWith('/auth/') && !item.standalone;
 
 const resourceRoutes = navigationItems
     .filter(isResourceRoute)
@@ -39,6 +42,7 @@ const protectedRoutes = [
     { path: '/auth/profile', component: ProfilePage },
     { path: '/fatture/generazione', exact: true, component: BillingBatchPage },
     { path: '/fatture/controlli', exact: true, component: InvoiceControlPage },
+    { path: '/consegne', exact: true, component: ConsegnePage },
     { path: '/:resource/:id/:relation', exact: true, component: RelationViewPage },
     ...entityRoutes,
     { path: '/', exact: true, component: HomePage },

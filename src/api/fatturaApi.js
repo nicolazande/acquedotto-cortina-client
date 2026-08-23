@@ -23,6 +23,8 @@ const fatturaApi = {
         const response = await axios.get(`${resource.baseUrl}/${id}/xml`, { responseType: 'blob' });
         openBlobResponse(response, `fattura-${id}.xml`);
     },
+    // Cosa succederebbe consegnando questa fattura: canali, recapiti e ostacoli.
+    getConsegne: (id) => resource.getRelation(id, 'consegne'),
     getAuditLog: (id) => resource.getRelation(id, 'audit'),
     verifyCalcolo: (id) => resource.getRelation(id, 'verifica-calcolo'),
     updateFattura: resource.update,

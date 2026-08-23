@@ -14,6 +14,7 @@ describe('normalizza la risposta della panoramica', () => {
                 scadute: { quante: 725, totale: 163219.89, ritardoMassimo: 1328 },
             },
             scaduto: { fasce: [{ id: 'entro-30', etichetta: 'Fino a 30 giorni', quante: 0, totale: 0 }] },
+            consegne: { automatiche: 3, daStampare: 12, errori: 1 },
             daSollecitare: [{ _id: 's1', nome: 'Rossi', totale: 100, ritardo: 30 }],
             attivita: [{ _id: 'a1', summary: 'Modificata fattura' }],
         };
@@ -34,6 +35,7 @@ describe('normalizza la risposta della panoramica', () => {
         const risultato = normalizza(vecchia);
 
         expect(risultato.scaduto.fasce).toEqual([]);
+        expect(risultato.consegne).toEqual({ automatiche: 0, daStampare: 0, errori: 0 });
         expect(risultato.daSollecitare).toEqual([]);
         expect(risultato.attivita).toEqual([]);
         expect(risultato.incassi.aperte.totale).toBe(163219.89);

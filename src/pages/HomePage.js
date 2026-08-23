@@ -55,6 +55,11 @@ export const normalizza = (dati) => ({
         },
     },
     scaduto: { fasce: dati?.scaduto?.fasce ?? [] },
+    consegne: {
+        automatiche: dati?.consegne?.automatiche ?? 0,
+        daStampare: dati?.consegne?.daStampare ?? 0,
+        errori: dati?.consegne?.errori ?? 0,
+    },
     daSollecitare: dati?.daSollecitare ?? [],
     attivita: dati?.attivita ?? [],
 });
@@ -77,6 +82,22 @@ const dettaglioIncassi = ({ aperte, scadute }) => {
     }
 
     return `${scadenze}, di cui ${formatNumber(scadute.quante)} scadute`;
+};
+
+// Cosa resta da recapitare, detto come lo direbbe una persona.
+const dettaglioConsegne = ({ automatiche, daStampare, errori }) => {
+    if (errori > 0) {
+        return `${formatNumber(errori)} non ${errori === 1 ? 'è partita' : 'sono partite'}`;
+    }
+
+    if (automatiche + daStampare === 0) {
+        return 'Niente in sospeso';
+    }
+
+    return [
+        daStampare > 0 ? `${formatNumber(daStampare)} da stampare` : null,
+        automatiche > 0 ? `${formatNumber(automatiche)} da inviare` : null,
+    ].filter(Boolean).join(', ');
 };
 
 const HomePage = () => {
@@ -119,7 +140,7 @@ const HomePage = () => {
             </section>
 
             <section className="stat-row" aria-label="Riepilogo">
-                {isLoading && [1, 2, 3].map((chiave) => <StatSkeleton key={chiave} />)}
+                {isLoading && [1, 2, 3, 4].map((chiave) => <StatSkeleton key={chiave} />)}
 
                 {!isLoading && error && <p className="dashboard-error" role="status">{error}</p>}
 
@@ -141,6 +162,14 @@ const HomePage = () => {
                             detail={panoramica.letture.daFatturare > 0
                                 ? 'Pronte per la generazione'
                                 : 'Nessuna lettura in attesa'}
+                        />
+                        <StatCard
+                            icon="send"
+                            label="Fatture da consegnare"
+                            to="/consegne"
+                            tone={panoramica.consegne.errori > 0 ? 'attenzione' : 'neutral'}
+                            value={formatNumber(panoramica.consegne.automatiche + panoramica.consegne.daStampare)}
+                            detail={dettaglioConsegne(panoramica.consegne)}
                         />
                         <StatCard
                             icon="invoice"

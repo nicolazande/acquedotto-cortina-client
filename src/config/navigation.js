@@ -46,6 +46,16 @@ export const navigationItems = [
         description: 'Documenti, importi, scadenze e conferme di emissione.',
     },
     {
+        path: '/consegne',
+        group: 'lavoro',
+        label: 'Consegne',
+        icon: pathIcons['/consegne'],
+        description: 'Copie di cortesia e fatture elettroniche da recapitare, per canale.',
+        // Non e una risorsa con elenco e scheda come le altre: e un cruscotto
+        // operativo, quindi la sua rotta e dichiarata a mano in App.js.
+        standalone: true,
+    },
+    {
         path: '/scadenze',
         group: 'lavoro',
         label: 'Scadenze',
