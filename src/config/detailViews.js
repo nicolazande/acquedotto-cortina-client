@@ -184,6 +184,15 @@ export const detailViews = {
                 onClick: () => fatturaApi.openPdf(record._id),
                 variant: 'secondary',
             }),
+            // Scarica il file della fattura elettronica sul computer. Il gestionale
+            // non lo trasmette: l'invio al Sistema di Interscambio resta separato.
+            (record) => ({
+                icon: 'download',
+                label: 'XML',
+                title: 'Scarica il file della fattura elettronica (non lo invia)',
+                onClick: () => fatturaApi.scaricaXml(record._id),
+                variant: 'secondary',
+            }),
         ],
         panels: [InvoiceVerificationPanel, InvoiceAuditPanel],
         fields: [

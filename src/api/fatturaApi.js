@@ -17,6 +17,12 @@ const fatturaApi = {
         const response = await axios.get(`${resource.baseUrl}/${id}/pdf`, { responseType: 'blob' });
         openBlobResponse(response, `fattura-${id}.pdf`);
     },
+    // Scarica il file della fattura elettronica. Non invia nulla: la trasmissione
+    // al Sistema di Interscambio non e gestita dal gestionale.
+    scaricaXml: async (id) => {
+        const response = await axios.get(`${resource.baseUrl}/${id}/xml`, { responseType: 'blob' });
+        openBlobResponse(response, `fattura-${id}.xml`);
+    },
     getAuditLog: (id) => resource.getRelation(id, 'audit'),
     verifyCalcolo: (id) => resource.getRelation(id, 'verifica-calcolo'),
     updateFattura: resource.update,
