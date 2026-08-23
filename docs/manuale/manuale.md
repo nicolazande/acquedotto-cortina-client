@@ -493,11 +493,21 @@ I filtri sono:
 Si apre la scadenza, si spunta **Saldo** e si inserisce la **Data pagamento**. Il ritardo
 smette di crescere e si ferma ai giorni effettivi.
 
+Se si spunta **Saldo** senza indicare la data, la scadenza risulta comunque chiusa e il
+ritardo resta a zero: il gestionale non sa di quanto sia stata pagata in ritardo e non
+lo inventa. Conviene sempre metterla.
+
 ## Il ritardo
 
 Il campo **Ritardo** è calcolato dal gestionale e non si modifica a mano: per le
 scadenze non pagate cresce ogni giorno, per quelle pagate resta fermo ai giorni fra
 scadenza e pagamento.
+
+> **Scadenze importate senza data di pagamento.** Il vecchio programma, invece di
+> lasciare vuota la casella, ci scriveva `31/12/2099`. Quelle date sono state
+> svuotate: **740 scadenze** non mostrano più una data di pagamento inventata, e le
+> **13** che risultano pagate senza data si riconoscono perché hanno il *Saldo*
+> spuntato e la casella vuota.
 
 Il campo **Solleciti** serve ad annotare quanti avvisi sono già stati mandati.
 
