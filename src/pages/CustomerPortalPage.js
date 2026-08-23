@@ -71,12 +71,12 @@ const CustomerPortalPage = () => {
     }, [loadDashboard]);
 
     if (isLoading) {
-        return <div className="customer-portal-page">Caricamento area clienti...</div>;
+        return <div className="page-stack">Caricamento area clienti...</div>;
     }
 
     if (error) {
         return (
-            <div className="customer-portal-page">
+            <div className="page-stack">
                 <BillingPanel title="Area clienti">
                     <BillingState>{error}</BillingState>
                 </BillingPanel>
@@ -87,7 +87,7 @@ const CustomerPortalPage = () => {
     const { cliente, contatori = [], fatture = [], letture = [], totals = {} } = dashboard || {};
 
     return (
-        <div className="customer-portal-page">
+        <div className="page-stack">
             <PageHeader
                 className="detail-page-heading"
                 eyebrow="Area clienti"

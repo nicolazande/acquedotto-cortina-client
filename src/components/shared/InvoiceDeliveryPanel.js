@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import consegnaApi from '../../api/consegnaApi';
 import fatturaApi from '../../api/fatturaApi';
-import { canaleLabel, statoLabel, tipoLabel } from '../../config/deliveryModes';
+import { canaleLabel, confermaInvio, statoLabel, tipoLabel } from '../../config/deliveryModes';
 import { EMPTY_VALUE, formatDate } from '../../utils/formatters';
 import BillingPanel, { BillingActions, BillingState } from './BillingPanel';
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
+import useRemoteAction from '../../hooks/useRemoteAction';
 
 // Le consegne gia registrate, indicizzate per tipo: al piano manca lo stato,
 // che esiste solo dopo che la fattura e stata messa in coda.
@@ -25,10 +26,9 @@ const dettaglio = (voce, registrata) => (
 );
 
 const InvoiceDeliveryPanel = ({ recordId }) => {
-    const { confirm, notify } = useFeedback();
+    const { confirm } = useFeedback();
     const [piano, setPiano] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [isWorking, setIsWorking] = useState(false);
     const [error, setError] = useState('');
 
     const carica = useCallback(async () => {
@@ -50,18 +50,7 @@ const InvoiceDeliveryPanel = ({ recordId }) => {
         carica();
     }, [carica]);
 
-    const esegui = async (operazione, messaggio) => {
-        setIsWorking(true);
-        try {
-            const risposta = await operazione();
-            notify(messaggio(risposta.data), 'success');
-            await carica();
-        } catch (richiesta) {
-            notify(richiesta.response?.data?.error || 'Operazione non riuscita', 'error');
-        } finally {
-            setIsWorking(false);
-        }
-    };
+    const { esegui, isWorking } = useRemoteAction(carica);
 
     const handlePrepara = () => esegui(
         () => consegnaApi.pianifica({ fatture: [recordId] }),
@@ -69,14 +58,7 @@ const InvoiceDeliveryPanel = ({ recordId }) => {
     );
 
     const handleInvia = async () => {
-        const inProva = !piano?.trasporto?.pronto;
-        const confermato = await confirm({
-            title: inProva ? 'Prova di invio' : 'Invia la fattura',
-            message: inProva
-                ? 'Il server di posta non è configurato: la consegna verrà registrata come simulata e nessun messaggio uscirà dal gestionale.'
-                : 'La copia di cortesia verrà inviata al recapito del cliente. L’operazione non si annulla.',
-            confirmLabel: inProva ? 'Prova' : 'Invia',
-        });
+        const confermato = await confirm(confermaInvio({ inProva: !piano?.trasporto?.pronto, singola: true }));
 
         if (!confermato) return;
 
@@ -142,7 +124,7 @@ const InvoiceDeliveryPanel = ({ recordId }) => {
                                 const registrata = registrate.get(voce.tipo);
 
                                 return (
-                                    <tr className={`invoice-control-row ${classeRiga(voce, registrata)}`.trim()} key={voce.tipo}>
+                                    <tr className={classeRiga(voce, registrata)} key={voce.tipo}>
                                         <td data-label="Cosa">{tipoLabel(voce.tipo)}</td>
                                         <td data-label="Canale">{canaleLabel(voce.canale)}</td>
                                         <td data-label="Recapito">{voce.destinatario || EMPTY_VALUE}</td>

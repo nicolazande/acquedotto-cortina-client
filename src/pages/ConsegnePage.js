@@ -6,8 +6,16 @@ import Button from '../components/shared/Button';
 import { PageHeader, Pagination, ViewFilters } from '../components/shared/PageChrome';
 import RecordTable from '../components/shared/RecordTable';
 import { useFeedback } from '../components/shared/FeedbackProvider';
-import { canaleLabel, modalitaLabel, statoClassName, statoLabel, tipoLabel } from '../config/deliveryModes';
-import { EMPTY_VALUE, formatDate } from '../utils/formatters';
+import useRemoteAction from '../hooks/useRemoteAction';
+import {
+    canaleLabel,
+    confermaInvio,
+    modalitaLabel,
+    statoClassName,
+    statoLabel,
+    tipoLabel,
+} from '../config/deliveryModes';
+import { EMPTY_VALUE, formatDate, numberOrZero } from '../utils/formatters';
 
 const VISTE = [
     { value: 'in-coda', label: 'In coda' },
@@ -20,22 +28,20 @@ const VISTE = [
 
 const PER_PAGINA = 50;
 
-const numero = (valore) => Number(valore) || 0;
-
 const riepilogoItems = (riepilogo) => {
     const stati = riepilogo?.perStato || {};
 
     return [
-        { label: 'In coda', value: numero(stati.in_coda) },
-        { label: 'Da stampare', value: numero(riepilogo?.daStampare) },
-        { label: 'Inviate', value: numero(stati.inviata), className: 'is-ok' },
-        { label: 'In errore', value: numero(stati.errore), className: 'is-danger' },
-        { label: 'Annullate', value: numero(stati.annullata) },
+        { label: 'In coda', value: numberOrZero(stati.in_coda) },
+        { label: 'Da stampare', value: numberOrZero(riepilogo?.daStampare) },
+        { label: 'Inviate', value: numberOrZero(stati.inviata), className: 'is-ok' },
+        { label: 'In errore', value: numberOrZero(stati.errore), className: 'is-danger' },
+        { label: 'Annullate', value: numberOrZero(stati.annullata) },
     ];
 };
 
-// Cosa succede davvero premendo "Elabora": senza un server di posta configurato
-// i messaggi vengono registrati ma non consegnati, e va detto prima, non dopo.
+// Cosa succede davvero premendo "Invia": senza un server di posta configurato i
+// messaggi vengono registrati ma non consegnati, e va detto prima, non dopo.
 const statoInvio = (riepilogo) => {
     const trasporto = riepilogo?.trasporto;
 
@@ -78,14 +84,13 @@ const esitoTesto = (record) => record.ultimo_errore || record.note || EMPTY_VALU
 
 const ConsegnePage = () => {
     const history = useHistory();
-    const { confirm, notify } = useFeedback();
+    const { confirm } = useFeedback();
     const [riepilogo, setRiepilogo] = useState(null);
     const [consegne, setConsegne] = useState([]);
     const [vista, setVista] = useState('in-coda');
     const [pagina, setPagina] = useState(1);
     const [pagine, setPagine] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
-    const [isWorking, setIsWorking] = useState(false);
     const [error, setError] = useState('');
 
     const carica = useCallback(async () => {
@@ -112,18 +117,7 @@ const ConsegnePage = () => {
         carica();
     }, [carica]);
 
-    const esegui = async (operazione, messaggio) => {
-        setIsWorking(true);
-        try {
-            const risposta = await operazione();
-            notify(messaggio(risposta.data), 'success');
-            await carica();
-        } catch (richiesta) {
-            notify(richiesta.response?.data?.error || 'Operazione non riuscita', 'error');
-        } finally {
-            setIsWorking(false);
-        }
-    };
+    const { esegui, isWorking } = useRemoteAction(carica);
 
     const handlePianifica = async () => {
         const confermato = await confirm({
@@ -141,14 +135,7 @@ const ConsegnePage = () => {
     };
 
     const handleElabora = async () => {
-        const inProva = !riepilogo?.trasporto?.pronto;
-        const confermato = await confirm({
-            title: inProva ? 'Prova di elaborazione' : 'Invia le consegne automatiche',
-            message: inProva
-                ? 'Il server di posta non è configurato: le consegne verranno registrate come simulate e nessun messaggio uscirà dal gestionale.'
-                : 'Le consegne automatiche in coda verranno inviate ai clienti. L’operazione non si annulla.',
-            confirmLabel: inProva ? 'Prova' : 'Invia',
-        });
+        const confermato = await confirm(confermaInvio({ inProva: !riepilogo?.trasporto?.pronto, limite: PER_PAGINA }));
 
         if (!confermato) return;
 
@@ -212,7 +199,7 @@ const ConsegnePage = () => {
     );
 
     return (
-        <div className="invoice-control-page">
+        <div className="page-stack">
             <PageHeader
                 className="detail-page-heading"
                 eyebrow="Fatture"
@@ -269,7 +256,7 @@ const ConsegnePage = () => {
                         })),
                         {
                             label: 'Clienti con fattura elettronica',
-                            value: numero(riepilogo?.clienti?.conFatturaElettronica),
+                            value: numberOrZero(riepilogo?.clienti?.conFatturaElettronica),
                         },
                     ]}
                 />
@@ -300,7 +287,7 @@ const ConsegnePage = () => {
                     containerClassName="billing-preview-table"
                     emptyMessage="Nessuna consegna in questo elenco"
                     emptyHint="Usa Prepara per mettere in coda le fatture confermate."
-                    getRowClassName={(record) => `invoice-control-row ${statoClassName(record.stato)}`.trim()}
+                    getRowClassName={(record) => statoClassName(record.stato)}
                     isLoading={isLoading}
                     records={consegne}
                     summary={{

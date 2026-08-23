@@ -29,10 +29,15 @@ componenti:
 | `relationViews.js`     | come si naviga e si collega una risorsa a un'altra                |
 | `referenceResources.js`| come si sceglie un record collegato in un campo riferimento       |
 | `resourceMeta.js`      | icone per risorsa                                                 |
+| `deliveryModes.js`     | etichette e testi delle consegne (l'elenco autorevole e sul server)|
 
 Le rotte stesse nascono dalla configurazione: `App.js` costruisce l'elenco dei
 percorsi partendo da `navigationItems`, quindi una nuova voce di menu con la
 relativa configurazione produce lista, scheda e modulo senza altro codice.
+
+Fa eccezione chi non e una risorsa: una voce con `standalone: true` (le Consegne)
+non genera lista e scheda, e dichiara la propria pagina in `App.js`. Senza quel
+segnale la rotta punterebbe a un componente inesistente.
 
 ## I componenti generici
 
@@ -42,7 +47,9 @@ relativa configurazione produce lista, scheda e modulo senza altro codice.
 - **`DetailPage`** — scheda del record, relazioni, pannelli specifici, allegati
   alle note, modifica e cancellazione. Rispetta `isLocked` per le fatture confermate.
 - **`EntityEditor`** — modulo generato dai campi dichiarati, con supporto per date,
-  booleani e campi riferimento verso altre risorse.
+  booleani, tendine e campi riferimento verso altre risorse. Una tendina che trova
+  un valore salvato fuori elenco lo mantiene selezionabile, cosi il primo
+  salvataggio non lo cambia di nascosto.
 - **`RecordTable`** — la tabella. Ogni cella porta un attributo `data-label` e ogni
   riga un riepilogo: sono questi due elementi che permettono al CSS di trasformare
   la tabella in una lista di schede sugli schermi stretti.
@@ -53,6 +60,14 @@ Quando si apre una scheda da un'altra scheda, l'URL porta con se `returnTo` e
 `returnLabel` (`hooks/useContextBack.js`). Il pulsante di ritorno mostra quindi
 "Torna alla scheda cliente" invece di un generico "Indietro". Ordinamento e
 paginazione preservano questi parametri.
+
+## Operazioni che cambiano qualcosa
+
+`hooks/useRemoteAction.js` tiene insieme i tre passaggi che vanno sempre
+insieme: esegui, avvisa dell'esito, rileggi. Senza la rilettura finale
+l'interfaccia resta a mostrare lo stato precedente e sembra che non sia
+successo niente; `isWorking` disabilita i pulsanti mentre l'operazione e in
+corso, cosi non parte due volte.
 
 ## Autenticazione
 

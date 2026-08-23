@@ -38,6 +38,10 @@ export const formatCubicMeters = (value) => (
     !isEmptyValue(value) && Number.isFinite(Number(value)) ? `${Number(value)} m3` : EMPTY_VALUE
 );
 
+// Un conteggio assente vale zero: nei riepiloghi una casella vuota si legge
+// come un dato mancante, mentre quasi sempre significa "nessuno".
+export const numberOrZero = (value) => Number(value) || 0;
+
 export const boolText = (value) => (value ? 'Si' : 'No');
 
 export const invoiceStatus = (record) => {

@@ -73,6 +73,8 @@ PDF con `npm run manuale`. Istruzioni in [docs/manuale/README.md](docs/manuale/R
 - `src/pages`: pagine principali
 - `src/components`: liste, dettagli ed editor
 - `src/pages/BillingBatchPage.js`: anteprima clienti/letture pronte per fatturazione
+- `src/pages/ConsegnePage.js`: coda di consegna delle fatture, per canale
+- `src/config/deliveryModes.js`: etichette e testi delle consegne
 - `src/styles/index.css`: tema globale e componenti CRUD condivisi
 
 ## Script
@@ -81,6 +83,7 @@ PDF con `npm run manuale`. Istruzioni in [docs/manuale/README.md](docs/manuale/R
 - `npm run build`: build di produzione nella cartella `build/`
 - `npm run preview`: serve in locale la build di produzione
 - `npm run lint`: controllo statico del codice
+- `npm test`: test unitari (Vitest)
 - `npm run test:smoke`: controlli veloci su URL API e navigazione contestuale
 
 Per controllare anche una build Netlify gia' pubblicata:

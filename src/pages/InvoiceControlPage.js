@@ -11,6 +11,7 @@ import {
     formatDate,
     formatMoney,
     invoiceStatus,
+    numberOrZero,
 } from '../utils/formatters';
 
 const currentYear = new Date().getFullYear();
@@ -20,8 +21,6 @@ const severityLabel = {
     warning: 'Controllare',
     info: 'Nota',
 };
-
-const number = (value) => Number(value) || 0;
 
 const customerLabel = (record) => (
     customerName(record.cliente) !== EMPTY_VALUE ? customerName(record.cliente) : record.clienteLabel || EMPTY_VALUE
@@ -34,20 +33,20 @@ const deltaLabel = (record) => (
 const invoiceLabel = (record) => `${record.anno || EMPTY_VALUE} / ${record.numero || EMPTY_VALUE}`;
 
 const strongIssueCount = (summary) => (
-    number(summary.senzaCliente)
-    + number(summary.scostamentoFattura)
-    + number(summary.erroriCalcolo)
+    numberOrZero(summary.senzaCliente)
+    + numberOrZero(summary.scostamentoFattura)
+    + numberOrZero(summary.erroriCalcolo)
 );
 
 const reviewIssueCount = (summary) => (
-    number(summary.senzaScadenza)
-    + number(summary.quotaFissaApplicabile)
+    numberOrZero(summary.senzaScadenza)
+    + numberOrZero(summary.quotaFissaApplicabile)
 );
 
 const summaryItems = (summary) => [
-    { label: 'Fatture controllate', value: number(summary.controllate) },
-    { label: 'Confermate', value: number(summary.confermate), className: 'is-ok' },
-    { label: 'Bozze', value: number(summary.bozze) },
+    { label: 'Fatture controllate', value: numberOrZero(summary.controllate) },
+    { label: 'Confermate', value: numberOrZero(summary.confermate), className: 'is-ok' },
+    { label: 'Bozze', value: numberOrZero(summary.bozze) },
     { label: 'Errori forti', value: strongIssueCount(summary), className: 'is-danger' },
     { label: 'Da controllare', value: reviewIssueCount(summary), className: 'is-warning' },
 ];
@@ -82,7 +81,7 @@ const InvoiceControlPage = () => {
     const issues = controls?.issues || [];
 
     return (
-        <div className="invoice-control-page">
+        <div className="page-stack">
             <PageHeader
                 className="detail-page-heading"
                 eyebrow="Fatture"
@@ -155,7 +154,7 @@ const InvoiceControlPage = () => {
                         ]}
                         containerClassName="billing-preview-table"
                         emptyMessage="Nessuna fattura da controllare"
-                        getRowClassName={(record) => `invoice-control-row is-${record.severity}`}
+                        getRowClassName={(record) => `is-${record.severity}`}
                         records={issues}
                         summary={{
                             title: invoiceLabel,

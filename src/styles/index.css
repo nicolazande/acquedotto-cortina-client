@@ -978,7 +978,10 @@ a {
     gap: 16px;
 }
 
-.invoice-control-page {
+/* Impaginazione delle pagine fatte di pannelli: una colonna centrata con i
+   pannelli distanziati allo stesso modo. La usano i cruscotti (controlli,
+   consegne) e l'area clienti: era ripetuta identica per ciascuna. */
+.page-stack {
     display: grid;
     width: 100%;
     max-width: 1320px;
@@ -986,7 +989,7 @@ a {
     gap: 16px;
 }
 
-.invoice-control-page .billing-preview {
+.page-stack .billing-preview {
     margin-top: 0;
 }
 
@@ -1002,33 +1005,33 @@ a {
     font-weight: 800;
 }
 
-.invoice-control-row.is-danger {
+/* Righe tinte dal loro stato. Valgono ovunque compaia una tabella a pannello -
+   controlli fattura, consegne - perche il colore dice sempre la stessa cosa.
+   Sono legate al contenitore invece che a una classe per pagina: cosi non
+   servono nomi nuovi ogni volta che nasce un elenco. */
+.billing-preview-table tr.is-danger {
     background: #fff8f8;
 }
 
-.invoice-control-row.is-warning {
+.billing-preview-table tr.is-warning {
     background: #fffdf5;
 }
 
-.invoice-control-row.is-info {
+.billing-preview-table tr.is-info {
     background: #f8fbfd;
+}
+
+.billing-preview-table tr.is-ok {
+    background: #f6fcf9;
+}
+
+.billing-preview-table tr.is-muted {
+    color: var(--color-text-muted);
 }
 
 .invoice-audit-panel .billing-preview-table table,
 .invoice-control-panel .billing-preview-table table {
     min-width: 760px;
-}
-
-.customer-portal-page {
-    display: grid;
-    width: 100%;
-    max-width: 1320px;
-    margin: 0 auto;
-    gap: 16px;
-}
-
-.customer-portal-page .billing-preview {
-    margin-top: 0;
 }
 
 .customer-portal-access-form {
