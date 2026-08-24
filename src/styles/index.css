@@ -993,6 +993,21 @@ a {
     margin-top: 0;
 }
 
+/* Campo con la sua etichetta sopra, dentro una barra di azioni: senza,
+   due caselle numeriche affiancate non dicono quale sia quale. */
+.campo-inline {
+    display: grid;
+    gap: 2px;
+}
+
+.campo-inline > span {
+    color: var(--color-muted);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
 .invoice-control-year {
     width: 96px;
     min-height: 36px;

@@ -304,17 +304,75 @@
 
 .dashboard-empty,
 .dashboard-error {
+    grid-column: 1 / -1;
     margin: 0;
+    padding: 12px 14px;
     color: var(--color-muted);
     font-size: 0.88rem;
-}
-
-.dashboard-error {
-    grid-column: 1 / -1;
-    padding: 12px 14px;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
+}
+
+/* Avviso sopra i numeri: qualcosa che smettera di funzionare se nessuno
+   interviene. Usa la stessa gradazione degli altri stati (attenzione, errore)
+   per non introdurre un secondo vocabolario di colori. */
+.dashboard-avviso {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    padding: 12px 14px;
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius);
+    background: #fff8f1;
+}
+
+.dashboard-avviso.is-danger {
+    border-left-color: var(--color-danger);
+    background: #fff5f6;
+}
+
+.dashboard-avviso-mark {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    color: var(--color-heading);
+    background: var(--color-surface);
+    border-radius: 8px;
+}
+
+.dashboard-avviso-copy {
+    display: grid;
+    gap: 3px;
+    font-size: 0.88rem;
+}
+
+.dashboard-avviso-copy strong {
+    color: var(--color-heading);
+}
+
+.dashboard-avviso-copy span {
+    color: var(--color-muted);
+}
+
+.dashboard-avviso-elenco {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-top: 3px;
+}
+
+.dashboard-avviso-elenco a {
+    color: var(--color-primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.dashboard-avviso-elenco a:hover {
+    text-decoration: underline;
 }
 
 /* --- Anzianita del credito -----------------------------------------------

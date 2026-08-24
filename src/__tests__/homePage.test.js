@@ -15,6 +15,11 @@ describe('normalizza la risposta della panoramica', () => {
             },
             scaduto: { fasce: [{ id: 'entro-30', etichetta: 'Fino a 30 giorni', quante: 0, totale: 0 }] },
             consegne: { automatiche: 3, daStampare: 12, errori: 1 },
+            tariffe: {
+                inScadenza: 10, scadute: 1, contatori: 1059,
+                prossimaScadenza: '2026-12-31T00:00:00.000Z',
+                listini: [{ listino: 'l1', categoria: 'DOMESTICO RESIDENTE', contatori: 432, scaduto: false }],
+            },
             daSollecitare: [{ _id: 's1', nome: 'Rossi', totale: 100, ritardo: 30 }],
             attivita: [{ _id: 'a1', summary: 'Modificata fattura' }],
         };
@@ -36,6 +41,8 @@ describe('normalizza la risposta della panoramica', () => {
 
         expect(risultato.scaduto.fasce).toEqual([]);
         expect(risultato.consegne).toEqual({ automatiche: 0, daStampare: 0, errori: 0 });
+        expect(risultato.tariffe.inScadenza).toBe(0);
+        expect(risultato.tariffe.listini).toEqual([]);
         expect(risultato.daSollecitare).toEqual([]);
         expect(risultato.attivita).toEqual([]);
         expect(risultato.incassi.aperte.totale).toBe(163219.89);

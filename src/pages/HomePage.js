@@ -7,6 +7,7 @@ import ActivityList from '../components/dashboard/ActivityList';
 import AgingBars from '../components/dashboard/AgingBars';
 import FollowUpList from '../components/dashboard/FollowUpList';
 import StatCard from '../components/dashboard/StatCard';
+import TariffWarning from '../components/dashboard/TariffWarning';
 import Icon from '../components/shared/Icon';
 import ServerStatusIndicator from '../ServerStatusIndicator';
 import useRemoteData from '../hooks/useRemoteData';
@@ -56,6 +57,13 @@ export const normalizza = (dati) => ({
         },
     },
     scaduto: { fasce: dati?.scaduto?.fasce ?? [] },
+    tariffe: {
+        inScadenza: dati?.tariffe?.inScadenza ?? 0,
+        scadute: dati?.tariffe?.scadute ?? 0,
+        contatori: dati?.tariffe?.contatori ?? 0,
+        prossimaScadenza: dati?.tariffe?.prossimaScadenza ?? null,
+        listini: dati?.tariffe?.listini ?? [],
+    },
     consegne: {
         automatiche: dati?.consegne?.automatiche ?? 0,
         daStampare: dati?.consegne?.daStampare ?? 0,
@@ -121,6 +129,8 @@ const HomePage = () => {
                 </div>
                 <ServerStatusIndicator />
             </section>
+
+            {!isLoading && panoramica && <TariffWarning tariffe={panoramica.tariffe} />}
 
             <section className="stat-row" aria-label="Riepilogo">
                 {isLoading && [1, 2, 3, 4].map((chiave) => <StatSkeleton key={chiave} />)}

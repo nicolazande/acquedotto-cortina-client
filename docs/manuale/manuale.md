@@ -560,6 +560,45 @@ il prezzo aggiornato.
 > cambiato cosa, il valore precedente e quello nuovo. Le modifiche compaiono anche nel
 > riquadro *Ultime modifiche* della panoramica.
 
+## Le tariffe scadono, e con loro la fatturazione
+
+Ogni fascia vale da una data a un'altra. **Quando l'ultima fascia utile scade, le
+fatture di quel listino non si generano più**: il gestionale si rifiuta di emetterle
+perché non ha un prezzo da applicare. È voluto — meglio fermarsi che fatturare una
+cifra inventata — ma va saputo per tempo.
+
+Il gestionale lo dice in due punti:
+
+- **in cima alla panoramica** compare un avviso quando qualche listino sta per scadere,
+  con l'elenco e quanti contatori riguarda;
+- **nella scheda del listino**, il riquadro *Prepara l'anno prossimo*.
+
+> **Attenzione.** Le tariffe attuali scadono il **31 dicembre 2026** su quasi tutti i
+> listini. Vanno rinnovate entro l'anno, altrimenti a gennaio non si fattura.
+
+## Preparare le tariffe dell'anno nuovo
+
+Nella scheda del listino, il riquadro **Prepara l'anno prossimo** fa in un colpo quello
+che altrimenti si farebbe fascia per fascia.
+
+Si indicano due cose:
+
+- l'**anno** delle nuove tariffe;
+- la **variazione %** da applicare ai prezzi: `0` li lascia uguali, `3` li aumenta del
+  tre per cento, `-2` li riduce.
+
+Il riquadro mostra **prima** cosa farebbe: quante fasce creerebbe, con quale prezzo
+attuale e quale nuovo. Solo premendo *Crea* le tariffe vengono salvate.
+
+Tre cose di cui si occupa da solo:
+
+- **non duplica le fasce che valgono già** per l'anno indicato. Alcune fasce hanno una
+  validità lunga: copiarle significherebbe fatturare due volte lo stesso scaglione;
+- **controlla che il risultato sia completo.** Se dopo il rinnovo restasse un buco fra
+  due scaglioni, il pulsante resta disattivato e il riquadro spiega cosa manca;
+- **non tocca le tariffe attuali.** Restano valide fino alla loro scadenza, e le fatture
+  già emesse continuano a corrispondere ai prezzi di allora.
+
 ---
 
 # L'area riservata ai clienti

@@ -16,6 +16,7 @@ import { modalitaLabel } from './deliveryModes';
 import InvoiceAuditPanel from '../components/shared/InvoiceAuditPanel';
 import InvoiceDeliveryPanel from '../components/shared/InvoiceDeliveryPanel';
 import InvoiceVerificationPanel from '../components/shared/InvoiceVerificationPanel';
+import TariffRenewalPanel from '../components/shared/TariffRenewalPanel';
 import {
     boolText,
     customerName,
@@ -243,6 +244,7 @@ export const detailViews = {
         EditorComponent: editorComponents.listino,
         api: api(listinoApi.getListino, listinoApi.updateListino, listinoApi.deleteListino),
         relations: ['fasce', 'contatori'],
+        panels: [TariffRenewalPanel],
         fields: [
             { label: 'Categoria', value: 'categoria' },
             { label: 'Descrizione', value: 'descrizione' },
