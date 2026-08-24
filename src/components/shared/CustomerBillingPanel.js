@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clienteApi from '../../api/clienteApi';
 import {
     canUseFixedCharge,
-    fixedChargeSelectionHelp,
     isBillablePreview,
     previewReadingId,
     sumFixedCharges,
@@ -10,7 +9,7 @@ import {
 import { formatMoney } from '../../utils/formatters';
 import BillingPanel, {
     BillingActions,
-    BillingOption,
+    AnnualFixedChargeOption,
     BillingState,
     BillingSummary,
 } from './BillingPanel';
@@ -123,11 +122,10 @@ const CustomerBillingPanel = ({ recordId }) => {
                 ]}
                 />
 
-                <BillingOption
+                <AnnualFixedChargeOption
                     checked={includeFixedCharge}
-                    disabled={fixedChargeRows.length === 0}
-                    help={fixedChargeSelectionHelp({ includeFixedCharge, total: fixedChargeTotal })}
-                    label="Quota fissa annuale"
+                    rows={fixedChargeRows}
+                    total={fixedChargeTotal}
                     onChange={setIncludeFixedCharge}
                 />
 

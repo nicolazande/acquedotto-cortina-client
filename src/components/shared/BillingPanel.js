@@ -1,4 +1,5 @@
 import React from 'react';
+import { fixedChargeSelectionHelp } from '../../utils/billingPreview';
 
 export const BillingActions = ({ children }) => (
     <div className="billing-preview-actions">{children}</div>
@@ -29,6 +30,19 @@ export const BillingOption = ({
             {help && <small>{help}</small>}
         </span>
     </label>
+);
+
+// L'interruttore della quota fissa annuale. Compare nella generazione massiva e
+// nella scheda del cliente con le stesse etichette e la stessa regola: e un solo
+// concetto, non due caselle che si somigliano.
+export const AnnualFixedChargeOption = ({ checked, onChange, rows = [], total }) => (
+    <BillingOption
+        checked={checked}
+        disabled={rows.length === 0}
+        help={fixedChargeSelectionHelp({ includeFixedCharge: checked, total })}
+        label="Quota fissa annuale"
+        onChange={onChange}
+    />
 );
 
 export const BillingSummary = ({ items }) => (

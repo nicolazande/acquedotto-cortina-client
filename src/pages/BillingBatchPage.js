@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 import fatturaApi from '../api/fatturaApi';
 import {
     canUseFixedCharge,
-    fixedChargeSelectionHelp,
     isBillablePreview,
     previewReadingId,
     sumFixedCharges,
@@ -14,6 +13,7 @@ import {
 } from '../utils/formatters';
 import BillingPanel, {
     BillingActions,
+    AnnualFixedChargeOption,
     BillingOption,
     BillingState,
     BillingSummary,
@@ -220,11 +220,10 @@ const BillingBatchPage = () => {
                                 Sono state lette solo le prime {preview.limit} letture non fatturate. Aumentare il limite API per un ciclo completo.
                             </BillingState>
                         )}
-                        <BillingOption
+                        <AnnualFixedChargeOption
                             checked={includeFixedCharge}
-                            disabled={fixedChargeRows.length === 0}
-                            help={fixedChargeSelectionHelp({ includeFixedCharge, total: fixedChargeTotal })}
-                            label="Quota fissa annuale"
+                            rows={fixedChargeRows}
+                            total={fixedChargeTotal}
                             onChange={setIncludeFixedCharge}
                         />
 
