@@ -10,6 +10,7 @@ import {
     formatDate,
     formatFieldValue,
     formatMoney,
+    paymentStatus,
     formatNumber,
     getPathValue,
     invoiceStatus,
@@ -150,5 +151,32 @@ describe('formatFieldValue', () => {
 
     test('i campi vuoti mostrano il segnaposto', () => {
         expect(formatFieldValue({}, { value: 'assente' })).toBe('-');
+    });
+});
+
+describe('stato di incasso', () => {
+    test('una scadenza pagata dice quando', () => {
+        expect(paymentStatus({ saldo: true, pagamento: '2026-03-12' })).toBe('Pagata il 12/03/2026');
+    });
+
+    test('pagata senza data lo dice senza inventarla', () => {
+        // Tredici scadenze importate sono cosi: il vecchio gestionale non aveva
+        // registrato il giorno.
+        expect(paymentStatus({ saldo: true })).toBe('Pagata');
+    });
+
+    test('una scadenza in ritardo dice di quanto', () => {
+        expect(paymentStatus({ saldo: false, ritardo: 47 })).toBe('Da incassare · 47 giorni di ritardo');
+        expect(paymentStatus({ saldo: false, ritardo: 1 })).toBe('Da incassare · 1 giorno di ritardo');
+    });
+
+    test('una scadenza non ancora arrivata dice quando scade', () => {
+        expect(paymentStatus({ saldo: false, ritardo: 0, scadenza: '2026-12-31' }))
+            .toBe('Da incassare · scade il 31/12/2026');
+    });
+
+    test('una fattura senza scadenza non ha stato di incasso', () => {
+        expect(paymentStatus(null)).toBe('-');
+        expect(paymentStatus(undefined)).toBe('-');
     });
 });

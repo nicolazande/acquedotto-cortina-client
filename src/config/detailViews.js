@@ -25,6 +25,7 @@ import {
     isInvoiceLocked,
     invoiceStatus,
     join,
+    paymentStatus,
     text,
 } from '../utils/formatters';
 
@@ -212,6 +213,7 @@ export const detailViews = {
             { label: 'IVA', value: 'iva', format: formatMoney },
             { label: 'Sconto imponibile', value: 'sconto_imponibile', format: formatMoney },
             { label: 'Totale fattura', value: 'totale_fattura', format: formatMoney },
+            { label: 'Incasso', value: (record) => paymentStatus(record.scadenza) },
             { label: 'Data fattura elettronica', value: 'data_fattura_elettronica', format: formatDate },
             { label: 'Data invio fattura', value: 'data_invio_fattura', format: formatDate },
             { label: 'Tipo pagamento', value: 'tipo_pagamento' },

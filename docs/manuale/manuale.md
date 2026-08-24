@@ -488,10 +488,24 @@ I filtri sono:
 - **In arrivo** — non ancora scadute.
 - **Saldate** — già incassate.
 
+## Dove si vede se una fattura è stata pagata
+
+Il pagamento non si registra sulla fattura ma sulla **scadenza**: la fattura è il
+documento, la scadenza è la posizione da incassare. Lo stato si legge in tre punti:
+
+- nella **scheda della fattura**, alla voce *Incasso*: «Pagata il 21/12/2022» oppure
+  «Da incassare · 47 giorni di ritardo»;
+- nell'**elenco Scadenze**, nelle colonne *Saldo* e *Pagata il*;
+- nella pagina **Incassi**, che mostra solo quelle ancora da incassare.
+
 ## Registrare un pagamento
 
 Si apre la scadenza, si spunta **Saldo** e si inserisce la **Data pagamento**. Il ritardo
 smette di crescere e si ferma ai giorni effettivi.
+
+Alla scadenza si arriva da *Scadenze*, oppure dalla fattura stessa seguendo il
+collegamento *Scadenza*. Per registrare più pagamenti insieme conviene la pagina
+**Incassi**, descritta più avanti.
 
 Se si spunta **Saldo** senza indicare la data, la scadenza risulta comunque chiusa e il
 ritardo resta a zero: il gestionale non sa di quanto sia stata pagata in ritardo e non

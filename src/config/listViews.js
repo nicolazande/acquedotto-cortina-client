@@ -297,6 +297,8 @@ export const listViews = {
             { label: 'Cognome', sortField: 'cognome', value: 'cognome' },
             { label: 'Scadenza', sortField: 'scadenza', value: 'scadenza', format: formatDate },
             { label: 'Ritardo', sortField: 'ritardo', value: (record) => `${record.ritardo || 0} giorni` },
+            { label: 'Saldo', sortField: 'saldo', value: 'saldo', format: boolText },
+            { label: 'Pagata il', sortField: 'pagamento', value: 'pagamento', format: formatDate },
             { label: 'Totale', sortField: 'totale', value: 'totale', format: formatMoney },
         ],
     },

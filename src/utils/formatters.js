@@ -62,6 +62,27 @@ export const invoiceStatus = (record) => {
     return record?.confermata ? 'Confermata' : 'Bozza';
 };
 
+// Lo stato di incasso, detto come lo direbbe una persona. Vive qui perche la
+// stessa frase serve nella scheda della fattura e ovunque si guardi una
+// scadenza: il "pagato" sta sulla scadenza, non sulla fattura.
+export const paymentStatus = (scadenza) => {
+    if (!scadenza) {
+        return EMPTY_VALUE;
+    }
+
+    if (scadenza.saldo) {
+        // Tredici scadenze importate risultano pagate senza data: il gestionale
+        // precedente non l'aveva registrata, e inventarla sarebbe peggio.
+        return scadenza.pagamento ? `Pagata il ${formatDate(scadenza.pagamento)}` : 'Pagata';
+    }
+
+    const ritardo = Number(scadenza.ritardo) || 0;
+
+    return ritardo > 0
+        ? `Da incassare · ${formatNumber(ritardo)} ${ritardo === 1 ? 'giorno' : 'giorni'} di ritardo`
+        : `Da incassare · scade il ${formatDate(scadenza.scadenza)}`;
+};
+
 export const isInvoiceLocked = (record) => (
     record?.confermata === true || String(record?.stato || '').toLowerCase() === 'confermata'
 );
