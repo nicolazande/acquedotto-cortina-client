@@ -14,6 +14,7 @@ const resourceIcons = {
 export const pathIcons = {
     '/': 'dashboard',
     '/consegne': 'send',
+    '/incassi': 'check',
     '/auth/profile': 'admin',
     '/articoli': resourceIcons.articoli,
     '/clienti': resourceIcons.clienti,

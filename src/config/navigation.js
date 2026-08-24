@@ -56,6 +56,16 @@ export const navigationItems = [
         standalone: true,
     },
     {
+        path: '/incassi',
+        group: 'lavoro',
+        label: 'Incassi',
+        icon: pathIcons['/incassi'],
+        description: 'Registra i pagamenti arrivati, molte scadenze in un colpo solo.',
+        // Non e una risorsa con elenco e scheda: e la pagina da tenere aperta
+        // accanto all'estratto conto. La rotta e dichiarata a mano in App.js.
+        standalone: true,
+    },
+    {
         path: '/scadenze',
         group: 'lavoro',
         label: 'Scadenze',

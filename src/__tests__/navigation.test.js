@@ -35,7 +35,7 @@ describe('navigazione', () => {
 
     test('la divisione riflette l uso: documenti ogni giorno, tariffe di rado', () => {
         expect(itemsByGroup('lavoro').map((i) => i.path)).toEqual(
-            ['/clienti', '/contatori', '/edifici', '/letture', '/fatture', '/consegne', '/scadenze']
+            ['/clienti', '/contatori', '/edifici', '/letture', '/fatture', '/consegne', '/incassi', '/scadenze']
         );
         expect(itemsByGroup('configurazione').map((i) => i.path)).toEqual(
             ['/articoli', '/listini', '/fasce']
@@ -66,6 +66,7 @@ describe('navigazione', () => {
             .map((item) => item.path);
 
         expect(risorse).not.toContain('/consegne');
+        expect(risorse).not.toContain('/incassi');
         expect(risorse).toContain('/fatture');
     });
 

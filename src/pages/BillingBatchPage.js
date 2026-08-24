@@ -23,13 +23,13 @@ import Button from '../components/shared/Button';
 import { PageHeader } from '../components/shared/PageChrome';
 import { useFeedback } from '../components/shared/FeedbackProvider';
 import useInvoiceGeneration from '../hooks/useInvoiceGeneration';
+import useSelezione from '../hooks/useSelezione';
 
 const BillingBatchPage = () => {
     const [preview, setPreview] = useState(null);
     const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const [selectedIds, setSelectedIds] = useState([]);
     const [bulk, setBulk] = useState(null);
     // Il flag di interruzione sta in un ref perche il ciclo in corso deve
     // vederlo cambiare senza aspettare un nuovo render.
@@ -57,7 +57,6 @@ const BillingBatchPage = () => {
                 limit: 1000,
             });
             setPreview(response.data);
-            setSelectedIds([]);
         } catch (requestError) {
             setPreview(null);
             setError(requestError.response?.data?.error || 'Anteprima generazione non disponibile.');
@@ -76,24 +75,24 @@ const BillingBatchPage = () => {
         group.previews.filter(isBillablePreview).map(previewReadingId).filter(Boolean)
     );
 
-    const toggleSelection = (clienteId) => {
-        setSelectedIds((correnti) => (
-            correnti.includes(clienteId)
-                ? correnti.filter((id) => id !== clienteId)
-                : [...correnti, clienteId]
-        ));
-    };
+    const clientiSelezionabili = useMemo(() => (
+        readyGroups.map((group) => group.cliente?._id).filter(Boolean)
+    ), [readyGroups]);
+    const selezione = useSelezione(clientiSelezionabili);
 
-    const selectedGroups = readyGroups.filter((group) => selectedIds.includes(group.cliente?._id));
-    const allSelected = readyGroups.length > 0 && selectedIds.length === readyGroups.length;
+    // Dopo una rilettura la selezione riparte da zero: le righe non sono piu
+    // necessariamente le stesse, e generare su una selezione vecchia
+    // significherebbe fatturare clienti che non si stanno guardando.
+    const { seleziona } = selezione;
+    useEffect(() => {
+        seleziona([]);
+    }, [preview, seleziona]);
+
+    const selectedGroups = readyGroups.filter((group) => selezione.contiene(group.cliente?._id));
     const selectedTotal = selectedGroups.reduce(
         (totale, group) => totale + Number(group.totals?.totale_fattura || 0),
         0
     );
-
-    const toggleSelectAll = () => {
-        setSelectedIds(allSelected ? [] : readyGroups.map((group) => group.cliente?._id).filter(Boolean));
-    };
 
     // Le fatture si generano una alla volta di proposito: la quota fissa annuale
     // e unica per contatore, quindi ogni generazione deve vedere quelle gia
@@ -232,12 +231,12 @@ const BillingBatchPage = () => {
                         {readyGroups.length > 0 && (
                             <div className="billing-bulk-bar">
                                 <BillingOption
-                                    checked={allSelected}
-                                    label={allSelected ? 'Deseleziona tutti' : 'Seleziona tutti'}
+                                    checked={selezione.tutteSelezionate}
+                                    label={selezione.tutteSelezionate ? 'Deseleziona tutti' : 'Seleziona tutti'}
                                     help={selectedGroups.length > 0
                                         ? `${selectedGroups.length} clienti selezionati · ${formatMoney(selectedTotal)}`
                                         : 'Nessun cliente selezionato'}
-                                    onChange={toggleSelectAll}
+                                    onChange={selezione.alternaTutte}
                                 />
                                 <BillingActions>
                                     {bulk?.running ? (
@@ -326,9 +325,9 @@ const BillingBatchPage = () => {
                             actions={(
                                 <BillingActions>
                                     <BillingOption
-                                        checked={selectedIds.includes(clienteId)}
+                                        checked={selezione.contiene(clienteId)}
                                         label="Seleziona"
-                                        onChange={() => toggleSelection(clienteId)}
+                                        onChange={() => selezione.alterna(clienteId)}
                                     />
                                     <Button
                                         variant="details"

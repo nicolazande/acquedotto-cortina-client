@@ -1000,6 +1000,14 @@ a {
     gap: 2px;
 }
 
+.invoice-control-search {
+    width: 200px;
+}
+
+.invoice-control-date {
+    width: 150px;
+}
+
 .campo-inline > span {
     color: var(--color-muted);
     font-size: 0.68rem;
@@ -1008,6 +1016,8 @@ a {
     text-transform: uppercase;
 }
 
+.invoice-control-search,
+.invoice-control-date,
 .invoice-control-year {
     width: 96px;
     min-height: 36px;

@@ -18,10 +18,10 @@ import BillingReadingsTable from './BillingReadingsTable';
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
 import useInvoiceGeneration from '../../hooks/useInvoiceGeneration';
+import useSelezione from '../../hooks/useSelezione';
 
 const CustomerBillingPanel = ({ recordId }) => {
     const [preview, setPreview] = useState(null);
-    const [selectedIds, setSelectedIds] = useState([]);
     const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -30,6 +30,16 @@ const CustomerBillingPanel = ({ recordId }) => {
     const billablePreviews = useMemo(() => (
         preview?.previews?.filter(isBillablePreview) || []
     ), [preview]);
+
+    const selezione = useSelezione(billablePreviews.map(previewReadingId));
+    const { selezionati: selectedIds, seleziona } = selezione;
+
+    // Le letture fatturabili partono tutte spuntate: e il caso normale, e
+    // toglierne una e piu rapido che spuntarne dieci. Si rifa a ogni rilettura
+    // dell'anteprima, cosi la selezione riflette sempre cio che si vede.
+    useEffect(() => {
+        seleziona(billablePreviews.map(previewReadingId));
+    }, [billablePreviews, seleziona]);
 
     const selectedTotal = useMemo(() => (
         billablePreviews
@@ -49,12 +59,7 @@ const CustomerBillingPanel = ({ recordId }) => {
 
         try {
             const response = await clienteApi.getFatturazionePreview(recordId, { includeFixedCharge });
-            const nextPreview = response.data;
-            const nextBillableIds = (nextPreview.previews || [])
-                .filter(isBillablePreview)
-                .map(previewReadingId);
-            setPreview(nextPreview);
-            setSelectedIds(nextBillableIds);
+            setPreview(response.data);
         } catch (requestError) {
             setPreview(null);
             setError(requestError.response?.data?.error || 'Anteprima fatturazione non disponibile.');
@@ -68,14 +73,6 @@ const CustomerBillingPanel = ({ recordId }) => {
     }, [loadPreview]);
 
     const { genera, inCorso: isGenerating } = useInvoiceGeneration(loadPreview);
-
-    const toggleSelection = (id) => {
-        setSelectedIds((currentIds) => (
-            currentIds.includes(id)
-                ? currentIds.filter((currentId) => currentId !== id)
-                : [...currentIds, id]
-        ));
-    };
 
     const handleGenerate = async () => {
         const confirmed = await confirm({
@@ -141,7 +138,7 @@ const CustomerBillingPanel = ({ recordId }) => {
                         rows={billablePreviews}
                         selectable
                         selectedIds={selectedIds}
-                        onToggleSelection={toggleSelection}
+                        onToggleSelection={selezione.alterna}
                     />
                 )}
             </>

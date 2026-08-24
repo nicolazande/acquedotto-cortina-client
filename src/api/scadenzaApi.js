@@ -10,6 +10,10 @@ const scadenzaApi = {
     deleteScadenza: resource.remove,
     associateFattura: (scadenzaId, fatturaId) => resource.postRelation(scadenzaId, `fattura/${fatturaId}`),
     getFattura: (id) => resource.getRelation(id, 'fattura'),
+    // Registra l'incasso di piu scadenze in un colpo solo, con la data in cui
+    // il denaro e arrivato. Non tocca quelle gia saldate.
+    registraIncassi: (scadenze, pagamento) => resource.postCollection('incassi', { scadenze, pagamento }),
+    annullaIncassi: (scadenze) => resource.postCollection('incassi/annulla', { scadenze }),
 };
 
 export default scadenzaApi;

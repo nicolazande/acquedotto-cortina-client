@@ -69,6 +69,7 @@ Tre hook, perche erano tre schemi riscritti in ogni pagina che li usava.
 |----------------------------|-------------------------------------------------------------------|
 | `useRemoteData`            | carico, chiedo, tengo il risultato o l'errore, smetto di caricare  |
 | `useRemoteAction`          | eseguo, avviso dell'esito, rileggo cio che e cambiato              |
+| `useSelezione`             | quali righe sono spuntate, spuntane una, spuntale tutte            |
 | `useInvoiceGeneration`     | genero la bozza, apro la fattura creata oppure rileggo l'anteprima |
 
 `useRemoteData` vuole una funzione memorizzata con `useCallback`: le sue

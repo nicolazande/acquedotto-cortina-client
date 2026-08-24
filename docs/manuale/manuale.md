@@ -497,6 +497,31 @@ Se si spunta **Saldo** senza indicare la data, la scadenza risulta comunque chiu
 ritardo resta a zero: il gestionale non sa di quanto sia stata pagata in ritardo e non
 lo inventa. Conviene sempre metterla.
 
+## Registrare molti incassi insieme
+
+Spuntare una scadenza alla volta va bene per due o tre pagamenti. Quando ne arrivano
+settanta insieme, si usa **Incassi** dal menu.
+
+È pensata per stare aperta **accanto all'home banking**: si guardano i movimenti sul
+conto e si spuntano le scadenze corrispondenti.
+
+1. si sceglie l'elenco: *Scadute*, *Da incassare*, *In arrivo*;
+2. si può **cercare** per cognome, nome o importo, così si trova subito la posizione che
+   corrisponde al movimento sul conto;
+3. si indica la **data pagamento** — una sola volta, in alto, vale per tutte le
+   scadenze di quella registrazione;
+4. si spuntano le righe, e in cima si vede sempre **quante sono e quanto fanno**;
+5. si preme **Segna pagate**.
+
+Il gestionale chiede conferma dicendo quante scadenze e quale importo, e non tocca mai
+quelle già saldate: se una era già stata registrata, la lascia com'è e lo dice.
+
+> **Se si sbaglia.** Il filtro *Saldate* mostra le scadenze già incassate: si spuntano e
+> si preme **Riapri**. Tornano fra le aperte e la data di pagamento viene tolta.
+
+Cambiando pagina, elenco o ricerca la selezione si azzera: si registra solo quello che
+si sta guardando.
+
 ## Il ritardo
 
 Il campo **Ritardo** è calcolato dal gestionale e non si modifica a mano: per le
