@@ -601,10 +601,14 @@ il prezzo aggiornato.
 
 ## Le tariffe scadono, e con loro la fatturazione
 
-Ogni fascia vale da una data a un'altra. **Quando l'ultima fascia utile scade, le
-fatture di quel listino non si generano più**: il gestionale si rifiuta di emetterle
-perché non ha un prezzo da applicare. È voluto — meglio fermarsi che fatturare una
-cifra inventata — ma va saputo per tempo.
+Ogni fascia vale da una data a un'altra. Ma **una tariffa scaduta non blocca la
+fatturazione**: finché non se ne inserisce una nuova, continua a valere quella vecchia.
+È come funziona nella realtà — il consiglio approva un prezzo e quello si applica
+finché non ne delibera un altro.
+
+Quindi il 1° gennaio non si ferma niente. Il punto è un altro: **si continuerebbe a
+fatturare l'anno nuovo ai prezzi dell'anno prima**, e questa dev'essere una decisione,
+non una dimenticanza.
 
 Il gestionale lo dice in due punti:
 
@@ -613,7 +617,8 @@ Il gestionale lo dice in due punti:
 - **nella scheda del listino**, il riquadro *Prepara l'anno prossimo*.
 
 > **Attenzione.** Le tariffe attuali scadono il **31 dicembre 2026** su quasi tutti i
-> listini. Vanno rinnovate entro l'anno, altrimenti a gennaio non si fattura.
+> listini. Se non vengono rinnovate, da gennaio le bollette continuano a uscire con i
+> prezzi del 2026.
 
 ## Preparare le tariffe dell'anno nuovo
 
@@ -636,7 +641,8 @@ Tre cose di cui si occupa da solo:
 - **controlla che il risultato sia completo.** Se dopo il rinnovo restasse un buco fra
   due scaglioni, il pulsante resta disattivato e il riquadro spiega cosa manca;
 - **non tocca le tariffe attuali.** Restano valide fino alla loro scadenza, e le fatture
-  già emesse continuano a corrispondere ai prezzi di allora.
+  già emesse continuano a corrispondere ai prezzi di allora. Appena esistono quelle
+  dell'anno nuovo, sono queste ad applicarsi: la proroga si fa da parte.
 
 ---
 
