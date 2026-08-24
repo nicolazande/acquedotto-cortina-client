@@ -129,7 +129,9 @@ const ListPage = ({
             notify('Record cancellato con successo', 'success');
             fetchRecords(currentPage, activeSearch, sortField, sortOrder, activeView);
         } catch (error) {
-            notify('Errore durante la cancellazione', 'error');
+            // Il messaggio del server spiega perche: "ha ancora 12 fatture" si
+            // legge e si capisce, "errore durante la cancellazione" no.
+            notify(error.response?.data?.error || 'Errore durante la cancellazione', 'error');
             console.error(error);
         }
     };
