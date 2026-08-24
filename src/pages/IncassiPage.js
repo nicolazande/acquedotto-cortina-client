@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import scadenzaApi from '../api/scadenzaApi';
 import BillingPanel, { BillingActions, BillingState, BillingSummary } from '../components/shared/BillingPanel';
 import Button from '../components/shared/Button';
@@ -9,7 +9,14 @@ import { useFeedback } from '../components/shared/FeedbackProvider';
 import useRemoteAction from '../hooks/useRemoteAction';
 import useRemoteData from '../hooks/useRemoteData';
 import useSelezione from '../hooks/useSelezione';
-import { EMPTY_VALUE, customerName, formatDate, formatMoney, formatNumber } from '../utils/formatters';
+import {
+    EMPTY_VALUE,
+    customerName,
+    formatDate,
+    formatMoney,
+    formatNumber,
+    paymentStatus,
+} from '../utils/formatters';
 
 const VISTE = [
     { value: 'scadute', label: 'Scadute' },
@@ -27,13 +34,30 @@ const oggi = () => new Date().toISOString().slice(0, 10);
 // segnaposto come il punto singolo che l'anagrafica importata usa per il nome.
 const intestatario = (record) => customerName(record);
 const documento = (record) => (record.anno ? `${record.anno} / ${record.numero ?? EMPTY_VALUE}` : EMPTY_VALUE);
-const ritardoTesto = (record) => (record.ritardo > 0 ? `${formatNumber(record.ritardo)} giorni` : '-');
+// La casella dice "questa riga e selezionata", non "questa e pagata": due
+// significati sulla stessa casella si leggono male, soprattutto nell'elenco
+// delle saldate. Lo stato sta in una colonna sua, con la stessa frase che
+// compare nella scheda della fattura.
+const statoClassName = (record) => (record.saldo ? 'is-ok' : '');
 
 const IncassiPage = () => {
     const history = useHistory();
+    const location = useLocation();
     const { confirm } = useFeedback();
-    const [vista, setVista] = useState('scadute');
-    const [pagina, setPagina] = useState(1);
+
+    // Vista e pagina stanno nell'indirizzo come in tutte le altre liste: il
+    // collegamento si puo condividere e il tasto "indietro" fa quello che ci si
+    // aspetta.
+    const parametri = new URLSearchParams(location.search);
+    const vista = parametri.get('vista') || 'scadute';
+    const pagina = Number.parseInt(parametri.get('page') || '1', 10);
+
+    const vaiA = (modifiche) => {
+        const params = new URLSearchParams(location.search);
+        Object.entries(modifiche).forEach(([chiave, valore]) => params.set(chiave, valore));
+        history.push(`?${params.toString()}`);
+    };
+
     const [ricerca, setRicerca] = useState('');
     const [cercato, setCercato] = useState('');
     const [pagamento, setPagamento] = useState(oggi);
@@ -107,7 +131,7 @@ const IncassiPage = () => {
 
     const cerca = (evento) => {
         evento.preventDefault();
-        setPagina(1);
+        vaiA({ page: 1 });
         setCercato(ricerca.trim());
     };
 
@@ -182,7 +206,7 @@ const IncassiPage = () => {
                     views={VISTE}
                     activeView={vista}
                     allLabel="Tutte"
-                    onChange={(scelta) => { setVista(scelta); setPagina(1); }}
+                    onChange={(scelta) => vaiA({ vista: scelta || 'scadute', page: 1 })}
                 />
 
                 <BillingSummary items={[
@@ -200,7 +224,7 @@ const IncassiPage = () => {
                     )}
                     columns={[
                         {
-                            label: 'Sel.',
+                            label: staGuardandoSaldate ? 'Riapri' : 'Incassa',
                             value: (record) => (
                                 <input
                                     type="checkbox"
@@ -213,13 +237,14 @@ const IncassiPage = () => {
                         { label: 'Cliente', value: intestatario },
                         { label: 'Fattura', value: documento },
                         { label: 'Scadenza', value: 'scadenza', format: formatDate },
-                        { label: 'Ritardo', value: ritardoTesto },
-                        { label: 'Pagata il', value: 'pagamento', format: formatDate },
+                        { label: 'Stato', value: paymentStatus },
                         { label: 'Importo', value: 'totale', format: formatMoney },
                     ]}
                     containerClassName="billing-preview-table"
                     emptyMessage="Nessuna scadenza in questo elenco"
-                    getRowClassName={(record) => (selezione.contiene(record._id) ? 'is-info' : '')}
+                    getRowClassName={(record) => (
+                        selezione.contiene(record._id) ? 'is-info' : statoClassName(record)
+                    )}
                     isLoading={isLoading}
                     records={scadenze}
                     summary={{
@@ -227,7 +252,7 @@ const IncassiPage = () => {
                         subtitle: (record) => formatDate(record.scadenza),
                         meta: (record) => [
                             { label: 'Importo', value: formatMoney(record.totale) },
-                            { label: 'Ritardo', value: ritardoTesto(record) },
+                            { label: 'Stato', value: paymentStatus(record) },
                         ],
                     }}
                     mobileSummaryOnly
@@ -247,7 +272,7 @@ const IncassiPage = () => {
                 )}
 
                 {pagine > 1 && (
-                    <Pagination currentPage={pagina} totalPages={pagine} onPageChange={setPagina} />
+                    <Pagination currentPage={pagina} totalPages={pagine} onPageChange={(p) => vaiA({ page: p })} />
                 )}
             </BillingPanel>
         </div>
