@@ -24,6 +24,7 @@ import { PageHeader } from '../components/shared/PageChrome';
 import { useFeedback } from '../components/shared/FeedbackProvider';
 import useInvoiceGeneration from '../hooks/useInvoiceGeneration';
 import useSelezione from '../hooks/useSelezione';
+import descriviErrore from '../api/descriviErrore';
 
 const BillingBatchPage = () => {
     const [preview, setPreview] = useState(null);
@@ -59,7 +60,7 @@ const BillingBatchPage = () => {
             setPreview(response.data);
         } catch (requestError) {
             setPreview(null);
-            setError(requestError.response?.data?.error || 'Anteprima generazione non disponibile.');
+            setError(descriviErrore(requestError, 'Anteprima generazione non disponibile.'));
         } finally {
             setIsLoading(false);
         }
@@ -130,7 +131,7 @@ const BillingBatchPage = () => {
             } catch (requestError) {
                 failed.push({
                     nome,
-                    motivo: requestError.response?.data?.error || 'errore imprevisto',
+                    motivo: descriviErrore(requestError, 'errore imprevisto'),
                 });
             }
 

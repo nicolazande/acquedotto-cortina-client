@@ -5,6 +5,7 @@ import authApi from '../api/authApi';
 import Button from '../components/shared/Button';
 import ServerStatusIndicator from '../ServerStatusIndicator';
 import '../styles/Auth.css';
+import descriviErrore from '../api/descriviErrore';
 
 const RegisterPage = ({ history }) => {
     const [username, setUsername] = useState('');
@@ -18,7 +19,7 @@ const RegisterPage = ({ history }) => {
             await authApi.register({ username, password });
             history.push('/login');
         } catch (err) {
-            const errorMessage = err.response?.data?.error || 'Errore durante la registrazione.';
+            const errorMessage = descriviErrore(err, 'Errore durante la registrazione.');
             setError(errorMessage);
         }
     };

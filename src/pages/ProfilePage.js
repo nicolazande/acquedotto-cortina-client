@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import authApi from '../api/authApi';
 import Button from '../components/shared/Button';
 import '../styles/Auth.css';
+import descriviErrore from '../api/descriviErrore';
 
 const ProfilePage = () => {
     const [isEditing, setIsEditing] = useState(false);
@@ -22,7 +23,7 @@ const ProfilePage = () => {
             setRole(response.data.role || 'admin');
             setCliente(response.data.cliente || null);
         } catch (err) {
-            const errorMessage = err.response?.data?.error || 'Errore durante il recupero del profilo';
+            const errorMessage = descriviErrore(err, 'Errore durante il recupero del profilo');
             setError(errorMessage);
         }
     };
@@ -40,7 +41,7 @@ const ProfilePage = () => {
             setIsEditing(false);
             fetchProfile();
         } catch (err) {
-            const errorMessage = err.response?.data?.error || 'Errore durante il salvataggio del profilo';
+            const errorMessage = descriviErrore(err, 'Errore durante il salvataggio del profilo');
             setError(errorMessage);
         }
     };

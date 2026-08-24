@@ -83,6 +83,13 @@ schermata resta a mostrare lo stato precedente e sembra che non sia successo
 niente - e `isWorking` disabilita i pulsanti mentre e in corso, cosi non parte
 due volte.
 
+### Il messaggio quando qualcosa fallisce
+
+`api/descriviErrore.js` estrae la spiegazione dalla risposta del server, con un
+testo di ripiego per quando la richiesta non e nemmeno arrivata. Era scritto per
+esteso in diciassette punti: bastava dimenticarne uno perche al posto del motivo
+("il cliente ha ancora 12 fatture") comparisse un generico "errore".
+
 ## Autenticazione
 
 Il token JWT sta in `localStorage`. `services/auth.js` installa due intercettori

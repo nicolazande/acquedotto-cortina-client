@@ -6,6 +6,7 @@ import { consumeSessionMessage } from '../services/auth';
 import Button from '../components/shared/Button';
 import ServerStatusIndicator from '../ServerStatusIndicator';
 import '../styles/Auth.css';
+import descriviErrore from '../api/descriviErrore';
 
 const LoginPage = ({ onLogin, history }) => {
     const [username, setUsername] = useState('');
@@ -28,7 +29,7 @@ const LoginPage = ({ onLogin, history }) => {
             const profile = await onLogin();
             history.push(profile?.role === 'cliente' ? '/area-cliente' : '/');
         } catch (err) {
-            const errorMessage = err.response?.data?.error || 'Credenziali non valide';
+            const errorMessage = descriviErrore(err, 'Credenziali non valide');
             setError(errorMessage);
         }
     };

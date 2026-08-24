@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useFeedback } from '../components/shared/FeedbackProvider';
+import descriviErrore from '../api/descriviErrore';
 
 // Un'operazione che tocca il server e cambia qualcosa: si esegue, si avvisa
 // l'utente dell'esito, si rilegge quello che e cambiato.
@@ -21,7 +22,7 @@ const useRemoteAction = (ricarica) => {
             notify(messaggio(risposta.data), 'success');
             await ricarica();
         } catch (errore) {
-            notify(errore.response?.data?.error || 'Operazione non riuscita', 'error');
+            notify(descriviErrore(errore, 'Operazione non riuscita'), 'error');
         } finally {
             setIsWorking(false);
         }

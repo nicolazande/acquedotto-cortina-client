@@ -18,6 +18,7 @@ import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
 import useInvoiceGeneration from '../../hooks/useInvoiceGeneration';
 import useSelezione from '../../hooks/useSelezione';
+import descriviErrore from '../../api/descriviErrore';
 
 const CustomerBillingPanel = ({ recordId }) => {
     const [preview, setPreview] = useState(null);
@@ -61,7 +62,7 @@ const CustomerBillingPanel = ({ recordId }) => {
             setPreview(response.data);
         } catch (requestError) {
             setPreview(null);
-            setError(requestError.response?.data?.error || 'Anteprima fatturazione non disponibile.');
+            setError(descriviErrore(requestError, 'Anteprima fatturazione non disponibile.'));
         } finally {
             setIsLoading(false);
         }

@@ -10,6 +10,7 @@ import {
     ViewFilters,
 } from './PageChrome';
 import RecordTable from './RecordTable';
+import descriviErrore from '../../api/descriviErrore';
 
 // `beforeTable` e i callback sulle righe sono i punti di estensione usati dalla
 // lista edifici, che ha una mappa sopra la tabella. Senza di essi quella pagina
@@ -67,7 +68,7 @@ const ListPage = ({
             setTotalPages(response.data.totalPages || 1);
             onRecordsLoadedRef.current?.(nextRecords);
         } catch (error) {
-            notify(`Errore durante il recupero di ${config.title.toLowerCase()}`, 'error');
+            notify(descriviErrore(error, `Errore durante il recupero di ${config.title.toLowerCase()}`), 'error');
             console.error(error);
         } finally {
             setIsLoading(false);
@@ -131,7 +132,7 @@ const ListPage = ({
         } catch (error) {
             // Il messaggio del server spiega perche: "ha ancora 12 fatture" si
             // legge e si capisce, "errore durante la cancellazione" no.
-            notify(error.response?.data?.error || 'Errore durante la cancellazione', 'error');
+            notify(descriviErrore(error, 'Errore durante la cancellazione'), 'error');
             console.error(error);
         }
     };

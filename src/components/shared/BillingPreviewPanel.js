@@ -18,6 +18,7 @@ import BillingPanel, {
 } from './BillingPanel';
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
+import descriviErrore from '../../api/descriviErrore';
 
 const BillingPreviewPanel = ({ recordId }) => {
     const [calculation, setCalculation] = useState(null);
@@ -37,7 +38,7 @@ const BillingPreviewPanel = ({ recordId }) => {
             setCalculation(response.data);
         } catch (requestError) {
             setCalculation(null);
-            setError(requestError.response?.data?.error || 'Calcolo non disponibile per questa lettura.');
+            setError(descriviErrore(requestError, 'Calcolo non disponibile per questa lettura.'));
         } finally {
             setIsLoading(false);
         }
@@ -87,7 +88,7 @@ const BillingPreviewPanel = ({ recordId }) => {
                 await loadCalculation();
             }
         } catch (requestError) {
-            notify(requestError.response?.data?.error || 'Errore durante la generazione della fattura', 'error');
+            notify(descriviErrore(requestError, 'Errore durante la generazione della fattura'), 'error');
         } finally {
             setIsGenerating(false);
         }

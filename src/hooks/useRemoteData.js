@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import descriviErrore from '../api/descriviErrore';
 
 // Il caricamento di dati dal server.
 //
@@ -30,7 +31,7 @@ const useRemoteData = (richiesta, { messaggioErrore = 'Dati non disponibili.', i
             // I dati precedenti vengono scartati: mostrarli accanto a un
             // messaggio di errore farebbe credere che siano aggiornati.
             setDati(valoreIniziale.current);
-            setError(errore.response?.data?.error || messaggioErrore);
+            setError(descriviErrore(errore, messaggioErrore));
         } finally {
             setIsLoading(false);
         }

@@ -7,6 +7,7 @@ import { formatFieldValue } from '../../utils/formatters';
 import { useFeedback } from './FeedbackProvider';
 import Button from './Button';
 import { PageHeader } from './PageChrome';
+import descriviErrore from '../../api/descriviErrore';
 
 const DetailPage = ({ config }) => {
     const { id } = useParams();
@@ -25,7 +26,7 @@ const DetailPage = ({ config }) => {
             const response = await config.api.get(id);
             setRecord(response.data);
         } catch (error) {
-            notify(`Errore durante il recupero di ${config.title.toLowerCase()}`, 'error');
+            notify(descriviErrore(error, `Errore durante il recupero di ${config.title.toLowerCase()}`), 'error');
             console.error(error);
         } finally {
             setIsLoading(false);
@@ -59,7 +60,7 @@ const DetailPage = ({ config }) => {
                 ? 'Documento emesso aggiornato: la modifica e stata registrata'
                 : 'Record aggiornato con successo', 'success');
         } catch (error) {
-            notify(error.response?.data?.error || 'Errore durante il salvataggio', 'error');
+            notify(descriviErrore(error, 'Errore durante il salvataggio'), 'error');
             console.error(error);
         }
     };
@@ -91,7 +92,7 @@ const DetailPage = ({ config }) => {
             notify('Record cancellato con successo', 'success');
             goBack();
         } catch (error) {
-            notify(error.response?.data?.error || 'Errore durante la cancellazione', 'error');
+            notify(descriviErrore(error, 'Errore durante la cancellazione'), 'error');
             console.error(error);
         }
     };

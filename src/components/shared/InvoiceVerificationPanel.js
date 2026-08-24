@@ -16,6 +16,7 @@ import BillingPanel, {
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
 import useRemoteData from '../../hooks/useRemoteData';
+import descriviErrore from '../../api/descriviErrore';
 
 const lineCode = (line) => line.articolo_dettaglio?.codice || line.articolo?.codice || line.articolo || '-';
 const lineLabel = (line) => join(line.tipo_tariffa, line.tipo_quota);
@@ -184,7 +185,7 @@ const InvoiceVerificationPanel = ({ record, recordId }) => {
             notify('Quota fissa aggiunta e totali aggiornati', 'success');
             await loadVerification();
         } catch (requestError) {
-            notify(requestError.response?.data?.error || 'Impossibile aggiungere la quota fissa', 'error');
+            notify(descriviErrore(requestError, 'Impossibile aggiungere la quota fissa'), 'error');
             await loadVerification();
         } finally {
             setIsApplyingFixedCharge(false);

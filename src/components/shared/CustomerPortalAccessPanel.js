@@ -4,6 +4,7 @@ import { customerName } from '../../utils/formatters';
 import BillingPanel, { BillingActions, BillingState } from './BillingPanel';
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
+import descriviErrore from '../../api/descriviErrore';
 
 const cleanUsernamePart = (value = '') => String(value)
     .toLowerCase()
@@ -18,7 +19,7 @@ const defaultUsername = (cliente = {}) => {
     return code ? `cliente.${code}` : name ? `cliente.${name}` : '';
 };
 
-const requestError = (error, fallback) => error.response?.data?.error || fallback;
+const requestError = (error, fallback) => descriviErrore(error, fallback);
 
 const CustomerPortalAccessPanel = ({ record, recordId }) => {
     const { confirm, notify } = useFeedback();

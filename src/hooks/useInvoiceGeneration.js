@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useFeedback } from '../components/shared/FeedbackProvider';
+import descriviErrore from '../api/descriviErrore';
 
 // La generazione di una bozza di fattura, con quello che viene dopo.
 //
@@ -31,7 +32,7 @@ const useInvoiceGeneration = (ricaricaAnteprima) => {
                 await ricaricaAnteprima();
             }
         } catch (errore) {
-            notify(errore.response?.data?.error || 'Errore durante la generazione della fattura', 'error');
+            notify(descriviErrore(errore, 'Errore durante la generazione della fattura'), 'error');
         } finally {
             setInCorso('');
         }
