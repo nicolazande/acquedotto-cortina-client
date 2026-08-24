@@ -19,6 +19,13 @@ const SkeletonRows = ({ colSpan, rows = 5 }) => (
 
 const defaultRecordKey = (record) => record._id;
 
+// Gli importi si allineano a destra: incolonnati per unita, migliaia e
+// decimali si confrontano a colpo d'occhio, allineati a sinistra no.
+const cellClassName = (column, nascondiSuMobile = false) => [
+    nascondiSuMobile || column.mobileHidden ? 'mobile-hidden-cell' : null,
+    column.align === 'right' ? 'cell-right' : null,
+].filter(Boolean).join(' ') || undefined;
+
 const getSummaryValue = (getter, record) => (
     typeof getter === 'function' ? getter(record) : getter
 );
@@ -117,6 +124,7 @@ const RecordTable = ({
                             column.sortField && onSort ? (
                                 <SortableHeader
                                     key={column.label}
+                                    align={column.align}
                                     label={column.label}
                                     field={column.sortField}
                                     sortField={sortField}
@@ -124,7 +132,7 @@ const RecordTable = ({
                                     onSort={onSort}
                                 />
                             ) : (
-                                <th key={column.label}>{column.label}</th>
+                                <th key={column.label} className={cellClassName(column)}>{column.label}</th>
                             )
                         ))}
                         {actions && <th>{actionsLabel}</th>}
@@ -158,7 +166,7 @@ const RecordTable = ({
                             {columns.map((column) => (
                                 <td
                                     key={column.label}
-                                    className={hideDataCellsOnMobile || column.mobileHidden ? 'mobile-hidden-cell' : undefined}
+                                    className={cellClassName(column, hideDataCellsOnMobile)}
                                     data-label={column.label}
                                 >
                                     {renderCell(record, column)}

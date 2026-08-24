@@ -10,11 +10,17 @@ export const formatDate = (value) => (
 
 // Formato italiano: 1.234,56 EUR. Prima gli importi uscivano come "1234.56",
 // in disaccordo con il PDF della fattura, che usa gia la virgola decimale.
+//
+// Il raggruppamento e forzato perche l'italiano, di norma, non separa le
+// migliaia sui numeri di quattro cifre: in una colonna di importi finivano
+// affiancati "9197,91" e "13.339,29", e confrontarli a occhio diventava un
+// esercizio. La convenzione contabile italiana scrive comunque 9.197,91.
 const currencyFormatter = new Intl.NumberFormat('it-IT', {
     style: 'currency',
     currency: 'EUR',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
+    useGrouping: 'always',
 });
 
 // Un valore assente non e zero: Number(null) e Number('') valgono 0, quindi
@@ -65,6 +71,21 @@ export const invoiceStatus = (record) => {
 // Lo stato di incasso, detto come lo direbbe una persona. Vive qui perche la
 // stessa frase serve nella scheda della fattura e ovunque si guardi una
 // scadenza: il "pagato" sta sulla scadenza, non sulla fattura.
+// Come si chiama un documento: 2026/A/12 per quelli emessi da qui, anno/numero
+// per quelli importati, che una serie non ce l'hanno. Il tipo compare solo
+// quando non e una fattura: scriverlo su tutte le righe di un elenco di fatture
+// e una colonna che ripete la stessa parola 3.467 volte.
+export const invoiceLabel = (record) => {
+    if (!record?.anno) {
+        return EMPTY_VALUE;
+    }
+
+    const codice = [record.anno, record.serie, record.numero].filter(Boolean).join('/');
+    const tipo = String(record.tipo_documento || '').trim();
+
+    return /^fattura$/i.test(tipo) || !tipo ? codice : `${codice} · ${tipo}`;
+};
+
 export const paymentStatus = (scadenza) => {
     if (!scadenza) {
         return EMPTY_VALUE;

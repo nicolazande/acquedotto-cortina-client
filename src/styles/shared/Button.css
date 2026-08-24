@@ -1,5 +1,9 @@
+/* La regola di base non deve nominare l'elemento: `.App button.btn` vale
+   (0,2,1) e batte ogni variante scritta come `.App .btn-delete` (0,2,0), che
+   percio non riusciva a colorare nulla. Il risultato era che ogni bottone -
+   elimina, annulla, secondario - usciva del colore primario, e un'azione
+   distruttiva era indistinguibile da una innocua. */
 .App .btn,
-.App button.btn,
 .auth-container .btn {
     display: inline-flex;
     width: auto;
@@ -47,15 +51,17 @@
 }
 
 .App .btn:hover,
-.App button.btn:hover,
 .auth-container .btn:hover {
     background: var(--color-primary-strong);
     box-shadow: none;
     transform: translateY(-1px);
 }
 
+/* Lo stato disabilitato deve invece vincere su tutte le varianti: e l'unico
+   caso in cui alzare la specificita e voluto. */
 .App .btn:disabled,
-.App button.btn:disabled {
+.App button.btn:disabled,
+.App a.btn[aria-disabled="true"] {
     color: #8d989c;
     background: #e7ecee;
     box-shadow: none;

@@ -140,7 +140,7 @@ const InvoiceControlPage = () => {
                             { label: 'Data', value: 'data_fattura', format: formatDate },
                             { label: 'Problema', value: 'message' },
                             { label: 'Stato', value: (record) => severityLabel[record.severity] || invoiceStatus(record) },
-                            { label: 'Scostamento', value: deltaLabel },
+                            { label: 'Scostamento', value: deltaLabel, align: 'right' },
                         ]}
                         containerClassName="billing-preview-table"
                         emptyMessage="Nessuna fattura da controllare"

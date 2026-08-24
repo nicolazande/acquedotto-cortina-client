@@ -115,8 +115,8 @@ const TariffRenewalPanel = ({ record, recordId }) => {
                                         <th>Fascia</th>
                                         <th>Da</th>
                                         <th>A</th>
-                                        <th>Prezzo attuale</th>
-                                        <th>{`Prezzo ${piano.anno}`}</th>
+                                        <th className="cell-right">Prezzo attuale</th>
+                                        <th className="cell-right">{`Prezzo ${piano.anno}`}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -125,8 +125,8 @@ const TariffRenewalPanel = ({ record, recordId }) => {
                                             <td data-label="Fascia">{fascia.tipo}</td>
                                             <td data-label="Da">{`${fascia.min} m3`}</td>
                                             <td data-label="A">{`${fascia.max} m3`}</td>
-                                            <td data-label="Prezzo attuale">{formatMoney(fascia.prezzoPrecedente)}</td>
-                                            <td data-label={`Prezzo ${piano.anno}`}>{formatMoney(fascia.prezzo)}</td>
+                                            <td className="cell-right" data-label="Prezzo attuale">{formatMoney(fascia.prezzoPrecedente)}</td>
+                                            <td className="cell-right" data-label={`Prezzo ${piano.anno}`}>{formatMoney(fascia.prezzo)}</td>
                                         </tr>
                                     ))}
                                 </tbody>

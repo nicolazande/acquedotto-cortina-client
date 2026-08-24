@@ -54,12 +54,12 @@ export const SearchToolbar = ({
     </form>
 );
 
-export const SortableHeader = ({ field, label, sortField, sortOrder, onSort }) => {
+export const SortableHeader = ({ align, field, label, sortField, sortOrder, onSort }) => {
     const isActive = sortField === field;
     const indicator = isActive ? (sortOrder === 'asc' ? '▲' : '▼') : '';
 
     return (
-        <th onClick={() => onSort(field)}>
+        <th className={align === 'right' ? 'cell-right' : undefined} onClick={() => onSort(field)}>
             {label} {indicator}
         </th>
     );

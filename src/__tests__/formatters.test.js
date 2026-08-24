@@ -13,6 +13,7 @@ import {
     paymentStatus,
     formatNumber,
     getPathValue,
+    invoiceLabel,
     invoiceStatus,
     isInvoiceLocked,
     join,
@@ -21,7 +22,11 @@ import {
 
 describe('formatMoney', () => {
     test('usa il formato italiano, come il PDF della fattura', () => {
-        expect(conSpaziNormali(formatMoney(1234.5))).toBe('1234,50 €');
+        // Le migliaia sono sempre separate, anche a quattro cifre: l'italiano
+        // di norma non lo fa, ma in una colonna di importi "9197,91" accanto a
+        // "13.339,29" si confronta a fatica.
+        expect(conSpaziNormali(formatMoney(1234.5))).toBe('1.234,50 €');
+        expect(conSpaziNormali(formatMoney(9197.91))).toBe('9.197,91 €');
         expect(conSpaziNormali(formatMoney(163283.09))).toBe('163.283,09 €');
         expect(conSpaziNormali(formatMoney(0))).toBe('0,00 €');
         expect(conSpaziNormali(formatMoney(6))).toBe('6,00 €');
@@ -136,7 +141,7 @@ describe('helper di visualizzazione', () => {
 describe('formatFieldValue', () => {
     test('applica il formattatore dichiarato nella configurazione', () => {
         const record = { totale: 1234.5 };
-        expect(conSpaziNormali(formatFieldValue(record, { value: 'totale', format: formatMoney }))).toBe('1234,50 €');
+        expect(conSpaziNormali(formatFieldValue(record, { value: 'totale', format: formatMoney }))).toBe('1.234,50 €');
     });
 
     test('accetta un estrattore al posto del nome del campo', () => {
@@ -178,5 +183,27 @@ describe('stato di incasso', () => {
     test('una fattura senza scadenza non ha stato di incasso', () => {
         expect(paymentStatus(null)).toBe('-');
         expect(paymentStatus(undefined)).toBe('-');
+    });
+});
+
+describe('nome del documento', () => {
+    test('una fattura emessa da qui ha anno, serie e numero', () => {
+        expect(invoiceLabel({ anno: 2026, serie: 'A', numero: 12 })).toBe('2026/A/12');
+    });
+
+    test('una fattura importata non ha serie', () => {
+        expect(invoiceLabel({ anno: 2025, numero: 102, tipo_documento: 'Fattura' })).toBe('2025/102');
+    });
+
+    test('il tipo si scrive solo quando non e una fattura', () => {
+        // Su un elenco di fatture la parola "Fattura" ripetuta 3.467 volte non
+        // e informazione: le cinque note di credito, invece, vanno distinte.
+        expect(invoiceLabel({ anno: 2025, numero: 8, tipo_documento: 'Nota di Credito' }))
+            .toBe('2025/8 · Nota di Credito');
+    });
+
+    test('senza anno non c e un nome da mostrare', () => {
+        expect(invoiceLabel({})).toBe('-');
+        expect(invoiceLabel(null)).toBe('-');
     });
 });

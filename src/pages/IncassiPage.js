@@ -238,7 +238,7 @@ const IncassiPage = () => {
                         { label: 'Fattura', value: documento },
                         { label: 'Scadenza', value: 'scadenza', format: formatDate },
                         { label: 'Stato', value: paymentStatus },
-                        { label: 'Importo', value: 'totale', format: formatMoney },
+                        { label: 'Importo', value: 'totale', format: formatMoney, align: 'right' },
                     ]}
                     containerClassName="billing-preview-table"
                     emptyMessage="Nessuna scadenza in questo elenco"

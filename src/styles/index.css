@@ -557,6 +557,14 @@ a {
     vertical-align: middle;
 }
 
+/* Gli importi vanno a destra: e l'unico modo di confrontare a occhio una
+   colonna di cifre. Vale sia per l'intestazione sia per le celle, altrimenti
+   il titolo resta scollato dai numeri. */
+.content th.cell-right,
+.content td.cell-right {
+    text-align: right;
+}
+
 .content th,
 .auth-container th,
 .auth-container td:first-child {

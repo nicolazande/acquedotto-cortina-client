@@ -16,6 +16,7 @@ import {
     formatDate,
     formatMoney,
     isInvoiceLocked,
+    invoiceLabel,
     invoiceStatus,
     join,
 } from '../utils/formatters';
@@ -204,11 +205,11 @@ export const listViews = {
             ],
         },
         columns: [
+            { label: 'Documento', sortField: 'numero', value: invoiceLabel },
             { label: 'Cliente', sortField: 'cliente.nome', value: (record) => personLabel(record.cliente) },
-            { label: 'Tipo Documento', sortField: 'tipo_documento', value: 'tipo_documento' },
             { label: 'Data', sortField: 'data_fattura', value: 'data_fattura', format: formatDate },
             { label: 'Stato', sortField: 'confermata', value: invoiceStatus },
-            { label: 'Totale', sortField: 'totale_fattura', value: 'totale_fattura', format: formatMoney },
+            { label: 'Totale', sortField: 'totale_fattura', value: 'totale_fattura', format: formatMoney , align: 'right' },
         ],
     },
     letture: {
@@ -299,7 +300,7 @@ export const listViews = {
             { label: 'Ritardo', sortField: 'ritardo', value: (record) => `${record.ritardo || 0} giorni` },
             { label: 'Saldo', sortField: 'saldo', value: 'saldo', format: boolText },
             { label: 'Pagata il', sortField: 'pagamento', value: 'pagamento', format: formatDate },
-            { label: 'Totale', sortField: 'totale', value: 'totale', format: formatMoney },
+            { label: 'Totale', sortField: 'totale', value: 'totale', format: formatMoney , align: 'right' },
         ],
     },
     servizi: {
@@ -320,8 +321,8 @@ export const listViews = {
         columns: [
             { label: 'Descrizione', sortField: 'descrizione', value: 'descrizione' },
             { label: 'Data Lettura', sortField: 'data_lettura', value: 'data_lettura', format: formatDate },
-            { label: 'Prezzo unitario', sortField: 'prezzo', value: 'prezzo', format: formatMoney },
-            { label: 'Totale riga', sortField: 'valore_unitario', value: 'valore_unitario', format: formatMoney },
+            { label: 'Prezzo unitario', sortField: 'prezzo', value: 'prezzo', format: formatMoney , align: 'right' },
+            { label: 'Totale riga', sortField: 'valore_unitario', value: 'valore_unitario', format: formatMoney , align: 'right' },
         ],
     },
 };
