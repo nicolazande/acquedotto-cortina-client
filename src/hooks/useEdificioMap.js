@@ -72,6 +72,7 @@ const useEdificioMap = (onMarkerSelect) => {
 
     const azzeraSelezione = useCallback(() => {
         setSelezionati(null);
+        setSelezioneAttiva(false);
         Object.values(markersRef.current).forEach((marker) => marker.setIcon(NORMALE));
         if (rettangoloRef.current && mapRef.current) {
             mapRef.current.removeLayer(rettangoloRef.current);
@@ -140,6 +141,12 @@ const useEdificioMap = (onMarkerSelect) => {
             });
 
             setSelezionati(dentro);
+
+            // Disegnata la zona, la mappa torna com'era. Restare in modalita
+            // disegno vorrebbe dire che il clic successivo su un edificio
+            // ricomincia a tirare un rettangolo invece di aprirlo, e nessuno si
+            // ricorda di spegnere un interruttore che ha premuto due gesti fa.
+            setSelezioneAttiva(false);
         };
 
         contenitore.addEventListener('pointerdown', inizio);

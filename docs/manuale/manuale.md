@@ -241,7 +241,11 @@ Cliccando un segnaposto la riga corrispondente si evidenzia nell'elenco, e vicev
 mappa — con il mouse oppure con un dito sul tablet — per racchiudere l'area da
 percorrere. Gli edifici dentro il rettangolo diventano blu e sotto la mappa compare
 l'elenco numerato *Giro di letture*, con i nomi cliccabili per aprire ciascun edificio e
-arrivare ai suoi contatori. **Azzera zona** toglie la selezione.
+arrivare ai suoi contatori.
+
+Disegnata la zona la mappa torna come prima, quindi il clic successivo su un segnaposto
+apre il suo edificio: non c'è nessuna modalità da ricordarsi di spegnere. Per un'altra
+zona si ripreme *Seleziona zona*, e **Azzera zona** toglie l'elenco e il rettangolo.
 
 È il percorso che nel gestionale precedente si faceva mappa → edificio → utente, con in
 più la possibilità di prendere una zona intera in un colpo solo.
