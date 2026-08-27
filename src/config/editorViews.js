@@ -21,24 +21,26 @@ const TIPI_DOCUMENTO = [
 // chiunque, un contatore venduto e al 22%, la mora e esente. Il numero arriva
 // dall'anagrafica articoli insieme all'articolo scelto, cosi non esiste una
 // seconda copia dell'aliquota scritta qui dentro.
+//
+// IVA e totale non si scrivono a mano: il server li ricalcola comunque dalla
+// riga, quindi un numero digitato verrebbe sostituito al salvataggio. Qui si
+// mostra in anticipo esattamente quello che verra salvato.
 const ricalcolaImportiFattura = (dati, campoModificato) => {
-    if (!['imponibile', 'articolo', 'iva'].includes(campoModificato)) {
+    if (!['imponibile', 'articolo'].includes(campoModificato)) {
         return {};
     }
 
-    const imponibile = inCentesimi(dati.imponibile);
-
-    // Senza articolo non si puo sapere l'aliquota: si lascia scrivere l'IVA a
-    // mano e si aggiorna solo il totale, invece di inventare una percentuale.
     const aliquota = dati.aliquota_articolo;
-    const scrittaAMano = campoModificato === 'iva' || aliquota === undefined || aliquota === '';
 
-    const iva = scrittaAMano ? inCentesimi(dati.iva) : ivaSuCentesimi(imponibile, Number(aliquota));
+    // Senza articolo non c'e aliquota, e un importo non si inventa.
+    if (aliquota === undefined || aliquota === null || aliquota === '') {
+        return { iva: '', totale_fattura: '' };
+    }
 
-    return {
-        ...(scrittaAMano ? {} : { iva: inEuro(iva) }),
-        totale_fattura: inEuro(imponibile + iva),
-    };
+    const imponibile = inCentesimi(dati.imponibile);
+    const iva = ivaSuCentesimi(imponibile, Number(aliquota));
+
+    return { iva: inEuro(iva), totale_fattura: inEuro(imponibile + iva) };
 };
 
 const cleanValue = (value) => (value === '-' ? '' : value);
@@ -206,6 +208,7 @@ export const editorViews = {
             // L'articolo diventa la riga della fattura, e porta con se l'aliquota.
             // Una fattura senza righe non si puo trasmettere allo SdI.
             referenceField('Articolo', 'articolo', 'articoli', {
+                obbligatorio: true,
                 copyTo: { aliquota_articolo: (record) => record?.aliquota },
             }),
             // Non e un campo della fattura: serve solo a calcolare l'IVA nel form.
@@ -218,8 +221,8 @@ export const editorViews = {
             field('Codice', 'codice'),
             field('Destinazione', 'destinazione'),
             field('Imponibile', 'imponibile', 'number'),
-            field('IVA', 'iva', 'number'),
-            field('Totale Fattura', 'totale_fattura', 'number'),
+            field('IVA', 'iva', 'number', { calcolato: true }),
+            field('Totale Fattura', 'totale_fattura', 'number', { calcolato: true }),
             field('Data fattura elettronica', 'data_fattura_elettronica', 'date'),
             field('Data invio fattura', 'data_invio_fattura', 'date'),
             field('Tipo Pagamento', 'tipo_pagamento'),

@@ -394,12 +394,12 @@ scritto in *Articoli*, in un posto solo:
 | RIMBORSI | Art. 26 DPR 633/72 |
 | SCOSOC (sconto socio) | NI90 |
 
-Il campo **IVA** resta modificabile per i casi fuori scala, e il totale segue. Se serve
-un'aliquota che non c'è, però, la cosa giusta è aggiungerla in *Articoli*: così vale
-anche per le fatture automatiche e non resta un numero scritto a mano su un solo
-documento.
+**IVA e Totale non si scrivono**: appaiono in grigio perché sono calcolati, e mostrano
+in anticipo esattamente ciò che verrà salvato. Se serve un'aliquota che non c'è, si
+aggiunge in *Articoli*: così vale anche per le fatture automatiche, invece di restare un
+numero scritto a mano su un solo documento.
 
-I totali salvati sono quelli calcolati dalla riga, non quelli digitati: un totale che
+Senza articolo la fattura non si salva, e il gestionale dice cosa manca: un totale che
 non corrisponde alla somma delle righe fa rifiutare la fattura elettronica dallo SdI.
 
 ## Bozza e confermata

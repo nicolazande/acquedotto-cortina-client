@@ -116,7 +116,10 @@ const renderField = ({
     const commonProps = {
         name: field.name,
         onChange,
-        readOnly: isReadOnly,
+        // Un campo calcolato si legge e non si scrive: il suo valore arriva da
+        // altri campi, e lasciarlo digitare vorrebbe dire accettare un numero
+        // che al salvataggio viene sostituito.
+        readOnly: isReadOnly || field.calcolato,
     };
 
     if (field.type === 'reference') {
@@ -182,6 +185,7 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
         prepareInitialReferences(record, config.fields)
     ));
     const isReadOnly = mode === READ_ONLY_MODE;
+    const [mancanti, setMancanti] = useState([]);
 
     useEffect(() => {
         setFormData(prepareInitialData(record, config.fields));
@@ -232,6 +236,17 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        const senzaValore = config.fields
+            .filter((field) => field.obbligatorio && !formData[field.name])
+            .map((field) => field.label);
+
+        if (senzaValore.length > 0) {
+            setMancanti(senzaValore);
+            return;
+        }
+
+        setMancanti([]);
         onSave(prepareSubmitData(formData, config.fields));
     };
 
@@ -256,6 +271,11 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
                             })}
                         </div>
                     ))}
+                    {mancanti.length > 0 && (
+                        <p className="editor-mancanti">
+                            {`Manca ${mancanti.length === 1 ? 'un dato' : 'qualche dato'}: ${mancanti.join(', ')}.`}
+                        </p>
+                    )}
                     <ActionBar>
                         {!isReadOnly && (
                             <Button type="submit" variant="save" icon="check">

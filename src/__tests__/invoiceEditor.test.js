@@ -37,22 +37,33 @@ describe('emissione di una fattura a mano', () => {
     });
 
     it('senza articolo non inventa un aliquota', () => {
-        // Si lascia scrivere l'IVA a mano e si aggiorna solo il totale.
-        expect(ricalcola({ imponibile: '100', iva: '4' }, 'imponibile')).toEqual({ totale_fattura: 104 });
-        expect(ricalcola({ imponibile: '100', iva: '4' }, 'iva')).toEqual({ totale_fattura: 104 });
+        // Svuota invece di indovinare: un importo senza aliquota nota sarebbe
+        // un numero senza fondamento.
+        expect(ricalcola({ imponibile: '100' }, 'imponibile')).toEqual({ iva: '', totale_fattura: '' });
     });
 
-    it('rispetta un IVA scritta a mano anche quando l articolo c e', () => {
-        expect(ricalcola({ imponibile: '100', aliquota_articolo: 10, iva: '22' }, 'iva'))
-            .toEqual({ totale_fattura: 122 });
+    it('IVA e totale non si scrivono a mano', () => {
+        // Il server li ricalcola dalla riga: un numero digitato verrebbe
+        // sostituito al salvataggio, e un campo che accetta cio che poi butta
+        // via e peggio di un campo bloccato.
+        expect(campo('iva').calcolato).toBe(true);
+        expect(campo('totale_fattura').calcolato).toBe(true);
+        expect(ricalcola({ imponibile: '100', aliquota_articolo: 10, iva: '22' }, 'iva')).toEqual({});
+    });
+
+    it('l articolo e obbligatorio', () => {
+        // Senza articolo non c'e riga, e una fattura senza righe non si
+        // trasmette.
+        expect(campo('articolo').obbligatorio).toBe(true);
     });
 
     it('arrotonda sui centesimi come il server, non come il virgola mobile', () => {
-        // 0.1 + 0.2 in virgola mobile non fa 0.3: il totale deve restare esatto.
-        expect(ricalcola({ imponibile: '0.1', iva: '0.2' }, 'iva').totale_fattura).toBe(0.3);
-        // 26.75 al 10% fa 2.675, che si arrotonda per eccesso a 2.68.
+        // 26.75 al 10% fa 2.675, che si arrotonda per eccesso a 2.68 e non a
+        // 2.67 come farebbe l'arrotondamento sul valore binario.
         expect(ricalcola({ imponibile: '26.75', aliquota_articolo: 10 }, 'imponibile'))
             .toEqual({ iva: 2.68, totale_fattura: 29.43 });
+        // 0.1 + 0.2 in virgola mobile non fa 0.3: il totale deve restare esatto.
+        expect(ricalcola({ imponibile: '0.1', aliquota_articolo: 200 }, 'imponibile').totale_fattura).toBe(0.3);
     });
 
     it('non tocca gli importi quando si modifica un altro campo', () => {

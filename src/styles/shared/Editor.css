@@ -26,6 +26,22 @@
     box-shadow: var(--shadow-float);
 }
 
+/* Un campo calcolato si distingue da uno da compilare: il valore c'e, ma non
+   si scrive. */
+.modal-content input[readonly] {
+    color: var(--color-text-muted);
+    background: var(--color-surface-muted);
+    cursor: default;
+}
+
+.editor-mancanti {
+    grid-column: 1 / -1;
+    margin: 4px 0 0;
+    color: var(--color-danger, #b3261e);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
 .modal-content h3 {
     margin: 0 0 18px;
     color: var(--color-heading);
