@@ -21,7 +21,6 @@ const ListPage = ({
     config,
     detailReturnLabel,
     getRowClassName,
-    getRowId,
     onRowClick,
     onSelect,
 }) => {
@@ -220,7 +219,6 @@ const ListPage = ({
                 {beforeTable}
                 <RecordTable
                     getRowClassName={getRowClassName}
-                    getRowId={getRowId}
                     onRowClick={onRowClick}
                     actions={(record) => (
                         <>

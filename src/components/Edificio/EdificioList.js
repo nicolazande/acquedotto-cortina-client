@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import useEdificioMap from '../../hooks/useEdificioMap';
 import { createContextBackSearch, getLocationPath } from '../../hooks/useContextBack';
@@ -12,38 +12,31 @@ import 'leaflet/dist/leaflet.css';
 // ordinamento, paginazione, creazione, cancellazione - arriva da ListPage:
 // prima era riscritto qui e non riceveva i miglioramenti fatti alle altre liste.
 const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' }) => {
-    const [highlightedRowId, setHighlightedRowId] = useState(null);
     const history = useHistory();
     const location = useLocation();
 
-    // I nomi della zona aprono la scheda, come fa il pulsante Apri della
-    // tabella. Non usano `onSelectEdificio`: quella prop esiste solo quando la
-    // lista serve a collegare un edificio a qualcos'altro, e sulla pagina
-    // normale e assente - un nome cliccato non avrebbe fatto nulla.
+    // Aprire l'edificio, dal segnaposto come dai nomi della zona: un clic, un
+    // comportamento. La mappa mostra tutti gli edifici mentre la tabella ne
+    // mostra cinquanta per volta, quindi legarsi alla riga voleva dire non fare
+    // niente per 123 edifici su 173.
+    //
+    // Non si usa `onSelectEdificio`: quella prop esiste solo quando la lista
+    // serve a collegare un edificio a qualcos'altro, e sulla pagina normale e
+    // assente.
     const apriEdificio = useCallback((edificioId) => {
         const ritorno = createContextBackSearch(getLocationPath(location), detailReturnLabel);
         history.push(`/edifici/${edificioId}${ritorno}`);
     }, [detailReturnLabel, history, location]);
 
-    const scrollToEdificioRow = useCallback((edificioId) => {
-        const row = document.getElementById(`row-${edificioId}`);
-        if (row) {
-            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }, []);
-
-    const handleMarkerSelect = useCallback((edificioId) => {
-        setHighlightedRowId(edificioId);
-        scrollToEdificioRow(edificioId);
-    }, [scrollToEdificioRow]);
-
     const {
         azzeraSelezione, edifici, errore, highlightMarker, mapElementRef,
         selezionati, selezioneAttiva, senzaPosizione, toggleSelezione,
-    } = useEdificioMap(handleMarkerSelect);
+    } = useEdificioMap(apriEdificio);
 
+    // Dalla riga alla mappa: il segnaposto si colora e la mappa ci si centra.
+    // La riga non si segna piu: la classe che la marcava non aveva alcuno stile,
+    // quindi non dipingeva nulla.
     const handleRowClick = useCallback((edificio) => {
-        setHighlightedRowId(edificio._id);
         highlightMarker(edificio._id);
     }, [highlightMarker]);
 
@@ -109,10 +102,6 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
             detailReturnLabel={detailReturnLabel}
             onSelect={onSelectEdificio}
             beforeTable={mappa}
-            getRowId={(edificio) => `row-${edificio._id}`}
-            getRowClassName={(edificio) => (
-                `edificio-list-item${highlightedRowId === edificio._id ? ' highlight' : ''}`
-            )}
             onRowClick={handleRowClick}
         />
     );

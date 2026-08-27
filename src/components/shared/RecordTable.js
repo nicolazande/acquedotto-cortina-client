@@ -98,7 +98,6 @@ const RecordTable = ({
     emptyHint,
     getRecordKey = defaultRecordKey,
     getRowClassName,
-    getRowId,
     isLoading,
     loadingMessage = 'Caricamento...',
     mobileSummaryOnly = false,
@@ -158,7 +157,6 @@ const RecordTable = ({
                     {!isLoading && records.map((record) => (
                         <tr
                             key={getRecordKey(record)}
-                            id={getRowId ? getRowId(record) : undefined}
                             className={getRowClassName ? getRowClassName(record) : undefined}
                             onClick={onRowClick ? () => onRowClick(record) : undefined}
                         >
