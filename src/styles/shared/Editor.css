@@ -118,6 +118,9 @@
 .reference-results {
     display: flex;
     max-height: min(420px, calc(100vh - 260px));
+    /* Lo spazio che scrollIntoView lascia sotto: appoggiato al bordo sembrerebbe
+       tagliato invece che finito. */
+    scroll-margin-bottom: 16px;
     flex-direction: column;
     overflow: hidden;
     background: var(--color-surface);

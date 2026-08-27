@@ -37,6 +37,7 @@ const ReferenceField = ({
     value,
 }) => {
     const resultListRef = useRef(null);
+    const resultsRef = useRef(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [options, setOptions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -79,10 +80,33 @@ const ReferenceField = ({
     }, [fetchOptions]);
 
     useEffect(() => {
-        if (isPickerOpen && resultListRef.current) {
-            resultListRef.current.scrollTo({ top: 0 });
+        // Si aspetta che i risultati ci siano davvero: all'apertura il riquadro
+        // contiene solo l'intestazione, e alto poche decine di pixel, quindi
+        // sta comodamente nello schermo e non c'e niente da portare in vista.
+        // E quando arrivano le voci e diventa alto quattrocento pixel, nessuno
+        // ci ripensa piu.
+        if (!isPickerOpen || isLoading) {
+            return;
         }
-    }, [currentPage, isPickerOpen]);
+
+        resultListRef.current?.scrollTo({ top: 0 });
+
+        // L'elenco si apre sotto il campo, dentro una finestra che scorre: se il
+        // campo sta gia in basso - ed e il caso dell'articolo, che nella nuova
+        // fattura viene dopo cliente, scadenza e tipo - il riquadro nasce sotto
+        // il bordo dello schermo. Si vedevano le prime due voci su undici, e per
+        // arrivare alle altre bisognava indovinare che la finestra scorre.
+        //
+        // Si sposta solo se serve davvero: per un campo gia in vista, come il
+        // cliente in cima, muovere la finestra sarebbe solo uno scossone.
+        // E allineato in basso e non "nearest", perche quando il riquadro e piu
+        // alto dello spazio rimasto "nearest" vede l'inizio gia visibile e non
+        // fa niente, che e esattamente il caso da risolvere.
+        const riquadro = resultsRef.current;
+        if (riquadro && riquadro.getBoundingClientRect().bottom > window.innerHeight) {
+            riquadro.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    }, [currentPage, isLoading, isPickerOpen]);
 
     const fieldOptions = mergeReferenceOptions(selectedReference, options);
     const selectedOption = fieldOptions.find((record) => getReferenceRecordId(record) === value);
@@ -160,7 +184,7 @@ const ReferenceField = ({
                 </div>
             )}
             {isPickerOpen && !isReadOnly && (
-                <div className="reference-results">
+                <div className="reference-results" ref={resultsRef}>
                     <div className="reference-results-header">
                         <span>{resultCountLabel}</span>
                         <button type="button" onClick={() => setIsPickerOpen(false)}>
