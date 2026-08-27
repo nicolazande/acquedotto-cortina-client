@@ -1,3 +1,25 @@
+// Un errore che arriva mentre si aspetta un file e comunque JSON, ma dentro un
+// blob: senza leggerlo, al posto del motivo ("la coda e vuota") comparirebbe un
+// generico "operazione non riuscita".
+export const spiegaErroreDiFile = async (errore) => {
+    const dati = errore?.response?.data;
+
+    if (!(dati instanceof Blob)) {
+        return errore;
+    }
+
+    try {
+        const { error: messaggio } = JSON.parse(await dati.text());
+        if (messaggio) {
+            errore.response.data = { error: messaggio };
+        }
+    } catch {
+        // Non era JSON: resta il messaggio generico, che e il meglio possibile.
+    }
+
+    return errore;
+};
+
 const filenameFromDisposition = (disposition, fallback) => {
     const match = String(disposition || '').match(/filename="?([^"]+)"?/i);
     return match?.[1] || fallback;

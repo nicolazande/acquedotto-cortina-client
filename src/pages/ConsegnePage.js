@@ -140,6 +140,20 @@ const ConsegnePage = () => {
         );
     };
 
+    // La stampa non cambia lo stato delle consegne: si stampa, si controlla che
+    // sia uscito tutto, e solo dopo si dichiarano evase.
+    const handleStampa = () => esegui(
+        () => consegnaApi.stampa(),
+        (dati) => (dati.rimaste
+            ? `Stampa pronta. Ne restano ${dati.rimaste}: ripeti per le prossime.`
+            : 'Stampa pronta con tutte le fatture da consegnare.')
+    );
+
+    const handleXml = () => esegui(
+        () => consegnaApi.scaricaXml(),
+        () => 'Archivio degli XML pronto.'
+    );
+
     const handleProva = () => esegui(
         () => consegnaApi.provaTrasporto(),
         (dati) => dati.messaggio
@@ -220,6 +234,22 @@ const ConsegnePage = () => {
                         </Button>
                         <Button variant="secondary" icon="list" disabled={isWorking} onClick={handlePianifica}>
                             Prepara
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            icon="download"
+                            disabled={isWorking || !numberOrZero(riepilogo?.daStampare)}
+                            onClick={handleStampa}
+                        >
+                            {`Stampa (${numberOrZero(riepilogo?.daStampare)})`}
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            icon="download"
+                            disabled={isWorking || !numberOrZero(riepilogo?.perTipo?.elettronica)}
+                            onClick={handleXml}
+                        >
+                            XML
                         </Button>
                         <Button variant="secondary" icon="check" disabled={isWorking} onClick={handleProva}>
                             Verifica posta
