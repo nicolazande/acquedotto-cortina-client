@@ -14,10 +14,20 @@ const formatDateInput = (value) => {
     return date.toISOString().split('T')[0];
 };
 
-const prepareInitialData = (record = {}, fields) => {
+// Esportata perche e logica pura e va verificata da sola: e qui che i valori
+// predefiniti entrano nel form, ed e il punto in cui un errore si vedrebbe solo
+// aprendo la maschera.
+export const prepareInitialData = (record = {}, fields) => {
     const data = { ...record };
 
     fields.forEach((field) => {
+        // I valori predefiniti valgono solo dove non c'e gia qualcosa: aprire
+        // un record esistente non deve cambiarlo, e un campo lasciato vuoto di
+        // proposito su un record salvato resta vuoto.
+        if (field.predefinito !== undefined && data[field.name] === undefined) {
+            data[field.name] = field.predefinito;
+        }
+
         if (field.type === 'date') {
             data[field.name] = formatDateInput(record[field.name]);
         }
@@ -175,10 +185,19 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
         if (isReadOnly) return;
 
         const { name, value, type, checked } = event.target;
-        setFormData((previousData) => ({
-            ...previousData,
-            [name]: type === 'checkbox' ? checked : value,
-        }));
+        setFormData((previousData) => {
+            const aggiornato = {
+                ...previousData,
+                [name]: type === 'checkbox' ? checked : value,
+            };
+
+            // Alcuni campi dipendono da altri: l'IVA dall'imponibile, il totale
+            // da entrambi. Scriverli a mano significa sbagliarli, e una fattura
+            // con il totale che non torna viene rifiutata dallo SdI.
+            return config.ricalcola
+                ? { ...aggiornato, ...config.ricalcola(aggiornato, name) }
+                : aggiornato;
+        });
     };
 
     const handleReferenceChange = (field, value, selectedRecord) => {

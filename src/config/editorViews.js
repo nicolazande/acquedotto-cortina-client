@@ -1,11 +1,47 @@
 import { modalitaOptions } from './deliveryModes';
 import { customerName } from '../utils/formatters';
+import { inCentesimi, inEuro, ivaSuCentesimi } from '../utils/money';
 
 const field = (label, name, type = 'text', options = {}) => ({ label, name, type, ...options });
 const referenceField = (label, name, resource, options = {}) => (
     field(label, name, 'reference', { resource, ...options })
 );
-const selectField = (label, name, options) => field(label, name, 'select', { options });
+const selectField = (label, name, options, extra = {}) => field(label, name, 'select', { options, ...extra });
+
+// I due soli tipi che l'acquedotto ha mai emesso: 3.467 fatture e 5 note di
+// credito. Era un campo di testo libero senza valore predefinito, quindi una
+// fattura nuova nasceva senza tipo e la fattura elettronica veniva rifiutata.
+const TIPI_DOCUMENTO = [
+    { value: 'Fattura', label: 'Fattura' },
+    { value: 'Nota di Credito', label: 'Nota di Credito' },
+];
+
+// L'acqua e al 10%. Le altre aliquote esistono (22% sulle prestazioni, esente
+// sui rimborsi) ma sono l'eccezione, quindi si parte dal 10 e si corregge.
+const ALIQUOTA_PREDEFINITA = 10;
+
+// Imponibile e sconto guidano l'IVA; l'IVA guida il totale. Chi scrive un'IVA
+// diversa dal 10% se la tiene, e il totale la segue: e il comportamento di
+// qualunque modulo di fatturazione, e toglie all'operatore un calcolo a mano
+// che finora poteva sbagliare in silenzio.
+const ricalcolaImportiFattura = (dati, campoModificato) => {
+    if (!['imponibile', 'sconto_imponibile', 'iva'].includes(campoModificato)) {
+        return {};
+    }
+
+    const imponibile = inCentesimi(dati.imponibile);
+    const sconto = inCentesimi(dati.sconto_imponibile);
+    const base = imponibile - sconto;
+
+    const iva = campoModificato === 'iva'
+        ? inCentesimi(dati.iva)
+        : ivaSuCentesimi(base, ALIQUOTA_PREDEFINITA);
+
+    return {
+        ...(campoModificato === 'iva' ? {} : { iva: inEuro(iva) }),
+        totale_fattura: inEuro(base + iva),
+    };
+};
 
 const cleanValue = (value) => (value === '-' ? '' : value);
 const clienteName = (record) => cleanValue(customerName(record)) || record?.nome_cliente || '';
@@ -159,6 +195,7 @@ export const editorViews = {
             view: 'Visualizza Fattura',
         },
         createButtonLabel: 'Crea',
+        ricalcola: ricalcolaImportiFattura,
         fields: [
             referenceField('Cliente', 'cliente', 'clienti', {
                 copyTo: {
@@ -167,7 +204,7 @@ export const editorViews = {
                 },
             }),
             referenceField('Scadenza', 'scadenza', 'scadenze'),
-            field('Tipo Documento', 'tipo_documento'),
+            selectField('Tipo Documento', 'tipo_documento', TIPI_DOCUMENTO, { predefinito: 'Fattura' }),
             field('Ragione Sociale', 'ragione_sociale'),
             field('Confermata', 'confermata', 'checkbox'),
             field('Anno', 'anno', 'number'),
