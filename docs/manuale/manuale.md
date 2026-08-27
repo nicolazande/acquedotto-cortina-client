@@ -75,12 +75,19 @@ utente, email, numero di telefono e password.
 
 ## Il menu
 
-Il menu a sinistra è diviso in due parti, separate da una linea.
+Il menu a sinistra è diviso in gruppi, separati da una linea.
 
-- **La parte alta è il lavoro di tutti i giorni:** Clienti, Contatori, Edifici, Letture,
-  Fatture, Consegne, Scadenze.
-- **La parte bassa riguarda le tariffe:** Articoli, Listini, Fasce. Sono le voci che si
-  toccano una o due volte l'anno, quando cambiano i prezzi.
+- **Panoramica**, da sola in cima: è la schermata di partenza.
+- **Il lavoro di tutti i giorni:** Clienti, Contatori, Edifici, Letture, Fatture,
+  Consegne, Incassi, Scadenze.
+- **Le tariffe:** Articoli, Listini, Fasce. Sono le voci che si toccano una o due volte
+  l'anno, quando cambiano i prezzi.
+- **Admin**, in fondo: il proprio profilo e la password.
+
+Due voci si somigliano e conviene distinguerle subito: **Scadenze** è l'elenco completo
+delle posizioni, da consultare e filtrare; **Incassi** è la pagina da tenere aperta
+accanto all'estratto conto per spuntare i pagamenti arrivati. Stessi dati, due modi di
+lavorarci.
 
 Su telefono il menu si apre con il pulsante a tre righe in alto a destra.
 
@@ -222,9 +229,22 @@ vuoto.
 Gli edifici raccolgono i dati dell'immobile: indirizzo, località, dati catastali, numero
 di unità abitative, posti letto.
 
-Se l'edificio ha latitudine e longitudine, compare sulla **mappa** in cima all'elenco.
-Cliccando un segnaposto sulla mappa la riga corrispondente viene evidenziata
-nell'elenco, e viceversa.
+### La mappa e il giro di letture
+
+In cima all'elenco c'è la **mappa con tutti gli edifici**, non solo quelli della pagina
+aperta. Sopra la mappa una riga dice quanti sono e **quanti restano fuori perché non
+hanno la posizione**: quelli vanno rilevati sul posto, altrimenti non compariranno mai.
+
+Cliccando un segnaposto la riga corrispondente si evidenzia nell'elenco, e viceversa.
+
+**Per preparare un giro di letture** si preme **Seleziona zona** e si trascina sulla
+mappa — con il mouse oppure con un dito sul tablet — per racchiudere l'area da
+percorrere. Gli edifici dentro il rettangolo diventano blu e sotto la mappa compare
+l'elenco numerato *Giro di letture*, con i nomi cliccabili per aprire ciascun edificio e
+arrivare ai suoi contatori. **Azzera zona** toglie la selezione.
+
+È il percorso che nel gestionale precedente si faceva mappa → edificio → utente, con in
+più la possibilità di prendere una zona intera in un colpo solo.
 
 ---
 
@@ -249,9 +269,21 @@ e più sicuro perché il contatore risulta già collegato. Si compilano:
 - **Unità di misura** — normalmente `m3`;
 - **Tipo** e **Note** — facoltativi, utili per annotare letture stimate o anomalie.
 
+## Trovare le letture di una persona
+
+L'elenco mostra il **cliente** e il **contatore** accanto a ogni lettura, e la ricerca in
+cima accetta **cognome o ragione sociale**: scrivendo `Ghedina` escono tutte le letture
+dei suoi contatori, senza dover sapere quali siano.
+
+Il nome non è una copia salvata dentro la lettura: viene letto ogni volta dal cliente
+collegato al contatore, quindi resta giusto anche se la ragione sociale cambia.
+
 ## Filtri
 
-- **Da fatturare** — le letture che entreranno nella prossima fatturazione;
+- **Da fatturare** — le letture che entreranno nella prossima fatturazione. **È
+  l'elenco che dice cosa resta da fatturare**, ed è lo stesso numero che la panoramica
+  mostra nel riquadro *Letture da fatturare*: se il riquadro segna 27, qui ci sono
+  quelle 27, con nome e consumo di ciascuna;
 - **Fatturate** — quelle già diventate fattura.
 
 Una lettura risulta *fatturata* automaticamente quando viene inclusa in una fattura.
@@ -313,9 +345,49 @@ I motivi più comuni sono:
 Le fatture generate nascono sempre come **bozza**: nulla e definitivo finché non si
 conferma.
 
+## 5. La penale per il ritardo
+
+Generando una fattura, il gestionale guarda se il cliente ha **una scadenza precedente
+non ancora pagata e gia superata**. Se la trova, aggiunge alla fattura una riga di
+**6 euro** (l'articolo `GG_DELAY`, «spese per ritardato pagamento»).
+
+Succede da solo, come nel gestionale precedente. Conviene saperlo prima di generare,
+perché finisce in bolletta: se una fattura mostra 6 euro che non ci si aspettava, è
+questa la riga.
+
+**Si addebita una volta sola per scadenza.** Appena la penale entra in una fattura, la
+scadenza che l'ha causata resta segnata e non la fa più scattare: un cliente fatturato
+due volte mentre la stessa posizione resta aperta non la paga due volte. Se si cancella
+la fattura che la portava, la scadenza torna addebitabile.
+
+> **Prima di una fatturazione massiva conviene guardarla.** La penale scatta sulle
+> posizioni aperte e scadute: se i pagamenti di un anno non sono ancora stati registrati,
+> partirebbe verso quasi tutti i clienti insieme. Aprire **Incassi** e sistemare i
+> pagamenti arrivati *prima* di generare, non dopo.
+
 ---
 
 # Fatture
+
+## Emettere una fattura a mano
+
+Non tutto nasce da una lettura: un rimborso, un allacciamento, un conguaglio si
+scrivono a mano con **Nuova** dall'elenco Fatture.
+
+- **Tipo Documento** è già impostato su *Fattura*; l'altra voce è *Nota di Credito*, per
+  storni e rimborsi.
+- Scritto l'**imponibile**, **IVA e Totale fattura si calcolano da soli** al 10%, che è
+  l'aliquota dell'acqua. Se la voce va a un'aliquota diversa — il 22% sulle prestazioni,
+  zero sugli esenti — si scrive l'IVA a mano e **il totale si aggiorna di conseguenza**.
+- Lo **Sconto imponibile** viene tolto prima di calcolare l'IVA.
+
+**L'IVA a mano si scrive per ultima.** Imponibile e sconto ricalcolano sempre l'IVA al
+10%: se si torna a correggerli dopo aver scritto un'aliquota diversa, quella viene
+rifatta al 10% e va riscritta. Lo si vede subito nel campo, ma conviene saperlo.
+
+Conviene lasciar fare il conto al gestionale: un totale che non corrisponde alla somma
+delle righe fa rifiutare la fattura elettronica dallo SdI, e il controllo in *Fatture →
+Controlli* lo segnala comunque.
 
 ## Bozza e confermata
 
@@ -349,9 +421,14 @@ Il riquadro **Storico modifiche** elenca ogni intervento sulla fattura, con l'au
 
 ## Cancellare una fattura
 
-Cancellando una fattura il gestionale rimuove anche le sue righe e la scadenza
-collegata, e **rimette le letture fra quelle da fatturare**. È l'operazione da usare
-quando una bozza e sbagliata: si cancella e si rigenera.
+Cancellando una fattura il gestionale rimuove anche le sue righe, la scadenza collegata
+e le consegne in coda per quel documento, e **rimette le letture fra quelle da
+fatturare**. È l'operazione da usare quando una bozza e sbagliata: si cancella e si
+rigenera.
+
+La scadenza collegata viene rimossa **solo se nessun'altra fattura la richiama**, e se il
+documento portava la penale per il ritardo quella posizione torna addebitabile: dopo una
+cancellazione non resta niente a metà.
 
 ---
 
@@ -417,7 +494,7 @@ modalità si trova il gestionale in questo momento.
 
 *La pagina Consegne. Il riquadro giallo in alto avvisa che il gestionale è in modalità prova e non sta inviando nulla; i numeri sotto contano cosa resta da fare.*
 
-## I quattro pulsanti
+## I pulsanti in alto
 
 **Prepara** cerca le fatture confermate che non hanno ancora una consegna e le mette in
 elenco, ognuna con il recapito del suo cliente. Non manda niente: serve solo a costruire
@@ -426,6 +503,24 @@ la lista di cosa andrebbe fatto.
 **Invia** percorre la lista e recapita quello che può, cioè le email e le PEC, con il
 PDF della fattura allegato. Le fatture cartacee restano in elenco: quelle le stampa e le
 imbuca una persona.
+
+**Stampa (N)** — il numero fra parentesi dice quante buste ci sono da fare — scarica **un
+unico PDF con dentro tutte le fatture da consegnare a mano**, una per pagina, pronto da
+mandare alla stampante. È il pulsante di lavoro dello sportello: oggi tutti i clienti
+sono impostati su *Cartacea postale*, quindi passa di qui tutta la fatturazione.
+
+Se le fatture sono molte il gestionale ne prepara un blocco alla volta e dice quante ne
+restano: si ripreme *Stampa* per il blocco successivo. Serve a non produrre un PDF da
+centinaia di pagine che poi la stampante non regge.
+
+Le consegne stampate **non vengono segnate come evase**: il PDF si può rifare quante
+volte si vuole senza sporcare nulla. A cose fatte si usa *Evasa* sulle righe imbucate.
+
+**XML** scarica in un archivio `.zip` le **fatture elettroniche** pronte da trasmettere,
+un file per fattura nel formato che vuole l'Agenzia delle Entrate. Serve a chi trasmette
+allo SdI passando dal commercialista o dal portale dell'Agenzia: si scarica l'archivio e
+si consegna. Finché nessun cliente è impostato sulla fattura elettronica, il pulsante non
+trova nulla da scaricare e lo dice.
 
 **Verifica posta** controlla che il gestionale riesca a parlare con il server di posta,
 senza spedire nulla a nessuno.
@@ -599,7 +694,7 @@ il prezzo aggiornato.
 > cambiato cosa, il valore precedente e quello nuovo. Le modifiche compaiono anche nel
 > riquadro *Ultime modifiche* della panoramica.
 
-## Le tariffe scadono, e con loro la fatturazione
+## Cosa succede quando una tariffa scade
 
 Ogni fascia vale da una data a un'altra. Ma **una tariffa scaduta non blocca la
 fatturazione**: finché non se ne inserisce una nuova, continua a valere quella vecchia.
@@ -621,6 +716,10 @@ Il gestionale lo dice in due punti:
 > prezzi del 2026.
 
 ## Preparare le tariffe dell'anno nuovo
+
+**Non farlo e una scelta valida**: se nessuno tocca niente, da gennaio si continua a
+fatturare ai prezzi di oggi. Il riquadro serve quando i prezzi **cambiano**, non per
+tenere in piedi la fatturazione.
 
 Nella scheda del listino, il riquadro **Prepara l'anno prossimo** fa in un colpo quello
 che altrimenti si farebbe fascia per fascia.
@@ -672,6 +771,9 @@ Dopo aver confermato le fatture, aprire **Consegne** e premere **Prepara**: l'el
 mostra quante buste ci sono da stampare e quante fatture partono da sole. Il filtro
 *Errori* segnala i clienti a cui manca il recapito.
 
+Poi **Stampa** per avere in un solo PDF tutte le fatture da imbucare, e *Evasa* sulle
+righe man mano che le buste partono.
+
 ## Una volta al mese
 
 Aprire la panoramica e guardare l'**anzianità del credito**. Se la fascia *oltre un anno*
@@ -681,6 +783,10 @@ cresce, è il momento di intervenire sui solleciti.
 
 Controllare che i listini abbiano fasce valide per l'anno in corso: è la causa più
 frequente di generazioni fallite.
+
+Aprire **Incassi** e registrare i pagamenti gia arrivati. Le posizioni aperte e scadute
+fanno scattare la penale di 6 euro sulla fattura nuova: registrarli prima evita di
+addebitarla a chi aveva gia pagato.
 
 Se si è passati all'invio per email, controllare anche il riquadro in alto nella pagina
 **Consegne**: dice se il gestionale sta inviando davvero oppure se è in modalità prova.
