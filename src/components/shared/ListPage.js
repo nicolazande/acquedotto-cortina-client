@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { createContextBackSearch, getLocationPath } from '../../hooks/useContextBack';
 import { useFeedback } from './FeedbackProvider';
@@ -22,7 +22,6 @@ const ListPage = ({
     detailReturnLabel,
     getRowClassName,
     getRowId,
-    onRecordsLoaded,
     onRowClick,
     onSelect,
 }) => {
@@ -34,10 +33,6 @@ const ListPage = ({
     const [totalItems, setTotalItems] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const { confirm, notify } = useFeedback();
-    // Tenuto in un ref: cosi un callback ricreato a ogni render dal componente
-    // padre non fa ripartire il caricamento in continuazione.
-    const onRecordsLoadedRef = useRef(onRecordsLoaded);
-    onRecordsLoadedRef.current = onRecordsLoaded;
     const history = useHistory();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -66,7 +61,6 @@ const ListPage = ({
             setRecords(nextRecords);
             setTotalItems(response.data.totalItems || nextRecords.length);
             setTotalPages(response.data.totalPages || 1);
-            onRecordsLoadedRef.current?.(nextRecords);
         } catch (error) {
             notify(descriviErrore(error, `Errore durante il recupero di ${config.title.toLowerCase()}`), 'error');
             console.error(error);

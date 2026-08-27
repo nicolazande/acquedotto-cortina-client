@@ -230,12 +230,18 @@ export const listViews = {
             title: (record) => formatDate(record.data_lettura),
             subtitle: (record) => join(record.consumo, record.unita_misura),
             meta: (record) => [
+                { label: 'Cliente', value: customerName(record.contatore?.cliente) },
                 { label: 'Tipo', value: record.tipo },
                 { label: 'Stato', value: record.fatturata ? 'Fatturata' : 'Da fatturare' },
             ],
         },
         columns: [
             { label: 'Data Lettura', sortField: 'data_lettura', value: 'data_lettura', format: formatDate },
+            // Chi rileva ragiona per persona, non per matricola: senza il nome
+            // l'elenco costringeva ad aprire ogni riga per capire di chi fosse.
+            // La ricerca in cima trova anche per cognome o ragione sociale.
+            { label: 'Cliente', value: (record) => customerName(record.contatore?.cliente) },
+            { label: 'Contatore', value: (record) => record.contatore?.codice || record.contatore?.seriale || '-' },
             { label: 'Lettura contatore', sortField: 'consumo', value: (record) => join(record.consumo, record.unita_misura) },
             { label: 'Fatturata', sortField: 'fatturata', value: 'fatturata', format: boolText },
             { label: 'Tipo', sortField: 'tipo', value: 'tipo' },

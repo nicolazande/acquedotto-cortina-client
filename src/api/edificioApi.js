@@ -10,6 +10,8 @@ const edificioApi = {
     deleteEdificio: resource.remove,
     associateContatore: (edificioId, contatoreId) => resource.postRelation(edificioId, `contatori/${contatoreId}`),
     getContatori: (id) => resource.getRelation(id, 'contatori'),
+    // Tutti gli edifici che stanno su una mappa, senza paginazione.
+    getMappa: () => resource.getCollection('mappa'),
 };
 
 export default edificioApi;

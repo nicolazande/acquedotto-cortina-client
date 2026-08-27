@@ -1181,6 +1181,102 @@ a {
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     box-shadow: none;
+    /* Mentre si disegna la zona, il trascinamento deve restare alla mappa e non
+       far scorrere la pagina sotto il dito. */
+    touch-action: none;
+}
+
+.edificio-mappa-barra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.edificio-mappa-conteggio {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.edificio-mappa-aiuto,
+.edificio-mappa-errore {
+    margin: -8px 0 14px;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+/* Il segnaposto e disegnato qui: prima era un'immagine scaricata da un sito
+   esterno, quindi la mappa dipendeva da terzi per mostrare un pallino. */
+.edificio-marker span {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.edificio-zona {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+}
+
+.edificio-zona h4 {
+    margin: 0 0 10px;
+}
+
+.edificio-zona ol {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 2px 28px;
+    margin: 0;
+    padding: 0;
+    /* Il numero e disegnato dentro la riga con un contatore, invece di usare il
+       marcatore dell'elenco. In una griglia il marcatore sta fuori dalla casella
+       e finisce nella corsia della colonna accanto: un nome lungo che andava a
+       capo lasciava il numero staccato sulla riga sotto, e il testo si
+       sovrapponeva alla colonna vicina. */
+    list-style: none;
+    counter-reset: edificio;
+}
+
+.edificio-zona li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    /* Senza, una parola lunga allarga la colonna e invade quella accanto. */
+    min-width: 0;
+    counter-increment: edificio;
+}
+
+.edificio-zona li::before {
+    content: counter(edificio) ".";
+    flex: 0 0 2.4em;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.edificio-zona button {
+    flex: 1;
+    min-width: 0;
+    padding: 3px 0;
+    color: var(--color-link, #2980b9);
+    background: none;
+    border: 0;
+    font: inherit;
+    text-align: left;
+    /* Un nome senza spazi non deve sfondare la colonna. */
+    overflow-wrap: anywhere;
+    cursor: pointer;
+}
+
+.edificio-zona button:hover {
+    text-decoration: underline;
 }
 
 .note-attachments-panel {
