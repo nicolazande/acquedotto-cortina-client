@@ -98,3 +98,18 @@ describe('cosa entra e cosa esce dal form', () => {
         expect(inviato.imponibile).toBe(100);
     });
 });
+
+describe('la maschera non lascia scrivere cio che decide il gestionale', () => {
+    it('la numerazione e calcolata, non digitata', () => {
+        // Un numero scritto a mano scavalcava il contatore: e cosi che nascono
+        // due documenti con lo stesso numero.
+        ['anno', 'numero', 'codice'].forEach((nome) => {
+            expect(campo(nome).calcolato).toBe(true);
+        });
+    });
+
+    it('il cliente e obbligatorio quanto l articolo', () => {
+        expect(campo('cliente').obbligatorio).toBe(true);
+        expect(campo('articolo').obbligatorio).toBe(true);
+    });
+});

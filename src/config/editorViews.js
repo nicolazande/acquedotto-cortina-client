@@ -198,6 +198,9 @@ export const editorViews = {
         ricalcola: ricalcolaImportiFattura,
         fields: [
             referenceField('Cliente', 'cliente', 'clienti', {
+                // Una fattura senza intestatario non si trasmette. In archivio
+                // ce ne sono 121, ereditate dall'import: non se ne aggiungono.
+                obbligatorio: true,
                 copyTo: {
                     ragione_sociale: clienteName,
                     nome_cliente: clienteName,
@@ -215,10 +218,13 @@ export const editorViews = {
             field('Aliquota', 'aliquota_articolo', 'hidden', { soloForm: true }),
             field('Ragione Sociale', 'ragione_sociale'),
             field('Confermata', 'confermata', 'checkbox'),
-            field('Anno', 'anno', 'number'),
-            field('Numero', 'numero', 'number'),
+            // Numerazione: la assegna il gestionale, e non si scrive a mano.
+            // Il numero digitato scavalcava il contatore, ed e cosi che nascono
+            // due documenti con lo stesso numero - in archivio ce ne sono tre.
+            field('Anno', 'anno', 'number', { calcolato: true }),
+            field('Numero', 'numero', 'number', { calcolato: true }),
             field('Data Fattura', 'data_fattura', 'date'),
-            field('Codice', 'codice'),
+            field('Codice', 'codice', 'text', { calcolato: true }),
             field('Destinazione', 'destinazione'),
             field('Imponibile', 'imponibile', 'number'),
             field('IVA', 'iva', 'number', { calcolato: true }),

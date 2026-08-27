@@ -399,8 +399,22 @@ in anticipo esattamente ciò che verrà salvato. Se serve un'aliquota che non c'
 aggiunge in *Articoli*: così vale anche per le fatture automatiche, invece di restare un
 numero scritto a mano su un solo documento.
 
-Senza articolo la fattura non si salva, e il gestionale dice cosa manca: un totale che
-non corrisponde alla somma delle righe fa rifiutare la fattura elettronica dallo SdI.
+**Cliente e Articolo sono obbligatori**: senza intestatario e senza righe la fattura non
+si trasmette, e il gestionale dice cosa manca invece di salvare un documento monco.
+
+**Anno, Numero e Codice non si scrivono**: la numerazione la assegna il gestionale. Un
+numero digitato a mano scavalcherebbe il contatore, ed è così che nascono due documenti
+con lo stesso numero.
+
+### Più righe sulla stessa fattura
+
+La maschera crea la prima riga. Se il documento ne ha bisogno di altre — un allacciamento
+più la vendita di un contatore, per esempio — si apre la fattura e si aggiungono dal
+riquadro **Servizi**, ognuna con il suo articolo e quindi con la sua aliquota.
+
+**I totali si rifanno da soli** a ogni riga aggiunta, modificata o tolta: imponibile, IVA
+e totale restano sempre la somma delle righe. L'IVA si arrotonda una volta per aliquota,
+esattamente come la dichiara il riepilogo della fattura elettronica.
 
 ## Bozza e confermata
 
