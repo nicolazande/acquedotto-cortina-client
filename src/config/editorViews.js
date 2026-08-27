@@ -16,30 +16,28 @@ const TIPI_DOCUMENTO = [
     { value: 'Nota di Credito', label: 'Nota di Credito' },
 ];
 
-// L'acqua e al 10%. Le altre aliquote esistono (22% sulle prestazioni, esente
-// sui rimborsi) ma sono l'eccezione, quindi si parte dal 10 e si corregge.
-const ALIQUOTA_PREDEFINITA = 10;
-
-// Imponibile e sconto guidano l'IVA; l'IVA guida il totale. Chi scrive un'IVA
-// diversa dal 10% se la tiene, e il totale la segue: e il comportamento di
-// qualunque modulo di fatturazione, e toglie all'operatore un calcolo a mano
-// che finora poteva sbagliare in silenzio.
+// L'aliquota la decide l'articolo, non il cliente e non il listino: il listino
+// dice il prezzo, l'articolo dice cosa stai vendendo. L'acqua e al 10% per
+// chiunque, un contatore venduto e al 22%, la mora e esente. Il numero arriva
+// dall'anagrafica articoli insieme all'articolo scelto, cosi non esiste una
+// seconda copia dell'aliquota scritta qui dentro.
 const ricalcolaImportiFattura = (dati, campoModificato) => {
-    if (!['imponibile', 'sconto_imponibile', 'iva'].includes(campoModificato)) {
+    if (!['imponibile', 'articolo', 'iva'].includes(campoModificato)) {
         return {};
     }
 
     const imponibile = inCentesimi(dati.imponibile);
-    const sconto = inCentesimi(dati.sconto_imponibile);
-    const base = imponibile - sconto;
 
-    const iva = campoModificato === 'iva'
-        ? inCentesimi(dati.iva)
-        : ivaSuCentesimi(base, ALIQUOTA_PREDEFINITA);
+    // Senza articolo non si puo sapere l'aliquota: si lascia scrivere l'IVA a
+    // mano e si aggiorna solo il totale, invece di inventare una percentuale.
+    const aliquota = dati.aliquota_articolo;
+    const scrittaAMano = campoModificato === 'iva' || aliquota === undefined || aliquota === '';
+
+    const iva = scrittaAMano ? inCentesimi(dati.iva) : ivaSuCentesimi(imponibile, Number(aliquota));
 
     return {
-        ...(campoModificato === 'iva' ? {} : { iva: inEuro(iva) }),
-        totale_fattura: inEuro(base + iva),
+        ...(scrittaAMano ? {} : { iva: inEuro(iva) }),
+        totale_fattura: inEuro(imponibile + iva),
     };
 };
 
@@ -205,6 +203,13 @@ export const editorViews = {
             }),
             referenceField('Scadenza', 'scadenza', 'scadenze'),
             selectField('Tipo Documento', 'tipo_documento', TIPI_DOCUMENTO, { predefinito: 'Fattura' }),
+            // L'articolo diventa la riga della fattura, e porta con se l'aliquota.
+            // Una fattura senza righe non si puo trasmettere allo SdI.
+            referenceField('Articolo', 'articolo', 'articoli', {
+                copyTo: { aliquota_articolo: (record) => record?.aliquota },
+            }),
+            // Non e un campo della fattura: serve solo a calcolare l'IVA nel form.
+            field('Aliquota', 'aliquota_articolo', 'hidden', { soloForm: true }),
             field('Ragione Sociale', 'ragione_sociale'),
             field('Confermata', 'confermata', 'checkbox'),
             field('Anno', 'anno', 'number'),
@@ -214,7 +219,6 @@ export const editorViews = {
             field('Destinazione', 'destinazione'),
             field('Imponibile', 'imponibile', 'number'),
             field('IVA', 'iva', 'number'),
-            field('Sconto Imponibile', 'sconto_imponibile', 'number'),
             field('Totale Fattura', 'totale_fattura', 'number'),
             field('Data fattura elettronica', 'data_fattura_elettronica', 'date'),
             field('Data invio fattura', 'data_invio_fattura', 'date'),

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { editorViews } from '../config/editorViews';
-import { prepareInitialData } from '../components/shared/EntityEditor';
+import { prepareInitialData, prepareSubmitData } from '../components/shared/EntityEditor';
 
 const ricalcola = editorViews.fattura.ricalcola;
 const campo = (nome) => editorViews.fattura.fields.find((f) => f.name === nome);
@@ -15,53 +15,75 @@ describe('emissione di una fattura a mano', () => {
         expect(tipo.options.map((o) => o.value)).toEqual(['Fattura', 'Nota di Credito']);
     });
 
-    it('calcola IVA e totale dall imponibile', () => {
-        expect(ricalcola({ imponibile: '100' }, 'imponibile')).toEqual({ iva: 10, totale_fattura: 110 });
-        expect(ricalcola({ imponibile: '1113.41' }, 'imponibile')).toEqual({ iva: 111.34, totale_fattura: 1224.75 });
+    it('chiede l articolo, che diventa la riga della fattura', () => {
+        // Una fattura senza righe non si puo trasmettere allo SdI.
+        expect(campo('articolo').resource).toBe('articoli');
     });
 
-    it('toglie lo sconto prima di applicare l IVA', () => {
-        expect(ricalcola({ imponibile: '100', sconto_imponibile: '20' }, 'sconto_imponibile'))
-            .toEqual({ iva: 8, totale_fattura: 88 });
+    it('prende l aliquota dall articolo, non da un numero scritto qui', () => {
+        // 10% sull'acqua, 22% su un contatore venduto, esente sulla mora: e
+        // l'anagrafica articoli a dirlo, in un posto solo.
+        expect(ricalcola({ imponibile: '100', aliquota_articolo: 10 }, 'imponibile'))
+            .toEqual({ iva: 10, totale_fattura: 110 });
+        expect(ricalcola({ imponibile: '100', aliquota_articolo: 22 }, 'imponibile'))
+            .toEqual({ iva: 22, totale_fattura: 122 });
+        expect(ricalcola({ imponibile: '100', aliquota_articolo: 0 }, 'imponibile'))
+            .toEqual({ iva: 0, totale_fattura: 100 });
     });
 
-    it('rispetta un IVA scritta a mano e aggiorna solo il totale', () => {
-        // Il 22% e l'esente esistono: chi li scrive se li tiene.
-        expect(ricalcola({ imponibile: '100', iva: '22' }, 'iva')).toEqual({ totale_fattura: 122 });
-        expect(ricalcola({ imponibile: '100', iva: '0' }, 'iva')).toEqual({ totale_fattura: 100 });
+    it('ricalcola anche quando si cambia articolo a importo gia scritto', () => {
+        expect(ricalcola({ imponibile: '1113.41', aliquota_articolo: 10 }, 'articolo'))
+            .toEqual({ iva: 111.34, totale_fattura: 1224.75 });
+    });
+
+    it('senza articolo non inventa un aliquota', () => {
+        // Si lascia scrivere l'IVA a mano e si aggiorna solo il totale.
+        expect(ricalcola({ imponibile: '100', iva: '4' }, 'imponibile')).toEqual({ totale_fattura: 104 });
+        expect(ricalcola({ imponibile: '100', iva: '4' }, 'iva')).toEqual({ totale_fattura: 104 });
+    });
+
+    it('rispetta un IVA scritta a mano anche quando l articolo c e', () => {
+        expect(ricalcola({ imponibile: '100', aliquota_articolo: 10, iva: '22' }, 'iva'))
+            .toEqual({ totale_fattura: 122 });
     });
 
     it('arrotonda sui centesimi come il server, non come il virgola mobile', () => {
         // 0.1 + 0.2 in virgola mobile non fa 0.3: il totale deve restare esatto.
         expect(ricalcola({ imponibile: '0.1', iva: '0.2' }, 'iva').totale_fattura).toBe(0.3);
-        // 26.75 al 10% fa 2.675, che si arrotonda per eccezione a 2.68.
-        expect(ricalcola({ imponibile: '26.75' }, 'imponibile')).toEqual({ iva: 2.68, totale_fattura: 29.43 });
+        // 26.75 al 10% fa 2.675, che si arrotonda per eccesso a 2.68.
+        expect(ricalcola({ imponibile: '26.75', aliquota_articolo: 10 }, 'imponibile'))
+            .toEqual({ iva: 2.68, totale_fattura: 29.43 });
     });
 
     it('non tocca gli importi quando si modifica un altro campo', () => {
-        expect(ricalcola({ imponibile: '100', iva: '10' }, 'data_fattura')).toEqual({});
+        expect(ricalcola({ imponibile: '100', aliquota_articolo: 10 }, 'data_fattura')).toEqual({});
     });
 
     it('accetta la virgola come separatore decimale', () => {
-        expect(ricalcola({ imponibile: '100,50' }, 'imponibile')).toEqual({ iva: 10.05, totale_fattura: 110.55 });
+        expect(ricalcola({ imponibile: '100,50', aliquota_articolo: 10 }, 'imponibile'))
+            .toEqual({ iva: 10.05, totale_fattura: 110.55 });
     });
 });
 
-describe('i valori predefiniti entrano davvero nel form', () => {
+describe('cosa entra e cosa esce dal form', () => {
     it('una fattura nuova parte con il tipo compilato', () => {
-        const dati = prepareInitialData(undefined, editorViews.fattura.fields);
-        expect(dati.tipo_documento).toBe('Fattura');
+        expect(prepareInitialData(undefined, editorViews.fattura.fields).tipo_documento).toBe('Fattura');
     });
 
     it('aprire una nota di credito esistente non la trasforma in fattura', () => {
-        // Il valore predefinito vale solo dove non c'e gia qualcosa: altrimenti
-        // il primo salvataggio cambierebbe il tipo senza che nessuno lo decida.
         const dati = prepareInitialData({ tipo_documento: 'Nota di Credito' }, editorViews.fattura.fields);
         expect(dati.tipo_documento).toBe('Nota di Credito');
     });
 
-    it('un campo senza predefinito resta vuoto', () => {
-        const dati = prepareInitialData(undefined, editorViews.fattura.fields);
-        expect(dati.imponibile).toBeUndefined();
+    it('l aliquota resta nel form e non viene spedita', () => {
+        // Non e un campo della fattura: spedirla vorrebbe dire farsela scartare
+        // in silenzio dal database.
+        const inviato = prepareSubmitData(
+            { imponibile: 100, aliquota_articolo: 22, articolo: 'abc' },
+            editorViews.fattura.fields
+        );
+        expect(inviato.aliquota_articolo).toBeUndefined();
+        expect(inviato.articolo).toBe('abc');
+        expect(inviato.imponibile).toBe(100);
     });
 });

@@ -371,23 +371,36 @@ la fattura che la portava, la scadenza torna addebitabile.
 
 ## Emettere una fattura a mano
 
-Non tutto nasce da una lettura: un rimborso, un allacciamento, un conguaglio si
-scrivono a mano con **Nuova** dall'elenco Fatture.
+Non tutto nasce da una lettura: un rimborso, un allacciamento, la vendita di un
+contatore si scrivono a mano con **Nuova** dall'elenco Fatture.
 
 - **Tipo Documento** è già impostato su *Fattura*; l'altra voce è *Nota di Credito*, per
   storni e rimborsi.
-- Scritto l'**imponibile**, **IVA e Totale fattura si calcolano da soli** al 10%, che è
-  l'aliquota dell'acqua. Se la voce va a un'aliquota diversa — il 22% sulle prestazioni,
-  zero sugli esenti — si scrive l'IVA a mano e **il totale si aggiorna di conseguenza**.
-- Lo **Sconto imponibile** viene tolto prima di calcolare l'IVA.
+- **Articolo** è la voce che si sta fatturando, e va scelto: diventa la riga della
+  fattura. Una fattura senza righe **non si può trasmettere** allo SdI.
+- Scritto l'**imponibile**, **IVA e Totale si calcolano da soli** con l'aliquota
+  dell'articolo scelto.
 
-**L'IVA a mano si scrive per ultima.** Imponibile e sconto ricalcolano sempre l'IVA al
-10%: se si torna a correggerli dopo aver scritto un'aliquota diversa, quella viene
-rifatta al 10% e va riscritta. Lo si vede subito nel campo, ma conviene saperlo.
+L'aliquota non dipende dal cliente né dal suo listino: il listino stabilisce il
+*prezzo*, l'articolo stabilisce **cosa** stai vendendo, ed è quello a decidere l'IVA.
+L'acqua è al 10% per chiunque, un contatore venduto è al 22%, la mora è esente. È
+scritto in *Articoli*, in un posto solo:
 
-Conviene lasciar fare il conto al gestionale: un totale che non corrisponde alla somma
-delle righe fa rifiutare la fattura elettronica dallo SdI, e il controllo in *Fatture →
-Controlli* lo segnala comunque.
+| Articolo | Aliquota |
+|----------|----------|
+| ACQUA, ACQUAF, COND, CONDF, allacciamenti | IVA 10% |
+| CONT01 (Contatore) | IVA 22% |
+| GG_DELAY (mora) | Esente art. 15 |
+| RIMBORSI | Art. 26 DPR 633/72 |
+| SCOSOC (sconto socio) | NI90 |
+
+Il campo **IVA** resta modificabile per i casi fuori scala, e il totale segue. Se serve
+un'aliquota che non c'è, però, la cosa giusta è aggiungerla in *Articoli*: così vale
+anche per le fatture automatiche e non resta un numero scritto a mano su un solo
+documento.
+
+I totali salvati sono quelli calcolati dalla riga, non quelli digitati: un totale che
+non corrisponde alla somma delle righe fa rifiutare la fattura elettronica dallo SdI.
 
 ## Bozza e confermata
 

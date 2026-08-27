@@ -52,10 +52,17 @@ const prepareInitialReferences = (record = {}, fields) => (
     }, {})
 );
 
-const prepareSubmitData = (formData, fields) => {
+export const prepareSubmitData = (formData, fields) => {
     const data = { ...formData };
 
     fields.forEach((field) => {
+        // Alcuni campi servono solo al form - l'aliquota che accompagna
+        // l'articolo scelto, per esempio - e non appartengono al record.
+        // Spedirli significherebbe farseli scartare in silenzio dal database.
+        if (field.soloForm) {
+            delete data[field.name];
+        }
+
         if (field.type === 'reference' && data[field.name] === '') {
             data[field.name] = null;
         }
@@ -208,11 +215,19 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
             [field.name]: selectedRecord,
         }));
 
-        setFormData((previousData) => ({
-            ...previousData,
-            [field.name]: value,
-            ...getCopiedReferenceValues(field, selectedRecord, config.fields),
-        }));
+        setFormData((previousData) => {
+            const aggiornato = {
+                ...previousData,
+                [field.name]: value,
+                ...getCopiedReferenceValues(field, selectedRecord, config.fields),
+            };
+
+            // Anche un riferimento puo guidare altri campi: scegliere l'articolo
+            // decide l'aliquota, e quindi l'IVA e il totale.
+            return config.ricalcola
+                ? { ...aggiornato, ...config.ricalcola(aggiornato, field.name) }
+                : aggiornato;
+        });
     };
 
     const handleSubmit = (event) => {
@@ -225,7 +240,7 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
             <div className="modal-content">
                 <h3>{getTitle(config, mode)}</h3>
                 <form onSubmit={handleSubmit}>
-                    {config.fields.map((field) => (
+                    {config.fields.filter((field) => field.type !== 'hidden').map((field) => (
                         <div
                             className={`form-group ${field.type === 'reference' ? 'form-group-reference' : ''}`}
                             key={field.name}
