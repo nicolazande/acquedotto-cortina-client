@@ -1,10 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import useEdificioMap from '../../hooks/useEdificioMap';
 import { createContextBackSearch, getLocationPath } from '../../hooks/useContextBack';
 import ListPage from '../shared/ListPage';
 import Button from '../shared/Button';
 import { listViews } from '../../config/listViews';
+import { PARAMETRO_ZONA, leggiZona, scriviZona } from '../../utils/zonaMappa';
 import 'leaflet/dist/leaflet.css';
 
 // La lista edifici e una lista come le altre, con in piu una mappa sopra la
@@ -28,10 +29,24 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
         history.push(`/edifici/${edificioId}${ritorno}`);
     }, [detailReturnLabel, history, location]);
 
+    const zona = useMemo(() => leggiZona(location.search), [location.search]);
+
+    const impostaZona = useCallback((prossima) => {
+        const parametri = new URLSearchParams(location.search);
+
+        if (prossima) {
+            parametri.set(PARAMETRO_ZONA, scriviZona(prossima));
+        } else {
+            parametri.delete(PARAMETRO_ZONA);
+        }
+
+        history.replace(`${location.pathname}?${parametri.toString()}`);
+    }, [history, location.pathname, location.search]);
+
     const {
         azzeraSelezione, edifici, errore, highlightMarker, mapElementRef,
         selezionati, selezioneAttiva, senzaPosizione, toggleSelezione,
-    } = useEdificioMap(apriEdificio);
+    } = useEdificioMap(apriEdificio, { zona, impostaZona });
 
     // Dalla riga alla mappa: il segnaposto si colora e la mappa ci si centra.
     // La riga non si segna piu: la classe che la marcava non aveva alcuno stile,

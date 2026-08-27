@@ -247,6 +247,11 @@ Disegnata la zona la mappa torna come prima, quindi il clic successivo su un seg
 apre il suo edificio: non c'è nessuna modalità da ricordarsi di spegnere. Per un'altra
 zona si ripreme *Seleziona zona*, e **Azzera zona** toglie l'elenco e il rettangolo.
 
+**La zona resta finché non la si azzera**: si può aprire un edificio dell'elenco, vedere i
+suoi contatori e tornare indietro ritrovandola intatta — utile per percorrere il giro una
+casa alla volta. Resta anche nell'indirizzo della pagina, quindi il collegamento si può
+salvare fra i preferiti o mandare a chi fa il giro.
+
 È il percorso che nel gestionale precedente si faceva mappa → edificio → utente, con in
 più la possibilità di prendere una zona intera in un colpo solo.
 

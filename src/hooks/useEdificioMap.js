@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import edificioApi from '../api/edificioApi';
 
@@ -16,9 +16,11 @@ const NORMALE = segnaposto('#c0392b');
 const EVIDENZIATO = segnaposto('#f1c40f');
 const NELLA_ZONA = segnaposto('#2980b9');
 
+const STILE_ZONA = { color: '#2980b9', weight: 1, fillOpacity: 0.1 };
 const CENTRO_CORTINA = [46.5396, 12.1357];
 
 const haCoordinate = (edificio) => edificio.latitudine && edificio.longitudine;
+const confiniDi = (zona) => L.latLngBounds([zona.sud, zona.ovest], [zona.nord, zona.est]);
 
 // La mappa degli edifici, con la selezione di una zona.
 //
@@ -26,18 +28,24 @@ const haCoordinate = (edificio) => edificio.latitudine && edificio.longitudine;
 // della tabella: chi organizza un giro di letture per zona ne vedeva cinquanta
 // su centosettanta e non poteva sapere cosa mancasse. Ora li carica tutti una
 // volta sola, e permette di racchiuderne un gruppo trascinando un rettangolo.
-const useEdificioMap = (onMarkerSelect) => {
+//
+// La zona non e uno stato di questo hook: arriva da fuori - la lista la tiene
+// nell'indirizzo, come gia fa con pagina, ordinamento e ricerca - e gli edifici
+// selezionati si ricavano da lei. Cosi la selezione sopravvive all'andare e
+// tornare da una scheda, e non esistono due copie della stessa cosa che possano
+// discordare.
+const useEdificioMap = (apriEdificio, { zona, impostaZona }) => {
     const mapElementRef = useRef(null);
     const mapRef = useRef(null);
     const markersRef = useRef({});
     const highlightedMarkerRef = useRef(null);
-    const rettangoloRef = useRef(null);
+    const zonaDisegnataRef = useRef(null);
+    const anteprimaRef = useRef(null);
     const inizioRef = useRef(null);
     const selezioneAttivaRef = useRef(false);
 
     const [edifici, setEdifici] = useState([]);
     const [senzaPosizione, setSenzaPosizione] = useState(0);
-    const [selezionati, setSelezionati] = useState(null);
     const [selezioneAttiva, setSelezioneAttiva] = useState(false);
     const [errore, setErrore] = useState('');
 
@@ -57,6 +65,18 @@ const useEdificioMap = (onMarkerSelect) => {
         return () => { annullato = true; };
     }, []);
 
+    // Gli edifici nella zona non si memorizzano: si ricavano dai confini ogni
+    // volta che servono.
+    const selezionati = useMemo(() => {
+        if (!zona) {
+            return null;
+        }
+
+        const confini = confiniDi(zona);
+        return edifici.filter((edificio) => haCoordinate(edificio)
+            && confini.contains(L.latLng(edificio.latitudine, edificio.longitudine)));
+    }, [edifici, zona]);
+
     const highlightMarker = useCallback((edificioId) => {
         if (highlightedMarkerRef.current) {
             highlightedMarkerRef.current.setIcon(NORMALE);
@@ -71,14 +91,9 @@ const useEdificioMap = (onMarkerSelect) => {
     }, []);
 
     const azzeraSelezione = useCallback(() => {
-        setSelezionati(null);
+        impostaZona(null);
         setSelezioneAttiva(false);
-        Object.values(markersRef.current).forEach((marker) => marker.setIcon(NORMALE));
-        if (rettangoloRef.current && mapRef.current) {
-            mapRef.current.removeLayer(rettangoloRef.current);
-            rettangoloRef.current = null;
-        }
-    }, []);
+    }, [impostaZona]);
 
     const toggleSelezione = useCallback(() => setSelezioneAttiva((attiva) => !attiva), []);
 
@@ -102,9 +117,10 @@ const useEdificioMap = (onMarkerSelect) => {
         }
     }, [selezioneAttiva]);
 
-    // Disegna il rettangolo. Si usano i puntatori invece di mouse e touch
-    // separati: un dito e un mouse fanno lo stesso gesto e meritano lo stesso
-    // codice.
+    // Il gesto. Si usano i puntatori invece di mouse e touch separati: un dito e
+    // un mouse fanno lo stesso gesto e meritano lo stesso codice. Mentre si
+    // trascina si vede un'anteprima; al rilascio si dichiarano i confini e sara
+    // l'effetto qui sotto a disegnare la zona vera.
     const collegaDisegno = useCallback((mappa) => {
         const contenitore = mappa.getContainer();
 
@@ -113,34 +129,39 @@ const useEdificioMap = (onMarkerSelect) => {
             return mappa.containerPointToLatLng([evento.clientX - riquadro.left, evento.clientY - riquadro.top]);
         };
 
+        const togliAnteprima = () => {
+            if (anteprimaRef.current) {
+                mappa.removeLayer(anteprimaRef.current);
+                anteprimaRef.current = null;
+            }
+        };
+
         const inizio = (evento) => {
             if (!selezioneAttivaRef.current) return;
             contenitore.setPointerCapture?.(evento.pointerId);
             inizioRef.current = puntoDa(evento);
-            if (rettangoloRef.current) mappa.removeLayer(rettangoloRef.current);
-            rettangoloRef.current = L.rectangle(L.latLngBounds(inizioRef.current, inizioRef.current), {
-                color: '#2980b9', weight: 1, fillOpacity: 0.1,
-            }).addTo(mappa);
+            togliAnteprima();
+            anteprimaRef.current = L.rectangle(L.latLngBounds(inizioRef.current, inizioRef.current), STILE_ZONA)
+                .addTo(mappa);
         };
 
         const muovi = (evento) => {
-            if (!inizioRef.current || !rettangoloRef.current) return;
-            rettangoloRef.current.setBounds(L.latLngBounds(inizioRef.current, puntoDa(evento)));
+            if (!inizioRef.current || !anteprimaRef.current) return;
+            anteprimaRef.current.setBounds(L.latLngBounds(inizioRef.current, puntoDa(evento)));
         };
 
         const fine = () => {
-            if (!inizioRef.current || !rettangoloRef.current) return;
-            const confini = rettangoloRef.current.getBounds();
+            if (!inizioRef.current || !anteprimaRef.current) return;
+            const confini = anteprimaRef.current.getBounds();
             inizioRef.current = null;
+            togliAnteprima();
 
-            const dentro = edifici.filter((edificio) => haCoordinate(edificio)
-                && confini.contains(L.latLng(edificio.latitudine, edificio.longitudine)));
-
-            Object.entries(markersRef.current).forEach(([id, marker]) => {
-                marker.setIcon(dentro.some((edificio) => edificio._id === id) ? NELLA_ZONA : NORMALE);
+            impostaZona({
+                sud: confini.getSouth(),
+                ovest: confini.getWest(),
+                nord: confini.getNorth(),
+                est: confini.getEast(),
             });
-
-            setSelezionati(dentro);
 
             // Disegnata la zona, la mappa torna com'era. Restare in modalita
             // disegno vorrebbe dire che il clic successivo su un edificio
@@ -160,7 +181,7 @@ const useEdificioMap = (onMarkerSelect) => {
             contenitore.removeEventListener('pointerup', fine);
             contenitore.removeEventListener('pointercancel', fine);
         };
-    }, [edifici]);
+    }, [impostaZona]);
 
     useEffect(() => {
         if (!mapElementRef.current || edifici.length === 0) return undefined;
@@ -181,7 +202,7 @@ const useEdificioMap = (onMarkerSelect) => {
             const marker = L.marker([edificio.latitudine, edificio.longitudine], { icon: NORMALE })
                 .addTo(mappa)
                 .bindTooltip(edificio.descrizione || edificio.nome_edificio || edificio.indirizzo || 'Edificio')
-                .on('click', () => onMarkerSelect?.(edificio._id));
+                .on('click', () => apriEdificio(edificio._id));
             markersRef.current[edificio._id] = marker;
         });
 
@@ -191,7 +212,30 @@ const useEdificioMap = (onMarkerSelect) => {
         }
 
         return collegaDisegno(mappa);
-    }, [collegaDisegno, edifici, onMarkerSelect]);
+    }, [apriEdificio, collegaDisegno, edifici]);
+
+    // Il rettangolo e i colori dei segnaposto seguono la zona, che sia appena
+    // stata disegnata o riletta dall'indirizzo tornando da una scheda.
+    useEffect(() => {
+        const mappa = mapRef.current;
+        if (!mappa) {
+            return;
+        }
+
+        if (zonaDisegnataRef.current) {
+            mappa.removeLayer(zonaDisegnataRef.current);
+            zonaDisegnataRef.current = null;
+        }
+
+        if (zona) {
+            zonaDisegnataRef.current = L.rectangle(confiniDi(zona), STILE_ZONA).addTo(mappa);
+        }
+
+        const dentro = new Set((selezionati || []).map((edificio) => edificio._id));
+        Object.entries(markersRef.current).forEach(([id, marker]) => {
+            marker.setIcon(dentro.has(id) ? NELLA_ZONA : NORMALE);
+        });
+    }, [selezionati, zona]);
 
     // Uscendo dalla pagina la mappa va chiusa: Leaflet tiene agganciati i propri
     // ascoltatori sulla finestra, e senza questo ne resta un insieme appeso a
@@ -204,7 +248,8 @@ const useEdificioMap = (onMarkerSelect) => {
             mapRef.current = null;
             markersRef.current = {};
             highlightedMarkerRef.current = null;
-            rettangoloRef.current = null;
+            zonaDisegnataRef.current = null;
+            anteprimaRef.current = null;
         }
     }, []);
 
