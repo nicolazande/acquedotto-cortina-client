@@ -182,7 +182,7 @@ const ListPage = ({
 
     return (
         <div className={`${config.className}-list-container`}>
-            <div className={`${config.className}-list`}>
+            <div className={`${config.className}-list page-list`}>
                 <PageHeader
                     className="list-page-heading"
                     eyebrow={config.eyebrow || 'Archivio'}

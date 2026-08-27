@@ -85,7 +85,13 @@ a {
     box-shadow: none;
 }
 
-.content [class$="-list"],
+/* Il contenitore di pagina si dichiara con una classe sua, non per il modo in
+   cui finisce il suo nome. `[class$="-list"]` prendeva qualunque elemento la cui
+   classe termina per "-list": la lista dei risultati del selettore dentro le
+   maschere, che smetteva di scorrere perche si ritrovava overflow:hidden, e le
+   liste della panoramica, che si prendevano un riquadro e un padding mai
+   chiesti - il loro padding:0 perdeva contro una regola piu specifica. */
+.content .page-list,
 .content > [class$="-details"],
 .auth-container {
     position: relative;
@@ -104,7 +110,7 @@ a {
     display: block;
 }
 
-.content [class$="-list"],
+.content .page-list,
 .content > [class$="-details"] {
     padding: 24px;
 }
@@ -337,7 +343,7 @@ a {
     color: var(--color-heading);
 }
 
-.content [class$="-list"] h2,
+.content .page-list h2,
 .content > [class$="-details"] h2,
 .content > [class$="-details"] h3,
 .auth-container h2 {
@@ -372,7 +378,7 @@ a {
     line-height: 1.45;
 }
 
-.content [class$="-list"] .eyebrow,
+.content .page-list .eyebrow,
 .content > [class$="-details"] .eyebrow {
     margin-bottom: 4px;
     color: var(--color-primary-strong);
@@ -1752,7 +1758,7 @@ input[type="checkbox"] {
         background: var(--color-page);
     }
 
-    .content [class$="-list"],
+    .content .page-list,
     .content > [class$="-details"],
     .auth-container {
         padding: 16px;
@@ -1861,7 +1867,7 @@ input[type="checkbox"] {
         padding: 12px;
     }
 
-    .content [class$="-list"] h2,
+    .content .page-list h2,
     .content > [class$="-details"] h2,
     .auth-container h2 {
         font-size: 1.38rem;
