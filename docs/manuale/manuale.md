@@ -231,6 +231,29 @@ trova e il **listino** con cui si calcolano i suoi consumi.
 
 I filtri disponibili sono *Attivi*, *Inattivi* e *Condominiali*.
 
+### Se il contatore viene sostituito
+
+Il consumo si calcola come **differenza fra due letture dello stesso contatore**. Quando
+si monta un contatore nuovo, l'indice riparte da zero: se la lettura nuova finisce sul
+contatore vecchio, la differenza risulterebbe negativa.
+
+Il gestionale non lo lascia passare. Se una lettura è più bassa della precedente si
+ferma e lo dice — «la lettura X è più bassa della precedente Y» — e quel cliente non
+viene fatturato finché qualcuno non decide. È giusto così: le cause sono tre — contatore
+sostituito, contatore azzerato, cifra sbagliata — e vanno distinte da una persona.
+
+**Come si fa una sostituzione**: si registra l'ultima lettura sul contatore vecchio (che
+chiude i suoi conti), si crea un **contatore nuovo** collegato allo stesso cliente e allo
+stesso edificio, e le letture successive vanno su quello. Lo storico del vecchio resta
+dov'è.
+
+### Se cambia l'intestatario
+
+Vale lo stesso principio: prima si registra e si **fattura** la lettura di chiusura del
+cliente che se ne va, poi si cambia il cliente sul contatore. Il gestionale calcola
+sempre la differenza rispetto alla lettura precedente di quel contatore, quindi una
+lettura rimasta da fatturare dopo il cambio finirebbe addebitata al cliente nuovo.
+
 Il campo **Quota riparto (%)** riguarda solo i contatori condominiali: indica la
 percentuale di consumo attribuita a quella utenza. Sui contatori normali si lascia
 vuoto.

@@ -166,8 +166,6 @@ export const editorViews = {
             field('Seriale', 'seriale'),
             field('Inattivo', 'inattivo', 'checkbox'),
             field('Quota riparto (%)', 'consumo', 'number'),
-            field('Subentro', 'subentro', 'checkbox'),
-            field('Sostituzione', 'sostituzione', 'checkbox'),
             field('Condominiale', 'condominiale', 'checkbox'),
             field('Inizio', 'inizio', 'date'),
             field('Scadenza', 'scadenza', 'date'),
