@@ -153,7 +153,8 @@ const renderField = ({
                 disabled={isReadOnly}
                 value={valore}
             >
-                {!field.required && <option value="">-</option>}
+                {/* Un campo obbligatorio non offre la scelta vuota. */}
+                {!field.obbligatorio && <option value="">-</option>}
                 {daMostrare.map((opzione) => (
                     <option key={opzione.value} value={opzione.value}>{opzione.label}</option>
                 ))}
