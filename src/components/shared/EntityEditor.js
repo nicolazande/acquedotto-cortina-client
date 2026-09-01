@@ -111,6 +111,7 @@ const renderField = ({
     isReadOnly,
     onChange,
     onReferenceChange,
+    opzioni,
     selectedReference,
 }) => {
     const commonProps = {
@@ -135,14 +136,15 @@ const renderField = ({
     }
 
     if (field.type === 'select') {
+        const elenco = typeof field.options === 'function' ? (opzioni || []) : field.options;
         const valore = formData[field.name] ?? '';
         // Un valore salvato che non compare fra le opzioni (per esempio una
         // modalita scritta a mano prima che il campo diventasse una tendina)
         // resta selezionabile: altrimenti il primo salvataggio lo cambierebbe
         // senza che nessuno lo abbia deciso.
-        const opzioni = field.options.some((opzione) => opzione.value === valore) || valore === ''
-            ? field.options
-            : [{ value: valore, label: valore }, ...field.options];
+        const daMostrare = elenco.some((opzione) => opzione.value === valore) || valore === ''
+            ? elenco
+            : [{ value: valore, label: valore }, ...elenco];
 
         return (
             <select
@@ -152,7 +154,7 @@ const renderField = ({
                 value={valore}
             >
                 {!field.required && <option value="">-</option>}
-                {opzioni.map((opzione) => (
+                {daMostrare.map((opzione) => (
                     <option key={opzione.value} value={opzione.value}>{opzione.label}</option>
                 ))}
             </select>
@@ -186,6 +188,28 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
     ));
     const isReadOnly = mode === READ_ONLY_MODE;
     const [mancanti, setMancanti] = useState([]);
+    // Le opzioni di una tendina possono arrivare dal server - le province sono
+    // centosette e la loro fonte e la stessa che le converte per la fattura
+    // elettronica, quindi si chiedono invece di tenerne una copia qui.
+    const [opzioniCaricate, setOpzioniCaricate] = useState({});
+
+    useEffect(() => {
+        let annullato = false;
+
+        config.fields
+            .filter((field) => typeof field.options === 'function')
+            .forEach((field) => {
+                field.options()
+                    .then((elenco) => {
+                        if (!annullato) {
+                            setOpzioniCaricate((precedenti) => ({ ...precedenti, [field.name]: elenco }));
+                        }
+                    })
+                    .catch(() => {});
+            });
+
+        return () => { annullato = true; };
+    }, [config.fields]);
 
     useEffect(() => {
         setFormData(prepareInitialData(record, config.fields));
@@ -267,6 +291,7 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
                                 isReadOnly,
                                 onChange: handleChange,
                                 onReferenceChange: handleReferenceChange,
+                                opzioni: opzioniCaricate[field.name],
                                 selectedReference: selectedReferences[field.name],
                             })}
                         </div>

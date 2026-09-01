@@ -1,6 +1,7 @@
 import { modalitaOptions } from './deliveryModes';
 import { customerName } from '../utils/formatters';
 import { inCentesimi, inEuro, ivaSuCentesimi } from '../utils/money';
+import provinciaApi from '../api/provinciaApi';
 
 const field = (label, name, type = 'text', options = {}) => ({ label, name, type, ...options });
 const referenceField = (label, name, resource, options = {}) => (
@@ -43,6 +44,36 @@ const ricalcolaImportiFattura = (dati, campoModificato) => {
     return { iva: inEuro(iva), totale_fattura: inEuro(imponibile + iva) };
 };
 
+// Le province si scelgono, non si scrivono: in campo libero l'anagrafica ha
+// raccolto "Aquila", "Pesaro (vecchio codice)" e una provincia soppressa.
+// L'elenco arriva dal server, che e lo stesso che le converte in sigla per la
+// fattura elettronica.
+const opzioniProvincia = async () => {
+    const { data } = await provinciaApi.getProvince();
+    return (data.data || []).map(({ nome, sigla }) => ({ value: nome, label: `${nome} (${sigla})` }));
+};
+
+const campoProvincia = (label, name) => selectField(label, name, opzioniProvincia);
+
+// Nove clienti su dieci fatturano dove risiedono: 846 su 900 in archivio hanno
+// i due indirizzi identici. Si ricopiano mentre si scrive, e restano
+// modificabili per i pochi che differiscono.
+const CAMPI_INDIRIZZO = ['indirizzo', 'numero', 'cap', 'localita', 'provincia', 'nazione'];
+
+const ricalcolaIndirizzoCliente = (dati, campoModificato) => {
+    if (!dati.fatturazione_come_residenza) {
+        return {};
+    }
+
+    // Spuntata la casella si allinea tutto; poi ogni campo della residenza
+    // trascina il suo gemello.
+    const daCopiare = campoModificato === 'fatturazione_come_residenza'
+        ? CAMPI_INDIRIZZO
+        : CAMPI_INDIRIZZO.filter((campo) => `${campo}_residenza` === campoModificato);
+
+    return Object.fromEntries(daCopiare.map((campo) => [`${campo}_fatturazione`, dati[`${campo}_residenza`] ?? '']));
+};
+
 const cleanValue = (value) => (value === '-' ? '' : value);
 const clienteName = (record) => cleanValue(customerName(record)) || record?.nome_cliente || '';
 const buildingName = (record) => record?.descrizione || record?.nome_edificio || '';
@@ -68,6 +99,7 @@ export const editorViews = {
             view: 'Visualizza Cliente',
         },
         createButtonLabel: 'Crea',
+        ricalcola: ricalcolaIndirizzoCliente,
         fields: [
             field('Ragione Sociale', 'ragione_sociale'),
             field('Nome', 'nome'),
@@ -77,19 +109,20 @@ export const editorViews = {
             field('Quote', 'quote', 'number'),
             field('Data di Nascita', 'data_nascita', 'date'),
             field('Comune di Nascita', 'comune_nascita'),
-            field('Provincia di Nascita', 'provincia_nascita'),
+            campoProvincia('Provincia di Nascita', 'provincia_nascita'),
             field('Indirizzo di Residenza', 'indirizzo_residenza'),
             field('Numero di Residenza', 'numero_residenza'),
             field('CAP di Residenza', 'cap_residenza'),
             field('Località di Residenza', 'localita_residenza'),
-            field('Provincia di Residenza', 'provincia_residenza'),
+            campoProvincia('Provincia di Residenza', 'provincia_residenza'),
             field('Nazione di Residenza', 'nazione_residenza'),
+            field('Fatturazione come residenza', 'fatturazione_come_residenza', 'checkbox', { soloForm: true, predefinito: true }),
             field('Destinazione di Fatturazione', 'destinazione_fatturazione'),
             field('Indirizzo di Fatturazione', 'indirizzo_fatturazione'),
             field('Numero di Fatturazione', 'numero_fatturazione'),
             field('CAP di Fatturazione', 'cap_fatturazione'),
             field('Località di Fatturazione', 'localita_fatturazione'),
-            field('Provincia di Fatturazione', 'provincia_fatturazione'),
+            campoProvincia('Provincia di Fatturazione', 'provincia_fatturazione'),
             field('Nazione di Fatturazione', 'nazione_fatturazione'),
             field('Codice Fiscale', 'codice_fiscale'),
             field('Partita IVA', 'partita_iva'),

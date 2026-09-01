@@ -113,3 +113,51 @@ describe('la maschera non lascia scrivere cio che decide il gestionale', () => {
         expect(campo('articolo').obbligatorio).toBe(true);
     });
 });
+
+describe('anagrafica cliente', () => {
+    const ricalcolaCliente = editorViews.cliente.ricalcola;
+    const campoCliente = (nome) => editorViews.cliente.fields.find((f) => f.name === nome);
+
+    it('le province si scelgono da un elenco, non si scrivono', () => {
+        // In campo libero l'anagrafica ha raccolto "Aquila", "Forli Cesena" e
+        // "Pesaro (vecchio codice)".
+        ['provincia_nascita', 'provincia_residenza', 'provincia_fatturazione'].forEach((nome) => {
+            expect(campoCliente(nome).type).toBe('select');
+            expect(typeof campoCliente(nome).options).toBe('function');
+        });
+    });
+
+    it('la fatturazione segue la residenza finche la casella e spuntata', () => {
+        const dati = {
+            fatturazione_come_residenza: true,
+            indirizzo_residenza: 'Via Zuel 12', cap_residenza: '32043',
+            localita_residenza: 'Cortina', provincia_residenza: 'Belluno',
+        };
+
+        // Spuntando la casella si allinea tutto.
+        expect(ricalcolaCliente(dati, 'fatturazione_come_residenza')).toEqual({
+            indirizzo_fatturazione: 'Via Zuel 12', numero_fatturazione: '',
+            cap_fatturazione: '32043', localita_fatturazione: 'Cortina',
+            provincia_fatturazione: 'Belluno', nazione_fatturazione: '',
+        });
+
+        // Poi ogni campo trascina solo il suo gemello.
+        expect(ricalcolaCliente({ ...dati, cap_residenza: '32100' }, 'cap_residenza'))
+            .toEqual({ cap_fatturazione: '32100' });
+    });
+
+    it('togliendo la spunta i due indirizzi si separano', () => {
+        expect(ricalcolaCliente({ fatturazione_come_residenza: false, cap_residenza: '32043' }, 'cap_residenza'))
+            .toEqual({});
+    });
+
+    it('la casella resta nel form e non finisce nel record', () => {
+        expect(campoCliente('fatturazione_come_residenza').soloForm).toBe(true);
+        const inviato = prepareSubmitData(
+            { ragione_sociale: 'Prova', fatturazione_come_residenza: true },
+            editorViews.cliente.fields
+        );
+        expect(inviato.fatturazione_come_residenza).toBeUndefined();
+        expect(inviato.ragione_sociale).toBe('Prova');
+    });
+});

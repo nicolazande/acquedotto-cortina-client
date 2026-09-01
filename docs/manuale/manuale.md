@@ -178,6 +178,17 @@ Si preme **Nuovo** e si compilano i campi. Per una persona fisica si usano *Cogn
 *Nome*; per una società si compila *Ragione sociale*, che ha la precedenza ovunque
 compaia il nome del cliente.
 
+**L'indirizzo di fatturazione si compila da solo.** La casella *Fatturazione come
+residenza* è spuntata, e ogni campo della residenza — indirizzo, numero, CAP, località,
+provincia — si ricopia mentre lo si scrive. Nove clienti su dieci stanno così: in
+archivio sono 846 su 900. Per i pochi diversi si toglie la spunta e si compilano a mano;
+da quel momento i due indirizzi restano separati.
+
+**Le province si scelgono da una tendina**, non si scrivono. Sono le 107 italiane con la
+loro sigla, e sono le stesse che la fattura elettronica sa scrivere: scegliendo da lì non
+può più capitare quello che è capitato scrivendole a mano, cioè «Aquila», «Forlì Cesena»
+e «Pesaro (vecchio codice)» che nell'archivio ci sono ancora.
+
 Sono importanti anche:
 
 - **Destinazione e indirizzo di fatturazione**, se la fattura va spedita a un indirizzo
