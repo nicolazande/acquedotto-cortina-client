@@ -2,22 +2,15 @@ import React from 'react';
 import DetailPage from './DetailPage';
 import { detailViews } from '../../config/detailViews';
 
-const createDetailComponent = (resourceKey) => {
-    const DetailComponent = () => <DetailPage config={detailViews[resourceKey]} />;
+const createDetailComponent = (nome) => {
+    const DetailComponent = () => <DetailPage config={detailViews[nome]} />;
 
-    DetailComponent.displayName = `${resourceKey}Details`;
+    DetailComponent.displayName = `${nome}Details`;
     return DetailComponent;
 };
 
-export const detailComponents = {
-    articoli: createDetailComponent('articoli'),
-    clienti: createDetailComponent('clienti'),
-    contatori: createDetailComponent('contatori'),
-    edifici: createDetailComponent('edifici'),
-    fasce: createDetailComponent('fasce'),
-    fatture: createDetailComponent('fatture'),
-    letture: createDetailComponent('letture'),
-    listini: createDetailComponent('listini'),
-    scadenze: createDetailComponent('scadenze'),
-    servizi: createDetailComponent('servizi'),
-};
+// Una scheda per ogni vista dichiarata: non c'e niente da scegliere, quindi non
+// c'e niente da elencare.
+export const detailComponents = Object.fromEntries(
+    Object.keys(detailViews).map((nome) => [nome, createDetailComponent(nome)]),
+);

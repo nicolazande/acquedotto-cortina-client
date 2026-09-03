@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import ListPage from './ListPage';
 import PageLoading from './PageLoading';
 import { listViews } from '../../config/listViews';
+import { selectProp } from '../../config/resourceMeta';
 
 // La lista edifici porta con se Leaflet e il suo CSS, che pesano piu di tutto il
 // resto dell'applicazione. Caricarla su richiesta evita di farli scaricare a chi
@@ -17,28 +18,21 @@ const EdificioList = (props) => (
 
 EdificioList.displayName = 'edificiList';
 
-const createListComponent = (resourceKey, selectProp) => {
+const createListComponent = (nome) => {
     const ListComponent = (props) => (
         <ListPage
-            config={listViews[resourceKey]}
+            config={listViews[nome]}
             detailReturnLabel={props.detailReturnLabel}
-            onSelect={props[selectProp]}
+            onSelect={props[selectProp(nome)]}
         />
     );
 
-    ListComponent.displayName = `${resourceKey}List`;
+    ListComponent.displayName = `${nome}List`;
     return ListComponent;
 };
 
-export const listComponents = {
-    articoli: createListComponent('articoli', 'onSelectArticolo'),
-    clienti: createListComponent('clienti', 'onSelectCliente'),
-    contatori: createListComponent('contatori', 'onSelectContatore'),
-    edifici: EdificioList,
-    fasce: createListComponent('fasce', 'onSelectFascia'),
-    fatture: createListComponent('fatture', 'onSelectFattura'),
-    letture: createListComponent('letture', 'onSelectLettura'),
-    listini: createListComponent('listini', 'onSelectListino'),
-    scadenze: createListComponent('scadenze', 'onSelectScadenza'),
-    servizi: createListComponent('servizi', 'onSelectServizio'),
-};
+// Un elenco per ogni vista dichiarata. Gli edifici hanno il proprio, con la
+// mappa; per tutti gli altri il componente e lo stesso, cambia la configurazione.
+export const listComponents = Object.fromEntries(
+    Object.keys(listViews).map((nome) => [nome, nome === 'edifici' ? EdificioList : createListComponent(nome)]),
+);

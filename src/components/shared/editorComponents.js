@@ -2,30 +2,24 @@ import React from 'react';
 import EntityEditor from './EntityEditor';
 import { editorViews } from '../../config/editorViews';
 
-const createEditorComponent = (configKey, propName) => {
+// Ogni vista di modifica ha il suo componente, e sono tutti uguali: cambia solo
+// quale configurazione leggono e sotto quale prop arriva il record - che e lo
+// stesso nome della vista. Elencarli a mano voleva dire dieci righe identiche.
+const createEditorComponent = (nome) => {
     const EditorComponent = ({ onSave, onCancel, mode, ...props }) => (
         <EntityEditor
-            config={editorViews[configKey]}
-            record={props[propName]}
+            config={editorViews[nome]}
+            record={props[nome]}
             onSave={onSave}
             onCancel={onCancel}
             mode={mode}
         />
     );
 
-    EditorComponent.displayName = `${configKey}Editor`;
+    EditorComponent.displayName = `${nome}Editor`;
     return EditorComponent;
 };
 
-export const editorComponents = {
-    articolo: createEditorComponent('articolo', 'articolo'),
-    cliente: createEditorComponent('cliente', 'cliente'),
-    contatore: createEditorComponent('contatore', 'contatore'),
-    edificio: createEditorComponent('edificio', 'edificio'),
-    fascia: createEditorComponent('fascia', 'fascia'),
-    fattura: createEditorComponent('fattura', 'fattura'),
-    lettura: createEditorComponent('lettura', 'lettura'),
-    listino: createEditorComponent('listino', 'listino'),
-    scadenza: createEditorComponent('scadenza', 'scadenza'),
-    servizio: createEditorComponent('servizio', 'servizio'),
-};
+export const editorComponents = Object.fromEntries(
+    Object.keys(editorViews).map((nome) => [nome, createEditorComponent(nome)]),
+);

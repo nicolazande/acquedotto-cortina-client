@@ -46,7 +46,10 @@ export default [
         // I test girano con Vitest: le sue globali non esistono nel codice applicativo.
         files: ['src/**/*.test.js'],
         languageOptions: {
-            globals: { describe: 'readonly', expect: 'readonly', test: 'readonly', vi: 'readonly' },
+            // `process` serve ai test che leggono i file del progetto: girano in Node.
+            globals: {
+                describe: 'readonly', expect: 'readonly', it: 'readonly', test: 'readonly', vi: 'readonly', process: 'readonly',
+            },
         },
     },
     {

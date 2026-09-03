@@ -11,6 +11,7 @@ import scadenzaApi from '../api/scadenzaApi';
 import servizioApi from '../api/servizioApi';
 import { editorComponents } from '../components/shared/editorComponents';
 import { listComponents } from '../components/shared/listComponents';
+import { risorse, selectProp } from './resourceMeta';
 import {
     EMPTY_VALUE,
     boolText,
@@ -30,127 +31,79 @@ const recordId = (record) => record && record._id;
 const createdRecordId = (response) => response?.data?._id;
 export const responseData = (response) => response.data;
 
+// Cosa serve sapere di una risorsa per aprirne le relazioni. Solo tre cose
+// cambiano davvero da una all'altra - come si legge un record, come se ne crea
+// uno, e che titolo mostrare: il resto discende dal nome e dal singolare, che
+// stanno in `resourceMeta`. Prima erano dieci righe per risorsa, sei delle quali
+// sempre uguali a se stesse.
+const risorsa = (nome, { get, create, title }) => {
+    const { singolare } = risorse[nome];
+
+    return {
+        singular: singolare,
+        plural: nome.charAt(0).toUpperCase() + nome.slice(1),
+        basePath: `/${nome}`,
+        get,
+        create,
+        title,
+        ListComponent: listComponents[nome],
+        EditorComponent: editorComponents[singolare.toLowerCase()],
+        editorProp: singolare.toLowerCase(),
+        selectProp: selectProp(nome),
+    };
+};
+
 const resourceViews = {
-    articoli: {
-        singular: 'Articolo',
-        plural: 'Articoli',
-        basePath: '/articoli',
+    articoli: risorsa('articoli', {
         get: articoloApi.getArticolo,
         create: articoloApi.createArticolo,
-        ListComponent: listComponents.articoli,
-        EditorComponent: editorComponents.articolo,
-        editorProp: 'articolo',
-        selectProp: 'onSelectArticolo',
         title: (record) => join(record.codice, record.descrizione),
-    },
-    clienti: {
-        singular: 'Cliente',
-        plural: 'Clienti',
-        basePath: '/clienti',
+    }),
+    clienti: risorsa('clienti', {
         get: clienteApi.getCliente,
         create: clienteApi.createCliente,
-        ListComponent: listComponents.clienti,
-        EditorComponent: editorComponents.cliente,
-        editorProp: 'cliente',
-        selectProp: 'onSelectCliente',
         title: personLabel,
-    },
-    contatori: {
-        singular: 'Contatore',
-        plural: 'Contatori',
-        basePath: '/contatori',
+    }),
+    contatori: risorsa('contatori', {
         get: contatoreApi.getContatore,
         create: contatoreApi.createContatore,
-        ListComponent: listComponents.contatori,
-        EditorComponent: editorComponents.contatore,
-        editorProp: 'contatore',
-        selectProp: 'onSelectContatore',
         title: (record) => join(record.codice, record.seriale, record.nome_cliente),
-    },
-    edifici: {
-        singular: 'Edificio',
-        plural: 'Edifici',
-        basePath: '/edifici',
+    }),
+    edifici: risorsa('edifici', {
         get: edificioApi.getEdificio,
         create: edificioApi.createEdificio,
-        ListComponent: listComponents.edifici,
-        EditorComponent: editorComponents.edificio,
-        editorProp: 'edificio',
-        selectProp: 'onSelectEdificio',
         title: (record) => join(record.descrizione, record.indirizzo),
-    },
-    fasce: {
-        singular: 'Fascia',
-        plural: 'Fasce',
-        basePath: '/fasce',
+    }),
+    fasce: risorsa('fasce', {
         get: fasciaApi.getFascia,
         create: fasciaApi.createFascia,
-        ListComponent: listComponents.fasce,
-        EditorComponent: editorComponents.fascia,
-        editorProp: 'fascia',
-        selectProp: 'onSelectFascia',
         title: (record) => join(record.tipo, `${record.min || 0}/${record.max || 0}`),
-    },
-    fatture: {
-        singular: 'Fattura',
-        plural: 'Fatture',
-        basePath: '/fatture',
+    }),
+    fatture: risorsa('fatture', {
         get: fatturaApi.getFattura,
         create: fatturaApi.createFattura,
-        ListComponent: listComponents.fatture,
-        EditorComponent: editorComponents.fattura,
-        editorProp: 'fattura',
-        selectProp: 'onSelectFattura',
         title: (record) => join(record.tipo_documento, record.numero, record.ragione_sociale),
-    },
-    letture: {
-        singular: 'Lettura',
-        plural: 'Letture',
-        basePath: '/letture',
+    }),
+    letture: risorsa('letture', {
         get: letturaApi.getLettura,
         create: letturaApi.createLettura,
-        ListComponent: listComponents.letture,
-        EditorComponent: editorComponents.lettura,
-        editorProp: 'lettura',
-        selectProp: 'onSelectLettura',
         title: (record) => join(formatDate(record.data_lettura), record.consumo),
-    },
-    listini: {
-        singular: 'Listino',
-        plural: 'Listini',
-        basePath: '/listini',
+    }),
+    listini: risorsa('listini', {
         get: listinoApi.getListino,
         create: listinoApi.createListino,
-        ListComponent: listComponents.listini,
-        EditorComponent: editorComponents.listino,
-        editorProp: 'listino',
-        selectProp: 'onSelectListino',
         title: (record) => join(record.categoria, record.descrizione),
-    },
-    scadenze: {
-        singular: 'Scadenza',
-        plural: 'Scadenze',
-        basePath: '/scadenze',
+    }),
+    scadenze: risorsa('scadenze', {
         get: scadenzaApi.getScadenza,
         create: scadenzaApi.createScadenza,
-        ListComponent: listComponents.scadenze,
-        EditorComponent: editorComponents.scadenza,
-        editorProp: 'scadenza',
-        selectProp: 'onSelectScadenza',
         title: (record) => join(personLabel(record), formatDate(record.scadenza)),
-    },
-    servizi: {
-        singular: 'Servizio',
-        plural: 'Servizi',
-        basePath: '/servizi',
+    }),
+    servizi: risorsa('servizi', {
         get: servizioApi.getServizio,
         create: servizioApi.createServizio,
-        ListComponent: listComponents.servizi,
-        EditorComponent: editorComponents.servizio,
-        editorProp: 'servizio',
-        selectProp: 'onSelectServizio',
         title: (record) => join(record.descrizione, record.seriale),
-    },
+    }),
 };
 
 const resource = (name) => resourceViews[name];
