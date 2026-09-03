@@ -110,10 +110,26 @@ const useEdificioMap = (apriEdificio, { zona, impostaZona }) => {
             return;
         }
 
+        const contenitore = mapRef.current.getContainer();
+
         if (selezioneAttiva) {
             mapRef.current.dragging.disable();
+            // Spegnendo il trascinamento, Leaflet toglie al contenitore la classe
+            // `leaflet-touch-drag`, e la regola che resta - `.leaflet-container
+            // .leaflet-touch-zoom` - rimette `touch-action: pan-x pan-y`. Su un
+            // telefono il browser si riprendeva il gesto dopo due frame: arrivava
+            // un `pointercancel` e della zona disegnata restava un francobollo.
+            // Lo stile in linea e l'unico che vince su quella regola senza
+            // rincorrerne la specificita a colpi di selettori.
+            contenitore.style.touchAction = 'none';
+            // Su un telefono la mappa comincia sotto il titolo, la ricerca e il
+            // pulsante: premuto "Seleziona zona" se ne vedeva solo la striscia
+            // in alto, e non era chiaro dove andasse tirato il dito. Se e gia
+            // tutta in vista questo non sposta niente.
+            contenitore.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } else {
             mapRef.current.dragging.enable();
+            contenitore.style.touchAction = '';
         }
     }, [selezioneAttiva]);
 
@@ -150,6 +166,14 @@ const useEdificioMap = (apriEdificio, { zona, impostaZona }) => {
             anteprimaRef.current.setBounds(L.latLngBounds(inizioRef.current, puntoDa(evento)));
         };
 
+        // Un gesto interrotto - una notifica, un secondo dito, il browser che
+        // decide di scorrere - non e una zona: si butta via. Confermarlo voleva
+        // dire ritrovarsi selezionato un rettangolo che nessuno aveva disegnato.
+        const annulla = () => {
+            inizioRef.current = null;
+            togliAnteprima();
+        };
+
         const fine = () => {
             if (!inizioRef.current || !anteprimaRef.current) return;
             const confini = anteprimaRef.current.getBounds();
@@ -173,13 +197,13 @@ const useEdificioMap = (apriEdificio, { zona, impostaZona }) => {
         contenitore.addEventListener('pointerdown', inizio);
         contenitore.addEventListener('pointermove', muovi);
         contenitore.addEventListener('pointerup', fine);
-        contenitore.addEventListener('pointercancel', fine);
+        contenitore.addEventListener('pointercancel', annulla);
 
         return () => {
             contenitore.removeEventListener('pointerdown', inizio);
             contenitore.removeEventListener('pointermove', muovi);
             contenitore.removeEventListener('pointerup', fine);
-            contenitore.removeEventListener('pointercancel', fine);
+            contenitore.removeEventListener('pointercancel', annulla);
         };
     }, [impostaZona]);
 

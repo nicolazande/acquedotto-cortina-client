@@ -310,10 +310,15 @@ hanno la posizione**: quelli vanno rilevati sul posto, altrimenti non compariran
 Cliccando un segnaposto la riga corrispondente si evidenzia nell'elenco, e viceversa.
 
 **Per preparare un giro di letture** si preme **Seleziona zona** e si trascina sulla
-mappa — con il mouse oppure con un dito sul tablet — per racchiudere l'area da
-percorrere. Gli edifici dentro il rettangolo diventano blu e sotto la mappa compare
+mappa — con il mouse, oppure con un dito su telefono e tablet — per racchiudere l'area
+da percorrere. Gli edifici dentro il rettangolo diventano blu e sotto la mappa compare
 l'elenco numerato *Giro di letture*, con i nomi cliccabili per aprire ciascun edificio e
 arrivare ai suoi contatori.
+
+Sul telefono, premuto il pulsante la mappa si porta da sola in vista e sopra compare la
+riga che ricorda cosa fare: si appoggia il dito su un angolo dell'area e lo si trascina
+fino all'angolo opposto, senza staccarlo. Mentre si disegna la pagina non scorre, e il
+dito resta al rettangolo.
 
 Disegnata la zona la mappa torna come prima, quindi il clic successivo su un segnaposto
 apre il suo edificio: non c'è nessuna modalità da ricordarsi di spegnere. Per un'altra

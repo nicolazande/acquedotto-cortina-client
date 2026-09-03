@@ -82,13 +82,13 @@ const EdificioList = ({ onSelectEdificio, detailReturnLabel = 'lista edifici' })
 
             {errore && <p className="edificio-mappa-errore">{errore}</p>}
 
-            <div ref={mapElementRef} className="edificio-map" />
-
             {selezioneAttiva && !selezionati && (
                 <p className="edificio-mappa-aiuto">
                     Trascina sulla mappa - con il mouse o con un dito - per racchiudere la zona da percorrere.
                 </p>
             )}
+
+            <div ref={mapElementRef} className="edificio-map" />
 
             {selezionati && (
                 <div className="edificio-zona">
