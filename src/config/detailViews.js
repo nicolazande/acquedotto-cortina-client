@@ -209,7 +209,6 @@ export const detailViews = {
             { label: 'Destinazione', value: 'destinazione' },
             { label: 'Imponibile', value: 'imponibile', format: formatMoney },
             { label: 'IVA', value: 'iva', format: formatMoney },
-            { label: 'Sconto imponibile', value: 'sconto_imponibile', format: formatMoney },
             { label: 'Totale fattura', value: 'totale_fattura', format: formatMoney },
             { label: 'Incasso', value: (record) => paymentStatus(record.scadenza) },
             { label: 'Data fattura elettronica', value: 'data_fattura_elettronica', format: formatDate },
