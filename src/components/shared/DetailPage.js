@@ -8,11 +8,13 @@ import { useFeedback } from './FeedbackProvider';
 import Button from './Button';
 import { PageHeader } from './PageChrome';
 import descriviErrore from '../../api/descriviErrore';
+import { eAmministratore, puoScrivere, useRisorsePermesse } from '../../hooks/useRisorsePermesse';
 
 const DetailPage = ({ config }) => {
     const { id } = useParams();
     const { goBack, backLabel } = useContextBack(config.listPath);
     const { confirm, notify } = useFeedback();
+    const { ruolo, scrivibili } = useRisorsePermesse();
     const [record, setRecord] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -107,8 +109,18 @@ const DetailPage = ({ config }) => {
 
     const Editor = config.EditorComponent;
     const hasNotes = config.fields.some((field) => field.value === 'note' || field.label.toLowerCase() === 'note');
-    const panels = config.panels || [];
+    // I pannelli marcati `soloAmministratore` chiamano rotte riservate: chi non
+    // lo e li vedrebbe solo fallire.
+    const panels = (config.panels || []).filter((Panel) => !Panel.soloAmministratore || eAmministratore(ruolo));
     const lockedMessage = config.lockedMessage || 'Record bloccato';
+    const modificabile = puoScrivere(scrivibili, config.resource);
+    // Di un cliente il letturista riceve solo nome e recapito: gli altri campi
+    // non arrivano proprio. Disegnarne l'etichetta con un trattino accanto
+    // riempirebbe la scheda di righe vuote e farebbe sembrare mancante un dato
+    // che invece c'e, solo non per lui.
+    const campi = config.fields.filter((field) => (
+        eAmministratore(ruolo) || typeof field.value !== 'string' || record[field.value] !== undefined
+    ));
     const actions = (config.actions || [])
         .map((action) => (typeof action === 'function' ? action(record) : action))
         .filter(Boolean);
@@ -141,22 +153,26 @@ const DetailPage = ({ config }) => {
                                 {action.label}
                             </Button>
                         ))}
-                        <Button
-                            onClick={handleEdit}
-                            variant="edit"
-                            icon="edit"
-                            title={isLocked ? `${lockedMessage}: la modifica richiede conferma` : undefined}
-                        >
-                            Modifica
-                        </Button>
-                        <Button
-                            onClick={handleDelete}
-                            variant="delete"
-                            icon="trash"
-                            title={isLocked ? `${lockedMessage}: la cancellazione richiede conferma` : undefined}
-                        >
-                            Elimina
-                        </Button>
+                        {modificabile && (
+                            <>
+                                <Button
+                                    onClick={handleEdit}
+                                    variant="edit"
+                                    icon="edit"
+                                    title={isLocked ? `${lockedMessage}: la modifica richiede conferma` : undefined}
+                                >
+                                    Modifica
+                                </Button>
+                                <Button
+                                    onClick={handleDelete}
+                                    variant="delete"
+                                    icon="trash"
+                                    title={isLocked ? `${lockedMessage}: la cancellazione richiede conferma` : undefined}
+                                >
+                                    Elimina
+                                </Button>
+                            </>
+                        )}
                     </>
                 )}
             />
@@ -168,7 +184,7 @@ const DetailPage = ({ config }) => {
             <div className="table-container detail-info-card">
                 <table className="info-table">
                     <tbody>
-                        {config.fields.map((field) => (
+                        {campi.map((field) => (
                             <tr key={field.label}>
                                 <th>{field.label}</th>
                                 <td>{formatFieldValue(record, field)}</td>

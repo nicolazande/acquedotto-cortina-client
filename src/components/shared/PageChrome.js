@@ -47,9 +47,11 @@ export const SearchToolbar = ({
             <Button type="submit" variant="search" icon="search">
                 Cerca
             </Button>
-            <Button type="button" className={createClassName} variant={null} icon="plus" onClick={onCreate}>
-                {createLabel}
-            </Button>
+            {onCreate && (
+                <Button type="button" className={createClassName} variant={null} icon="plus" onClick={onCreate}>
+                    {createLabel}
+                </Button>
+            )}
         </div>
     </form>
 );

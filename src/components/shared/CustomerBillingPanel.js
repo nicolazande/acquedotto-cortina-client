@@ -145,4 +145,7 @@ const CustomerBillingPanel = ({ recordId }) => {
     );
 };
 
+// Quanto si sta per fatturare a questo cliente: e un importo, non una lettura.
+CustomerBillingPanel.soloAmministratore = true;
+
 export default CustomerBillingPanel;

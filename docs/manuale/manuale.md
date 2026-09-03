@@ -41,7 +41,9 @@ consegne, incassi, scadenze e listini non ci sono — non gli servono, e il gest
 glieli rifiuta anche se ne conoscesse l'indirizzo.
 
 **Registra le letture** e può correggerle, ma non modifica le anagrafiche: clienti,
-contatori ed edifici li vede e basta.
+contatori ed edifici li vede e basta. Su quelle schede i pulsanti «Nuovo», «Modifica»
+ed «Elimina» non compaiono proprio, così non c'è modo di cominciare una cosa che poi
+verrebbe rifiutata.
 
 Sulle schede trova solo i collegamenti che gli competono: dal contatore arriva al
 cliente, alle sue letture e all'edificio, ma non al listino; dalla scheda cliente ai

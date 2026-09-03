@@ -12,6 +12,7 @@ import {
 } from '../hooks/useContextBack';
 import { useFeedback } from '../components/shared/FeedbackProvider';
 import Button from '../components/shared/Button';
+import { puoScrivere, useRisorsePermesse } from '../hooks/useRisorsePermesse';
 import RecordTable from '../components/shared/RecordTable';
 
 const asArray = (value) => {
@@ -23,9 +24,13 @@ const getRecordId = (record) => record?._id;
 
 const RelationViewPage = () => {
     const { resource, id, relation } = useParams();
+    const { scrivibili } = useRisorsePermesse();
     const history = useHistory();
     const location = useLocation();
     const config = getRelationView(resource, relation);
+    // Chi puo solo consultare la risorsa di destinazione non deve vedersi
+    // offrire "Associa" e "Nuovo": sono scritture, e finirebbero in un 403.
+    const collegabile = puoScrivere(scrivibili, config?.targetResource);
     const { notify } = useFeedback();
     const [parent, setParent] = useState(null);
     const [records, setRecords] = useState([]);
@@ -145,12 +150,16 @@ const RelationViewPage = () => {
                     <Button to={parentPathWithContext} variant="secondary" icon="arrowLeft">
                         Scheda principale
                     </Button>
-                    <Button variant="primary" icon="check" onClick={() => setSelecting(true)}>
-                        Associa {config.target.singular}
-                    </Button>
-                    <Button variant="edit" icon="plus" onClick={() => setCreating(true)}>
-                        Nuovo {config.target.singular}
-                    </Button>
+                    {collegabile && (
+                        <>
+                            <Button variant="primary" icon="check" onClick={() => setSelecting(true)}>
+                                Associa {config.target.singular}
+                            </Button>
+                            <Button variant="edit" icon="plus" onClick={() => setCreating(true)}>
+                                Nuovo {config.target.singular}
+                            </Button>
+                        </>
+                    )}
                 </div>
             </header>
 
@@ -165,7 +174,9 @@ const RelationViewPage = () => {
                 {!loading && !error && records.length === 0 && (
                     <div className="relation-view-empty">
                         <h3>Nessun collegamento</h3>
-                        <p>Puoi associare un record esistente oppure crearne uno nuovo da questa vista.</p>
+                        {collegabile && (
+                            <p>Puoi associare un record esistente oppure crearne uno nuovo da questa vista.</p>
+                        )}
                     </div>
                 )}
                 {!loading && !error && records.length > 0 && (

@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { puoAprire } from '../hooks/useRisorsePermesse';
+import { eAmministratore, puoAprire, puoScrivere } from '../hooks/useRisorsePermesse';
+import { listViews } from '../config/listViews';
+import BillingPreviewPanel from '../components/shared/BillingPreviewPanel';
+import CustomerBillingPanel from '../components/shared/CustomerBillingPanel';
+import CustomerPortalAccessPanel from '../components/shared/CustomerPortalAccessPanel';
 import { getRelationLinks } from '../config/relationViews';
 
 describe('cosa si puo aprire', () => {
@@ -48,5 +52,49 @@ describe('i collegamenti offerti sulle schede del letturista', () => {
     it('per l amministratore non sparisce niente', () => {
         const tutti = getRelationLinks('contatori', ['cliente', 'letture', 'edificio', 'listino']);
         expect(tutti.filter((link) => puoAprire(null, link.targetResource))).toHaveLength(4);
+    });
+});
+
+describe('i pannelli d ufficio non compaiono a chi legge i contatori', () => {
+    it('sa chi e amministratore', () => {
+        expect(eAmministratore('admin')).toBe(true);
+        expect(eAmministratore('letturista')).toBe(false);
+        expect(eAmministratore('cliente')).toBe(false);
+        // Profilo non ancora caricato: non si nasconde niente.
+        expect(eAmministratore(null)).toBe(true);
+        expect(eAmministratore(undefined)).toBe(true);
+    });
+
+    it('i pannelli che chiamano rotte riservate si dichiarano', () => {
+        // Le schede cliente e lettura il letturista le apre: se uno di questi
+        // pannelli perdesse il contrassegno, si vedrebbe comparire un errore di
+        // permessi su una pagina che per lui funziona.
+        [CustomerPortalAccessPanel, CustomerBillingPanel, BillingPreviewPanel]
+            .forEach((Panel) => expect(Panel.soloAmministratore).toBe(true));
+    });
+});
+
+describe('cosa si puo cambiare', () => {
+    const scrivibiliDelLetturista = ['letture'];
+
+    it('lascia scrivere solo dove il server lo concede', () => {
+        expect(puoScrivere(scrivibiliDelLetturista, 'letture')).toBe(true);
+        ['clienti', 'contatori', 'edifici'].forEach((risorsa) => {
+            expect(puoScrivere(scrivibiliDelLetturista, risorsa)).toBe(false);
+        });
+    });
+
+    it('senza elenco non nasconde niente', () => {
+        expect(puoScrivere(null, 'clienti')).toBe(true);
+        expect(puoScrivere(undefined, 'clienti')).toBe(true);
+    });
+
+    it('ogni vista di elenco sa a che risorsa appartiene', () => {
+        // Senza il nome, il controllo sui permessi non trova la risorsa e fa
+        // sparire "Nuovo" anche all'amministratore.
+        Object.entries(listViews).forEach(([nome, vista]) => {
+            expect(vista.resource).toBe(nome);
+            expect(puoScrivere(null, vista.resource)).toBe(true);
+        });
     });
 });

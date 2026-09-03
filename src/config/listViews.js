@@ -30,7 +30,7 @@ const tariffPrice = (value, record) => `${formatMoney(value)}${isFixedTariff(rec
 const rangeLabel = (record) => join(`${record.min ?? 0} m3`, `${record.max ?? 0} m3`);
 const validityLabel = (record) => join(formatDate(record.inizio), formatDate(record.scadenza));
 
-export const listViews = {
+const viste = {
     articoli: {
         title: 'Articoli',
         eyebrow: 'Configurazione tariffaria',
@@ -332,3 +332,11 @@ export const listViews = {
         ],
     },
 };
+
+// Ogni vista porta il nome della propria risorsa. Serve a decidere i permessi -
+// chi non puo scrivere non deve vedersi offrire "Nuovo" o "Elimina" - e
+// derivarlo dalla chiave evita di riscriverlo dieci volte, con la decima
+// sbagliata.
+export const listViews = Object.fromEntries(
+    Object.entries(viste).map(([nome, vista]) => [nome, { ...vista, resource: nome }]),
+);

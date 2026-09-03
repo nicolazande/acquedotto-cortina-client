@@ -11,6 +11,7 @@ import {
 } from './PageChrome';
 import RecordTable from './RecordTable';
 import descriviErrore from '../../api/descriviErrore';
+import { puoScrivere, useRisorsePermesse } from '../../hooks/useRisorsePermesse';
 
 // `beforeTable` e i callback sulle righe sono i punti di estensione usati dalla
 // lista edifici, che ha una mappa sopra la tabella. Senza di essi quella pagina
@@ -24,6 +25,9 @@ const ListPage = ({
     onRowClick,
     onSelect,
 }) => {
+    const { scrivibili } = useRisorsePermesse();
+    // Chi puo solo consultare questa risorsa non vede "Nuovo" ne "Elimina".
+    const modificabile = puoScrivere(scrivibili, config.resource);
     const [records, setRecords] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeSearch, setActiveSearch] = useState('');
@@ -210,7 +214,7 @@ const ListPage = ({
                     value={searchTerm}
                     onChange={setSearchTerm}
                     onSearch={handleSearch}
-                    onCreate={() => setCreating(true)}
+                    onCreate={modificabile ? () => setCreating(true) : undefined}
                     searchLabel={`Cerca ${config.title.toLowerCase()}`}
                     placeholder={`Cerca ${config.title.toLowerCase()}...`}
                     createClassName={`btn btn-new-${config.className}`}
@@ -238,7 +242,7 @@ const ListPage = ({
                                     Seleziona
                                 </Button>
                             )}
-                            {!config.isLocked?.(record) && (
+                            {modificabile && !config.isLocked?.(record) && (
                                 <Button
                                     variant="delete"
                                     icon="trash"

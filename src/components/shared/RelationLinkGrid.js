@@ -8,7 +8,7 @@ import { puoAprire, useRisorsePermesse } from '../../hooks/useRisorsePermesse';
 
 const RelationLinkGrid = ({ resource, recordId, relations }) => {
     const location = useLocation();
-    const risorse = useRisorsePermesse();
+    const { risorse } = useRisorsePermesse();
     // Un collegamento verso una risorsa che il ruolo non puo aprire porterebbe
     // a un errore di permessi: meglio non offrirlo. E il caso del riquadro
     // Fatture sulla scheda cliente, o di Listino su quella di un contatore.

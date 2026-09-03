@@ -188,4 +188,7 @@ const BillingPreviewPanel = ({ recordId }) => {
     );
 };
 
+// Il calcolo di quanto costa questa lettura: importi e fasce di prezzo.
+BillingPreviewPanel.soloAmministratore = true;
+
 export default BillingPreviewPanel;

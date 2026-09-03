@@ -135,9 +135,14 @@ const App = () => {
     // non la puo nemmeno caricare: il suo punto di partenza e la mappa, da cui
     // si sceglie la zona e comincia il giro.
     const defaultPath = PAGINA_INIZIALE[profile?.role] || '/';
+    // Cosa puo aprire chi e entrato, come lo dichiara il server. Finche il
+    // profilo non c'e resta `null`, che vuol dire "non nascondere niente".
+    const permessi = profile
+        ? { risorse: profile.risorse, scrivibili: profile.scrivibili, ruolo: profile.role }
+        : null;
 
     return (
-        <RisorsePermesseProvider value={profile?.risorse || null}>
+        <RisorsePermesseProvider value={permessi}>
         <FeedbackProvider>
             <Router>
                 <div className={`App ${isAuthenticated ? 'is-authenticated' : 'is-public'}`}>

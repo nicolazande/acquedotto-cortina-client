@@ -255,4 +255,8 @@ const CustomerPortalAccessPanel = ({ record, recordId }) => {
     );
 };
 
+// L'accesso al portale di un cliente lo gestisce l'ufficio: username, password
+// e attivazione. Chi va a leggere i contatori non c'entra.
+CustomerPortalAccessPanel.soloAmministratore = true;
+
 export default CustomerPortalAccessPanel;
