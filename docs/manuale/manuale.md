@@ -244,8 +244,18 @@ sostituito, contatore azzerato, cifra sbagliata — e vanno distinte da una pers
 
 **Come si fa una sostituzione**: si registra l'ultima lettura sul contatore vecchio (che
 chiude i suoi conti), si crea un **contatore nuovo** collegato allo stesso cliente e allo
-stesso edificio, e le letture successive vanno su quello. Lo storico del vecchio resta
-dov'è.
+stesso edificio, e nel campo **Precedente** si indica il contatore che sostituisce. Le
+letture successive vanno sul nuovo; lo storico del vecchio resta dov'è.
+
+Quel collegamento è ciò che tiene insieme la **storia del punto di fornitura**: da un
+contatore si risale a tutti quelli che l'hanno preceduto, con matricola, intestatario,
+periodo e l'indice a cui ciascuno si è fermato. È l'informazione che serve quando un
+cliente contesta un consumo a cavallo di una sostituzione, ed è anche quello che la
+normativa chiede di poter ricostruire: data dell'intervento, matricola rimossa,
+matricola installata e lettura di chiusura.
+
+Un contatore che ne ha sostituito un altro **non lascia cancellare** il predecessore: la
+storia si spezzerebbe a metà.
 
 ### Se cambia l'intestatario
 

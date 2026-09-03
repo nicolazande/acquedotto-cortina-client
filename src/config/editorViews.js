@@ -158,6 +158,9 @@ export const editorViews = {
             referenceField('Edificio', 'edificio', 'edifici', {
                 copyTo: { nome_edificio: buildingName },
             }),
+            // Il contatore che questo ha sostituito: e il filo che tiene insieme
+            // la storia del punto di fornitura attraverso i cambi.
+            referenceField('Precedente', 'precedente', 'contatori'),
             referenceField('Listino', 'listino', 'listini'),
             field('Tipo Contatore', 'tipo_contatore'),
             field('Codice', 'codice'),
@@ -210,6 +213,9 @@ export const editorViews = {
         },
         createButtonLabel: 'Crea',
         fields: [
+            // Il contatore che questo ha sostituito: e il filo che tiene insieme
+            // la storia del punto di fornitura attraverso i cambi.
+            referenceField('Precedente', 'precedente', 'contatori'),
             referenceField('Listino', 'listino', 'listini'),
             field('Tipo', 'tipo'),
             field('Soglia minima', 'min', 'number'),

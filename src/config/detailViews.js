@@ -112,8 +112,6 @@ export const detailViews = {
             { label: 'Seriale', value: 'seriale' },
             { label: 'Inattivo', value: 'inattivo', format: boolText },
             { label: 'Quota riparto (%)', value: 'consumo' },
-            { label: 'Subentro', value: 'subentro', format: boolText },
-            { label: 'Sostituzione', value: 'sostituzione', format: boolText },
             { label: 'Condominiale', value: 'condominiale', format: boolText },
             { label: 'Inizio', value: 'inizio', format: formatDate },
             { label: 'Scadenza', value: 'scadenza', format: formatDate },
