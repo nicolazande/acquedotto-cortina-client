@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { itemsByGroup } from '../config/navigation';
+import { useRisorsePermesse } from '../hooks/useRisorsePermesse';
 import panoramicaApi from '../api/panoramicaApi';
 import { formatMoney, formatNumber } from '../utils/formatters';
 import ActivityList from '../components/dashboard/ActivityList';
@@ -110,13 +111,14 @@ const dettaglioConsegne = ({ automatiche, daStampare, errori }) => {
 };
 
 const HomePage = () => {
+    const { risorse } = useRisorsePermesse();
     const richiesta = useCallback(async () => normalizza((await panoramicaApi.get()).data), []);
     const { dati: panoramica, error, isLoading } = useRemoteData(richiesta, {
         messaggioErrore: 'Riepilogo non disponibile.',
     });
 
-    const gestione = itemsByGroup('lavoro');
-    const tariffe = itemsByGroup('configurazione');
+    const gestione = itemsByGroup('lavoro', risorse);
+    const tariffe = itemsByGroup('configurazione', risorse);
     const scadute = panoramica?.incassi.scadute;
 
     return (

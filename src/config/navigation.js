@@ -172,5 +172,8 @@ export const navigationItemsForRole = (risorse) => {
     return visibleNavigationItems.filter((item) => !item.area || permesse.has(item.area));
 };
 
-
-export const itemsByGroup = (id) => visibleNavigationItems.filter((item) => item.group === id);
+// Le schede della panoramica, per gruppo. Passano dallo stesso filtro del menu:
+// senza, offrirebbero anche cio che il ruolo non puo aprire - e infatti la
+// panoramica dell'amministratore proponeva "Area clienti", che per lui non
+// esiste.
+export const itemsByGroup = (id, risorse) => navigationItemsForRole(risorse).filter((item) => item.group === id);

@@ -148,3 +148,21 @@ describe('l area che governa un indirizzo', () => {
         expect(areaDelPercorso('/:resource/:id/:relation')).toBeUndefined();
     });
 });
+
+describe('le schede della panoramica seguono i permessi', () => {
+    it('all amministratore non offre l area riservata ai clienti', () => {
+        const admin = [
+            'articoli', 'clienti', 'contatori', 'edifici', 'fasce', 'fatture',
+            'letture', 'listini', 'scadenze', 'servizi', 'panoramica', 'consegne',
+        ];
+        const percorsi = itemsByGroup('lavoro', admin).map((voce) => voce.path);
+
+        expect(percorsi).not.toContain('/area-cliente');
+        expect(percorsi).toContain('/fatture');
+        expect(percorsi).toContain('/consegne');
+    });
+
+    it('senza elenco resta tutto, come per il menu', () => {
+        expect(itemsByGroup('configurazione').map((v) => v.path)).toEqual(['/articoli', '/listini', '/fasce']);
+    });
+});

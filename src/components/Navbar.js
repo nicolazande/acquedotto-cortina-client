@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { visibleNavigationItems } from '../config/navigation';
 import Icon from './shared/Icon';
 import '../styles/Navbar.css';
 
 // Le voci arrivano gia divise per gruppo. Il separatore fra gestione quotidiana
 // e tariffe evita che dodici voci allo stesso livello sembrino tutte equivalenti.
-const Navbar = ({ items = visibleNavigationItems, onLogout }) => {
+// `items` arriva sempre da App, gia filtrato per il ruolo: un valore di
+// ripiego qui mostrerebbe tutto il menu a chi non ne ha diritto.
+const Navbar = ({ items, onLogout }) => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleMenu = () => setMenuOpen((open) => !open);
