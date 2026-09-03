@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { Redirect, useHistory, useLocation, useParams } from 'react-router-dom';
 import {
     getRelationView,
     renderRelationCell,
@@ -12,7 +12,7 @@ import {
 } from '../hooks/useContextBack';
 import { useFeedback } from '../components/shared/FeedbackProvider';
 import Button from '../components/shared/Button';
-import { puoScrivere, useRisorsePermesse } from '../hooks/useRisorsePermesse';
+import { puoAprire, puoScrivere, useRisorsePermesse } from '../hooks/useRisorsePermesse';
 import RecordTable from '../components/shared/RecordTable';
 
 const asArray = (value) => {
@@ -24,7 +24,7 @@ const getRecordId = (record) => record?._id;
 
 const RelationViewPage = () => {
     const { resource, id, relation } = useParams();
-    const { scrivibili } = useRisorsePermesse();
+    const { risorse, scrivibili } = useRisorsePermesse();
     const history = useHistory();
     const location = useLocation();
     const config = getRelationView(resource, relation);
@@ -83,6 +83,14 @@ const RelationViewPage = () => {
     useEffect(() => {
         loadData();
     }, [loadData]);
+
+    // Questa rotta e l'unica generica del gestionale: la risorsa la porta
+    // l'indirizzo, quindi il permesso si guarda qui e non al montaggio. Senza,
+    // chi scrivesse /fatture/<id>/cliente vedrebbe l'intestazione di una pagina
+    // che poi resta vuota, mentre ovunque altrove viene rimandato indietro.
+    if (config && !(puoAprire(risorse, resource) && puoAprire(risorse, config.targetResource))) {
+        return <Redirect to="/" />;
+    }
 
     if (!config) {
         return (

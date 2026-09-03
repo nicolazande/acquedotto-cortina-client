@@ -3,6 +3,8 @@ import authApi from '../api/authApi';
 import Button from '../components/shared/Button';
 import '../styles/Auth.css';
 import descriviErrore from '../api/descriviErrore';
+import { NOME_DEL_RUOLO } from '../hooks/useRisorsePermesse';
+import { EMPTY_VALUE } from '../utils/formatters';
 
 const ProfilePage = () => {
     const [isEditing, setIsEditing] = useState(false);
@@ -20,7 +22,7 @@ const ProfilePage = () => {
             setUsername(response.data.username || '');
             setEmail(response.data.email || '');
             setNumeroTelefono(response.data.numero_telefono || '');
-            setRole(response.data.role || 'admin');
+            setRole(response.data.role || '');
             setCliente(response.data.cliente || null);
         } catch (err) {
             const errorMessage = descriviErrore(err, 'Errore durante il recupero del profilo');
@@ -59,7 +61,7 @@ const ProfilePage = () => {
                     <tbody>
                         <tr>
                             <td>Tipo account</td>
-                            <td>{role === 'cliente' ? 'Cliente' : 'Amministratore'}</td>
+                            <td>{NOME_DEL_RUOLO[role] || role || EMPTY_VALUE}</td>
                         </tr>
                         {cliente && (
                             <tr>

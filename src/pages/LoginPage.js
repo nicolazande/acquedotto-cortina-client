@@ -8,7 +8,7 @@ import ServerStatusIndicator from '../ServerStatusIndicator';
 import '../styles/Auth.css';
 import descriviErrore from '../api/descriviErrore';
 
-const LoginPage = ({ onLogin, history }) => {
+const LoginPage = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -26,8 +26,11 @@ const LoginPage = ({ onLogin, history }) => {
         try {
             const response = await authApi.login({ username, password });
             localStorage.setItem('token', response.data.token);
-            const profile = await onLogin();
-            history.push(profile?.role === 'cliente' ? '/area-cliente' : '/');
+            // Dove si atterra lo decide App, che conosce la pagina iniziale di
+            // ogni ruolo: deciderlo anche qui voleva dire due regole, e infatti
+            // dicevano cose diverse - il letturista finiva sulla panoramica,
+            // che non puo nemmeno caricare.
+            await onLogin();
         } catch (err) {
             const errorMessage = descriviErrore(err, 'Credenziali non valide');
             setError(errorMessage);
@@ -78,7 +81,6 @@ const LoginPage = ({ onLogin, history }) => {
 
 LoginPage.propTypes = {
     onLogin: PropTypes.func.isRequired,
-    history: PropTypes.object.isRequired,
 };
 
 export default LoginPage;

@@ -1,5 +1,6 @@
 import { describe, expect, it, test } from 'vitest';
 import {
+    areaDelPercorso,
     itemsByGroup,
     navigationItemsForRole,
     navigationItems,
@@ -36,7 +37,7 @@ describe('navigazione', () => {
 
     test('la divisione riflette l uso: documenti ogni giorno, tariffe di rado', () => {
         expect(itemsByGroup('lavoro').map((i) => i.path)).toEqual(
-            ['/clienti', '/contatori', '/edifici', '/letture', '/fatture', '/consegne', '/incassi', '/scadenze']
+            ['/clienti', '/contatori', '/edifici', '/letture', '/fatture', '/consegne', '/incassi', '/scadenze', '/area-cliente']
         );
         expect(itemsByGroup('configurazione').map((i) => i.path)).toEqual(
             ['/articoli', '/listini', '/fasce']
@@ -86,7 +87,31 @@ describe('il menu segue le risorse che il server concede', () => {
     it('mostra solo le voci corrispondenti alle risorse concesse', () => {
         const percorsi = navigationItemsForRole(DEL_LETTURISTA).map((voce) => voce.path);
 
-        expect(percorsi.sort()).toEqual(['/clienti', '/contatori', '/edifici', '/letture']);
+        // Il profilo non ha un'area: e il proprio account, e lo apre chiunque
+        // sia entrato. Prima il letturista non aveva la voce e non poteva
+        // cambiarsi la password.
+        expect(percorsi.sort()).toEqual(['/auth/profile', '/clienti', '/contatori', '/edifici', '/letture']);
+    });
+
+    it('al cliente resta il suo portale, e nient altro del gestionale', () => {
+        const percorsi = navigationItemsForRole(['portale-cliente']).map((voce) => voce.path);
+
+        expect(percorsi.sort()).toEqual(['/area-cliente', '/auth/profile']);
+    });
+
+    it('all amministratore non manca niente', () => {
+        // Panoramica, Consegne e Incassi non sono risorse con un modello: se
+        // l'elenco del server non le nominasse, sparirebbero dal suo menu.
+        const percorsi = navigationItemsForRole([
+            'articoli', 'clienti', 'contatori', 'edifici', 'fasce', 'fatture',
+            'letture', 'listini', 'scadenze', 'servizi', 'panoramica', 'consegne',
+        ]).map((voce) => voce.path);
+
+        expect(percorsi).toContain('/');
+        expect(percorsi).toContain('/consegne');
+        expect(percorsi).toContain('/incassi');
+        expect(percorsi).toContain('/auth/profile');
+        expect(percorsi).not.toContain('/area-cliente');
     });
 
     it('non offre porte che il server chiuderebbe con un 403', () => {
@@ -99,5 +124,27 @@ describe('il menu segue le risorse che il server concede', () => {
     it('senza elenco si mostra tutto, come prima che i ruoli esistessero', () => {
         expect(navigationItemsForRole(null)).toEqual(visibleNavigationItems);
         expect(navigationItemsForRole(undefined)).toEqual(visibleNavigationItems);
+    });
+});
+
+describe('l area che governa un indirizzo', () => {
+    // App monta le rotte guardando questa funzione: se sbagliasse area, una
+    // pagina sparirebbe a chi ne ha diritto o comparirebbe a chi non ne ha.
+    it('legge il primo segmento, cosi le sottopagine seguono la loro sezione', () => {
+        expect(areaDelPercorso('/fatture')).toBe('fatture');
+        expect(areaDelPercorso('/fatture/generazione')).toBe('fatture');
+        expect(areaDelPercorso('/fatture/12/cliente')).toBe('fatture');
+        expect(areaDelPercorso('/clienti/12')).toBe('clienti');
+        expect(areaDelPercorso('/')).toBe('panoramica');
+        expect(areaDelPercorso('/area-cliente')).toBe('portale-cliente');
+    });
+
+    it('gli incassi seguono le scadenze, che e cio su cui lavorano', () => {
+        expect(areaDelPercorso('/incassi')).toBe('scadenze');
+    });
+
+    it('senza area si apre sempre: il proprio profilo, e le rotte generiche', () => {
+        expect(areaDelPercorso('/auth/profile')).toBeUndefined();
+        expect(areaDelPercorso('/:resource/:id/:relation')).toBeUndefined();
     });
 });

@@ -7,10 +7,10 @@ import FeedbackProvider from './components/shared/FeedbackProvider';
 import PageLoading from './components/shared/PageLoading';
 import { detailComponents } from './components/shared/detailComponents';
 import { listComponents } from './components/shared/listComponents';
-// navigationItems genera le rotte (comprese quelle nascoste dal menu),
-// visibleNavigationItems alimenta la barra di navigazione.
-import { navigationItems, navigationItemsForRole } from './config/navigation';
-import { RisorsePermesseProvider } from './hooks/useRisorsePermesse';
+// navigationItems genera le rotte (comprese quelle nascoste dal menu) e dice
+// quale area governa ogni indirizzo; navigationItemsForRole ne ricava il menu.
+import { areaDelPercorso, navigationItems, navigationItemsForRole } from './config/navigation';
+import { puoAprire, RisorsePermesseProvider } from './hooks/useRisorsePermesse';
 import authApi from './api/authApi';
 import './styles/App.css';
 
@@ -40,8 +40,17 @@ const entityRoutes = resourceRoutes.reduce((routes, { resource, path }) => ([
     { path, component: listComponents[resource] },
 ]), []);
 
-const protectedRoutes = [
+// Tutte le pagine, in un elenco solo. L'ordine conta: `/fatture/generazione`
+// deve precedere `/fatture/:id`, altrimenti "generazione" verrebbe letto come un
+// identificativo.
+//
+// Chi puo aprirle non si decide qui: lo dice il server, e `areaDelPercorso`
+// traduce l'indirizzo nel nome dell'area. Prima esistevano due elenchi paralleli,
+// uno per il cliente e uno per tutti gli altri, e aggiungere una pagina voleva
+// dire ricordarsi di entrambi.
+const tutteLeRotte = [
     { path: '/auth/profile', component: ProfilePage },
+    { path: '/area-cliente', exact: true, component: CustomerPortalPage },
     { path: '/fatture/generazione', exact: true, component: BillingBatchPage },
     { path: '/fatture/controlli', exact: true, component: InvoiceControlPage },
     { path: '/consegne', exact: true, component: ConsegnePage },
@@ -51,28 +60,18 @@ const protectedRoutes = [
     { path: '/', exact: true, component: HomePage },
 ];
 
+// Una pagina che il ruolo non puo aprire non viene nemmeno montata: chi ne
+// scrive l'indirizzo finisce sulla propria pagina iniziale invece di vedersi
+// caricare una schermata che poi si riempie di errori.
+const rotteConcesse = (risorse) => tutteLeRotte.filter(({ path }) => {
+    const area = areaDelPercorso(path);
+    return !area || puoAprire(risorse, area);
+});
+
 const PAGINA_INIZIALE = {
     cliente: '/area-cliente',
     letturista: '/edifici',
 };
-
-const customerNavigationItems = [
-    {
-        path: '/area-cliente',
-        label: 'Area clienti',
-        icon: 'dashboard',
-    },
-    {
-        path: '/auth/profile',
-        label: 'Profilo',
-        icon: 'admin',
-    },
-];
-
-const customerRoutes = [
-    { path: '/area-cliente', exact: true, component: CustomerPortalPage },
-    { path: '/auth/profile', component: ProfilePage },
-];
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(localStorage.getItem('token')));
@@ -125,12 +124,11 @@ const App = () => {
         setIsAuthenticated(false);
     };
 
-    const isCustomer = profile?.role === 'cliente';
-    // Il menu mostra solo cio che il ruolo puo davvero aprire: il server
-    // risponderebbe 403 sul resto, e una voce che porta a un errore e peggio di
-    // una voce assente.
+    // Menu e rotte vengono dallo stesso elenco: il server dice cosa questo ruolo
+    // puo aprire, e il client non ne tiene una seconda idea. Una voce che porta a
+    // un errore e peggio di una voce assente.
     const vociMenu = navigationItemsForRole(profile?.risorse);
-    const activeRoutes = isCustomer ? customerRoutes : protectedRoutes;
+    const activeRoutes = rotteConcesse(profile?.risorse);
     // Dove si atterra entrando. La panoramica e fatta di soldi e il letturista
     // non la puo nemmeno caricare: il suo punto di partenza e la mappa, da cui
     // si sceglie la zona e comincia il giro.
@@ -147,7 +145,7 @@ const App = () => {
             <Router>
                 <div className={`App ${isAuthenticated ? 'is-authenticated' : 'is-public'}`}>
                     {isAuthenticated && !isProfileLoading && (
-                        <Navbar items={isCustomer ? customerNavigationItems : vociMenu} onLogout={handleLogout} />
+                        <Navbar items={vociMenu} onLogout={handleLogout} />
                     )}
                     <div className="content">
                         <Suspense fallback={<PageLoading />}>

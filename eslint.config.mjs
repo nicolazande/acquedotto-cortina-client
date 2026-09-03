@@ -36,6 +36,10 @@ export default [
             'no-console': ['warn', { allow: ['warn', 'error'] }],
             eqeqeq: ['warn', 'smart'],
             'prefer-const': 'warn',
+            // Una costante usata prima di essere definita non e un dettaglio di
+            // stile: passa il lint, passa i test e va in pezzi appena la riga
+            // viene eseguita.
+            'no-use-before-define': ['error', { functions: false, classes: false }],
         },
     },
     {

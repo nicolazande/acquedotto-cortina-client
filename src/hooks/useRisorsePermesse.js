@@ -26,3 +26,12 @@ export const puoScrivere = (scrivibili, nome) => !scrivibili || scrivibili.inclu
 // d'ufficio, e il server li apre al solo amministratore. Qui si evita di
 // disegnarli a chi poi si vedrebbe rispondere 403.
 export const eAmministratore = (ruolo) => !ruolo || ruolo === 'admin';
+
+// Come si chiama un ruolo quando lo si mostra a chi legge. Sta qui accanto agli
+// altri fatti sui permessi: scriverlo nella pagina del profilo aveva prodotto un
+// "Amministratore" mostrato anche al letturista.
+export const NOME_DEL_RUOLO = {
+    admin: 'Amministratore',
+    letturista: 'Letturista',
+    cliente: 'Cliente',
+};

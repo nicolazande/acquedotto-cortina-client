@@ -1,10 +1,13 @@
 import { pathIcons } from './resourceMeta';
 
+const primoSegmento = (percorso) => percorso.split('/')[1] || '';
+
 // L'ordine dell'array e anche l'ordine del menu: le voci sono raggruppate per
 // come si usano, quindi devono restare contigue per gruppo.
 export const navigationItems = [
     {
         path: '/',
+        area: 'panoramica',
         group: 'panoramica',
         label: 'Panoramica',
         icon: pathIcons['/'],
@@ -12,6 +15,7 @@ export const navigationItems = [
     },
     {
         path: '/clienti',
+        area: 'clienti',
         group: 'lavoro',
         label: 'Clienti',
         icon: pathIcons['/clienti'],
@@ -19,6 +23,7 @@ export const navigationItems = [
     },
     {
         path: '/contatori',
+        area: 'contatori',
         group: 'lavoro',
         label: 'Contatori',
         icon: pathIcons['/contatori'],
@@ -26,6 +31,7 @@ export const navigationItems = [
     },
     {
         path: '/edifici',
+        area: 'edifici',
         group: 'lavoro',
         label: 'Edifici',
         icon: pathIcons['/edifici'],
@@ -33,6 +39,7 @@ export const navigationItems = [
     },
     {
         path: '/letture',
+        area: 'letture',
         group: 'lavoro',
         label: 'Letture',
         icon: pathIcons['/letture'],
@@ -40,6 +47,7 @@ export const navigationItems = [
     },
     {
         path: '/fatture',
+        area: 'fatture',
         group: 'lavoro',
         label: 'Fatture',
         icon: pathIcons['/fatture'],
@@ -47,6 +55,7 @@ export const navigationItems = [
     },
     {
         path: '/consegne',
+        area: 'consegne',
         group: 'lavoro',
         label: 'Consegne',
         icon: pathIcons['/consegne'],
@@ -57,6 +66,9 @@ export const navigationItems = [
     },
     {
         path: '/incassi',
+        // Non ha un'area propria: registra i pagamenti sulle scadenze, e chi
+        // non puo aprire quelle non ha niente da registrare.
+        area: 'scadenze',
         group: 'lavoro',
         label: 'Incassi',
         icon: pathIcons['/incassi'],
@@ -67,13 +79,25 @@ export const navigationItems = [
     },
     {
         path: '/scadenze',
+        area: 'scadenze',
         group: 'lavoro',
         label: 'Scadenze',
         icon: pathIcons['/scadenze'],
         description: 'Date di pagamento e stato delle fatture collegate.',
     },
     {
+        path: '/area-cliente',
+        area: 'portale-cliente',
+        group: 'lavoro',
+        label: 'Area clienti',
+        icon: pathIcons['/area-cliente'],
+        description: 'I propri contatori, letture e fatture.',
+        // Ha una pagina propria, non l'elenco e la scheda di una risorsa.
+        standalone: true,
+    },
+    {
         path: '/servizi',
+        area: 'servizi',
         label: 'Servizi',
         icon: pathIcons['/servizi'],
         description: 'Voci operative collegate a letture, articoli e fatture.',
@@ -85,6 +109,7 @@ export const navigationItems = [
     },
     {
         path: '/articoli',
+        area: 'articoli',
         group: 'configurazione',
         label: 'Articoli',
         icon: pathIcons['/articoli'],
@@ -92,6 +117,7 @@ export const navigationItems = [
     },
     {
         path: '/listini',
+        area: 'listini',
         group: 'configurazione',
         label: 'Listini',
         icon: pathIcons['/listini'],
@@ -99,6 +125,7 @@ export const navigationItems = [
     },
     {
         path: '/fasce',
+        area: 'fasce',
         group: 'configurazione',
         label: 'Fasce',
         icon: pathIcons['/fasce'],
@@ -106,8 +133,9 @@ export const navigationItems = [
     },
     {
         path: '/auth/profile',
+        // Nessuna area: il proprio account lo apre chiunque sia entrato.
         group: 'sistema',
-        label: 'Admin',
+        label: 'Profilo',
         icon: pathIcons['/auth/profile'],
         description: "Profilo utente e impostazioni dell'account.",
     },
@@ -123,6 +151,16 @@ export const navigationItems = [
 // offrire porte che si aprirebbero su un errore.
 export const visibleNavigationItems = navigationItems.filter((item) => !item.hidden);
 
+// L'area che governa un indirizzo, cioe il nome con cui il server dice se si
+// puo aprire. Si guarda il primo segmento, cosi `/fatture/generazione` e
+// `/fatture/12/cliente` ricadono sotto `fatture` senza doverli elencare. Un
+// indirizzo che non corrisponde a nessuna voce non ha area: e il caso del
+// profilo, che riguarda chiunque sia entrato.
+export const areaDelPercorso = (percorso) => {
+    const segmento = primoSegmento(percorso);
+    return navigationItems.find((item) => primoSegmento(item.path) === segmento)?.area;
+};
+
 export const navigationItemsForRole = (risorse) => {
     // Nessun elenco significa amministratore, o un profilo non ancora caricato:
     // si mostra tutto, come prima che i ruoli esistessero.
@@ -131,7 +169,7 @@ export const navigationItemsForRole = (risorse) => {
     }
 
     const permesse = new Set(risorse);
-    return visibleNavigationItems.filter((item) => permesse.has(item.path.replace('/', '')));
+    return visibleNavigationItems.filter((item) => !item.area || permesse.has(item.area));
 };
 
 

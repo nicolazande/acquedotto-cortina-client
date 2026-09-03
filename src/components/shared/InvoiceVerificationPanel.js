@@ -164,6 +164,8 @@ const InvoiceVerificationPanel = ({ record, recordId }) => {
         ricarica: loadVerification,
     } = useRemoteData(richiesta, { messaggioErrore: 'Verifica calcolo non disponibile.' });
 
+    const summary = verification?.summary;
+
     const handleFixedChargeChange = async (checked) => {
         if (!checked || !summary?.quotaFissaApplicabile || isApplyingFixedCharge) {
             return;
@@ -191,8 +193,6 @@ const InvoiceVerificationPanel = ({ record, recordId }) => {
             setIsApplyingFixedCharge(false);
         }
     };
-
-    const summary = verification?.summary;
     const status = getVerificationStatus(summary);
     const locked = isInvoiceLocked(record);
     const fixedChargeDisabled = Boolean(

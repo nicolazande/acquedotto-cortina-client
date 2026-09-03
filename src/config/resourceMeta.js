@@ -13,6 +13,7 @@ const resourceIcons = {
 
 export const pathIcons = {
     '/': 'dashboard',
+    '/area-cliente': 'dashboard',
     '/consegne': 'send',
     '/incassi': 'check',
     '/auth/profile': 'admin',

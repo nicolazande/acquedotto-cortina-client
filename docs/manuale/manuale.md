@@ -36,9 +36,10 @@ fatture.
 ### Il letturista
 
 Entrando si trova subito sulla **mappa degli edifici**, che è da dove comincia il giro,
-e nel menu ha soltanto quattro voci: Clienti, Contatori, Edifici e Letture. Fatture,
-consegne, incassi, scadenze e listini non ci sono — non gli servono, e il gestionale
-glieli rifiuta anche se ne conoscesse l'indirizzo.
+e nel menu ha soltanto quattro voci più il proprio profilo: Clienti, Contatori, Edifici
+e Letture. Fatture, consegne, incassi, scadenze e listini non ci sono — non gli servono,
+e il gestionale glieli rifiuta anche se ne conoscesse l'indirizzo: scrivendone uno viene
+riportato sulla mappa.
 
 **Registra le letture** e può correggerle, ma non modifica le anagrafiche: clienti,
 contatori ed edifici li vede e basta. Su quelle schede i pulsanti «Nuovo», «Modifica»
