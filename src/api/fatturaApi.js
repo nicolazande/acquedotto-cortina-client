@@ -12,7 +12,6 @@ const fatturaApi = {
     applyFixedCharge: (id) => resource.postRelation(id, 'quota-fissa'),
     getFatture: resource.list,
     getFattura: resource.get,
-    getPdfUrl: (id) => `${resource.baseUrl}/${id}/pdf`,
     openPdf: async (id) => {
         const response = await axios.get(`${resource.baseUrl}/${id}/pdf`, { responseType: 'blob' });
         openBlobResponse(response, `fattura-${id}.pdf`);
