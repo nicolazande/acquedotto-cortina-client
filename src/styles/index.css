@@ -1190,6 +1190,13 @@ a {
     /* Mentre si disegna la zona, il trascinamento deve restare alla mappa e non
        far scorrere la pagina sotto il dito. */
     touch-action: none;
+    /* Leaflet impila i suoi controlli fino a z-index 1000, lo stesso della barra
+       di navigazione: a parita vince chi viene dopo nel documento, cioe la mappa,
+       e scorrendo i pulsanti dello zoom e la riga dei crediti comparivano sopra
+       la barra. `isolation` chiude quei livelli dentro il contenitore, cosi
+       restano ordinati fra loro ma non competono piu con il resto della pagina -
+       senza rincorrere numeri di z-index sempre piu alti. */
+    isolation: isolate;
 }
 
 .edificio-mappa-barra {

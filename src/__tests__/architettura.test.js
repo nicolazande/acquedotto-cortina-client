@@ -70,3 +70,24 @@ describe('la forma del client', () => {
         expect(fuoriPosto).toEqual([]);
     });
 });
+
+describe('la mappa non invade il resto della pagina', () => {
+    // Leaflet impila i suoi controlli fino a z-index 1000, lo stesso della barra
+    // di navigazione: a parita vince chi viene dopo nel documento. Senza isolare
+    // il contenitore, scorrendo la pagina i pulsanti dello zoom e la riga dei
+    // crediti comparivano sopra la barra. La riga che lo impedisce sembra
+    // decorativa, e non lo e.
+    const stili = fs.readFileSync(path.join(RADICE, 'styles/index.css'), 'utf8');
+    const regolaDellaMappa = stili.slice(stili.indexOf('.edificio-map {'), stili.indexOf('.edificio-mappa-barra'));
+
+    it('il contenitore della mappa isola i propri livelli', () => {
+        expect(regolaDellaMappa).toMatch(/isolation:\s*isolate/);
+    });
+
+    it('la barra di navigazione resta almeno alta quanto i controlli di Leaflet', () => {
+        const barra = fs.readFileSync(path.join(RADICE, 'styles/Navbar.css'), 'utf8');
+        const zIndex = Number(barra.match(/\.navbar\s*\{[^}]*z-index:\s*(\d+)/s)?.[1]);
+
+        expect(zIndex).toBeGreaterThanOrEqual(1000);
+    });
+});
