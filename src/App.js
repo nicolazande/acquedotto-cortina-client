@@ -10,6 +10,7 @@ import { listComponents } from './components/shared/listComponents';
 // navigationItems genera le rotte (comprese quelle nascoste dal menu),
 // visibleNavigationItems alimenta la barra di navigazione.
 import { navigationItems, navigationItemsForRole } from './config/navigation';
+import { RisorsePermesseProvider } from './hooks/useRisorsePermesse';
 import authApi from './api/authApi';
 import './styles/App.css';
 
@@ -128,7 +129,7 @@ const App = () => {
     // Il menu mostra solo cio che il ruolo puo davvero aprire: il server
     // risponderebbe 403 sul resto, e una voce che porta a un errore e peggio di
     // una voce assente.
-    const vociMenu = navigationItemsForRole(profile?.role);
+    const vociMenu = navigationItemsForRole(profile?.risorse);
     const activeRoutes = isCustomer ? customerRoutes : protectedRoutes;
     // Dove si atterra entrando. La panoramica e fatta di soldi e il letturista
     // non la puo nemmeno caricare: il suo punto di partenza e la mappa, da cui
@@ -136,6 +137,7 @@ const App = () => {
     const defaultPath = PAGINA_INIZIALE[profile?.role] || '/';
 
     return (
+        <RisorsePermesseProvider value={profile?.risorse || null}>
         <FeedbackProvider>
             <Router>
                 <div className={`App ${isAuthenticated ? 'is-authenticated' : 'is-public'}`}>
@@ -177,6 +179,7 @@ const App = () => {
                 </div>
             </Router>
         </FeedbackProvider>
+        </RisorsePermesseProvider>
     );
 };
 

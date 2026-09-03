@@ -79,24 +79,25 @@ describe('navigazione', () => {
     });
 });
 
-describe('il menu del letturista', () => {
-    it('mostra solo cio che il suo ruolo puo davvero aprire', () => {
-        const percorsi = navigationItemsForRole('letturista').map((voce) => voce.path);
+describe('il menu segue le risorse che il server concede', () => {
+    // L'elenco arriva dal profilo: qui non c'e una seconda idea di chi vede cosa.
+    const DEL_LETTURISTA = ['edifici', 'contatori', 'clienti', 'letture'];
 
-        expect(percorsi).toEqual(['/clienti', '/contatori', '/edifici', '/letture']);
+    it('mostra solo le voci corrispondenti alle risorse concesse', () => {
+        const percorsi = navigationItemsForRole(DEL_LETTURISTA).map((voce) => voce.path);
+
+        expect(percorsi.sort()).toEqual(['/clienti', '/contatori', '/edifici', '/letture']);
     });
 
-    it('non gli offre porte che il server chiuderebbe con un 403', () => {
-        const percorsi = navigationItemsForRole('letturista').map((voce) => voce.path);
+    it('non offre porte che il server chiuderebbe con un 403', () => {
+        const percorsi = navigationItemsForRole(DEL_LETTURISTA).map((voce) => voce.path);
 
         ['/', '/fatture', '/consegne', '/incassi', '/scadenze', '/listini', '/fasce', '/articoli']
             .forEach((chiusa) => expect(percorsi).not.toContain(chiusa));
     });
 
-    it('l amministratore continua a vedere tutto', () => {
-        expect(navigationItemsForRole('admin')).toEqual(visibleNavigationItems);
-        // Senza ruolo si assume l'amministratore: e cio che facevano tutte le
-        // voci prima che i ruoli esistessero.
+    it('senza elenco si mostra tutto, come prima che i ruoli esistessero', () => {
+        expect(navigationItemsForRole(null)).toEqual(visibleNavigationItems);
         expect(navigationItemsForRole(undefined)).toEqual(visibleNavigationItems);
     });
 });

@@ -12,7 +12,6 @@ export const navigationItems = [
     },
     {
         path: '/clienti',
-        ruoli: ['admin', 'letturista'],
         group: 'lavoro',
         label: 'Clienti',
         icon: pathIcons['/clienti'],
@@ -20,7 +19,6 @@ export const navigationItems = [
     },
     {
         path: '/contatori',
-        ruoli: ['admin', 'letturista'],
         group: 'lavoro',
         label: 'Contatori',
         icon: pathIcons['/contatori'],
@@ -28,7 +26,6 @@ export const navigationItems = [
     },
     {
         path: '/edifici',
-        ruoli: ['admin', 'letturista'],
         group: 'lavoro',
         label: 'Edifici',
         icon: pathIcons['/edifici'],
@@ -36,7 +33,6 @@ export const navigationItems = [
     },
     {
         path: '/letture',
-        ruoli: ['admin', 'letturista'],
         group: 'lavoro',
         label: 'Letture',
         icon: pathIcons['/letture'],
@@ -120,16 +116,23 @@ export const navigationItems = [
 // Voci mostrate nel menu. L'ordine dell'array raggruppa gia le voci per uso, e
 // la barra di navigazione separa i gruppi leggendo `item.group`.
 //
-// `ruoli`, quando c'e, dice chi altri oltre all'amministratore la vede. Il menu
-// e solo cio che si mostra: a decidere chi puo davvero e il server, che risponde
-// 403 sulle risorse che non competono. Nasconderle qui evita di offrire porte
-// che si aprirebbero su un errore.
-const PREDEFINITI = ['admin'];
-
+// Il menu mostra cio che il ruolo puo davvero aprire. L'elenco delle risorse
+// arriva dal profilo, cioe dal server, che e lo stesso che concede i permessi:
+// tenerne qui una seconda copia vorrebbe dire due verita che col tempo
+// divergono. Il menu non protegge nulla - a rifiutare e il server - ma evita di
+// offrire porte che si aprirebbero su un errore.
 export const visibleNavigationItems = navigationItems.filter((item) => !item.hidden);
 
-export const navigationItemsForRole = (role) => visibleNavigationItems
-    .filter((item) => (item.ruoli || PREDEFINITI).includes(role || 'admin'));
+export const navigationItemsForRole = (risorse) => {
+    // Nessun elenco significa amministratore, o un profilo non ancora caricato:
+    // si mostra tutto, come prima che i ruoli esistessero.
+    if (!risorse) {
+        return visibleNavigationItems;
+    }
+
+    const permesse = new Set(risorse);
+    return visibleNavigationItems.filter((item) => permesse.has(item.path.replace('/', '')));
+};
 
 
-export const itemsByGroup = (id, role) => navigationItemsForRole(role).filter((item) => item.group === id);
+export const itemsByGroup = (id) => visibleNavigationItems.filter((item) => item.group === id);

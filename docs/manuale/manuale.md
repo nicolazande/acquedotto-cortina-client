@@ -43,6 +43,12 @@ glieli rifiuta anche se ne conoscesse l'indirizzo.
 **Registra le letture** e può correggerle, ma non modifica le anagrafiche: clienti,
 contatori ed edifici li vede e basta.
 
+Sulle schede trova solo i collegamenti che gli competono: dal contatore arriva al
+cliente, alle sue letture e all'edificio, ma non al listino; dalla scheda cliente ai
+contatori, non alle fatture. Non è una questione di ordine — quelle pagine il
+gestionale gliele rifiuterebbe, e un riquadro che porta a un errore è peggio di un
+riquadro assente.
+
 Di un cliente vede **come trovarlo** — nome, indirizzo, località e telefono — e nient'altro.
 Codice fiscale, partita IVA, IBAN e mandato di addebito non escono dal gestionale: non
 sono nascosti a schermo, proprio non gli vengono inviati.
