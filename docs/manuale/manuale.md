@@ -21,16 +21,35 @@ Conviene salvarlo fra i preferiti del browser.
 
 ## Chi può fare cosa
 
-Esistono due tipi di accesso.
+Esistono tre tipi di accesso.
 
 | Tipo | Chi lo usa | Cosa vede |
 |------|------------|-----------|
 | Amministratore | Proprietario, segreteria | Tutto il gestionale |
+| Letturista | Chi va in giro a leggere i contatori | Edifici, contatori, clienti e letture |
 | Cliente | I clienti dell'acquedotto | Solo i propri dati: contatori, letture, fatture |
 
 Gli accessi dei clienti si creano dalla scheda del singolo cliente, come spiegato più
 avanti. Il cliente non può modificare nulla: può solo consultare e scaricare le proprie
 fatture.
+
+### Il letturista
+
+Entrando si trova subito sulla **mappa degli edifici**, che è da dove comincia il giro,
+e nel menu ha soltanto quattro voci: Clienti, Contatori, Edifici e Letture. Fatture,
+consegne, incassi, scadenze e listini non ci sono — non gli servono, e il gestionale
+glieli rifiuta anche se ne conoscesse l'indirizzo.
+
+**Registra le letture** e può correggerle, ma non modifica le anagrafiche: clienti,
+contatori ed edifici li vede e basta.
+
+Di un cliente vede **come trovarlo** — nome, indirizzo, località e telefono — e nient'altro.
+Codice fiscale, partita IVA, IBAN e mandato di addebito non escono dal gestionale: non
+sono nascosti a schermo, proprio non gli vengono inviati.
+
+Il suo giro tipico: apre **Edifici**, disegna la zona sulla mappa, ottiene l'elenco delle
+case da visitare, apre un edificio, vede i suoi contatori, apre un contatore — dove trova
+**l'ultimo indice registrato** — e inserisce quello nuovo.
 
 > **Nota.** I dati sono conservati online e restano disponibili da qualunque
 > postazione. Non serve fare copie sul proprio computer.

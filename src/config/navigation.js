@@ -12,6 +12,7 @@ export const navigationItems = [
     },
     {
         path: '/clienti',
+        ruoli: ['admin', 'letturista'],
         group: 'lavoro',
         label: 'Clienti',
         icon: pathIcons['/clienti'],
@@ -19,6 +20,7 @@ export const navigationItems = [
     },
     {
         path: '/contatori',
+        ruoli: ['admin', 'letturista'],
         group: 'lavoro',
         label: 'Contatori',
         icon: pathIcons['/contatori'],
@@ -26,6 +28,7 @@ export const navigationItems = [
     },
     {
         path: '/edifici',
+        ruoli: ['admin', 'letturista'],
         group: 'lavoro',
         label: 'Edifici',
         icon: pathIcons['/edifici'],
@@ -33,6 +36,7 @@ export const navigationItems = [
     },
     {
         path: '/letture',
+        ruoli: ['admin', 'letturista'],
         group: 'lavoro',
         label: 'Letture',
         icon: pathIcons['/letture'],
@@ -115,7 +119,17 @@ export const navigationItems = [
 
 // Voci mostrate nel menu. L'ordine dell'array raggruppa gia le voci per uso, e
 // la barra di navigazione separa i gruppi leggendo `item.group`.
+//
+// `ruoli`, quando c'e, dice chi altri oltre all'amministratore la vede. Il menu
+// e solo cio che si mostra: a decidere chi puo davvero e il server, che risponde
+// 403 sulle risorse che non competono. Nasconderle qui evita di offrire porte
+// che si aprirebbero su un errore.
+const PREDEFINITI = ['admin'];
+
 export const visibleNavigationItems = navigationItems.filter((item) => !item.hidden);
 
+export const navigationItemsForRole = (role) => visibleNavigationItems
+    .filter((item) => (item.ruoli || PREDEFINITI).includes(role || 'admin'));
 
-export const itemsByGroup = (id) => visibleNavigationItems.filter((item) => item.group === id);
+
+export const itemsByGroup = (id, role) => navigationItemsForRole(role).filter((item) => item.group === id);

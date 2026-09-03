@@ -9,7 +9,7 @@ import { detailComponents } from './components/shared/detailComponents';
 import { listComponents } from './components/shared/listComponents';
 // navigationItems genera le rotte (comprese quelle nascoste dal menu),
 // visibleNavigationItems alimenta la barra di navigazione.
-import { navigationItems, visibleNavigationItems } from './config/navigation';
+import { navigationItems, navigationItemsForRole } from './config/navigation';
 import authApi from './api/authApi';
 import './styles/App.css';
 
@@ -49,6 +49,11 @@ const protectedRoutes = [
     ...entityRoutes,
     { path: '/', exact: true, component: HomePage },
 ];
+
+const PAGINA_INIZIALE = {
+    cliente: '/area-cliente',
+    letturista: '/edifici',
+};
 
 const customerNavigationItems = [
     {
@@ -120,15 +125,22 @@ const App = () => {
     };
 
     const isCustomer = profile?.role === 'cliente';
+    // Il menu mostra solo cio che il ruolo puo davvero aprire: il server
+    // risponderebbe 403 sul resto, e una voce che porta a un errore e peggio di
+    // una voce assente.
+    const vociMenu = navigationItemsForRole(profile?.role);
     const activeRoutes = isCustomer ? customerRoutes : protectedRoutes;
-    const defaultPath = isCustomer ? '/area-cliente' : '/';
+    // Dove si atterra entrando. La panoramica e fatta di soldi e il letturista
+    // non la puo nemmeno caricare: il suo punto di partenza e la mappa, da cui
+    // si sceglie la zona e comincia il giro.
+    const defaultPath = PAGINA_INIZIALE[profile?.role] || '/';
 
     return (
         <FeedbackProvider>
             <Router>
                 <div className={`App ${isAuthenticated ? 'is-authenticated' : 'is-public'}`}>
                     {isAuthenticated && !isProfileLoading && (
-                        <Navbar items={isCustomer ? customerNavigationItems : visibleNavigationItems} onLogout={handleLogout} />
+                        <Navbar items={isCustomer ? customerNavigationItems : vociMenu} onLogout={handleLogout} />
                     )}
                     <div className="content">
                         <Suspense fallback={<PageLoading />}>

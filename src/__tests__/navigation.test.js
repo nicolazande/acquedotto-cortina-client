@@ -1,6 +1,7 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, it, test } from 'vitest';
 import {
     itemsByGroup,
+    navigationItemsForRole,
     navigationItems,
     visibleNavigationItems,
 } from '../config/navigation';
@@ -75,5 +76,27 @@ describe('navigazione', () => {
             expect(item.label, `${item.path} senza etichetta`).toBeTruthy();
             expect(item.icon, `${item.path} senza icona`).toBeTruthy();
         });
+    });
+});
+
+describe('il menu del letturista', () => {
+    it('mostra solo cio che il suo ruolo puo davvero aprire', () => {
+        const percorsi = navigationItemsForRole('letturista').map((voce) => voce.path);
+
+        expect(percorsi).toEqual(['/clienti', '/contatori', '/edifici', '/letture']);
+    });
+
+    it('non gli offre porte che il server chiuderebbe con un 403', () => {
+        const percorsi = navigationItemsForRole('letturista').map((voce) => voce.path);
+
+        ['/', '/fatture', '/consegne', '/incassi', '/scadenze', '/listini', '/fasce', '/articoli']
+            .forEach((chiusa) => expect(percorsi).not.toContain(chiusa));
+    });
+
+    it('l amministratore continua a vedere tutto', () => {
+        expect(navigationItemsForRole('admin')).toEqual(visibleNavigationItems);
+        // Senza ruolo si assume l'amministratore: e cio che facevano tutte le
+        // voci prima che i ruoli esistessero.
+        expect(navigationItemsForRole(undefined)).toEqual(visibleNavigationItems);
     });
 });
