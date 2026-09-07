@@ -47,11 +47,20 @@ const LoginPage = ({ onLogin }) => {
                 <form onSubmit={handleLogin}>
                     <div className="form-group">
                         <label htmlFor="username">Username</label>
+                        {/* Sul telefono la tastiera mette da sola la maiuscola
+                            iniziale e prova a correggere quello che scrivi: un
+                            nome utente tutto minuscolo diventava "Brunodonaz" e
+                            l'accesso veniva rifiutato, senza che si capisse
+                            perche. */}
                         <input
                             id="username"
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            spellCheck={false}
+                            autoComplete="username"
                             required
                         />
                     </div>
@@ -62,6 +71,7 @@ const LoginPage = ({ onLogin }) => {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="current-password"
                             required
                         />
                     </div>
