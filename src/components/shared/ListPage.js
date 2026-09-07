@@ -11,6 +11,7 @@ import {
 } from './PageChrome';
 import RecordTable from './RecordTable';
 import descriviErrore from '../../api/descriviErrore';
+import cancellaRecord, { CONFERMA_CANCELLAZIONE } from './cancellaRecord';
 import { puoScrivere, useRisorsePermesse } from '../../hooks/useRisorsePermesse';
 
 // `beforeTable` e i callback sulle righe sono i punti di estensione usati dalla
@@ -110,29 +111,12 @@ const ListPage = ({
         updateQuery(1, field, newOrder);
     };
 
-    const handleDelete = async (id) => {
-        const confirmed = await confirm({
-            title: 'Cancella record',
-            message: 'Sei sicuro di voler cancellare questo record?',
-            confirmLabel: 'Cancella',
-            variant: 'danger',
-        });
-
-        if (!confirmed) {
-            return;
-        }
-
-        try {
-            await config.api.remove(id);
-            notify('Record cancellato con successo', 'success');
-            fetchRecords(currentPage, activeSearch, sortField, sortOrder, activeView);
-        } catch (error) {
-            // Il messaggio del server spiega perche: "ha ancora 12 fatture" si
-            // legge e si capisce, "errore durante la cancellazione" no.
-            notify(descriviErrore(error, 'Errore durante la cancellazione'), 'error');
-            console.error(error);
-        }
-    };
+    const handleDelete = (id) => cancellaRecord({
+        conferma: () => confirm(CONFERMA_CANCELLAZIONE),
+        rimuovi: () => config.api.remove(id),
+        notify,
+        dopo: () => fetchRecords(currentPage, activeSearch, sortField, sortOrder, activeView),
+    });
 
     // Uno stato vuoto utile dice perche non c'e niente e cosa fare, invece del
     // generico "nessun record trovato" che lascia l'utente a chiedersi se

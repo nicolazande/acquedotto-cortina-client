@@ -6,6 +6,7 @@ import Button from '../components/shared/Button';
 import ServerStatusIndicator from '../ServerStatusIndicator';
 import '../styles/Auth.css';
 import descriviErrore from '../api/descriviErrore';
+import { CampoNomeUtente, CampoPassword } from '../components/shared/CampiCredenziali';
 
 const RegisterPage = ({ history }) => {
     const [username, setUsername] = useState('');
@@ -31,26 +32,8 @@ const RegisterPage = ({ history }) => {
                 <h2>Crea account</h2>
                 {error && <p className="error-message">{error}</p>}
                 <form onSubmit={handleRegister}>
-                    <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <input
-                            id="username"
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+                    <CampoNomeUtente value={username} onChange={setUsername} />
+                    <CampoPassword value={password} onChange={setPassword} nuova />
                     <div className="btn-back-container">
                         <Button type="submit" variant="primary" icon="plus">
                             Registrati

@@ -17,6 +17,7 @@ import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
 import useRemoteData from '../../hooks/useRemoteData';
 import descriviErrore from '../../api/descriviErrore';
+import { CelleImporto, IntestazioniImporto } from './CelleImporto';
 
 const lineCode = (line) => line.articolo_dettaglio?.codice || line.articolo?.codice || line.articolo || '-';
 const lineLabel = (line) => join(line.tipo_tariffa, line.tipo_quota);
@@ -276,9 +277,7 @@ const InvoiceVerificationPanel = ({ record, recordId }) => {
                                         <tr>
                                             <th>Descrizione</th>
                                             <th>Articolo</th>
-                                            <th>Quantità</th>
-                                            <th>Prezzo</th>
-                                            <th>Totale</th>
+                                            <IntestazioniImporto />
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -286,9 +285,7 @@ const InvoiceVerificationPanel = ({ record, recordId }) => {
                                             <tr key={line._id}>
                                                 <td data-label="Descrizione">{line.descrizione || lineLabel(line)}</td>
                                                 <td data-label="Articolo">{lineCode(line)}</td>
-                                                <td data-label="Quantità">{formatCubicMeters(line.metri_cubi)}</td>
-                                                <td data-label="Prezzo">{formatMoney(line.prezzo)}</td>
-                                                <td data-label="Totale">{formatMoney(line.valore_unitario)}</td>
+                                                <CelleImporto riga={line} />
                                             </tr>
                                         ))}
                                     </tbody>
@@ -340,9 +337,7 @@ const InvoiceVerificationPanel = ({ record, recordId }) => {
                                         <td data-label="Calcolo listino">{lineLabel(line)}</td>
                                         <td data-label="Contatore">{join(line.contatore?.seriale, line.contatore?.nome_edificio)}</td>
                                         <td data-label="Articolo">{lineCode(line)}</td>
-                                        <td data-label="Quantità">{formatCubicMeters(line.metri_cubi)}</td>
-                                        <td data-label="Prezzo">{formatMoney(line.prezzo)}</td>
-                                        <td data-label="Totale">{formatMoney(line.valore_unitario)}</td>
+                                        <CelleImporto riga={line} />
                                     </tr>
                                 ))}
                             </tbody>

@@ -4,7 +4,6 @@ import fatturaApi from '../../api/fatturaApi';
 import { fixedChargePreviewHelp } from '../../utils/billingPreview';
 import letturaApi from '../../api/letturaApi';
 import {
-    formatCubicMeters,
     formatDate,
     formatMoney,
     invoiceStatus,
@@ -19,6 +18,7 @@ import BillingPanel, {
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
 import descriviErrore from '../../api/descriviErrore';
+import { CelleImporto, IntestazioniImporto } from './CelleImporto';
 
 const BillingPreviewPanel = ({ recordId }) => {
     const [calculation, setCalculation] = useState(null);
@@ -164,9 +164,7 @@ const BillingPreviewPanel = ({ recordId }) => {
                                 <tr>
                                     <th>Riga</th>
                                     <th>Tariffa</th>
-                                    <th>Quantita</th>
-                                    <th>Prezzo</th>
-                                    <th>Totale</th>
+                                    <IntestazioniImporto />
                                 </tr>
                             </thead>
                             <tbody>
@@ -174,9 +172,7 @@ const BillingPreviewPanel = ({ recordId }) => {
                                     <tr key={`${line.riga}-${line.tipo_tariffa}`}>
                                         <td data-label="Riga">{line.riga}</td>
                                         <td data-label="Tariffa">{line.tipo_tariffa}</td>
-                                        <td data-label="Quantita">{formatCubicMeters(line.metri_cubi)}</td>
-                                        <td data-label="Prezzo">{formatMoney(line.prezzo)}</td>
-                                        <td data-label="Totale">{formatMoney(line.valore_unitario)}</td>
+                                        <CelleImporto riga={line} />
                                     </tr>
                                 ))}
                             </tbody>

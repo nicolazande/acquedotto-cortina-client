@@ -8,6 +8,7 @@ import { useFeedback } from './FeedbackProvider';
 import Button from './Button';
 import { PageHeader } from './PageChrome';
 import descriviErrore from '../../api/descriviErrore';
+import cancellaRecord, { CONFERMA_CANCELLAZIONE } from './cancellaRecord';
 import { eAmministratore, puoScrivere, useRisorsePermesse } from '../../hooks/useRisorsePermesse';
 
 const DetailPage = ({ config }) => {
@@ -75,29 +76,12 @@ const DetailPage = ({ config }) => {
         setIsEditing(true);
     };
 
-    const handleDelete = async () => {
-        const confirmed = isLocked
-            ? await chiediSblocco('cancellarlo')
-            : await confirm({
-                title: 'Cancella record',
-                message: 'Sei sicuro di voler cancellare questo record?',
-                confirmLabel: 'Cancella',
-                variant: 'danger',
-            });
-
-        if (!confirmed) {
-            return;
-        }
-
-        try {
-            await config.api.remove(id, isLocked ? { sbloccoConfermato: true } : undefined);
-            notify('Record cancellato con successo', 'success');
-            goBack();
-        } catch (error) {
-            notify(descriviErrore(error, 'Errore durante la cancellazione'), 'error');
-            console.error(error);
-        }
-    };
+    const handleDelete = () => cancellaRecord({
+        conferma: () => (isLocked ? chiediSblocco('cancellarlo') : confirm(CONFERMA_CANCELLAZIONE)),
+        rimuovi: () => config.api.remove(id, isLocked ? { sbloccoConfermato: true } : undefined),
+        notify,
+        dopo: goBack,
+    });
 
     if (isLoading) {
         return <div className={`${config.resource}-details`}>Caricamento...</div>;

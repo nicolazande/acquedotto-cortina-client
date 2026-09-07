@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import authApi from '../api/authApi';
 import { consumeSessionMessage } from '../services/auth';
 import Button from '../components/shared/Button';
+import { CampoNomeUtente, CampoPassword } from '../components/shared/CampiCredenziali';
 import ServerStatusIndicator from '../ServerStatusIndicator';
 import '../styles/Auth.css';
 import descriviErrore from '../api/descriviErrore';
@@ -45,36 +46,8 @@ const LoginPage = ({ onLogin }) => {
                 {notice && !error && <p className="notice-message">{notice}</p>}
                 {error && <p className="error-message">{error}</p>}
                 <form onSubmit={handleLogin}>
-                    <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        {/* Sul telefono la tastiera mette da sola la maiuscola
-                            iniziale e prova a correggere quello che scrivi: un
-                            nome utente tutto minuscolo diventava "Brunodonaz" e
-                            l'accesso veniva rifiutato, senza che si capisse
-                            perche. */}
-                        <input
-                            id="username"
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            autoCapitalize="none"
-                            autoCorrect="off"
-                            spellCheck={false}
-                            autoComplete="username"
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            autoComplete="current-password"
-                            required
-                        />
-                    </div>
+                    <CampoNomeUtente value={username} onChange={setUsername} />
+                    <CampoPassword value={password} onChange={setPassword} />
                     <div className="btn-back-container">
                         <Button type="submit" variant="primary" icon="check">
                             Accedi
