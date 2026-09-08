@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import attachmentApi from '../../api/attachmentApi';
+import descriviErrore from '../../api/descriviErrore';
 import { formatDate } from '../../utils/formatters';
 import { useFeedback } from './FeedbackProvider';
+import { puoScrivere, useRisorsePermesse } from '../../hooks/useRisorsePermesse';
 import Button from './Button';
 
 const MAX_IMAGE_SIDE = 1600;
@@ -207,6 +209,12 @@ const AttachmentCard = ({ attachment, onDelete }) => {
 
 const NoteAttachmentsPanel = ({ resource, recordId }) => {
     const { confirm, notify } = useFeedback();
+    const { scrivibili } = useRisorsePermesse();
+    // Un allegato vale quanto il documento a cui e attaccato: chi puo solo
+    // consultare un contatore non puo appendergli niente, e il server lo
+    // rifiuta. Offrire lo stesso il pulsante voleva dire far scegliere un file
+    // all'operatore e non far succedere nulla.
+    const modificabile = puoScrivere(scrivibili, resource);
     const fileInputRef = useRef(null);
     const [attachments, setAttachments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -251,7 +259,10 @@ const NoteAttachmentsPanel = ({ resource, recordId }) => {
             notify(files.length === 1 ? 'Allegato caricato' : 'Allegati caricati', 'success');
             await loadAttachments();
         } catch (error) {
-            notify('Errore durante il caricamento dell\'allegato', 'error');
+            // Il server spiega perche - "allegato troppo grande", "tipo non
+            // ammesso" - e quella spiegazione va mostrata: un generico "errore"
+            // lascia l'operatore a riprovare senza sapere cosa cambiare.
+            notify(descriviErrore(error, 'Errore durante il caricamento dell\'allegato'), 'error');
             console.error(error);
         } finally {
             setIsUploading(false);
@@ -274,7 +285,7 @@ const NoteAttachmentsPanel = ({ resource, recordId }) => {
             notify('Allegato eliminato', 'success');
             await loadAttachments();
         } catch (error) {
-            notify('Errore durante l\'eliminazione dell\'allegato', 'error');
+            notify(descriviErrore(error, 'Errore durante l\'eliminazione dell\'allegato'), 'error');
             console.error(error);
         }
     };
@@ -286,22 +297,24 @@ const NoteAttachmentsPanel = ({ resource, recordId }) => {
                     <span className="eyebrow">Note</span>
                     <h3>Allegati</h3>
                 </div>
-                <Button
-                    as="label"
-                    className={`note-attachment-upload ${isUploading ? 'is-disabled' : ''}`}
-                    icon="plus"
-                    variant="primary"
-                >
-                    {isUploading ? 'Caricamento...' : 'Aggiungi allegati'}
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept={ACCEPTED_ATTACHMENT_TYPES}
-                        multiple
-                        disabled={isUploading}
-                        onChange={handleFiles}
-                    />
-                </Button>
+                {modificabile && (
+                    <Button
+                        as="label"
+                        className={`note-attachment-upload ${isUploading ? 'is-disabled' : ''}`}
+                        icon="plus"
+                        variant="primary"
+                    >
+                        {isUploading ? 'Caricamento...' : 'Aggiungi allegati'}
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept={ACCEPTED_ATTACHMENT_TYPES}
+                            multiple
+                            disabled={isUploading}
+                            onChange={handleFiles}
+                        />
+                    </Button>
+                )}
             </div>
 
             {isLoading && <div className="note-attachments-empty">Caricamento...</div>}
