@@ -61,3 +61,29 @@ describe('le relazioni puntano a risorse che esistono', () => {
         });
     });
 });
+
+describe('le tendine dicono quello che c e in archivio', () => {
+    it('il tipo di attivita elenca le dieci categorie usate, e nessun altra', () => {
+        // Il listino si sceglie in base a questa categoria: era un campo di testo
+        // libero, e la stessa categoria scritta in due modi diventa un contatore
+        // che non rientra in nessuna tariffa. I valori sono quelli misurati sui
+        // 1.061 contatori in archivio.
+        const campo = editorViews.contatore.fields.find((f) => f.name === 'tipo_attivita');
+
+        expect(campo.type).toBe('select');
+        expect(campo.options.map((o) => o.value)).toEqual([
+            'DOMESTICO RESIDENTE',
+            'DOMESTICO NON RESIDENTE',
+            'PERTINENZE DOMESTICO RESIDENTE',
+            'PRODUTTIVO',
+            'UTENZE SOCI',
+            'UTENZA CONDOMINIALE',
+            'CANTIERI',
+            'AGRICOLO',
+            'SOCIETÀ IMMOBILIARI',
+            "SOLO CANONE SOCIETA' IMMOBILIARI",
+        ]);
+        // Etichetta e valore coincidono: quello che si legge e quello che si salva.
+        campo.options.forEach((o) => expect(o.label).toBe(o.value));
+    });
+});

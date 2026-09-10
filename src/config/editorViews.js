@@ -53,6 +53,23 @@ const opzioniProvincia = async () => {
     return (data.data || []).map(({ nome, sigla }) => ({ value: nome, label: `${nome} (${sigla})` }));
 };
 
+// Le categorie d'uso davvero in archivio: dieci, e nessun'altra in 1.061
+// contatori. Era un campo di testo libero, quindi la stessa categoria si poteva
+// scrivere in due modi - e il listino si sceglie in base a questa, quindi una
+// maiuscola di troppo diventa un contatore che non rientra in nessuna tariffa.
+const TIPI_ATTIVITA = [
+    'DOMESTICO RESIDENTE',
+    'DOMESTICO NON RESIDENTE',
+    'PERTINENZE DOMESTICO RESIDENTE',
+    'PRODUTTIVO',
+    'UTENZE SOCI',
+    'UTENZA CONDOMINIALE',
+    'CANTIERI',
+    'AGRICOLO',
+    'SOCIETÀ IMMOBILIARI',
+    "SOLO CANONE SOCIETA' IMMOBILIARI",
+].map((valore) => ({ value: valore, label: valore }));
+
 const campoProvincia = (label, name) => selectField(label, name, opzioniProvincia);
 
 // Nove clienti su dieci fatturano dove risiedono: 846 su 900 in archivio hanno
@@ -164,9 +181,9 @@ export const editorViews = {
             referenceField('Listino', 'listino', 'listini'),
             field('Tipo Contatore', 'tipo_contatore'),
             field('Codice', 'codice'),
-            field('Seriale Interno', 'seriale_interno'),
-            field('Tipo Attività', 'tipo_attivita'),
-            field('Seriale', 'seriale'),
+            field('Seriale interno (numero d ordine dell acquedotto)', 'seriale_interno'),
+            field('Matricola (stampigliata sul contatore)', 'seriale'),
+            selectField('Tipo Attività', 'tipo_attivita', TIPI_ATTIVITA),
             field('Inattivo', 'inattivo', 'checkbox'),
             field('Quota riparto (%)', 'consumo', 'number'),
             field('Condominiale', 'condominiale', 'checkbox'),
