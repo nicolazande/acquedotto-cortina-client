@@ -35,14 +35,22 @@ const FORMATI = [
     },
 ];
 
-// Le tre cose che vale la pena guardare prima di mandare l'elenco fuori. Non
-// sono errori: sono i casi che, se sono tanti, di solito vogliono dire che
-// manca un dato.
+// Cosa vale la pena guardare prima di mandare l'elenco fuori. Non sono errori:
+// sono i casi che, se sono tanti, di solito vogliono dire che manca un dato.
 const daControllare = (riepilogo) => [
     riepilogo.senzaCodiceFiscale > 0 && {
         label: 'Senza codice fiscale',
         value: riepilogo.senzaCodiceFiscale,
         className: 'is-danger',
+    },
+    riepilogo.daRipartire > 0 && {
+        // Piu intestatari attivi sullo stesso contatore, senza le quote di
+        // riparto: il consumo finisce tutto sul primo e gli altri risultano a
+        // zero. Il totale dell'elenco resta giusto, ma il BIM fatturerebbe a
+        // una persona sola quello che hanno consumato in cinque.
+        label: 'Condominiali senza riparto',
+        value: riepilogo.daRipartire,
+        className: 'is-warning',
     },
     riepilogo.primaLettura > 0 && {
         label: 'Contatori senza storico',
