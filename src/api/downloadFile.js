@@ -25,37 +25,43 @@ const filenameFromDisposition = (disposition, fallback) => {
     return match?.[1] || fallback;
 };
 
-export const openBlobResponse = (response, fallbackFilename = 'documento.pdf') => {
+// Il file arrivato dal server, dato all'utente. Cambia solo il gesto finale:
+// cio che il browser sa mostrare si apre in una scheda - una foto allegata a
+// una lettura si guarda, non si scarica - e tutto il resto si salva. Un foglio
+// di calcolo aperto in una scheda darebbe una pagina vuota o un download senza
+// nome. Il nome e quello che il server ha messo nell'intestazione: e lui a
+// saperlo.
+const SI_APRONO_A_SCHERMO = ['application/pdf', 'image/', 'text/plain'];
+
+const consegna = (response, fallbackFilename, { salvaSempre = false } = {}) => {
     const contentType = response.headers['content-type'] || 'application/octet-stream';
     const filename = filenameFromDisposition(response.headers['content-disposition'], fallbackFilename);
-    const blob = new Blob([response.data], { type: contentType });
-    const url = URL.createObjectURL(blob);
-    const opened = window.open(url, '_blank', 'noopener,noreferrer');
+    const url = URL.createObjectURL(new Blob([response.data], { type: contentType }));
 
-    if (!opened) {
+    const salva = () => {
         const link = document.createElement('a');
         link.href = url;
         link.download = filename;
+        document.body.appendChild(link);
         link.click();
+        link.remove();
+    };
+
+    const daGuardare = !salvaSempre && SI_APRONO_A_SCHERMO.some((tipo) => contentType.startsWith(tipo));
+
+    // Se la scheda non si apre - un blocco dei popup - resta il salvataggio,
+    // altrimenti il click non farebbe niente e sembrerebbe tutto rotto.
+    if (!daGuardare || !window.open(url, '_blank', 'noopener,noreferrer')) {
+        salva();
     }
 
     setTimeout(() => URL.revokeObjectURL(url), 30000);
 };
 
-// Un foglio di calcolo o un documento Word il browser non li mostra: aprirli in
-// una scheda darebbe una pagina vuota o un download a meta. Vanno salvati e
-// basta, lasciando il nome che il server ha messo nell'intestazione.
-export const scaricaBlobResponse = (response, fallbackFilename) => {
-    const contentType = response.headers['content-type'] || 'application/octet-stream';
-    const filename = filenameFromDisposition(response.headers['content-disposition'], fallbackFilename);
-    const url = URL.createObjectURL(new Blob([response.data], { type: contentType }));
+export const openBlobResponse = (response, fallbackFilename = 'documento.pdf') => (
+    consegna(response, fallbackFilename)
+);
 
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    setTimeout(() => URL.revokeObjectURL(url), 30000);
-};
+export const scaricaBlobResponse = (response, fallbackFilename) => (
+    consegna(response, fallbackFilename, { salvaSempre: true })
+);
