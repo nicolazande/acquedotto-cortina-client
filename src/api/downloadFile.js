@@ -41,3 +41,21 @@ export const openBlobResponse = (response, fallbackFilename = 'documento.pdf') =
 
     setTimeout(() => URL.revokeObjectURL(url), 30000);
 };
+
+// Un foglio di calcolo o un documento Word il browser non li mostra: aprirli in
+// una scheda darebbe una pagina vuota o un download a meta. Vanno salvati e
+// basta, lasciando il nome che il server ha messo nell'intestazione.
+export const scaricaBlobResponse = (response, fallbackFilename) => {
+    const contentType = response.headers['content-type'] || 'application/octet-stream';
+    const filename = filenameFromDisposition(response.headers['content-disposition'], fallbackFilename);
+    const url = URL.createObjectURL(new Blob([response.data], { type: contentType }));
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+};

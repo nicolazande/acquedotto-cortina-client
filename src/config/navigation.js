@@ -86,6 +86,17 @@ export const navigationItems = [
         description: 'Date di pagamento e stato delle fatture collegate.',
     },
     {
+        path: '/elenchi',
+        area: 'elenchi',
+        group: 'lavoro',
+        label: 'Elenchi',
+        icon: pathIcons['/elenchi'],
+        description: 'I consumi dell\'anno da mandare al BIM, in Excel, PDF o Word.',
+        // Non e una risorsa con elenco e scheda: produce file e basta. La rotta
+        // e dichiarata a mano in App.js.
+        standalone: true,
+    },
+    {
         path: '/area-cliente',
         area: 'portale-cliente',
         group: 'lavoro',

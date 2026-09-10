@@ -33,6 +33,7 @@ export const pathIcons = {
     '/': 'dashboard',
     '/area-cliente': 'dashboard',
     '/consegne': 'send',
+    '/elenchi': 'download',
     '/incassi': 'check',
     '/auth/profile': 'admin',
     ...Object.fromEntries(NOMI_RISORSE.map((nome) => [`/${nome}`, risorse[nome].icona])),

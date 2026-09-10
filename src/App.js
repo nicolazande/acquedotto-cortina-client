@@ -24,6 +24,7 @@ const CustomerPortalPage = lazy(() => import('./pages/CustomerPortalPage'));
 const InvoiceControlPage = lazy(() => import('./pages/InvoiceControlPage'));
 const ConsegnePage = lazy(() => import('./pages/ConsegnePage'));
 const IncassiPage = lazy(() => import('./pages/IncassiPage'));
+const ElenchiPage = lazy(() => import('./pages/ElenchiPage'));
 const RelationViewPage = lazy(() => import('./pages/RelationViewPage'));
 
 // Le voci `standalone` hanno una pagina propria invece dell'elenco e della
@@ -55,6 +56,7 @@ const tutteLeRotte = [
     { path: '/fatture/controlli', exact: true, component: InvoiceControlPage },
     { path: '/consegne', exact: true, component: ConsegnePage },
     { path: '/incassi', exact: true, component: IncassiPage },
+    { path: '/elenchi', exact: true, component: ElenchiPage },
     { path: '/:resource/:id/:relation', exact: true, component: RelationViewPage },
     ...entityRoutes,
     { path: '/', exact: true, component: HomePage },
