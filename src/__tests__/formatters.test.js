@@ -128,6 +128,19 @@ describe('helper di visualizzazione', () => {
     test('formatDate usa il formato italiano', () => {
         expect(formatDate('2026-06-15T00:00:00.000Z')).toBe('15/06/2026');
         expect(formatDate(null)).toBe('-');
+        // Un valore che non e una data non deve diventare "Invalid Date" in
+        // mezzo a una tabella.
+        expect(formatDate('non una data')).toBe('-');
+    });
+
+    test('formatDate legge il giorno in UTC, non nel fuso di chi guarda', () => {
+        // Le date del gestionale sono giorni di calendario salvati come
+        // mezzanotte UTC. Col fuso del browser, per chi sta a ovest di
+        // Greenwich mezzanotte del 25 e ancora il 24 sera: la stessa lettura
+        // mostrava un giorno diverso a seconda di dove si apriva il gestionale.
+        const mezzanotteUtc = new Date('2026-08-25T00:00:00.000Z');
+        expect(formatDate(mezzanotteUtc)).toBe('25/08/2026');
+        expect(formatDate('2026-01-01T00:00:00.000Z')).toBe('01/01/2026');
     });
 
     test('getPathValue attraversa i riferimenti popolati', () => {

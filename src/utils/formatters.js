@@ -4,9 +4,22 @@ export const isEmptyValue = (value) => value === undefined || value === null || 
 
 export const text = (value) => (isEmptyValue(value) ? EMPTY_VALUE : value);
 
-export const formatDate = (value) => (
-    value ? new Date(value).toLocaleDateString('it-IT') : EMPTY_VALUE
-);
+// Le date del gestionale sono giorni di calendario salvati come mezzanotte
+// UTC, non istanti: si leggono in UTC. Con `toLocaleDateString` conta il fuso
+// del browser, e per chi guarda da ovest di Greenwich mezzanotte del 25 e
+// ancora il 24 sera - la stessa lettura mostrava un giorno diverso a seconda di
+// dove si apriva il gestionale. Un'ora vera (quando e stato modificato un
+// record) e un'altra cosa, e li il fuso di chi guarda e quello giusto.
+const due = (numero) => String(numero).padStart(2, '0');
+
+export const formatDate = (value) => {
+    if (!value) return EMPTY_VALUE;
+
+    const data = new Date(value);
+    if (Number.isNaN(data.getTime())) return EMPTY_VALUE;
+
+    return `${due(data.getUTCDate())}/${due(data.getUTCMonth() + 1)}/${data.getUTCFullYear()}`;
+};
 
 // Formato italiano: 1.234,56 EUR. Prima gli importi uscivano come "1234.56",
 // in disaccordo con il PDF della fattura, che usa gia la virgola decimale.
