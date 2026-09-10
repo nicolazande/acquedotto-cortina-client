@@ -10,7 +10,6 @@ import scadenzaApi from '../api/scadenzaApi';
 import servizioApi from '../api/servizioApi';
 import { editorComponents } from '../components/shared/editorComponents';
 import {
-    EMPTY_VALUE,
     boolText,
     customerName,
     formatDate,
@@ -19,11 +18,10 @@ import {
     invoiceLabel,
     invoiceStatus,
     join,
+    personName,
 } from '../utils/formatters';
 
 const api = (list, create, remove) => ({ list, create, remove });
-const filled = (value) => (value === EMPTY_VALUE ? '' : value);
-const personLabel = (record) => filled(customerName(record));
 const statusText = (isInactive) => (isInactive ? 'Inattivo' : 'Attivo');
 const isFixedTariff = (record) => String(record?.tipo || '').toLowerCase().includes('fisso');
 const tariffPrice = (value, record) => `${formatMoney(value)}${isFixedTariff(record) ? '' : '/m3'}`;
@@ -76,11 +74,11 @@ const viste = {
         defaultSortField: 'cognome',
         defaultSortOrder: 'asc',
         summary: {
-            title: personLabel,
+            title: personName,
             meta: (record) => [{ label: 'Nascita', value: formatDate(record.data_nascita) }],
         },
         columns: [
-            { label: 'Cognome e nome', sortField: 'cognome', value: personLabel },
+            { label: 'Cognome e nome', sortField: 'cognome', value: personName },
             { label: 'Nascita', sortField: 'data_nascita', value: 'data_nascita', format: formatDate },
         ],
     },
@@ -197,7 +195,7 @@ const viste = {
         defaultSortOrder: 'desc',
         summary: {
             title: (record) => join(record.tipo_documento, record.numero),
-            subtitle: (record) => personLabel(record.cliente) || record.ragione_sociale,
+            subtitle: (record) => personName(record.cliente) || record.ragione_sociale,
             meta: (record) => [
                 { label: 'Data', value: formatDate(record.data_fattura) },
                 { label: 'Totale', value: formatMoney(record.totale_fattura) },
@@ -206,7 +204,7 @@ const viste = {
         },
         columns: [
             { label: 'Documento', sortField: 'numero', value: invoiceLabel },
-            { label: 'Cliente', sortField: 'cliente.nome', value: (record) => personLabel(record.cliente) },
+            { label: 'Cliente', sortField: 'cliente.nome', value: (record) => personName(record.cliente) },
             { label: 'Data', sortField: 'data_fattura', value: 'data_fattura', format: formatDate },
             { label: 'Stato', sortField: 'confermata', value: invoiceStatus },
             { label: 'Totale', sortField: 'totale_fattura', value: 'totale_fattura', format: formatMoney , align: 'right' },
@@ -292,7 +290,7 @@ const viste = {
         defaultSortField: 'scadenza',
         defaultSortOrder: 'desc',
         summary: {
-            title: (record) => personLabel(record) || join(record.nome, record.cognome),
+            title: (record) => personName(record) || join(record.nome, record.cognome),
             subtitle: (record) => formatDate(record.scadenza),
             meta: (record) => [
                 { label: 'Ritardo', value: `${record.ritardo || 0} giorni` },

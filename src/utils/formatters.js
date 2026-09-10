@@ -131,6 +131,14 @@ export const customerName = (record) => (
         : EMPTY_VALUE
 );
 
+// Il nome di una persona quando serve comporlo con altro: un valore mancante
+// diventa stringa vuota invece del segnaposto, altrimenti finirebbe un "-" in
+// mezzo a un titolo. Chi lo mostra da solo ci mette il segnaposto con `text`.
+export const personName = (record) => {
+    const nome = customerName(record);
+    return nome === EMPTY_VALUE ? '' : nome;
+};
+
 export const join = (...parts) => parts.filter((part) => !isEmptyValue(part)).join(' - ') || EMPTY_VALUE;
 
 export const getPathValue = (record, path) => (

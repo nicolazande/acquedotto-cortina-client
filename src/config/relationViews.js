@@ -15,18 +15,17 @@ import { risorse, selectProp } from './resourceMeta';
 import {
     EMPTY_VALUE,
     boolText,
-    customerName,
     formatCubicMeters,
     formatDate,
     formatMoney,
     invoiceStatus,
+    personName,
     join,
     text,
 } from '../utils/formatters';
 
-const empty = EMPTY_VALUE;
-const filled = (value) => (value === empty ? '' : value);
-const personLabel = (record) => filled(customerName(record)) || empty;
+// Mostrato da solo in un titolo o in una scheda: qui il segnaposto ci vuole.
+const personLabel = (record) => personName(record) || EMPTY_VALUE;
 const recordId = (record) => record && record._id;
 const createdRecordId = (response) => response?.data?._id;
 export const responseData = (response) => response.data;
@@ -454,5 +453,5 @@ export const getRelationLinks = (parentResource, relationKeys) => {
 
 export const renderRelationCell = (column, record) => {
     const value = column.value(record);
-    return isValidElement(value) ? value : value || empty;
+    return isValidElement(value) ? value : value || EMPTY_VALUE;
 };

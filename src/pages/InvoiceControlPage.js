@@ -11,6 +11,7 @@ import {
     customerName,
     formatDate,
     formatMoney,
+    invoiceLabel,
     invoiceStatus,
     numberOrZero,
 } from '../utils/formatters';
@@ -30,8 +31,6 @@ const customerLabel = (record) => (
 const deltaLabel = (record) => (
     Number.isFinite(Number(record.delta)) ? formatMoney(record.delta) : EMPTY_VALUE
 );
-
-const invoiceLabel = (record) => `${record.anno || EMPTY_VALUE} / ${record.numero || EMPTY_VALUE}`;
 
 const strongIssueCount = (summary) => (
     numberOrZero(summary.senzaCliente)
