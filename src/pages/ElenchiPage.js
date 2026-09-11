@@ -54,7 +54,7 @@ const ELENCHI = [
         id: 'anagrafe-tributaria',
         eyebrow: 'Anagrafe Tributaria',
         titolo: (anno) => `Utenze ${anno}`,
-        descrizione: "Tutte le utenze dell'anno. Quelle nuove portano anche i dati catastali dell'immobile.",
+        descrizione: "Le utenze fatturate nell'anno, con metri cubi e importo dei consumi. Chi subentra porta anche i dati catastali.",
         vuoto: (anno) => `Nel ${anno} non risultano utenze: non c'è niente da mandare.`,
         // Il tracciato lo decide chi lo riceve: un file di testo, non una tabella.
         formati: [
@@ -62,16 +62,21 @@ const ELENCHI = [
         ],
         riepilogo: (dati) => [
             { label: 'Utenze', value: formatNumber(numberOrZero(dati?.utenze)) },
-            { label: "Nuove dell'anno", value: formatNumber(numberOrZero(dati?.nuove)) },
+            { label: "Subentri dell'anno", value: formatNumber(numberOrZero(dati?.subentri)) },
         ],
         controlli: (dati) => [
             dati.senzaCatasto > 0 && {
-                // Senza foglio e particella l'utenza nuova parte incompleta, ed e
-                // il dato che va chiesto a chi firma il contratto.
-                label: 'Nuove senza dati catastali', value: dati.senzaCatasto, className: 'is-danger',
+                // Senza foglio e particella il subentro parte incompleto, ed e il
+                // dato che va chiesto a chi firma il contratto.
+                label: 'Subentri senza dati catastali', value: dati.senzaCatasto, className: 'is-danger',
             },
             dati.senzaCodiceFiscale > 0 && {
                 label: 'Senza codice fiscale', value: dati.senzaCodiceFiscale, className: 'is-danger',
+            },
+            dati.righeSenzaContatore > 0 && {
+                // Righe a consumo fatturate senza una lettura: non si sa di quale
+                // contatore siano, e restano fuori dal file.
+                label: 'Righe fatturate senza contatore', value: dati.righeSenzaContatore, className: 'is-warning',
             },
         ],
     },
