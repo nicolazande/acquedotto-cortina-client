@@ -23,6 +23,11 @@ export default defineConfig({
 
     server: {
         port: 3000,
+        // Con la 3000 occupata Vite passerebbe da solo alla 3001, dove il server
+        // rifiuta le richieste perche accetta solo http://localhost:3000: la pagina
+        // si aprirebbe ma non si collegherebbe a niente, senza dire perche. Meglio
+        // fermarsi subito con un errore che dice che la porta e gia in uso.
+        strictPort: true,
         // Senza REACT_APP_API_URL le chiamate restano relative e passano di qui.
         proxy: {
             '/api': {
