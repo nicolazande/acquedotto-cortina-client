@@ -33,7 +33,7 @@ const filenameFromDisposition = (disposition, fallback) => {
 // saperlo.
 const SI_APRONO_A_SCHERMO = ['application/pdf', 'image/', 'text/plain'];
 
-const consegna = (response, fallbackFilename, { salvaSempre = false } = {}) => {
+export const openBlobResponse = (response, fallbackFilename = 'documento.pdf') => {
     const contentType = response.headers['content-type'] || 'application/octet-stream';
     const filename = filenameFromDisposition(response.headers['content-disposition'], fallbackFilename);
     const url = URL.createObjectURL(new Blob([response.data], { type: contentType }));
@@ -47,7 +47,7 @@ const consegna = (response, fallbackFilename, { salvaSempre = false } = {}) => {
         link.remove();
     };
 
-    const daGuardare = !salvaSempre && SI_APRONO_A_SCHERMO.some((tipo) => contentType.startsWith(tipo));
+    const daGuardare = SI_APRONO_A_SCHERMO.some((tipo) => contentType.startsWith(tipo));
 
     // Se la scheda non si apre - un blocco dei popup - resta il salvataggio,
     // altrimenti il click non farebbe niente e sembrerebbe tutto rotto.
@@ -57,11 +57,3 @@ const consegna = (response, fallbackFilename, { salvaSempre = false } = {}) => {
 
     setTimeout(() => URL.revokeObjectURL(url), 30000);
 };
-
-export const openBlobResponse = (response, fallbackFilename = 'documento.pdf') => (
-    consegna(response, fallbackFilename)
-);
-
-export const scaricaBlobResponse = (response, fallbackFilename) => (
-    consegna(response, fallbackFilename, { salvaSempre: true })
-);

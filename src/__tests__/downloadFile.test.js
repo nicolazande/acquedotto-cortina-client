@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { openBlobResponse, scaricaBlobResponse, spiegaErroreDiFile } from '../api/downloadFile';
+import { openBlobResponse, spiegaErroreDiFile } from '../api/downloadFile';
 
 // Il browser vero non c'e: bastano le poche cose che `consegna` tocca.
 const rispostaCon = (contentType, disposition) => ({
@@ -50,15 +50,15 @@ describe('come arriva un file all utente', () => {
         expect(salvato).toBe('fatture.zip');
     });
 
-    it('un foglio di calcolo si salva sempre, anche chiedendolo per nome', () => {
+    it('un foglio di calcolo si salva: il browser non lo sa mostrare', () => {
         const xlsx = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-        scaricaBlobResponse(rispostaCon(xlsx), 'Elenco_BIM_2025.xlsx');
+        openBlobResponse(rispostaCon(xlsx), 'Elenco_BIM_2025.xlsx');
         expect(apertoUrl).toBeNull();
         expect(salvato).toBe('Elenco_BIM_2025.xlsx');
     });
 
     it('il nome lo decide il server, non il ripiego del client', () => {
-        scaricaBlobResponse(
+        openBlobResponse(
             rispostaCon('application/zip', 'attachment; filename="Elenco_BIM_2024.docx"'),
             'ripiego.docx'
         );

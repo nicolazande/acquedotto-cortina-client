@@ -32,12 +32,6 @@ const riepilogo = (elenco, anno) => axios.get(
     { params: anno ? { anno } : {} }
 );
 
-const elencoApi = {
-    scarica,
-    riepilogo,
-    // I consumi per il BIM, che su questi fattura fognatura e depurazione.
-    scaricaElencoBim: (formato, anno) => scarica('bim', formato, anno),
-    riepilogoElencoBim: (anno) => riepilogo('bim', anno),
-};
+const elencoApi = { riepilogo, scarica };
 
 export default elencoApi;
