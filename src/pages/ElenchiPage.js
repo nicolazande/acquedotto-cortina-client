@@ -8,81 +8,95 @@ import useRemoteData from '../hooks/useRemoteData';
 import descriviErrore from '../api/descriviErrore';
 import { formatNumber, numberOrZero } from '../utils/formatters';
 
-// L'anno di riferimento e quello appena chiuso: l'elenco si manda a inizio anno
-// per i consumi dell'anno precedente. Gli altri servono a rifare una spedizione
-// vecchia, quindi bastano pochi anni indietro.
+// L'anno di riferimento e quello appena chiuso: gli elenchi si mandano a inizio
+// anno per l'anno precedente. Gli altri servono a rifare una spedizione vecchia,
+// quindi bastano pochi anni indietro.
 const ANNO_CORRENTE = new Date().getFullYear();
 const ANNI = Array.from({ length: 6 }, (_, i) => ANNO_CORRENTE - i);
 
-const FORMATI = [
+// I due elenchi che una volta l'anno escono dall'acquedotto. Sono diversi in
+// tutto - chi li riceve, cosa contengono, in che formato - tranne che nel modo
+// di produrli: si sceglie l'anno, si guarda cosa c'e dentro, si scarica.
+const ELENCHI = [
     {
-        id: 'excel',
-        label: 'Excel',
-        variant: 'save',
-        descrizione: 'Foglio di calcolo, per rielaborare i dati.',
+        id: 'bim',
+        eyebrow: 'Consumi',
+        titolo: (anno) => `Consumi ${anno}`,
+        descrizione: "I consumi dell'anno, utenza per utenza, per il BIM che fattura fognatura e depurazione.",
+        vuoto: (anno) => `Nel ${anno} non risultano letture: non c'è niente da mandare.`,
+        formati: [
+            { id: 'excel', label: 'Excel', variant: 'save', aiuto: 'Foglio di calcolo, per rielaborare i dati.' },
+            { id: 'pdf', label: 'PDF', variant: 'secondary', aiuto: 'Si apre a schermo: da controllare o da archiviare.' },
+            { id: 'word', label: 'Word', variant: 'secondary', aiuto: 'Da allegare a una lettera.' },
+        ],
+        riepilogo: (dati) => [
+            { label: 'Utenze', value: formatNumber(numberOrZero(dati?.utenze)) },
+            { label: 'Consumi totali', value: `${formatNumber(numberOrZero(dati?.consumi))} m³` },
+            { label: 'Letture dal', value: dati?.dallaLettura || '-' },
+            { label: 'Letture al', value: dati?.allaLettura || '-' },
+        ],
+        // Cosa vale la pena guardare prima di mandarlo fuori. Non sono errori:
+        // sono i casi che, se sono tanti, di solito vogliono dire che manca un dato.
+        controlli: (dati) => [
+            dati.senzaCodiceFiscale > 0 && {
+                label: 'Senza codice fiscale', value: dati.senzaCodiceFiscale, className: 'is-danger',
+            },
+            dati.daRipartire > 0 && {
+                // Piu intestatari attivi sullo stesso contatore, senza le quote di
+                // riparto: il consumo finisce tutto sul primo e gli altri a zero.
+                label: 'Condominiali senza riparto', value: dati.daRipartire, className: 'is-warning',
+            },
+            dati.primaLettura > 0 && { label: 'Contatori senza storico', value: dati.primaLettura },
+            dati.senzaConsumo > 0 && { label: 'Consumo a zero', value: dati.senzaConsumo },
+        ],
     },
     {
-        id: 'pdf',
-        label: 'PDF',
-        variant: 'secondary',
-        descrizione: 'Si apre a schermo: da controllare o da archiviare.',
-    },
-    {
-        id: 'word',
-        label: 'Word',
-        variant: 'secondary',
-        descrizione: 'Da allegare a una lettera.',
+        id: 'anagrafe-tributaria',
+        eyebrow: 'Anagrafe Tributaria',
+        titolo: (anno) => `Utenze ${anno}`,
+        descrizione: "Tutte le utenze dell'anno. Quelle nuove portano anche i dati catastali dell'immobile.",
+        vuoto: (anno) => `Nel ${anno} non risultano utenze: non c'è niente da mandare.`,
+        // Il tracciato lo decide chi lo riceve: un file di testo, non una tabella.
+        formati: [
+            { id: 'testo', label: 'Scarica il file', variant: 'save', aiuto: 'Il tracciato a larghezza fissa da inviare.' },
+        ],
+        riepilogo: (dati) => [
+            { label: 'Utenze', value: formatNumber(numberOrZero(dati?.utenze)) },
+            { label: "Nuove dell'anno", value: formatNumber(numberOrZero(dati?.nuove)) },
+        ],
+        controlli: (dati) => [
+            dati.senzaCatasto > 0 && {
+                // Senza foglio e particella l'utenza nuova parte incompleta, ed e
+                // il dato che va chiesto a chi firma il contratto.
+                label: 'Nuove senza dati catastali', value: dati.senzaCatasto, className: 'is-danger',
+            },
+            dati.senzaCodiceFiscale > 0 && {
+                label: 'Senza codice fiscale', value: dati.senzaCodiceFiscale, className: 'is-danger',
+            },
+        ],
     },
 ];
 
-// Cosa vale la pena guardare prima di mandare l'elenco fuori. Non sono errori:
-// sono i casi che, se sono tanti, di solito vogliono dire che manca un dato.
-const daControllare = (riepilogo) => [
-    riepilogo.senzaCodiceFiscale > 0 && {
-        label: 'Senza codice fiscale',
-        value: riepilogo.senzaCodiceFiscale,
-        className: 'is-danger',
-    },
-    riepilogo.daRipartire > 0 && {
-        // Piu intestatari attivi sullo stesso contatore, senza le quote di
-        // riparto: il consumo finisce tutto sul primo e gli altri risultano a
-        // zero. Il totale dell'elenco resta giusto, ma il BIM fatturerebbe a
-        // una persona sola quello che hanno consumato in cinque.
-        label: 'Condominiali senza riparto',
-        value: riepilogo.daRipartire,
-        className: 'is-warning',
-    },
-    riepilogo.primaLettura > 0 && {
-        label: 'Contatori senza storico',
-        value: riepilogo.primaLettura,
-    },
-    riepilogo.senzaConsumo > 0 && {
-        label: 'Consumo a zero',
-        value: riepilogo.senzaConsumo,
-    },
-].filter(Boolean);
-
-const ElenchiPage = () => {
+const PannelloElenco = ({ elenco, anno, disabilitaAnno, onAnno }) => {
     const { notify } = useFeedback();
-    const [anno, setAnno] = useState(ANNO_CORRENTE - 1);
     const [formatoInCorso, setFormatoInCorso] = useState('');
 
     const richiesta = useCallback(
-        async () => (await elencoApi.riepilogoElencoBim(anno)).data,
-        [anno]
+        async () => (await elencoApi.riepilogo(elenco.id, anno)).data,
+        [elenco.id, anno]
     );
-    const { dati: riepilogo, error, isLoading } = useRemoteData(richiesta, {
-        messaggioErrore: "Non riesco a leggere i consumi dell'anno.",
+    const { dati, error, isLoading } = useRemoteData(richiesta, {
+        messaggioErrore: `Non riesco a leggere l'elenco del ${anno}.`,
     });
 
     // Lo scaricamento non ricarica niente - la pagina non cambia - quindi non
-    // passa da useRemoteAction: serve solo sapere quale dei tre pulsanti sta
-    // lavorando, perche su novecento righe il file non e immediato.
+    // passa da useRemoteAction: serve solo sapere quale pulsante sta lavorando,
+    // perche su novecento righe il file non e immediato.
     const scarica = async (formato) => {
         setFormatoInCorso(formato);
 
         try {
-            await elencoApi.scaricaElencoBim(formato, anno);
+            await elencoApi.scarica(elenco.id, formato, anno);
         } catch (errore) {
             notify(descriviErrore(errore, 'Non sono riuscito a preparare il file.'), 'error');
         } finally {
@@ -90,81 +104,91 @@ const ElenchiPage = () => {
         }
     };
 
-    const utenze = numberOrZero(riepilogo?.utenze);
+    const utenze = numberOrZero(dati?.utenze);
     const sonoInCorso = Boolean(formatoInCorso);
-    const controlli = riepilogo ? daControllare(riepilogo) : [];
+    const controlli = dati ? elenco.controlli(dati).filter(Boolean) : [];
+
+    return (
+        <BillingPanel
+            className="invoice-control-panel"
+            eyebrow={elenco.eyebrow}
+            title={elenco.titolo(anno)}
+            isLoading={isLoading}
+            loadingText="Lettura in corso..."
+            error={error}
+            actions={(
+                <BillingActions>
+                    <label className="elenco-anno">
+                        <span>Anno</span>
+                        <select
+                            value={anno}
+                            disabled={sonoInCorso || disabilitaAnno}
+                            onChange={(event) => onAnno(Number(event.target.value))}
+                        >
+                            {ANNI.map((valore) => (
+                                <option key={valore} value={valore}>{valore}</option>
+                            ))}
+                        </select>
+                    </label>
+
+                    {elenco.formati.map(({ id, label, variant, aiuto }) => (
+                        <Button
+                            key={id}
+                            icon="download"
+                            variant={variant}
+                            disabled={sonoInCorso || isLoading || utenze === 0}
+                            title={aiuto}
+                            onClick={() => scarica(id)}
+                        >
+                            {formatoInCorso === id ? 'Preparo...' : label}
+                        </Button>
+                    ))}
+                </BillingActions>
+            )}
+        >
+            <p className="page-description">{elenco.descrizione}</p>
+
+            <BillingSummary items={elenco.riepilogo(dati)} />
+
+            {!isLoading && !error && utenze === 0 && (
+                <BillingState>{elenco.vuoto(anno)}</BillingState>
+            )}
+
+            {controlli.length > 0 && (
+                <>
+                    <p className="page-description">
+                        Da guardare prima di mandarlo fuori. Non sono errori, ma se sono tanti
+                        di solito manca un dato.
+                    </p>
+                    <BillingSummary items={controlli} />
+                </>
+            )}
+        </BillingPanel>
+    );
+};
+
+const ElenchiPage = () => {
+    // L'anno e uno solo per tutti e due: si manda la stessa annata a entrambi
+    // gli enti, e due selettori scollegati sarebbero un invito a sbagliare.
+    const [anno, setAnno] = useState(ANNO_CORRENTE - 1);
 
     return (
         <div className="page-stack">
             <PageHeader
                 className="detail-page-heading"
                 eyebrow="Elenchi da inviare"
-                title="Consumi per il BIM"
-                description="I consumi dell'anno, utenza per utenza, nel formato che serve. Il file si scarica soltanto: da qui non parte nessun invio."
+                title="Elenchi annuali"
+                description="Quello che una volta l'anno esce dall'acquedotto. I file si scaricano soltanto: da qui non parte nessun invio."
             />
 
-            <BillingPanel
-                className="invoice-control-panel"
-                eyebrow="Anno di riferimento"
-                title={`Consumi ${anno}`}
-                isLoading={isLoading}
-                loadingText="Lettura dei consumi..."
-                error={error}
-                actions={(
-                    <BillingActions>
-                        <label className="elenco-anno">
-                            <span>Anno</span>
-                            <select
-                                value={anno}
-                                disabled={sonoInCorso}
-                                onChange={(event) => setAnno(Number(event.target.value))}
-                            >
-                                {ANNI.map((valore) => (
-                                    <option key={valore} value={valore}>{valore}</option>
-                                ))}
-                            </select>
-                        </label>
-
-                        {FORMATI.map(({ id, label, variant, descrizione }) => (
-                            <Button
-                                key={id}
-                                icon="download"
-                                variant={variant}
-                                disabled={sonoInCorso || isLoading || utenze === 0}
-                                title={descrizione}
-                                onClick={() => scarica(id)}
-                            >
-                                {formatoInCorso === id ? 'Preparo...' : label}
-                            </Button>
-                        ))}
-                    </BillingActions>
-                )}
-            >
-                <BillingSummary
-                    items={[
-                        { label: 'Utenze', value: formatNumber(utenze) },
-                        { label: 'Consumi totali', value: `${formatNumber(numberOrZero(riepilogo?.consumi))} m³` },
-                        { label: 'Letture dal', value: riepilogo?.dallaLettura || '-' },
-                        { label: 'Letture al', value: riepilogo?.allaLettura || '-' },
-                    ]}
+            {ELENCHI.map((elenco) => (
+                <PannelloElenco
+                    key={elenco.id}
+                    elenco={elenco}
+                    anno={anno}
+                    onAnno={setAnno}
                 />
-
-                {utenze === 0 && (
-                    <BillingState>
-                        {`Nel ${anno} non risultano letture: non c'è niente da mandare.`}
-                    </BillingState>
-                )}
-
-                {controlli.length > 0 && (
-                    <>
-                        <p className="page-description">
-                            Da guardare prima di mandarlo fuori. Non sono errori, ma se sono tanti
-                            di solito manca un dato.
-                        </p>
-                        <BillingSummary items={controlli} />
-                    </>
-                )}
-            </BillingPanel>
+            ))}
         </div>
     );
 };
