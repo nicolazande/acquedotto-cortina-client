@@ -21,5 +21,12 @@ if [[ ! -d node_modules ]]; then
     npm install
 fi
 
-echo "Avvio client su http://localhost:${PORT:-3000}"
+# La porta sta nel .env come tutto il resto della configurazione locale: cosi
+# ogni acquedotto parte con la sua senza doverla ricordare sulla riga di comando.
+if [[ -z "${PORT:-}" && -f .env ]]; then
+    PORT="$(sed -n 's/^PORT=//p' .env | tail -n 1 | tr -d '\r')"
+fi
+export PORT="${PORT:-3000}"
+
+echo "Avvio client su http://localhost:${PORT}"
 npm start

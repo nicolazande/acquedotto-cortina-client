@@ -35,7 +35,12 @@ Crea un file `.env` partendo da `.env.example`.
 
 ```bash
 REACT_APP_API_URL=http://localhost:5000
+PORT=3000                              # facoltativo: la porta del client
 ```
+
+`PORT` serve quando gira piu di un acquedotto sulla stessa macchina - Zuel sulla
+3000, Campo sulla 3001 - e ognuno deve parlare col proprio server. Vale sia per
+`./start-local.sh` sia per `PORT=3001 npm start`.
 
 Sono accettati sia `VITE_API_URL` sia `REACT_APP_API_URL`: il secondo e mantenuto
 per non dover riconfigurare l'hosting gia in uso.

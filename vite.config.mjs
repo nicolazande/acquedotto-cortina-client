@@ -22,11 +22,13 @@ export default defineConfig({
     envPrefix: ['VITE_', 'REACT_APP_'],
 
     server: {
-        port: 3000,
-        // Con la 3000 occupata Vite passerebbe da solo alla 3001, dove il server
-        // rifiuta le richieste perche accetta solo http://localhost:3000: la pagina
-        // si aprirebbe ma non si collegherebbe a niente, senza dire perche. Meglio
-        // fermarsi subito con un errore che dice che la porta e gia in uso.
+        // La porta si sceglie con PORT, perche di acquedotti ne gira piu di uno:
+        // Zuel sulla 3000, Campo sulla 3001, ognuno col suo server.
+        port: Number(process.env.PORT) || 3000,
+        // Con la porta occupata Vite passerebbe da solo a quella dopo, dove il
+        // server rifiuta le richieste perche accetta solo l'origine configurata:
+        // la pagina si aprirebbe ma non si collegherebbe a niente, senza dire
+        // perche. Meglio fermarsi subito con un errore che dice che e occupata.
         strictPort: true,
         // Senza REACT_APP_API_URL le chiamate restano relative e passano di qui.
         proxy: {
