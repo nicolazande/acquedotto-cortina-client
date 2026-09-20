@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { editorViews } from '../config/editorViews';
-import { prepareInitialData, prepareSubmitData } from '../components/shared/EntityEditor';
+import { campiDelModulo, prepareInitialData, prepareSubmitData } from '../components/shared/EntityEditor';
 
 const ricalcola = editorViews.fattura.ricalcola;
 const campo = (nome) => editorViews.fattura.fields.find((f) => f.name === nome);
@@ -51,10 +51,25 @@ describe('emissione di una fattura a mano', () => {
         expect(ricalcola({ imponibile: '100', aliquota_articolo: 10, iva: '22' }, 'iva')).toEqual({});
     });
 
-    it('l articolo e obbligatorio', () => {
+    it('l articolo e obbligatorio, ma solo quando la fattura nasce', () => {
         // Senza articolo non c'e riga, e una fattura senza righe non si
-        // trasmette.
+        // trasmette. Su una fattura che esiste gia sceglierlo non aggiunge
+        // nulla: chiederlo per salvare una modifica bloccava la conferma con un
+        // "manca articolo" su un documento che la riga ce l'ha.
         expect(campo('articolo').obbligatorio).toBe(true);
+        expect(campo('articolo').soloCreazione).toBe(true);
+    });
+
+    it('il termine di pagamento si sceglie, e decide la scadenza', () => {
+        // Era testo libero: cliccandolo non si apriva niente. "Vista Fattura"
+        // sul server vale zero giorni, che e il caso dell'acconto gia incassato.
+        const termine = campo('tipo_pagamento');
+        expect(termine.type).toBe('select');
+        expect(termine.options.map((o) => o.value)).toContain('Vista Fattura');
+        // E se serve una data diversa si scrive, ma solo mentre la fattura nasce:
+        // dopo, la scadenza e un documento suo e si corregge da li.
+        expect(campo('data_scadenza').type).toBe('date');
+        expect(campo('data_scadenza').soloCreazione).toBe(true);
     });
 
     it('arrotonda sui centesimi come il server, non come il virgola mobile', () => {
@@ -159,5 +174,21 @@ describe('anagrafica cliente', () => {
         );
         expect(inviato.fatturazione_come_residenza).toBeUndefined();
         expect(inviato.ragione_sociale).toBe('Prova');
+    });
+});
+
+describe('modificare una fattura gia scritta', () => {
+    const nomi = (record) => campiDelModulo(editorViews.fattura.fields, record).map((f) => f.name);
+
+    it('non richiede di nuovo l articolo', () => {
+        // Giovanna non riusciva a confermare una fattura: il modulo chiedeva
+        // l'articolo, che pero vale solo alla creazione - e la riga c'era gia.
+        expect(nomi({ _id: '1', anno: 2026 })).not.toContain('articolo');
+        expect(nomi({})).toContain('articolo');
+    });
+
+    it('la data di scadenza si sceglie solo alla creazione', () => {
+        expect(nomi({ _id: '1' })).not.toContain('data_scadenza');
+        expect(nomi(undefined)).toContain('data_scadenza');
     });
 });

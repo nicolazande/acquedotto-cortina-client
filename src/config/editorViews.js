@@ -17,6 +17,17 @@ const TIPI_DOCUMENTO = [
     { value: 'Nota di Credito', label: 'Nota di Credito' },
 ];
 
+// I termini di pagamento in uso nell'archivio. Era un campo di testo libero:
+// cliccandolo non si apriva niente e bisognava sapere a memoria come si scrive.
+// Il server usa gli stessi nomi per calcolare la scadenza (config/invoicing.js):
+// "Vista Fattura" vuol dire subito, ed e il caso di un acconto gia incassato.
+const TERMINI_PAGAMENTO = [
+    '30 Giorni data fattura',
+    '60 giorni data fattura',
+    'Vista Fattura',
+    'Addebito in conto  a scadenza',
+].map((valore) => ({ value: valore, label: valore.replace(/\s+/g, ' ') }));
+
 // L'aliquota la decide l'articolo, non il cliente e non il listino: il listino
 // dice il prezzo, l'articolo dice cosa stai vendendo. L'acqua e al 10% per
 // chiunque, un contatore venduto e al 22%, la mora e esente. Il numero arriva
@@ -147,7 +158,7 @@ export const editorViews = {
             field('Cellulare', 'cellulare'),
             field('Cellulare 2', 'cellulare2'),
             field('Email', 'email', 'email'),
-            field('Pagamento', 'pagamento'),
+            selectField('Pagamento', 'pagamento', TERMINI_PAGAMENTO),
             field('Data Mandato SDD', 'data_mandato_sdd', 'date'),
             field('Email PEC', 'email_pec', 'email'),
             field('Codice Destinatario', 'codice_destinatario'),
@@ -263,9 +274,12 @@ export const editorViews = {
             referenceField('Scadenza', 'scadenza', 'scadenze'),
             selectField('Tipo Documento', 'tipo_documento', TIPI_DOCUMENTO, { predefinito: 'Fattura' }),
             // L'articolo diventa la riga della fattura, e porta con se l'aliquota.
-            // Una fattura senza righe non si puo trasmettere allo SdI.
+            // Una fattura senza righe non si puo trasmettere allo SdI. Serve solo
+            // quando la fattura nasce: su una gia scritta la riga esiste gia, e
+            // sceglierlo di nuovo non aggiungerebbe niente.
             referenceField('Articolo', 'articolo', 'articoli', {
                 obbligatorio: true,
+                soloCreazione: true,
                 copyTo: { aliquota_articolo: (record) => record?.aliquota },
             }),
             // Non e un campo della fattura: serve solo a calcolare l'IVA nel form.
@@ -285,7 +299,11 @@ export const editorViews = {
             field('Totale Fattura', 'totale_fattura', 'number', { calcolato: true }),
             field('Data fattura elettronica', 'data_fattura_elettronica', 'date'),
             field('Data invio fattura', 'data_invio_fattura', 'date'),
-            field('Tipo Pagamento', 'tipo_pagamento'),
+            selectField('Tipo Pagamento', 'tipo_pagamento', TERMINI_PAGAMENTO),
+            // Quando incassare. Lasciata vuota la decide il termine di pagamento
+            // scelto sopra: trenta giorni di norma, il giorno stesso per un
+            // acconto gia incassato ("Vista Fattura").
+            field('Data Scadenza', 'data_scadenza', 'date', { soloCreazione: true }),
         ],
     },
     lettura: {

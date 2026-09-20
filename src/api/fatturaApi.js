@@ -1,6 +1,17 @@
 import { createResourceApi } from './resourceApi';
 import axios from 'axios';
-import { openBlobResponse } from './downloadFile';
+import { openBlobResponse, spiegaErroreDiFile } from './downloadFile';
+
+// Il motivo per cui un file non esce - "la fattura non ha righe", "il cliente
+// non ha partita IVA ne codice fiscale" - arriva dal server dentro un blob, e
+// senza aprirlo il rifiuto sarebbe muto.
+const scarica = async (richiesta, nomeDiRiserva) => {
+    try {
+        openBlobResponse(await richiesta(), nomeDiRiserva);
+    } catch (errore) {
+        throw await spiegaErroreDiFile(errore);
+    }
+};
 
 const resource = createResourceApi('fatture');
 
@@ -12,16 +23,16 @@ const fatturaApi = {
     applyFixedCharge: (id) => resource.postRelation(id, 'quota-fissa'),
     getFatture: resource.list,
     getFattura: resource.get,
-    openPdf: async (id) => {
-        const response = await axios.get(`${resource.baseUrl}/${id}/pdf`, { responseType: 'blob' });
-        openBlobResponse(response, `fattura-${id}.pdf`);
-    },
+    openPdf: (id) => scarica(
+        () => axios.get(`${resource.baseUrl}/${id}/pdf`, { responseType: 'blob' }),
+        `fattura-${id}.pdf`,
+    ),
     // Scarica il file della fattura elettronica. Non invia nulla: la trasmissione
     // al Sistema di Interscambio non e gestita dal gestionale.
-    scaricaXml: async (id) => {
-        const response = await axios.get(`${resource.baseUrl}/${id}/xml`, { responseType: 'blob' });
-        openBlobResponse(response, `fattura-${id}.xml`);
-    },
+    scaricaXml: (id) => scarica(
+        () => axios.get(`${resource.baseUrl}/${id}/xml`, { responseType: 'blob' }),
+        `fattura-${id}.xml`,
+    ),
     // Cosa succederebbe consegnando questa fattura: canali, recapiti e ostacoli.
     getConsegne: (id) => resource.getRelation(id, 'consegne'),
     getAuditLog: (id) => resource.getRelation(id, 'audit'),

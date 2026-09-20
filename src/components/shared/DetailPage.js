@@ -108,6 +108,17 @@ const DetailPage = ({ config }) => {
     const actions = (config.actions || [])
         .map((action) => (typeof action === 'function' ? action(record) : action))
         .filter(Boolean);
+    // Un'azione che scarica un file puo essere rifiutata con un motivo - una
+    // fattura senza righe non diventa un XML. Senza questo, il rifiuto restava
+    // nella console del browser e il pulsante sembrava semplicemente non fare
+    // nulla.
+    const eseguiAzione = async (action) => {
+        try {
+            await action.onClick();
+        } catch (error) {
+            notify(descriviErrore(error, `${action.label}: operazione non riuscita`), 'error');
+        }
+    };
     const editorProps = {
         [config.editorProp]: record,
         mode: 'Modifica',
@@ -128,7 +139,7 @@ const DetailPage = ({ config }) => {
                                 key={action.label}
                                 href={action.href}
                                 icon={action.icon}
-                                onClick={action.onClick}
+                                onClick={action.onClick && (() => eseguiAzione(action))}
                                 rel={action.rel}
                                 target={action.target}
                                 to={action.to}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { getReferenceRecordId } from '../../config/referenceResources';
 import Button, { ActionBar } from './Button';
 import ReferenceField from './ReferenceField';
@@ -182,10 +182,20 @@ const renderField = ({
     );
 };
 
+// Alcuni campi hanno senso solo mentre il record nasce: l'articolo di una
+// fattura crea la sua riga, e su un documento che esiste gia non farebbe nulla.
+// Chiederlo per salvare una modifica era solo un ostacolo - e uno di quelli che
+// sembrano un difetto: "manca articolo" su una fattura che l'articolo ce l'ha
+// gia nella sua riga.
+export const campiDelModulo = (fields, record) => (
+    fields.filter((field) => !field.soloCreazione || !record?._id)
+);
+
 const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
-    const [formData, setFormData] = useState(() => prepareInitialData(record, config.fields));
+    const campi = useMemo(() => campiDelModulo(config.fields, record), [config.fields, record]);
+    const [formData, setFormData] = useState(() => prepareInitialData(record, campi));
     const [selectedReferences, setSelectedReferences] = useState(() => (
-        prepareInitialReferences(record, config.fields)
+        prepareInitialReferences(record, campi)
     ));
     const isReadOnly = mode === READ_ONLY_MODE;
     const [mancanti, setMancanti] = useState([]);
@@ -197,7 +207,7 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
     useEffect(() => {
         let annullato = false;
 
-        config.fields
+        campi
             .filter((field) => typeof field.options === 'function')
             .forEach((field) => {
                 field.options()
@@ -210,12 +220,12 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
             });
 
         return () => { annullato = true; };
-    }, [config.fields]);
+    }, [campi]);
 
     useEffect(() => {
-        setFormData(prepareInitialData(record, config.fields));
-        setSelectedReferences(prepareInitialReferences(record, config.fields));
-    }, [config.fields, record]);
+        setFormData(prepareInitialData(record, campi));
+        setSelectedReferences(prepareInitialReferences(record, campi));
+    }, [campi, record]);
 
     const handleChange = (event) => {
         if (isReadOnly) return;
@@ -248,7 +258,7 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
             const aggiornato = {
                 ...previousData,
                 [field.name]: value,
-                ...getCopiedReferenceValues(field, selectedRecord, config.fields),
+                ...getCopiedReferenceValues(field, selectedRecord, campi),
             };
 
             // Anche un riferimento puo guidare altri campi: scegliere l'articolo
@@ -262,7 +272,7 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        const senzaValore = config.fields
+        const senzaValore = campi
             .filter((field) => field.obbligatorio && !formData[field.name])
             .map((field) => field.label);
 
@@ -272,7 +282,7 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
         }
 
         setMancanti([]);
-        onSave(prepareSubmitData(formData, config.fields));
+        onSave(prepareSubmitData(formData, campi));
     };
 
     return (
@@ -280,7 +290,7 @@ const EntityEditor = ({ config, record, onSave, onCancel, mode }) => {
             <div className="modal-content">
                 <h3>{getTitle(config, mode)}</h3>
                 <form onSubmit={handleSubmit}>
-                    {config.fields.filter((field) => field.type !== 'hidden').map((field) => (
+                    {campi.filter((field) => field.type !== 'hidden').map((field) => (
                         <div
                             className={`form-group ${field.type === 'reference' ? 'form-group-reference' : ''}`}
                             key={field.name}
