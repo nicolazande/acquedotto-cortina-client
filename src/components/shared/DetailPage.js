@@ -11,6 +11,10 @@ import descriviErrore from '../../api/descriviErrore';
 import cancellaRecord, { CONFERMA_CANCELLAZIONE } from './cancellaRecord';
 import { eAmministratore, puoScrivere, useRisorsePermesse } from '../../hooks/useRisorsePermesse';
 
+// I messaggi di blocco arrivano dalla configurazione: alcuni finiscono con il
+// punto, altri no. Unirli senza guardare dava "sono bloccate.. Modifica".
+const frase = (testo) => String(testo || '').trim().replace(/\.+$/, '');
+
 const DetailPage = ({ config }) => {
     const { id } = useParams();
     const { goBack, backLabel } = useContextBack(config.listPath);
@@ -46,7 +50,7 @@ const DetailPage = ({ config }) => {
     // registra nel giornale delle modifiche.
     const chiediSblocco = async (azione) => confirm({
         title: 'Documento già emesso',
-        message: `${config.lockedMessage || 'Questo documento risulta confermato'}. `
+        message: `${frase(config.lockedMessage) || 'Questo documento risulta confermato'}. `
             + `Vuoi ${azione} lo stesso? L'operazione resta registrata.`,
         confirmLabel: 'Procedi',
         variant: 'danger',
@@ -154,7 +158,7 @@ const DetailPage = ({ config }) => {
                                     onClick={handleEdit}
                                     variant="edit"
                                     icon="edit"
-                                    title={isLocked ? `${lockedMessage}: la modifica richiede conferma` : undefined}
+                                    title={isLocked ? `${frase(lockedMessage)}: la modifica richiede conferma` : undefined}
                                 >
                                     Modifica
                                 </Button>
@@ -162,7 +166,7 @@ const DetailPage = ({ config }) => {
                                     onClick={handleDelete}
                                     variant="delete"
                                     icon="trash"
-                                    title={isLocked ? `${lockedMessage}: la cancellazione richiede conferma` : undefined}
+                                    title={isLocked ? `${frase(lockedMessage)}: la cancellazione richiede conferma` : undefined}
                                 >
                                     Elimina
                                 </Button>
@@ -173,7 +177,8 @@ const DetailPage = ({ config }) => {
             />
             {isLocked && (
                 <div className="detail-lock-notice">
-                    {lockedMessage}. Modifica e cancellazione restano possibili con conferma esplicita e vengono registrate.
+                    {`${frase(lockedMessage)}. Modifica e cancellazione restano possibili `
+                        + 'con conferma esplicita e vengono registrate.'}
                 </div>
             )}
             <div className="table-container detail-info-card">
