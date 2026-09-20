@@ -191,4 +191,12 @@ describe('modificare una fattura gia scritta', () => {
         expect(nomi({ _id: '1' })).not.toContain('data_scadenza');
         expect(nomi(undefined)).toContain('data_scadenza');
     });
+
+    it('gli importi non si ritoccano sulla fattura, ma sulle sue righe', () => {
+        // Senza l'articolo non c'e l'aliquota, quindi ricalcolare l'IVA da un
+        // imponibile riscritto darebbe un documento con il totale sbagliato -
+        // e un documento cosi lo SdI lo rifiuta.
+        expect(nomi({ _id: '1' })).not.toContain('imponibile');
+        expect(nomi({})).toContain('imponibile');
+    });
 });

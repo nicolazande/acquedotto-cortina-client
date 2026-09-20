@@ -294,7 +294,10 @@ export const editorViews = {
             field('Data Fattura', 'data_fattura', 'date'),
             field('Codice', 'codice', 'text', { calcolato: true }),
             field('Destinazione', 'destinazione'),
-            field('Imponibile', 'imponibile', 'number'),
+            // L'imponibile e l'importo della riga che nasce con la fattura: da
+            // li in poi il documento sono le sue righe, e cambiarlo qui lo
+            // lascerebbe diverso dalla somma (lo SdI rifiuta un documento cosi).
+            field('Imponibile', 'imponibile', 'number', { soloCreazione: true }),
             field('IVA', 'iva', 'number', { calcolato: true }),
             field('Totale Fattura', 'totale_fattura', 'number', { calcolato: true }),
             field('Data fattura elettronica', 'data_fattura_elettronica', 'date'),

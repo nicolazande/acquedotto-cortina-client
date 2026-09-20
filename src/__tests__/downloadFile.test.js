@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { openBlobResponse, spiegaErroreDiFile } from '../api/downloadFile';
+import { openBlobResponse, scaricaFile, spiegaErroreDiFile } from '../api/downloadFile';
 
 // Il browser vero non c'e: bastano le poche cose che `consegna` tocca.
 const rispostaCon = (contentType, disposition) => ({
@@ -105,5 +105,25 @@ describe('gli errori arrivati dentro un file', () => {
     it('un errore normale passa intatto', async () => {
         const errore = { response: { data: { error: 'gia leggibile' } } };
         expect(await spiegaErroreDiFile(errore)).toBe(errore);
+    });
+});
+
+describe('chiedere un file al server', () => {
+    it('il file arrivato va all utente e la risposta torna a chi l ha chiesto', async () => {
+        const risposta = rispostaCon('application/pdf', 'attachment; filename="fattura.pdf"');
+        const tornata = await scaricaFile(async () => risposta, 'riserva.pdf');
+
+        expect(tornata).toBe(risposta);
+        expect(apertoUrl).toBe('blob:finto');
+    });
+
+    it('un rifiuto arriva con il suo motivo, non generico', async () => {
+        // "La fattura non ha righe" viaggia dentro il blob: senza aprirlo il
+        // pulsante sembrerebbe non fare nulla.
+        const errore = { response: { data: new Blob() } };
+        errore.response.data.text = async () => JSON.stringify({ error: 'La fattura non ha righe' });
+
+        await expect(scaricaFile(async () => { throw errore; }, 'x.xml')).rejects.toBe(errore);
+        expect(errore.response.data).toEqual({ error: 'La fattura non ha righe' });
     });
 });

@@ -4,6 +4,8 @@ import BillingPanel, { BillingState, BillingSummary } from '../components/shared
 import Button from '../components/shared/Button';
 import { PageHeader } from '../components/shared/PageChrome';
 import RecordTable from '../components/shared/RecordTable';
+import descriviErrore from '../api/descriviErrore';
+import { useFeedback } from '../components/shared/FeedbackProvider';
 import { formatCubicMeters, formatDate, formatMoney, invoiceStatus, join } from '../utils/formatters';
 import useRemoteData from '../hooks/useRemoteData';
 
@@ -48,7 +50,17 @@ const readingSummary = {
 };
 
 const CustomerPortalPage = () => {
+    const { notify } = useFeedback();
     const richiesta = useCallback(async () => (await customerPortalApi.getDashboard()).data, []);
+    // Un PDF puo essere rifiutato con un motivo: senza raccoglierlo, al cliente
+    // il pulsante sembrerebbe rotto.
+    const apriPdf = async (id) => {
+        try {
+            await customerPortalApi.openInvoicePdf(id);
+        } catch (errore) {
+            notify(descriviErrore(errore, 'Non si riesce ad aprire la fattura'), 'error');
+        }
+    };
     const {
         dati: dashboard,
         error,
@@ -100,7 +112,7 @@ const CustomerPortalPage = () => {
                         <Button
                             variant="secondary"
                             icon="download"
-                            onClick={() => customerPortalApi.openInvoicePdf(fattura._id)}
+                            onClick={() => apriPdf(fattura._id)}
                         >
                             PDF
                         </Button>

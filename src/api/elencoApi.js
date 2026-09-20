@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiUrl } from './baseUrl';
-import { openBlobResponse, spiegaErroreDiFile } from './downloadFile';
+import { scaricaFile } from './downloadFile';
 
 const baseUrl = apiUrl('elenchi');
 
@@ -13,17 +13,15 @@ const baseUrl = apiUrl('elenchi');
 // calcolo e il documento Word si salvano. Anche il nome e quello che il server
 // mette nell'intestazione - quello qui sotto serve solo se manca.
 const scarica = async (elenco, formato, anno) => {
-    try {
-        const risposta = await axios.get(`${baseUrl}/${elenco}/${formato}`, {
+    await scaricaFile(
+        () => axios.get(`${baseUrl}/${elenco}/${formato}`, {
             params: anno ? { anno } : {},
             responseType: 'blob',
-        });
+        }),
+        `Elenco_${elenco}_${anno || ''}`,
+    );
 
-        openBlobResponse(risposta, `Elenco_${elenco}_${anno || ''}`);
-        return { data: {} };
-    } catch (errore) {
-        throw await spiegaErroreDiFile(errore);
-    }
+    return { data: {} };
 };
 
 // Cosa c'e dentro l'elenco, prima di scaricarlo.

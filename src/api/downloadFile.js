@@ -57,3 +57,17 @@ export const openBlobResponse = (response, fallbackFilename = 'documento.pdf') =
 
     setTimeout(() => URL.revokeObjectURL(url), 30000);
 };
+
+// Chiedere un file e sempre queste due cose: consegnarlo al browser se arriva,
+// e leggere il motivo se non arriva. Stavano scritte in ognuna delle quattro
+// chiamate che scaricano qualcosa, e dove mancavano - il pulsante XML della
+// fattura - il rifiuto restava muto.
+export const scaricaFile = async (richiesta, nomeDiRiserva) => {
+    try {
+        const risposta = await richiesta();
+        openBlobResponse(risposta, nomeDiRiserva);
+        return risposta;
+    } catch (errore) {
+        throw await spiegaErroreDiFile(errore);
+    }
+};

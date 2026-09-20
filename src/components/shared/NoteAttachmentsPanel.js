@@ -133,6 +133,7 @@ const getAttachmentKind = (attachment) => {
 };
 
 const AttachmentCard = ({ attachment, onDelete }) => {
+    const { notify } = useFeedback();
     const [fileUrl, setFileUrl] = useState('');
     const isImage = attachment.contentType.startsWith('image/');
     const attachmentKind = getAttachmentKind(attachment);
@@ -164,7 +165,13 @@ const AttachmentCard = ({ attachment, onDelete }) => {
         };
     }, [attachment._id, attachment.contentType]);
 
-    const handleOpen = () => attachmentApi.openFile(attachment._id, attachment.filename);
+    const handleOpen = async () => {
+        try {
+            await attachmentApi.openFile(attachment._id, attachment.filename);
+        } catch (error) {
+            notify(descriviErrore(error, 'Errore durante l\'apertura dell\'allegato'), 'error');
+        }
+    };
 
     return (
         <article className="note-attachment-card">

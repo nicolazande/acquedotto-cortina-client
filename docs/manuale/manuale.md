@@ -492,6 +492,18 @@ si trasmette, e il gestionale dice cosa manca invece di salvare un documento mon
 numero digitato a mano scavalcherebbe il contatore, ed è così che nascono due documenti
 con lo stesso numero.
 
+### Quando si incassa
+
+**Tipo Pagamento** decide la scadenza della fattura: *30 Giorni data fattura* la mette a
+trenta giorni, *Vista Fattura* la mette **il giorno stesso**. È il caso degli **acconti**:
+si fattura un incasso già ricevuto, e trenta giorni di attesa non avrebbero senso. Se
+serve una data diversa si scrive in **Data Scadenza**, che vince su tutto.
+
+Articolo, Imponibile e Data Scadenza si chiedono **solo quando la fattura nasce**:
+l'articolo è la sua prima riga, e da lì in poi il documento sono le sue righe. Aprendo
+una fattura già scritta non vengono più richiesti, e gli importi si correggono dal
+riquadro **Servizi**.
+
 ### Più righe sulla stessa fattura
 
 La maschera crea la prima riga. Se il documento ne ha bisogno di altre — un allacciamento
@@ -517,12 +529,29 @@ I filtri dell'elenco sono *Bozze*, *Confermate* e *Senza scadenza*.
 
 Le fatture emesse da questo gestionale hanno un numero progressivo che riparte da 1 ogni
 anno, e un codice nella forma `2026/A/1`: anno, serie, numero. Le fatture importate dal
-vecchio programma mantengono la numerazione di allora e non si mescolano con le nuove.
+vecchio programma restano separate e non si mescolano con le nuove.
+
+> **Il numero delle fatture importate non è quello vero.** L'importazione dal vecchio
+> programma leggeva, al posto del numero del documento, il numero civico dell'indirizzo:
+> è un difetto scoperto a settembre 2026 e corretto, ma i documenti già importati portano
+> ancora quel numero. Per risalire al numero vero di una vecchia fattura si guarda il
+> vecchio programma, finché è raggiungibile. Le fatture emesse da qui non sono toccate.
 
 ## Il PDF
 
 Dalla scheda della fattura il pulsante apposito genera il **PDF** pronto da stampare o
 inviare, con i dati della cooperativa, gli estremi bancari e il dettaglio delle righe.
+
+## L'XML dalla scheda della fattura
+
+Accanto al PDF, il pulsante **XML** salva il file della fattura elettronica. Non lo
+trasmette: serve per guardarlo o per portarlo altrove; la trasmissione vera passa da
+*Consegne*.
+
+Se il file non si può produrre, il gestionale **dice perché** invece di non fare nulla:
+il cliente senza partita IVA né codice fiscale, una fattura senza righe, un totale che
+non coincide con la somma delle righe. Sono gli stessi motivi per cui lo scarterebbe il
+Sistema di Interscambio, detti prima di mandarlo.
 
 ## Verificare che i conti tornino
 

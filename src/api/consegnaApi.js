@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createResourceApi } from './resourceApi';
-import { openBlobResponse, spiegaErroreDiFile } from './downloadFile';
+import { scaricaFile } from './downloadFile';
 
 const resource = createResourceApi('consegne');
 
@@ -18,22 +18,20 @@ const consegnaApi = {
     // da trasmettere. Non cambiano lo stato delle consegne: si stampa, si
     // controlla, e solo dopo si dichiarano evase.
     stampa: async (limite) => {
-        try {
-            const risposta = await axios.post(`${resource.baseUrl}/stampa`, { limite }, { responseType: 'blob' });
-            openBlobResponse(risposta, 'fatture-da-consegnare.pdf');
-            return { data: { rimaste: Number(risposta.headers['x-consegne-rimaste']) || 0 } };
-        } catch (errore) {
-            throw await spiegaErroreDiFile(errore);
-        }
+        const risposta = await scaricaFile(
+            () => axios.post(`${resource.baseUrl}/stampa`, { limite }, { responseType: 'blob' }),
+            'fatture-da-consegnare.pdf',
+        );
+
+        return { data: { rimaste: Number(risposta.headers['x-consegne-rimaste']) || 0 } };
     },
     scaricaXml: async (limite) => {
-        try {
-            const risposta = await axios.post(`${resource.baseUrl}/xml`, { limite }, { responseType: 'blob' });
-            openBlobResponse(risposta, 'fatture-elettroniche.zip');
-            return { data: {} };
-        } catch (errore) {
-            throw await spiegaErroreDiFile(errore);
-        }
+        await scaricaFile(
+            () => axios.post(`${resource.baseUrl}/xml`, { limite }, { responseType: 'blob' }),
+            'fatture-elettroniche.zip',
+        );
+
+        return { data: {} };
     },
     segnaEvasa: (id, note) => resource.postRelation(id, 'evasa', { note }),
     rimettiInCoda: (id) => resource.postRelation(id, 'coda', {}),
