@@ -1,7 +1,7 @@
 import { describe, expect, it, test } from 'vitest';
-import { canaleSdiTesto } from '../pages/ConsegnePage';
 import {
     canaleLabel,
+    canaleSdiTesto,
     confermaInvio,
     modalitaLabel,
     modalitaOptions,

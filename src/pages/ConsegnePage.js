@@ -10,6 +10,7 @@ import useRemoteAction from '../hooks/useRemoteAction';
 import useRemoteData from '../hooks/useRemoteData';
 import {
     canaleLabel,
+    canaleSdiTesto,
     confermaInvio,
     modalitaLabel,
     statoClassName,
@@ -73,27 +74,6 @@ const statoInvio = (riepilogo) => {
         titolo: 'Invio attivo',
         testo: `I messaggi partono da ${trasporto.mittente} attraverso ${trasporto.host}.`,
     };
-};
-
-// Il pulsante XML - quello generale e quello sulle singole righe - lavora sulle
-// fatture elettroniche in coda. Quando non ce ne sono sembra sparito, e il
-// motivo non e sulla pagina: senza clienti impostati per la fattura elettronica
-// la coda non ne conterra mai.
-export const canaleSdiTesto = (riepilogo) => {
-    const canale = riepilogo?.canaleSdi === 'intermediario'
-        ? 'Fattura elettronica: la trasmissione allo SdI è affidata a un intermediario, il gestionale prepara il file.'
-        : `Fattura elettronica: trasmissione automatica sul canale "${riepilogo?.canaleSdi}".`;
-
-    if (!numberOrZero(riepilogo?.clienti?.conFatturaElettronica)) {
-        return `${canale} Nessun cliente è impostato per la fattura elettronica: finché non si spunta`
-            + ' "Fattura Elettronica" sulla sua scheda, in coda non compare nessun XML da scaricare.';
-    }
-
-    if (!numberOrZero(riepilogo?.perTipo?.elettronica)) {
-        return `${canale} In questo momento non c'è nessuna fattura elettronica in coda.`;
-    }
-
-    return canale;
 };
 
 const destinatarioTesto = (record) => record.destinatario || EMPTY_VALUE;
