@@ -664,6 +664,14 @@ allo SdI passando dal commercialista o dal portale dell'Agenzia: si scarica l'ar
 si consegna. Finché nessun cliente è impostato sulla fattura elettronica, il pulsante non
 trova nulla da scaricare e lo dice.
 
+**Una fattura per volta.** Se si trasmette un documento alla volta, l'archivio è un giro
+inutile: sulla riga della consegna c'è il pulsante **XML**, che scarica quel solo file,
+già con il nome della trasmissione. Niente zip da aprire e niente file da rinominare.
+
+Il file si può riscaricare quante volte serve e ogni volta prende un nome nuovo, così non
+si rischia di trasmettere due volte lo stesso. Quando la fattura è stata trasmessa si
+preme **Evasa**: la riga esce dalla coda e non ricompare negli scarichi successivi.
+
 **Verifica posta** controlla che il gestionale riesca a parlare con il server di posta,
 senza spedire nulla a nessuno.
 

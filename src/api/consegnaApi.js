@@ -33,6 +33,12 @@ const consegnaApi = {
 
         return { data: {} };
     },
+    // Il file di una sola consegna: chi trasmette una fattura per volta non ha
+    // motivo di scaricare l'archivio di tutte e poi estrarne una.
+    scaricaXmlSingolo: (id) => scaricaFile(
+        () => axios.get(`${resource.baseUrl}/${id}/xml`, { responseType: 'blob' }),
+        `fattura-elettronica-${id}.xml`,
+    ),
     segnaEvasa: (id, note) => resource.postRelation(id, 'evasa', { note }),
     rimettiInCoda: (id) => resource.postRelation(id, 'coda', {}),
     annulla: (id, note) => resource.postRelation(id, 'annulla', { note }),

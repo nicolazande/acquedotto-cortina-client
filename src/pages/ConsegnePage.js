@@ -154,6 +154,13 @@ const ConsegnePage = () => {
         () => 'Archivio degli XML pronto.'
     );
 
+    // Una fattura per volta: il file esce gia col nome della trasmissione, senza
+    // passare dall'archivio di tutte e da un programma per aprirlo.
+    const handleXmlSingolo = (record) => esegui(
+        () => consegnaApi.scaricaXmlSingolo(record._id),
+        () => `File della fattura ${record.documento || ''} pronto.`
+    );
+
     const handleProva = () => esegui(
         () => consegnaApi.provaTrasporto(),
         (dati) => dati.messaggio
@@ -189,6 +196,11 @@ const ConsegnePage = () => {
             {record.stato !== 'inviata' && (
                 <Button variant="save" icon="check" disabled={isWorking} onClick={() => handleEvasa(record)}>
                     Evasa
+                </Button>
+            )}
+            {record.tipo === 'elettronica' && (
+                <Button variant="secondary" icon="download" disabled={isWorking} onClick={() => handleXmlSingolo(record)}>
+                    XML
                 </Button>
             )}
             {record.stato === 'errore' && (
