@@ -195,7 +195,9 @@ const ConsegnePage = () => {
                     Evasa
                 </Button>
             )}
-            {record.tipo === 'elettronica' && (
+            {/* Il file si produce solo per una consegna ancora da fare: su una gia
+                trasmessa sarebbe una seconda copia valida della stessa fattura. */}
+            {record.tipo === 'elettronica' && ['in_coda', 'errore'].includes(record.stato) && (
                 <Button variant="secondary" icon="download" disabled={isWorking} onClick={() => handleXmlSingolo(record)}>
                     XML
                 </Button>
