@@ -1,7 +1,15 @@
 import React, { useCallback } from 'react';
 import consegnaApi from '../../api/consegnaApi';
 import fatturaApi from '../../api/fatturaApi';
-import { canaleLabel, confermaInvio, statoLabel, tipoLabel } from '../../config/deliveryModes';
+import {
+    canaleLabel,
+    confermaInvio,
+    esitoConsegna,
+    esitoInvio,
+    esitoPreparazione,
+    statoLabel,
+    tipoLabel,
+} from '../../config/deliveryModes';
 import { EMPTY_VALUE, formatDate } from '../../utils/formatters';
 import BillingPanel, { BillingActions, BillingState } from './BillingPanel';
 import Button from './Button';
@@ -22,9 +30,18 @@ const classeRiga = (voce, registrata) => {
     return '';
 };
 
+// Il problema che il piano vede oggi viene prima; poi cio che dice la consegna
+// registrata, con la stessa regola dell'elenco.
 const dettaglio = (voce, registrata) => (
-    voce.problema || registrata?.ultimo_errore || voce.nota || registrata?.note || ''
+    (registrata?.stato !== 'annullata' && voce.problema) || esitoConsegna(registrata) || voce.nota || ''
 );
+
+// Le consegne che la fattura ha gia avuto, con la data: sono il motivo per cui
+// non compaiono fra quelle da fare, e senza dirlo il riquadro sembrava parlare
+// di un cliente senza recapiti.
+const giaConsegnataTesto = (giaConsegnate) => `Già consegnata: ${giaConsegnate
+    .map(({ tipo, data }) => `${tipoLabel(tipo).toLowerCase()} il ${formatDate(data)}`)
+    .join('; ')}.`;
 
 const InvoiceDeliveryPanel = ({ recordId }) => {
     const { confirm } = useFeedback();
@@ -39,7 +56,7 @@ const InvoiceDeliveryPanel = ({ recordId }) => {
 
     const handlePrepara = () => esegui(
         () => consegnaApi.pianifica({ fatture: [recordId] }),
-        (dati) => `${dati.create + dati.aggiornate} consegne preparate`
+        esitoPreparazione
     );
 
     const handleInvia = async () => {
@@ -47,16 +64,12 @@ const InvoiceDeliveryPanel = ({ recordId }) => {
 
         if (!confermato) return;
 
-        await esegui(
-            () => consegnaApi.elabora({ fatture: [recordId] }),
-            (dati) => (dati.elaborate
-                ? `${dati.inviate} inviate, ${dati.simulate} simulate, ${dati.errori} in errore`
-                : 'Nessuna consegna automatica da elaborare')
-        );
+        await esegui(() => consegnaApi.elabora({ fatture: [recordId] }), esitoInvio);
     };
 
     const registrate = perTipo(piano?.registrate);
     const voci = piano?.consegne || [];
+    const giaConsegnate = piano?.giaConsegnate || [];
 
     return (
         <BillingPanel
@@ -84,7 +97,16 @@ const InvoiceDeliveryPanel = ({ recordId }) => {
                 <BillingState>{piano.ostacoli.join(' ')}</BillingState>
             )}
 
-            {piano && voci.length === 0 && piano.ostacoli.length === 0 && (
+            {giaConsegnate.length > 0 && <BillingState>{giaConsegnataTesto(giaConsegnate)}</BillingState>}
+
+            {piano && voci.length > 0 && !piano.emessaDalGestionale && (
+                <BillingState>
+                    Fattura del vecchio programma: il Prepara della pagina Consegne non la considera.
+                    Per consegnarla da qui si usa Prepara in questo riquadro.
+                </BillingState>
+            )}
+
+            {piano && voci.length === 0 && piano.ostacoli.length === 0 && giaConsegnate.length === 0 && (
                 <BillingState>
                     Per questo cliente non è prevista alcuna consegna: la copia di cortesia è disattivata
                     e la fattura elettronica non è richiesta.

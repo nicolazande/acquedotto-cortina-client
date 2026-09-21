@@ -8,10 +8,12 @@ const consegnaApi = {
     getConsegne: resource.list,
     getRiepilogo: () => resource.getCollection('riepilogo'),
     // Prepara la coda: crea le consegne mancanti per le fatture confermate.
-    // Non recapita nulla, si limita a dire cosa dovrebbe partire e dove.
+    // Non recapita nulla, si limita a dire cosa dovrebbe partire e dove. Senza
+    // elenco guarda le fatture emesse dal gestionale; con `fatture` quelle
+    // indicate, anche del vecchio programma.
     pianifica: (payload = {}) => resource.postCollection('pianifica', payload),
     // Percorre la coda e recapita quello che puo. Senza un server di posta
-    // configurato i messaggi vengono registrati come simulati e non escono.
+    // configurato e una prova: non esce niente e le consegne restano in coda.
     elabora: (payload = {}) => resource.postCollection('elabora', payload),
     provaTrasporto: () => resource.postCollection('prova-trasporto', {}),
     // Un unico PDF con le fatture da imbustare, e l'archivio degli XML ancora

@@ -68,8 +68,10 @@ export const modalitaOptions = MODALITA_CONSEGNA.map(({ value, label }) => ({ va
 export const confermaInvio = ({ inProva, singola, limite }) => ({
     title: inProva ? 'Prova di invio' : 'Invia',
     message: [
+        // Una prova non consuma il lavoro: la consegna resta da fare e parte
+        // davvero quando la posta sarà attiva.
         inProva
-            ? `Il server di posta non è configurato: ${singola ? 'la consegna verrà registrata come simulata' : 'le consegne verranno registrate come simulate'} e nessun messaggio uscirà dal gestionale.`
+            ? `Il server di posta non è configurato: nessun messaggio uscirà dal gestionale. ${singola ? 'La consegna resta in coda' : 'Le consegne restano in coda'}, con l’esito della prova scritto sulla riga.`
             : `${singola ? 'La copia di cortesia verrà inviata al recapito del cliente.' : 'Le consegne automatiche in coda verranno inviate ai clienti.'} L’operazione non si annulla.`,
         // Una coda di centinaia di consegne si smaltisce a scaglioni: dirlo
         // prima evita che sembri non aver funzionato quando la coda non si
@@ -78,6 +80,61 @@ export const confermaInvio = ({ inProva, singola, limite }) => ({
     ].filter(Boolean).join(' '),
     confirmLabel: inProva ? 'Prova' : 'Invia',
 });
+
+// Cosa dice la colonna Esito di una consegna. Su una riga annullata il motivo
+// della chiusura; sulle altre prima cio che e andato storto all'ultimo
+// tentativo, poi cio che il piano vede mancare, poi la nota.
+export const esitoConsegna = (consegna) => (consegna?.stato === 'annullata'
+    ? consegna.note || ''
+    : consegna?.ultimo_errore || consegna?.problema || consegna?.note || '');
+
+// La domanda prima di "Prepara" nella pagina Consegne: cosa entra nella coda e
+// cosa ne resta fuori, detto prima.
+export const CONFERMA_PREPARAZIONE = {
+    title: 'Prepara la coda',
+    message: 'Metto in coda le fatture confermate emesse dal gestionale che non hanno ancora una consegna, '
+        + 'con il recapito di ogni cliente, e tolgo quelle che non vanno più fatte. '
+        + 'Le fatture del vecchio programma restano fuori: una si mette in coda dalla sua scheda. '
+        + 'Non viene inviato nulla.',
+    confirmLabel: 'Prepara',
+};
+
+const conta = (quante, singolare, plurale) => `${quante} ${quante === 1 ? singolare : plurale}`;
+
+// Cosa dire dopo "Prepara". Le consegne tolte vanno dette: la prima volta dopo
+// la regola nuova ne escono centinaia, e una coda che si svuota senza una
+// parola sembra un guasto.
+export const esitoPreparazione = (dati) => {
+    const create = numberOrZero(dati?.create);
+    const riaperte = numberOrZero(dati?.riaperte);
+    const aggiornate = numberOrZero(dati?.aggiornate);
+    const annullate = numberOrZero(dati?.annullate);
+
+    const parti = [
+        create ? conta(create, 'consegna messa in coda', 'consegne messe in coda') : null,
+        riaperte ? conta(riaperte, 'consegna annullata rimessa in coda', 'consegne annullate rimesse in coda') : null,
+        !create && !riaperte ? 'Nessuna consegna nuova' : null,
+        aggiornate ? `${conta(aggiornate, 'già in coda aggiornata', 'già in coda aggiornate')} col recapito di oggi` : null,
+        annullate ? conta(annullate, 'tolta dalla coda perché non più da fare', 'tolte dalla coda perché non più da fare') : null,
+    ].filter(Boolean);
+
+    return `${parti.join(', ')}.${annullate ? ' Il motivo è scritto sulla riga.' : ''}`;
+};
+
+// Cosa dire dopo "Invia" o "Prova invio".
+export const esitoInvio = (dati) => {
+    if (!numberOrZero(dati?.elaborate)) return 'Nessuna consegna automatica da elaborare.';
+
+    const parti = [
+        numberOrZero(dati.inviate) ? conta(dati.inviate, 'inviata', 'inviate') : null,
+        numberOrZero(dati.simulate)
+            ? conta(dati.simulate, 'provata senza inviare: resta in coda', 'provate senza inviare: restano in coda')
+            : null,
+        numberOrZero(dati.errori) ? conta(dati.errori, 'in errore', 'in errore') : null,
+    ].filter(Boolean);
+
+    return `${parti.join(', ')}.`;
+};
 
 // Il pulsante XML - quello generale e quello sulle singole righe - lavora sulle
 // fatture elettroniche in coda. Quando non ce ne sono sembra sparito, e il

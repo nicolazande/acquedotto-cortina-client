@@ -1,8 +1,12 @@
 import { describe, expect, it, test } from 'vitest';
 import {
+    CONFERMA_PREPARAZIONE,
     canaleLabel,
     canaleSdiTesto,
     confermaInvio,
+    esitoConsegna,
+    esitoInvio,
+    esitoPreparazione,
     modalitaLabel,
     modalitaOptions,
     statoClassName,
@@ -50,6 +54,13 @@ describe('conferma prima di inviare', () => {
         expect(domanda.title).toMatch(/Prova/);
         expect(domanda.confirmLabel).toBe('Prova');
         expect(domanda.message).toMatch(/nessun messaggio uscirà/);
+    });
+
+    test('una prova non consuma il lavoro: le consegne restano in coda', () => {
+        // Prima la prova chiudeva le consegne come inviate, e a posta attiva il
+        // cliente non riceveva niente.
+        expect(confermaInvio({ inProva: true }).message).toMatch(/Le consegne restano in coda/);
+        expect(confermaInvio({ inProva: true, singola: true }).message).toMatch(/La consegna resta in coda/);
     });
 
     test('a invio attivo la domanda avverte che non si torna indietro', () => {
@@ -100,5 +111,50 @@ describe('cosa dice la pagina Consegne sulla fattura elettronica', () => {
         });
 
         expect(testo).toBe('Fattura elettronica: la trasmissione allo SdI è affidata a un intermediario, il gestionale prepara il file.');
+    });
+});
+
+describe('cosa dice la pagina dopo Prepara e Invia', () => {
+    test('prima di preparare dice che le fatture del vecchio programma restano fuori', () => {
+        expect(CONFERMA_PREPARAZIONE.message).toMatch(/vecchio programma restano fuori/);
+        expect(CONFERMA_PREPARAZIONE.message).toMatch(/Non viene inviato nulla/);
+    });
+
+    test('le consegne tolte dalla coda vengono dette, non solo quelle nuove', () => {
+        // Il primo Prepara con la regola nuova ne toglie centinaia: una coda che
+        // si svuota senza una parola sembra un guasto.
+        expect(esitoPreparazione({ create: 2, aggiornate: 0, annullate: 499 }))
+            .toBe('2 consegne messe in coda, 499 tolte dalla coda perché non più da fare. Il motivo è scritto sulla riga.');
+    });
+
+    test('singolare, plurale e niente di nuovo', () => {
+        expect(esitoPreparazione({ create: 1 })).toBe('1 consegna messa in coda.');
+        expect(esitoPreparazione({ create: 0 })).toBe('Nessuna consegna nuova.');
+        expect(esitoPreparazione({ create: 0, aggiornate: 2 })).toBe('Nessuna consegna nuova, 2 già in coda aggiornate col recapito di oggi.');
+    });
+
+    test('una consegna annullata rimessa in coda dalla scheda viene detta', () => {
+        expect(esitoPreparazione({ create: 0, riaperte: 1 })).toBe('1 consegna annullata rimessa in coda.');
+    });
+
+    test('dopo una prova di invio dice che le consegne restano da fare', () => {
+        expect(esitoInvio({ elaborate: 1, inviate: 0, simulate: 1, errori: 0 })).toBe('1 provata senza inviare: resta in coda.');
+        expect(esitoInvio({ elaborate: 3, inviate: 2, simulate: 0, errori: 1 })).toBe('2 inviate, 1 in errore.');
+        expect(esitoInvio({ elaborate: 0 })).toBe('Nessuna consegna automatica da elaborare.');
+    });
+});
+
+describe('la colonna Esito', () => {
+    test('su una riga annullata si legge il motivo della chiusura', () => {
+        // Anche se la riga porta ancora il problema di quando era aperta.
+        expect(esitoConsegna({ stato: 'annullata', note: 'Fattura del vecchio programma: ...', problema: 'Il cliente non ha un indirizzo di spedizione.' }))
+            .toBe('Fattura del vecchio programma: ...');
+    });
+
+    test("sulle altre prima l'errore dell'ultimo tentativo, poi il problema, poi la nota", () => {
+        expect(esitoConsegna({ stato: 'errore', ultimo_errore: '550', problema: 'manca', note: 'nota' })).toBe('550');
+        expect(esitoConsegna({ stato: 'in_coda', problema: 'manca', note: 'nota' })).toBe('manca');
+        expect(esitoConsegna({ stato: 'in_coda', note: 'nota' })).toBe('nota');
+        expect(esitoConsegna(undefined)).toBe('');
     });
 });

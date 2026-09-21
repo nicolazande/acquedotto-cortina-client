@@ -610,7 +610,7 @@ Nella scheda del cliente, il campo **Consegna copia** è una tendina con cinque 
 Nell'elenco dei clienti i filtri **Consegna: email** e **Consegna: posta** mostrano a
 colpo d'occhio chi riceve cosa.
 
-> **Prima di passare all'email serve un indirizzo.** Oggi solo 213 clienti su 900 ne
+> **Prima di passare all'email serve un indirizzo.** Oggi solo 215 clienti su 902 ne
 > hanno uno in anagrafica. Se si sceglie Email per un cliente che non ha l'indirizzo, il
 > gestionale non inventa nulla: lo segnala fra le consegne bloccate e non manda niente.
 
@@ -638,13 +638,20 @@ modalità si trova il gestionale in questo momento.
 
 ## I pulsanti in alto
 
-**Prepara** cerca le fatture confermate che non hanno ancora una consegna e le mette in
-elenco, ognuna con il recapito del suo cliente. Non manda niente: serve solo a costruire
-la lista di cosa andrebbe fatto.
+**Prepara** mette in elenco le fatture confermate emesse dal gestionale che non hanno
+ancora una consegna, ognuna con il recapito del suo cliente, e toglie quelle che non
+vanno più fatte, scrivendo il motivo sulla riga. Guarda tutte le fatture, anche le 670 di
+una fatturazione intera. Non manda niente: serve solo a costruire la lista di cosa
+andrebbe fatto.
+
+Le fatture del **vecchio programma** restano fuori: le ha già consegnate lui, e fra
+quelle vecchie ce ne sono alcune che partono ogni anno per altra via. Se una di loro va
+consegnata da qui, la si mette in coda dalla sua scheda (vedi *La singola fattura*).
 
 **Invia** percorre la lista e recapita quello che può, cioè le email e le PEC, con il
 PDF della fattura allegato. Le fatture cartacee restano in elenco: quelle le stampa e le
-imbuca una persona.
+imbuca una persona. Una fattura riportata a bozza nel frattempo non parte: la sua riga
+lo dice.
 
 **Stampa (N)** — il numero fra parentesi dice quante buste ci sono da fare — scarica **un
 unico PDF con dentro tutte le fatture da consegnare a mano**, una per pagina, pronto da
@@ -689,9 +696,11 @@ Su ogni riga dell'elenco ci sono poi:
 ## Niente parte per sbaglio
 
 Finché il server di posta non è configurato, il gestionale lavora in **modalità prova**:
-premendo *Invia* le consegne vengono registrate, i conteggi sono reali, ma **nessun
-messaggio esce**. Il riquadro in alto lo dice a chiare lettere, e il pulsante si chiama
-*Prova invio* invece di *Invia*.
+il pulsante si chiama *Prova invio* invece di *Invia*, e il riquadro in alto lo dice a
+chiare lettere. La prova compone i messaggi e i PDF, ma **nessun messaggio esce**: le
+consegne **restano in coda**, con l'esito della prova scritto sulla riga, e partiranno
+davvero quando la posta sarà attiva. Ripetendo la prova si passa alle consegne non
+ancora provate.
 
 È voluto: una spedizione a centinaia di clienti partita per errore non si annulla.
 
@@ -702,19 +711,25 @@ da chi cura il sistema — vedi *Assistenza e aggiornamenti* in fondo al manuale
 
 Nella scheda di ogni fattura il riquadro **Dove va questa fattura** mostra la stessa
 cosa per quel solo documento: i canali previsti, i recapiti, cosa è già partito e
-quando. Da lì si può preparare e inviare la singola fattura, senza passare dall'elenco.
+quando - per esempio *Già consegnata: copia di cortesia il 22/01/2026*. Da lì si può
+preparare e inviare la singola fattura, senza passare dall'elenco.
+
+È anche la strada per le fatture del **vecchio programma**, che il *Prepara* della
+pagina Consegne non considera: il riquadro lo ricorda, e il suo *Prepara* le mette in
+coda. Lo stesso pulsante rimette in coda una consegna annullata.
 
 Se la fattura è ancora una bozza il riquadro lo dice: **una bozza non si consegna**, va
 prima confermata.
 
 ## Come stanno le cose oggi
 
-Alla consegna di questo manuale il gestionale è predisposto ma **non invia nulla**:
+Alla consegna di questo manuale il gestionale prepara le consegne ma **non invia
+nulla da solo**:
 
-- tutti i clienti sono impostati su *Cartacea postale*;
-- la fattura elettronica non è ancora attiva su nessun cliente, perché va prima deciso
-  come l'acquedotto la trasmette (commercialista, portale dell'Agenzia, oppure canale
-  proprio);
+- i clienti sono impostati su *Cartacea postale*, tranne chi è stato passato a *Email*;
+- la fattura elettronica è attiva sui clienti che la ricevevano già con il vecchio
+  programma (899 su 902): il gestionale prepara il file XML, e la trasmissione passa
+  dalla contabilità;
 - il server di posta non è configurato, quindi la modalità è quella di prova.
 
 Tutto il resto è già al suo posto: quando le decisioni saranno prese, si tratta di

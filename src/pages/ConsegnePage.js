@@ -9,9 +9,13 @@ import { useFeedback } from '../components/shared/FeedbackProvider';
 import useRemoteAction from '../hooks/useRemoteAction';
 import useRemoteData from '../hooks/useRemoteData';
 import {
+    CONFERMA_PREPARAZIONE,
     canaleLabel,
     canaleSdiTesto,
     confermaInvio,
+    esitoConsegna,
+    esitoInvio,
+    esitoPreparazione,
     modalitaLabel,
     statoClassName,
     statoLabel,
@@ -78,7 +82,7 @@ const statoInvio = (riepilogo) => {
 
 const destinatarioTesto = (record) => record.destinatario || EMPTY_VALUE;
 
-const esitoTesto = (record) => record.ultimo_errore || record.note || EMPTY_VALUE;
+const esitoTesto = (record) => esitoConsegna(record) || EMPTY_VALUE;
 
 const ConsegnePage = () => {
     const history = useHistory();
@@ -110,18 +114,11 @@ const ConsegnePage = () => {
     const { esegui, isWorking } = useRemoteAction(carica);
 
     const handlePianifica = async () => {
-        const confermato = await confirm({
-            title: 'Prepara la coda',
-            message: 'Cerco le fatture confermate senza consegna e le metto in elenco con il recapito di ogni cliente. Non viene inviato nulla.',
-            confirmLabel: 'Prepara',
-        });
+        const confermato = await confirm(CONFERMA_PREPARAZIONE);
 
         if (!confermato) return;
 
-        await esegui(
-            () => consegnaApi.pianifica({}),
-            (dati) => `${dati.create} consegne preparate su ${dati.esaminate} fatture esaminate`
-        );
+        await esegui(() => consegnaApi.pianifica({}), esitoPreparazione);
     };
 
     const handleElabora = async () => {
@@ -129,10 +126,7 @@ const ConsegnePage = () => {
 
         if (!confermato) return;
 
-        await esegui(
-            () => consegnaApi.elabora({ limite: PER_PAGINA }),
-            (dati) => `${dati.elaborate} elaborate: ${dati.inviate} inviate, ${dati.simulate} simulate, ${dati.errori} in errore`
-        );
+        await esegui(() => consegnaApi.elabora({ limite: PER_PAGINA }), esitoInvio);
     };
 
     // La stampa non cambia lo stato delle consegne: si stampa, si controlla che
