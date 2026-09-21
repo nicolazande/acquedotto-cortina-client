@@ -146,7 +146,9 @@ const ConsegnePage = () => {
 
     const handleXml = () => esegui(
         () => consegnaApi.scaricaXml(),
-        () => 'Archivio degli XML pronto.'
+        (dati) => (dati.saltate
+            ? `Archivio degli XML pronto. ${dati.saltate} fatture sono rimaste fuori: il motivo è scritto sulla loro riga.`
+            : 'Archivio degli XML pronto.')
     );
 
     // Una fattura per volta: il file esce gia col nome della trasmissione, senza

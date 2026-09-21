@@ -25,13 +25,16 @@ const consegnaApi = {
 
         return { data: { rimaste: Number(risposta.headers['x-consegne-rimaste']) || 0 } };
     },
+    // Le fatture che non si possono emettere - un cliente estero, un totale che
+    // non torna - restano fuori dall'archivio: il server dice quante, e il
+    // motivo e scritto sulla loro riga.
     scaricaXml: async (limite) => {
-        await scaricaFile(
+        const risposta = await scaricaFile(
             () => axios.post(`${resource.baseUrl}/xml`, { limite }, { responseType: 'blob' }),
             'fatture-elettroniche.zip',
         );
 
-        return { data: {} };
+        return { data: { saltate: Number(risposta.headers['x-consegne-saltate']) || 0 } };
     },
     // Il file di una sola consegna: chi trasmette una fattura per volta non ha
     // motivo di scaricare l'archivio di tutte e poi estrarne una.
