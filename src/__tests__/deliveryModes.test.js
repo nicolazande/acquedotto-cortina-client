@@ -1,4 +1,5 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, it, test } from 'vitest';
+import { canaleSdiTesto } from '../pages/ConsegnePage';
 import {
     canaleLabel,
     confermaInvio,
@@ -67,5 +68,37 @@ describe('conferma prima di inviare', () => {
     test('il limite di elaborazione viene dichiarato prima, non scoperto dopo', () => {
         expect(confermaInvio({ inProva: true, limite: 50 }).message).toMatch(/al massimo 50/);
         expect(confermaInvio({ inProva: true }).message).not.toMatch(/al massimo/);
+    });
+});
+
+describe('cosa dice la pagina Consegne sulla fattura elettronica', () => {
+    const intermediario = { canaleSdi: 'intermediario' };
+
+    it('senza clienti impostati spiega perche non ci sono XML da scaricare', () => {
+        // Il pulsante XML lavora sulle fatture elettroniche in coda: quando non
+        // ce ne sono sembra sparito, e il motivo non era scritto da nessuna parte.
+        const testo = canaleSdiTesto({ ...intermediario, clienti: { conFatturaElettronica: 0 } });
+
+        expect(testo).toContain('Nessun cliente è impostato per la fattura elettronica');
+    });
+
+    it('con clienti impostati ma coda vuota lo dice in modo diverso', () => {
+        const testo = canaleSdiTesto({
+            ...intermediario,
+            clienti: { conFatturaElettronica: 12 },
+            perTipo: { elettronica: 0 },
+        });
+
+        expect(testo).toContain("non c'è nessuna fattura elettronica in coda");
+    });
+
+    it('quando ce ne sono resta la sola riga sul canale', () => {
+        const testo = canaleSdiTesto({
+            ...intermediario,
+            clienti: { conFatturaElettronica: 12 },
+            perTipo: { elettronica: 3 },
+        });
+
+        expect(testo).toBe('Fattura elettronica: la trasmissione allo SdI è affidata a un intermediario, il gestionale prepara il file.');
     });
 });
