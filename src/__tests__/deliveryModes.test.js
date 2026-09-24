@@ -117,7 +117,8 @@ describe('cosa dice la pagina Consegne sulla fattura elettronica', () => {
 
 describe('cosa dice la pagina dopo Prepara e Invia', () => {
     test('prima di preparare dice che le fatture del vecchio programma restano fuori', () => {
-        expect(CONFERMA_PREPARAZIONE.message).toMatch(/vecchio programma restano fuori/);
+        expect(CONFERMA_PREPARAZIONE.message).toMatch(/fatture del vecchio programma/);
+        expect(CONFERMA_PREPARAZIONE.message).toMatch(/canali di una fattura si decidono la prima volta/);
         expect(CONFERMA_PREPARAZIONE.message).toMatch(/Non viene inviato nulla/);
     });
 
@@ -139,6 +140,22 @@ describe('cosa dice la pagina dopo Prepara e Invia', () => {
         // migliaia compare da cinque cifre in su.
         expect(esitoPreparazione({ create: 1341 })).toBe(`${formatNumber(1341)} consegne messe in coda.`);
         expect(esitoPreparazione({ create: 12341 })).toBe('12.341 consegne messe in coda.');
+    });
+
+    test('le consegne non aggiunte si dicono, con quali fatture e cosa fare', () => {
+        const messaggio = esitoPreparazione({
+            create: 0,
+            nonAggiunte: [{ documento: '2026/A/12' }, { documento: '2026/A/15' }],
+        });
+
+        expect(messaggio).toMatch(/2 consegne non aggiunte/);
+        expect(messaggio).toMatch(/2026\/A\/12, 2026\/A\/15/);
+        expect(messaggio).toMatch(/dalla scheda della fattura/);
+    });
+
+    test("di molte fatture lasciate fuori si elencano le prime", () => {
+        const fuori = ['a', 'b', 'c', 'd', 'e'].map((codice) => ({ documento: codice }));
+        expect(esitoPreparazione({ nonAggiunte: fuori })).toMatch(/a, b, c e altre 2,/);
     });
 
     test('una consegna annullata rimessa in coda dalla scheda viene detta', () => {

@@ -92,14 +92,24 @@ export const esitoConsegna = (consegna) => (consegna?.stato === 'annullata'
 // cosa ne resta fuori, detto prima.
 export const CONFERMA_PREPARAZIONE = {
     title: 'Prepara la coda',
-    message: 'Metto in coda le fatture confermate emesse dal gestionale che non hanno ancora una consegna, '
-        + 'con il recapito di ogni cliente, e tolgo quelle che non vanno più fatte. '
-        + 'Le fatture del vecchio programma restano fuori: una si mette in coda dalla sua scheda. '
+    message: 'Metto in coda le consegne che mancano alle fatture emesse dal gestionale, con il recapito '
+        + 'di ogni cliente, tengo in pari quelle già in coda e tolgo quelle che non vanno più fatte. '
+        + 'I canali di una fattura si decidono la prima volta: se un cliente è passato alla fattura '
+        + 'elettronica dopo, le sue fatture già emesse restano fuori e te lo dico. '
+        + 'Fuori anche le fatture del vecchio programma: una si mette in coda dalla sua scheda. '
         + 'Non viene inviato nulla.',
     confirmLabel: 'Prepara',
 };
 
 // "1 consegna", "1.341 consegne", e niente per zero: una voce a zero non si dice.
+// Quali fatture sono rimaste fuori: i primi codici bastano a ritrovarle, e un
+// elenco di quaranta in un avviso non si legge.
+const elenco = (voci, quante = 3) => {
+    const codici = voci.slice(0, quante).map((voce) => voce.documento).filter(Boolean);
+    const altre = voci.length - codici.length;
+    return `${codici.join(', ')}${altre > 0 ? ` e altre ${altre}` : ''},`;
+};
+
 const conta = (quante, singolare, plurale) => {
     const numero = numberOrZero(quante);
     return numero ? `${formatNumber(numero)} ${numero === 1 ? singolare : plurale}` : null;
@@ -114,14 +124,21 @@ export const esitoPreparazione = (dati) => {
         conta(dati?.riaperte, 'consegna annullata rimessa in coda', 'consegne annullate rimesse in coda'),
     ].filter(Boolean);
     const tolte = conta(dati?.annullate, 'tolta dalla coda perché non più da fare', 'tolte dalla coda perché non più da fare');
+    // Un canale acceso dopo l'emissione non entra in coda da solo: va detto,
+    // altrimenti una correzione in anagrafica sembrerebbe non aver fatto niente.
+    const fuori = dati?.nonAggiunte || [];
+    const nonAggiunte = conta(fuori.length, 'consegna non aggiunta', 'consegne non aggiunte');
 
     const parti = [
         ...(nuove.length ? nuove : ['Nessuna consegna nuova']),
         conta(dati?.aggiornate, 'già in coda aggiornata col recapito di oggi', 'già in coda aggiornate col recapito di oggi'),
         tolte,
+        nonAggiunte,
     ].filter(Boolean);
 
-    return `${parti.join(', ')}.${tolte ? ' Il motivo è scritto sulla riga.' : ''}`;
+    return `${parti.join(', ')}.`
+        + (tolte ? ' Il motivo è scritto sulla riga.' : '')
+        + (nonAggiunte ? ` Canale acceso dopo l’emissione: ${elenco(fuori)} si preparano dalla scheda della fattura.` : '');
 };
 
 // Cosa dire dopo "Invia" o "Prova invio".

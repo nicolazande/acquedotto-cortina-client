@@ -657,6 +657,12 @@ Le fatture del **vecchio programma** restano fuori: le ha già consegnate lui, e
 quelle vecchie ce ne sono alcune che partono ogni anno per altra via. Se una di loro va
 consegnata da qui, la si mette in coda dalla sua scheda (vedi *La singola fattura*).
 
+**I canali di una fattura si decidono la prima volta.** Se un cliente passa alla fattura
+elettronica dopo che le sue fatture sono state emesse, quelle non vengono trasmesse a
+mesi di distanza: la novità vale per le fatture successive. *Prepara* dice quante ne ha
+lasciate fuori per questo motivo; se una di quelle va comunque mandata, si prepara dalla
+sua scheda.
+
 **Invia** percorre la lista e recapita quello che può, cioè le email e le PEC, con il
 PDF della fattura allegato. Le fatture cartacee restano in elenco: quelle le stampa e le
 imbuca una persona. Una fattura riportata a bozza nel frattempo non parte: la sua riga
