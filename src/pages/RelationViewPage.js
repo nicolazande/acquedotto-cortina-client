@@ -10,6 +10,7 @@ import {
     createContextBackSearch,
     getContextBackSearch,
 } from '../hooks/useContextBack';
+import descriviErrore from '../api/descriviErrore';
 import { useFeedback } from '../components/shared/FeedbackProvider';
 import Button from '../components/shared/Button';
 import { puoAprire, puoScrivere, useRisorsePermesse } from '../hooks/useRisorsePermesse';
@@ -124,7 +125,7 @@ const RelationViewPage = () => {
                 notify('Record associato con successo', 'success');
                 await loadData();
             } catch (associateError) {
-                notify('Errore durante l\'associazione', 'error');
+                notify(descriviErrore(associateError, 'Errore durante l\'associazione'), 'error');
                 console.error(associateError);
             }
         },
@@ -140,7 +141,7 @@ const RelationViewPage = () => {
                 notify('Record creato e associato con successo', 'success');
                 await loadData();
             } catch (createError) {
-                notify('Errore durante la creazione o associazione', 'error');
+                notify(descriviErrore(createError, 'Errore durante la creazione o associazione'), 'error');
                 console.error(createError);
             }
         },

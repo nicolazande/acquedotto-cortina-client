@@ -146,7 +146,7 @@ const ListPage = ({
                 notify('Record creato con successo', 'success');
                 fetchRecords(currentPage, activeSearch, sortField, sortOrder, activeView);
             } catch (error) {
-                notify('Errore durante la creazione', 'error');
+                notify(descriviErrore(error, 'Errore durante la creazione'), 'error');
                 console.error(error);
             }
         },

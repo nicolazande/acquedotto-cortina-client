@@ -1,4 +1,4 @@
-import { numberOrZero } from '../utils/formatters';
+import { formatNumber, numberOrZero } from '../utils/formatters';
 
 // Le modalita di consegna, come le vede chi usa il gestionale.
 //
@@ -99,26 +99,29 @@ export const CONFERMA_PREPARAZIONE = {
     confirmLabel: 'Prepara',
 };
 
-const conta = (quante, singolare, plurale) => `${quante} ${quante === 1 ? singolare : plurale}`;
+// "1 consegna", "1.341 consegne", e niente per zero: una voce a zero non si dice.
+const conta = (quante, singolare, plurale) => {
+    const numero = numberOrZero(quante);
+    return numero ? `${formatNumber(numero)} ${numero === 1 ? singolare : plurale}` : null;
+};
 
 // Cosa dire dopo "Prepara". Le consegne tolte vanno dette: la prima volta dopo
 // la regola nuova ne escono centinaia, e una coda che si svuota senza una
 // parola sembra un guasto.
 export const esitoPreparazione = (dati) => {
-    const create = numberOrZero(dati?.create);
-    const riaperte = numberOrZero(dati?.riaperte);
-    const aggiornate = numberOrZero(dati?.aggiornate);
-    const annullate = numberOrZero(dati?.annullate);
+    const nuove = [
+        conta(dati?.create, 'consegna messa in coda', 'consegne messe in coda'),
+        conta(dati?.riaperte, 'consegna annullata rimessa in coda', 'consegne annullate rimesse in coda'),
+    ].filter(Boolean);
+    const tolte = conta(dati?.annullate, 'tolta dalla coda perché non più da fare', 'tolte dalla coda perché non più da fare');
 
     const parti = [
-        create ? conta(create, 'consegna messa in coda', 'consegne messe in coda') : null,
-        riaperte ? conta(riaperte, 'consegna annullata rimessa in coda', 'consegne annullate rimesse in coda') : null,
-        !create && !riaperte ? 'Nessuna consegna nuova' : null,
-        aggiornate ? `${conta(aggiornate, 'già in coda aggiornata', 'già in coda aggiornate')} col recapito di oggi` : null,
-        annullate ? conta(annullate, 'tolta dalla coda perché non più da fare', 'tolte dalla coda perché non più da fare') : null,
+        ...(nuove.length ? nuove : ['Nessuna consegna nuova']),
+        conta(dati?.aggiornate, 'già in coda aggiornata col recapito di oggi', 'già in coda aggiornate col recapito di oggi'),
+        tolte,
     ].filter(Boolean);
 
-    return `${parti.join(', ')}.${annullate ? ' Il motivo è scritto sulla riga.' : ''}`;
+    return `${parti.join(', ')}.${tolte ? ' Il motivo è scritto sulla riga.' : ''}`;
 };
 
 // Cosa dire dopo "Invia" o "Prova invio".
@@ -126,11 +129,9 @@ export const esitoInvio = (dati) => {
     if (!numberOrZero(dati?.elaborate)) return 'Nessuna consegna automatica da elaborare.';
 
     const parti = [
-        numberOrZero(dati.inviate) ? conta(dati.inviate, 'inviata', 'inviate') : null,
-        numberOrZero(dati.simulate)
-            ? conta(dati.simulate, 'provata senza inviare: resta in coda', 'provate senza inviare: restano in coda')
-            : null,
-        numberOrZero(dati.errori) ? conta(dati.errori, 'in errore', 'in errore') : null,
+        conta(dati.inviate, 'inviata', 'inviate'),
+        conta(dati.simulate, 'provata senza inviare: resta in coda', 'provate senza inviare: restano in coda'),
+        conta(dati.errori, 'in errore', 'in errore'),
     ].filter(Boolean);
 
     return `${parti.join(', ')}.`;

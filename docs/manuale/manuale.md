@@ -355,6 +355,15 @@ e più sicuro perché il contatore risulta già collegato. Si compilano:
 - **Unità di misura** — normalmente `m3`;
 - **Tipo** e **Note** — facoltativi, utili per annotare letture stimate o anomalie.
 
+**Senza mappa.** Chi fa le letture non è obbligato a passare dalla mappa degli edifici:
+dal menu **Letture** preme *Nuova* e, nel campo **Contatore**, scrive il **cognome del
+cliente** o la **matricola** e preme *Cerca*. L'elenco che compare mostra matricola,
+cliente ed edificio, e si sceglie la riga giusta.
+
+**Una data nel futuro viene rifiutata.** È quasi sempre un anno battuto male, e una
+lettura datata avanti diventerebbe la più recente del contatore: la fatturazione la
+userebbe come lettura attuale. Il gestionale non la salva e lo dice.
+
 ## Trovare le letture di una persona
 
 L'elenco mostra il **cliente** e il **contatore** accanto a ogni lettura, e la ricerca in

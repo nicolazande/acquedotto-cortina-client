@@ -1,4 +1,5 @@
 import { describe, expect, it, test } from 'vitest';
+import { formatNumber } from '../utils/formatters';
 import {
     CONFERMA_PREPARAZIONE,
     canaleLabel,
@@ -131,6 +132,13 @@ describe('cosa dice la pagina dopo Prepara e Invia', () => {
         expect(esitoPreparazione({ create: 1 })).toBe('1 consegna messa in coda.');
         expect(esitoPreparazione({ create: 0 })).toBe('Nessuna consegna nuova.');
         expect(esitoPreparazione({ create: 0, aggiornate: 2 })).toBe('Nessuna consegna nuova, 2 già in coda aggiornate col recapito di oggi.');
+    });
+
+    test('i numeri si scrivono come nel resto del gestionale', () => {
+        // Stesso formattatore della panoramica: in italiano il punto delle
+        // migliaia compare da cinque cifre in su.
+        expect(esitoPreparazione({ create: 1341 })).toBe(`${formatNumber(1341)} consegne messe in coda.`);
+        expect(esitoPreparazione({ create: 12341 })).toBe('12.341 consegne messe in coda.');
     });
 
     test('una consegna annullata rimessa in coda dalla scheda viene detta', () => {

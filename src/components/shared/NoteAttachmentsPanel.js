@@ -234,7 +234,7 @@ const NoteAttachmentsPanel = ({ resource, recordId }) => {
             const response = await attachmentApi.list(resource, recordId);
             setAttachments(response.data);
         } catch (error) {
-            notify('Errore durante il recupero degli allegati', 'error');
+            notify(descriviErrore(error, 'Errore durante il recupero degli allegati'), 'error');
             console.error(error);
         } finally {
             setIsLoading(false);
