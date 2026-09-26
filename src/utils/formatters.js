@@ -21,6 +21,18 @@ export const formatDate = (value) => {
     return `${due(data.getUTCDate())}/${due(data.getUTCMonth() + 1)}/${data.getUTCFullYear()}`;
 };
 
+// Il giorno di un istante - quando una consegna e stata stampata, scaricata o
+// evasa - nel fuso di chi guarda: stampata a mezzanotte e mezza del 6, in UTC
+// sarebbe ancora il 5.
+const giornoLocale = new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+export const formatGiorno = (value) => {
+    if (!value) return EMPTY_VALUE;
+
+    const istante = new Date(value);
+    return Number.isNaN(istante.getTime()) ? EMPTY_VALUE : giornoLocale.format(istante);
+};
+
 // Formato italiano: 1.234,56 EUR. Prima gli importi uscivano come "1234.56",
 // in disaccordo con il PDF della fattura, che usa gia la virgola decimale.
 //

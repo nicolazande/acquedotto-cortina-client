@@ -1,13 +1,17 @@
 import { describe, expect, it, test } from 'vitest';
-import { formatNumber } from '../utils/formatters';
+import { formatGiorno, formatNumber } from '../utils/formatters';
 import {
     CONFERMA_PREPARAZIONE,
     canaleLabel,
     canaleSdiTesto,
+    confermaEvase,
     confermaInvio,
     esitoConsegna,
+    esitoEvase,
     esitoInvio,
     esitoPreparazione,
+    esitoStampa,
+    esitoXml,
     modalitaLabel,
     modalitaOptions,
     statoClassName,
@@ -98,17 +102,17 @@ describe('cosa dice la pagina Consegne sulla fattura elettronica', () => {
         const testo = canaleSdiTesto({
             ...intermediario,
             clienti: { conFatturaElettronica: 12 },
-            perTipo: { elettronica: 0 },
+            daTrasmettere: 0,
         });
 
-        expect(testo).toContain("non c'è nessuna fattura elettronica in coda");
+        expect(testo).toContain("non c'è nessuna fattura elettronica da trasmettere a mano");
     });
 
     it('quando ce ne sono resta la sola riga sul canale', () => {
         const testo = canaleSdiTesto({
             ...intermediario,
             clienti: { conFatturaElettronica: 12 },
-            perTipo: { elettronica: 3 },
+            daTrasmettere: 3,
         });
 
         expect(testo).toBe('Fattura elettronica: la trasmissione allo SdI è affidata a un intermediario, il gestionale prepara il file.');
@@ -181,5 +185,81 @@ describe('la colonna Esito', () => {
         expect(esitoConsegna({ stato: 'in_coda', problema: 'manca', note: 'nota' })).toBe('manca');
         expect(esitoConsegna({ stato: 'in_coda', note: 'nota' })).toBe('nota');
         expect(esitoConsegna(undefined)).toBe('');
+    });
+
+    test('su una consegna ancora da fare si legge se e gia stata stampata o scaricata', () => {
+        // La nota di una fattura elettronica c'e sempre: il segno viene prima,
+        // altrimenti non si vedrebbe mai quali sono gia uscite.
+        const quando = '2026-11-05T09:30:00.000Z';
+        expect(esitoConsegna({ stato: 'in_coda', stampata_il: quando })).toBe(`Stampata il ${formatGiorno(quando)}`);
+        expect(esitoConsegna({ stato: 'in_coda', scaricata_il: quando, note: 'Trasmissione affidata a un intermediario' }))
+            .toBe(`XML scaricato il ${formatGiorno(quando)}`);
+        expect(esitoConsegna({ stato: 'in_coda', scaricata_il: quando, ultimo_errore: 'totale' })).toBe('totale');
+        // Evasa, il segno e storia: la riga dice gia quando e stata chiusa.
+        expect(esitoConsegna({ stato: 'inviata', stampata_il: quando })).toBe('');
+    });
+});
+
+describe('stampa, XML e consegne segnate evase in blocco', () => {
+    test('dopo la stampa dice di segnarle evase, e che solo allora si passa alle prossime', () => {
+        expect(esitoStampa({ rimaste: 900 }))
+            .toBe('Stampa pronta. Quando sono stampate, segnale evase con «Evase le stampate»: '
+                + 'poi la stampa passa alle successive. Ne aspettano altre 900.');
+        expect(esitoStampa({ rimaste: 0 }))
+            .toBe('Stampa pronta con tutte le fatture da consegnare. Quando sono stampate, segnale evase con «Evase le stampate».');
+    });
+
+    test('dice quante copie non si stampano per un problema sulla riga', () => {
+        // Senza, "Stampa (N)" non arriverebbe mai a zero e non si capirebbe perche.
+        expect(esitoStampa({ rimaste: 0, bloccate: 1 }))
+            .toBe('Stampa pronta. Quando sono stampate, segnale evase con «Evase le stampate». '
+                + 'Una copia non si stampa: ha un problema scritto sulla riga, di solito l’indirizzo che manca.');
+        expect(esitoStampa({ rimaste: 300, bloccate: 3 }))
+            .toMatch(/Ne aspettano altre 300\. 3 copie non si stampano: hanno un problema scritto sulla riga/);
+    });
+
+    test("dopo l'archivio dice cosa fare, quali sono rimaste fuori e quante non ci stavano", () => {
+        expect(esitoXml({ saltate: 0, rimaste: 0 }))
+            .toBe('Archivio degli XML pronto: quando le hai trasmesse, segnale evase con «Evase le scaricate».');
+        expect(esitoXml({ saltate: 1 })).toMatch(/Una fattura è rimasta fuori: il motivo è scritto sulla sua riga\.$/);
+        expect(esitoXml({ saltate: 3, rimaste: 12 }))
+            .toMatch(/3 fatture sono rimaste fuori: il motivo è scritto sulla loro riga\. Altre 12 non ci stavano: arrivano con l’archivio successivo, dopo aver segnato evase queste\.$/);
+    });
+
+    test('prima di segnarle evase dice quante sono, quando farlo e come si torna indietro', () => {
+        const stampate = confermaEvase('stampate', 12341);
+        expect(stampate.title).toBe('Segna evase le stampate');
+        expect(stampate.message).toMatch(/^Segno evase le 12\.341 copie già stampate\. Fallo quando sono imbustate/);
+        expect(stampate.message).toMatch(/la stampa passa alle successive/);
+        expect(stampate.message).toMatch(/dalla sua riga la rimetti da fare\.$/);
+
+        expect(confermaEvase('scaricate', 800).message)
+            .toBe('Segno evase le 800 fatture elettroniche già scaricate. Fallo dopo averle caricate nel box. '
+                + 'Se una va rifatta, dalla sua riga la rimetti da fare.');
+        expect(confermaEvase('scaricate', 800).confirmLabel).toBe('Segna evase');
+    });
+
+    test('una sola si dice al singolare, dall\'inizio alla fine', () => {
+        expect(confermaEvase('stampate', 1).message)
+            .toBe('Segno evasa la copia già stampata. Fallo quando è imbustata o pronta da consegnare: '
+                + 'la stampa passa alle successive. Se va rifatta, dalla sua riga la rimetti da fare.');
+        expect(confermaEvase('scaricate', 1).message)
+            .toBe('Segno evasa la fattura elettronica già scaricata. Fallo dopo averla caricata nel box. '
+                + 'Se va rifatta, dalla sua riga la rimetti da fare.');
+    });
+
+    test('dopo, quante ne ha chiuse; zero vuol dire che la coda e cambiata', () => {
+        expect(esitoEvase({ quali: 'stampate', evase: 1, daRifare: 0 })).toBe('1 consegna segnata evasa.');
+        expect(esitoEvase({ quali: 'scaricate', evase: 800, daRifare: 0 })).toBe('800 consegne segnate evase.');
+        expect(esitoEvase({ quali: 'stampate', evase: 0, daRifare: 0 })).toBe('Nessuna consegna da segnare: la coda è cambiata nel frattempo.');
+    });
+
+    test('dice quante vanno rifatte perche la fattura e cambiata dopo, e perche', () => {
+        // Una fattura corretta dopo la stampa non si chiude con le altre: la copia
+        // uscita non e piu la sua.
+        expect(esitoEvase({ quali: 'stampate', evase: 196, daRifare: 4 }))
+            .toBe('196 consegne segnate evase. 4 da stampare di nuovo: le fatture sono cambiate dopo la stampa, o sono tornate bozze.');
+        expect(esitoEvase({ quali: 'scaricate', evase: 0, daRifare: 1 }))
+            .toBe('Nessuna consegna segnata evasa. 1 da scaricare di nuovo: la fattura è cambiata dopo lo scarico, o è tornata bozza.');
     });
 });

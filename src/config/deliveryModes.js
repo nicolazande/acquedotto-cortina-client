@@ -1,4 +1,4 @@
-import { formatNumber, numberOrZero } from '../utils/formatters';
+import { formatGiorno, formatNumber, numberOrZero } from '../utils/formatters';
 
 // Le modalita di consegna, come le vede chi usa il gestionale.
 //
@@ -81,12 +81,23 @@ export const confermaInvio = ({ inProva, singola, limite }) => ({
     confirmLabel: inProva ? 'Prova' : 'Invia',
 });
 
+// Su una consegna ancora da fare, se e gia uscita dal gestionale: e quella che
+// "Segna evase" chiudera insieme alle altre.
+const giaUscita = (consegna) => {
+    if (!['in_coda', 'errore'].includes(consegna?.stato)) return '';
+    if (consegna.stampata_il) return `Stampata il ${formatGiorno(consegna.stampata_il)}`;
+    if (consegna.scaricata_il) return `XML scaricato il ${formatGiorno(consegna.scaricata_il)}`;
+    return '';
+};
+
 // Cosa dice la colonna Esito di una consegna. Su una riga annullata il motivo
 // della chiusura; sulle altre prima cio che e andato storto all'ultimo
-// tentativo, poi cio che il piano vede mancare, poi la nota.
+// tentativo, poi cio che il piano vede mancare, poi se e gia stata stampata o
+// scaricata, poi la nota. Il segno viene prima della nota perche la nota di
+// una fattura elettronica - la trasmette un intermediario - c'e sempre.
 export const esitoConsegna = (consegna) => (consegna?.stato === 'annullata'
     ? consegna.note || ''
-    : consegna?.ultimo_errore || consegna?.problema || consegna?.note || '');
+    : consegna?.ultimo_errore || consegna?.problema || giaUscita(consegna) || consegna?.note || '');
 
 // La domanda prima di "Prepara" nella pagina Consegne: cosa entra nella coda e
 // cosa ne resta fuori, detto prima.
@@ -141,6 +152,105 @@ export const esitoPreparazione = (dati) => {
         + (nonAggiunte ? ` Canale acceso dopo l’emissione: ${elenco(fuori)} si preparano dalla scheda della fattura.` : '');
 };
 
+// Cosa dire dopo "Stampa". Stampare non chiude niente e non sposta niente: la
+// stampa successiva ripete le stesse finche non vengono segnate evase, e va
+// detto, altrimenti ripremendo si crederebbe di avere le prossime. Le copie con
+// un problema sulla riga non si stampano: si dice quante, altrimenti "Stampa (N)"
+// non arriverebbe mai a zero senza un perche.
+export const esitoStampa = (dati) => {
+    const poi = 'Quando sono stampate, segnale evase con «Evase le stampate»';
+    const rimaste = numberOrZero(dati?.rimaste);
+    const bloccate = numberOrZero(dati?.bloccate);
+    let fuori = '';
+
+    if (bloccate === 1) {
+        fuori = ' Una copia non si stampa: ha un problema scritto sulla riga, di solito l’indirizzo che manca.';
+    } else if (bloccate > 1) {
+        fuori = ` ${formatNumber(bloccate)} copie non si stampano: hanno un problema scritto sulla riga, di solito l’indirizzo che manca.`;
+    }
+
+    if (rimaste) {
+        return `Stampa pronta. ${poi}: poi la stampa passa alle successive. Ne aspettano altre ${formatNumber(rimaste)}.${fuori}`;
+    }
+
+    return `Stampa pronta${bloccate ? '' : ' con tutte le fatture da consegnare'}. ${poi}.${fuori}`;
+};
+
+// Cosa dire dopo "XML": cosa fare dopo, quali sono rimaste fuori e perche, e
+// quante non ci stavano.
+export const esitoXml = (dati) => {
+    const saltate = numberOrZero(dati?.saltate);
+    const rimaste = numberOrZero(dati?.rimaste);
+
+    return [
+        'Archivio degli XML pronto: quando le hai trasmesse, segnale evase con «Evase le scaricate».',
+        saltate === 1 ? 'Una fattura è rimasta fuori: il motivo è scritto sulla sua riga.' : null,
+        saltate > 1 ? `${formatNumber(saltate)} fatture sono rimaste fuori: il motivo è scritto sulla loro riga.` : null,
+        rimaste
+            ? `Altre ${formatNumber(rimaste)} non ci stavano: arrivano con l’archivio successivo, dopo aver segnato evase queste.`
+            : null,
+    ].filter(Boolean).join(' ');
+};
+
+// La domanda prima di segnare evase in blocco. Si chiudono tutte quelle gia
+// uscite dal gestionale: si dice quando farlo, e come si torna indietro su una.
+const IN_BLOCCO = {
+    stampate: {
+        title: 'Segna evase le stampate',
+        una: 'Segno evasa la copia già stampata. Fallo quando è imbustata o pronta da consegnare: '
+            + 'la stampa passa alle successive.',
+        tante: (quante) => `Segno evase le ${quante} copie già stampate. Fallo quando sono imbustate o pronte `
+            + 'da consegnare: la stampa passa alle successive.',
+    },
+    scaricate: {
+        title: 'Segna evase le scaricate',
+        una: 'Segno evasa la fattura elettronica già scaricata. Fallo dopo averla caricata nel box.',
+        tante: (quante) => `Segno evase le ${quante} fatture elettroniche già scaricate. Fallo dopo averle caricate nel box.`,
+    },
+};
+
+export const confermaEvase = (quali, quante) => {
+    const numero = numberOrZero(quante);
+    const testi = IN_BLOCCO[quali];
+
+    return {
+        title: testi.title,
+        message: numero === 1
+            ? `${testi.una} Se va rifatta, dalla sua riga la rimetti da fare.`
+            : `${testi.tante(formatNumber(numero))} Se una va rifatta, dalla sua riga la rimetti da fare.`,
+        confirmLabel: 'Segna evase',
+    };
+};
+
+// Dopo "Segna evase": quante ne ha chiuse, e quante no perche la fattura e
+// cambiata dopo la stampa o lo scarico, o e tornata bozza - quelle vanno rifatte.
+// Nessuna delle due vuol dire che nel frattempo qualcuno le ha gia chiuse, o
+// rimesse da fare.
+const DA_RIFARE = {
+    stampate: { cosa: 'da stampare di nuovo', dopo: 'dopo la stampa' },
+    scaricate: { cosa: 'da scaricare di nuovo', dopo: 'dopo lo scarico' },
+};
+
+export const esitoEvase = (dati) => {
+    const evase = numberOrZero(dati?.evase);
+    const daRifare = numberOrZero(dati?.daRifare);
+
+    if (!evase && !daRifare) return 'Nessuna consegna da segnare: la coda è cambiata nel frattempo.';
+
+    const chiuse = evase
+        ? `${conta(evase, 'consegna segnata evasa', 'consegne segnate evase')}.`
+        : 'Nessuna consegna segnata evasa.';
+
+    if (!daRifare) return chiuse;
+
+    const { cosa, dopo } = DA_RIFARE[dati.quali];
+    const perche = daRifare === 1
+        ? `la fattura è cambiata ${dopo}, o è tornata bozza`
+        : `le fatture sono cambiate ${dopo}, o sono tornate bozze`;
+
+    return `${chiuse} ${formatNumber(daRifare)} ${cosa}: ${perche}.`;
+};
+
 // Cosa dire dopo "Invia" o "Prova invio".
 export const esitoInvio = (dati) => {
     if (!numberOrZero(dati?.elaborate)) return 'Nessuna consegna automatica da elaborare.';
@@ -154,10 +264,10 @@ export const esitoInvio = (dati) => {
     return `${parti.join(', ')}.`;
 };
 
-// Il pulsante XML - quello generale e quello sulle singole righe - lavora sulle
-// fatture elettroniche in coda. Quando non ce ne sono sembra sparito, e il
-// motivo non e sulla pagina: senza clienti impostati per la fattura elettronica
-// la coda non ne conterra mai.
+// Il pulsante XML generale lavora sulle fatture elettroniche da trasmettere a
+// mano. Quando non ce ne sono resta spento, e il motivo non e sulla pagina:
+// senza clienti impostati per la fattura elettronica la coda non ne conterra
+// mai, e con la trasmissione automatica partono da sole.
 export const canaleSdiTesto = (riepilogo) => {
     const canale = riepilogo?.canaleSdi === 'intermediario'
         ? 'Fattura elettronica: la trasmissione allo SdI è affidata a un intermediario, il gestionale prepara il file.'
@@ -168,8 +278,8 @@ export const canaleSdiTesto = (riepilogo) => {
             + ' "Fattura Elettronica" sulla sua scheda, in coda non compare nessun XML da scaricare.';
     }
 
-    if (!numberOrZero(riepilogo?.perTipo?.elettronica)) {
-        return `${canale} In questo momento non c'è nessuna fattura elettronica in coda.`;
+    if (!numberOrZero(riepilogo?.daTrasmettere)) {
+        return `${canale} In questo momento non c'è nessuna fattura elettronica da trasmettere a mano.`;
     }
 
     return canale;

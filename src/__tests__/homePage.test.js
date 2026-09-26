@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { normalizza } from '../pages/HomePage';
+import { dettaglioConsegne, normalizza } from '../pages/HomePage';
 
 // Un server pubblicato piu vecchio dell'interfaccia restituisce meno campi.
 // Leggere direttamente quelli mancanti faceva crollare l'intera applicazione e
@@ -14,7 +14,7 @@ describe('normalizza la risposta della panoramica', () => {
                 scadute: { quante: 725, totale: 163219.89, ritardoMassimo: 1328 },
             },
             scaduto: { fasce: [{ id: 'entro-30', etichetta: 'Fino a 30 giorni', quante: 0, totale: 0 }] },
-            consegne: { automatiche: 3, daStampare: 12, errori: 1 },
+            consegne: { automatiche: 3, daStampare: 12, daTrasmettere: 5, errori: 1 },
             tariffe: {
                 inScadenza: 10, scadute: 1, contatori: 1059,
                 prossimaScadenza: '2026-12-31T00:00:00.000Z',
@@ -40,7 +40,7 @@ describe('normalizza la risposta della panoramica', () => {
         const risultato = normalizza(vecchia);
 
         expect(risultato.scaduto.fasce).toEqual([]);
-        expect(risultato.consegne).toEqual({ automatiche: 0, daStampare: 0, errori: 0 });
+        expect(risultato.consegne).toEqual({ automatiche: 0, daStampare: 0, daTrasmettere: 0, errori: 0 });
         expect(risultato.tariffe.inScadenza).toBe(0);
         expect(risultato.tariffe.listini).toEqual([]);
         expect(risultato.daSollecitare).toEqual([]);
@@ -64,5 +64,24 @@ describe('normalizza la risposta della panoramica', () => {
 
         expect(risultato.letture.daFatturare).toBe(0);
         expect(risultato.fatture.bozze).toBe(0);
+    });
+});
+
+describe('le fatture da consegnare nella panoramica', () => {
+    const consegne = (campi) => ({ automatiche: 0, daStampare: 0, daTrasmettere: 0, errori: 0, ...campi });
+
+    test('le fatture elettroniche si trasmettono, non si stampano', () => {
+        // Prima finivano fra quelle da stampare: 800 buste in piu che nessuno
+        // doveva imbustare.
+        expect(dettaglioConsegne(consegne({ daStampare: 12, daTrasmettere: 5, automatiche: 3 })))
+            .toBe('12 da stampare, 5 da trasmettere, 3 da inviare');
+    });
+
+    test('prima di tutto dice quelle che non sono partite', () => {
+        expect(dettaglioConsegne(consegne({ daStampare: 12, errori: 1 }))).toBe('1 non è partita');
+    });
+
+    test('senza niente in sospeso lo dice a parole', () => {
+        expect(dettaglioConsegne(consegne())).toBe('Niente in sospeso');
     });
 });

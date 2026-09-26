@@ -68,6 +68,7 @@ export const normalizza = (dati) => ({
     consegne: {
         automatiche: dati?.consegne?.automatiche ?? 0,
         daStampare: dati?.consegne?.daStampare ?? 0,
+        daTrasmettere: dati?.consegne?.daTrasmettere ?? 0,
         errori: dati?.consegne?.errori ?? 0,
     },
     daSollecitare: dati?.daSollecitare ?? [],
@@ -94,18 +95,25 @@ const dettaglioIncassi = ({ aperte, scadute }) => {
     return `${scadenze}, di cui ${formatNumber(scadute.quante)} scadute`;
 };
 
+// Quante fatture restano da recapitare: quelle che partono da sole e quelle che
+// aspettano una persona, da stampare o da trasmettere.
+const daConsegnare = ({ automatiche, daStampare, daTrasmettere }) => automatiche + daStampare + daTrasmettere;
+
 // Cosa resta da recapitare, detto come lo direbbe una persona.
-const dettaglioConsegne = ({ automatiche, daStampare, errori }) => {
+export const dettaglioConsegne = (consegne) => {
+    const { automatiche, daStampare, daTrasmettere, errori } = consegne;
+
     if (errori > 0) {
         return `${formatNumber(errori)} non ${errori === 1 ? 'è partita' : 'sono partite'}`;
     }
 
-    if (automatiche + daStampare === 0) {
+    if (daConsegnare(consegne) === 0) {
         return 'Niente in sospeso';
     }
 
     return [
         daStampare > 0 ? `${formatNumber(daStampare)} da stampare` : null,
+        daTrasmettere > 0 ? `${formatNumber(daTrasmettere)} da trasmettere` : null,
         automatiche > 0 ? `${formatNumber(automatiche)} da inviare` : null,
     ].filter(Boolean).join(', ');
 };
@@ -163,7 +171,7 @@ const HomePage = () => {
                             label="Fatture da consegnare"
                             to="/consegne"
                             tone={panoramica.consegne.errori > 0 ? 'attenzione' : 'neutral'}
-                            value={formatNumber(panoramica.consegne.automatiche + panoramica.consegne.daStampare)}
+                            value={formatNumber(daConsegnare(panoramica.consegne))}
                             detail={dettaglioConsegne(panoramica.consegne)}
                         />
                         <StatCard

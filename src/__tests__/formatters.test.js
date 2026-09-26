@@ -9,6 +9,7 @@ import {
     formatCubicMeters,
     formatDate,
     formatFieldValue,
+    formatGiorno,
     formatMoney,
     paymentStatus,
     formatNumber,
@@ -141,6 +142,15 @@ describe('helper di visualizzazione', () => {
         const mezzanotteUtc = new Date('2026-08-25T00:00:00.000Z');
         expect(formatDate(mezzanotteUtc)).toBe('25/08/2026');
         expect(formatDate('2026-01-01T00:00:00.000Z')).toBe('01/01/2026');
+    });
+
+    test('formatGiorno legge un istante nel fuso di chi guarda', () => {
+        // Una consegna stampata a mezzanotte e mezza del 6 e stampata il 6, anche
+        // se in UTC e ancora il 5.
+        expect(formatGiorno(new Date(2026, 10, 6, 0, 30))).toBe('06/11/2026');
+        expect(formatGiorno(new Date(2026, 10, 5, 23, 45).toISOString())).toBe('05/11/2026');
+        expect(formatGiorno(null)).toBe('-');
+        expect(formatGiorno('non una data')).toBe('-');
     });
 
     test('getPathValue attraversa i riferimenti popolati', () => {

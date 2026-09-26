@@ -628,9 +628,10 @@ colpo d'occhio chi riceve cosa.
 Si apre dal menu, voce **Consegne**, oppure dal numero *Fatture da consegnare* nella
 Panoramica. È divisa in due parti.
 
-**In alto lo stato**: quante consegne sono in coda, quante da stampare, quante già
-inviate, quante hanno dato errore. Sopra i numeri, un riquadro colorato dice in che
-modalità si trova il gestionale in questo momento.
+**In alto lo stato**: quante consegne sono in coda, quante da stampare, quante fatture
+elettroniche da trasmettere, quante già inviate, quante hanno dato errore. Sopra i
+numeri, un riquadro colorato dice in che modalità si trova il gestionale in questo
+momento.
 
 **Sotto l'elenco**, con i filtri:
 
@@ -643,7 +644,7 @@ modalità si trova il gestionale in questo momento.
 
 ![La pagina Consegne: in alto lo stato dell'invio e i conteggi, sotto l'elenco filtrabile delle consegne con le azioni su ogni riga.](immagini/consegne.png)
 
-*La pagina Consegne. Il riquadro giallo in alto avvisa che il gestionale è in modalità prova e non sta inviando nulla; i numeri sotto contano cosa resta da fare.*
+*La pagina Consegne. Il riquadro giallo in alto avvisa che il gestionale è in modalità prova e non sta inviando nulla; i numeri sotto contano cosa resta da fare. Accanto a Stampa e a XML compaiono i pulsanti per segnare evase, tutte insieme, le fatture già stampate o scaricate; nella colonna Esito ogni riga dice se è già stata stampata e quando.*
 
 ## I pulsanti in alto
 
@@ -673,18 +674,43 @@ unico PDF con dentro tutte le fatture da consegnare a mano**, una per pagina, pr
 mandare alla stampante. È il pulsante di lavoro dello sportello: oggi tutti i clienti
 sono impostati su *Cartacea postale*, quindi passa di qui tutta la fatturazione.
 
-Se le fatture sono molte il gestionale ne prepara un blocco alla volta e dice quante ne
-restano: si ripreme *Stampa* per il blocco successivo. Serve a non produrre un PDF da
-centinaia di pagine che poi la stampante non regge.
+Se le fatture sono molte il gestionale ne prepara **un blocco di duecento alla volta**,
+nell'ordine delle buste, e dice quante aspettano dopo: un PDF da centinaia di pagine la
+stampante non lo regge.
 
-Le consegne stampate **non vengono segnate come evase**: il PDF si può rifare quante
-volte si vuole senza sporcare nulla. A cose fatte si usa *Evasa* sulle righe imbucate.
+Stampare **non chiude niente**: finché non le si segna evase, *Stampa* ripete lo stesso
+blocco. Se la stampante si inceppa, o il PDF si chiude per sbaglio, basta ripremere.
+Quando il blocco è uscito si preme **Evase le stampate (N)**: le fatture stampate escono
+dalla coda tutte insieme, e la stampa successiva passa alle prossime duecento. Il
+pulsante compare solo quando c'è qualcosa di stampato da segnare.
 
-**XML** scarica in un archivio `.zip` le **fatture elettroniche** pronte da trasmettere,
-un file per fattura nel formato che vuole l'Agenzia delle Entrate. Serve a chi trasmette
-allo SdI passando dal commercialista o dal portale dell'Agenzia: si scarica l'archivio e
-si consegna. Finché nessun cliente è impostato sulla fattura elettronica, il pulsante non
-trova nulla da scaricare e lo dice.
+Nella colonna *Esito* una consegna già stampata lo dice, con la data: *Stampata il
+05/11/2026*. Sono quelle che *Evase le stampate* chiuderà.
+
+Una riga che nell'*Esito* mostra un **problema**, di solito l'indirizzo che manca, non
+si stampa: si sistema la scheda del cliente, si preme *Prepara* e rientra fra quelle da
+stampare. Dopo ogni stampa il gestionale dice quante sono rimaste fuori così.
+
+Se una fattura è stata **corretta dopo la stampa**, o è tornata bozza, *Evase le
+stampate* non la chiude: la copia stampata non è più quella giusta. Il gestionale dice
+quante sono, e la stampa successiva le ripropone. Lo stesso vale per l'XML.
+
+Del cliente, il gestionale si accorge solo del nome e del recapito (l'indirizzo della
+busta, il codice o la PEC della fattura elettronica), e solo dopo un *Prepara*. Se dopo
+la stampa si cambia altro, per esempio il codice fiscale o una scadenza, la copia già
+uscita va rifatta a mano.
+
+**XML (N)** scarica in un archivio `.zip` le **fatture elettroniche** da trasmettere, un
+file per fattura nel formato che vuole l'Agenzia delle Entrate: tutte insieme, anche le
+ottocento di una fatturazione intera. Serve a chi trasmette allo SdI passando dal
+commercialista o dal portale dell'Agenzia: si scarica l'archivio e lo si carica nel box.
+Una fattura che non si può emettere - un cliente estero, un totale che non torna - resta
+fuori dall'archivio, con il motivo scritto sulla sua riga, e non ferma le altre.
+
+Quando le fatture sono state trasmesse si preme **Evase le scaricate (N)**: escono dalla
+coda tutte insieme, senza segnarle una per una. Fino ad allora l'archivio si può
+riscaricare, e ogni file prende un nome nuovo. Finché nessun cliente è impostato sulla
+fattura elettronica, il pulsante *XML* non trova nulla da scaricare e lo dice.
 
 **Una fattura per volta.** Se si trasmette un documento alla volta, l'archivio è un giro
 inutile: sulla riga della consegna c'è il pulsante **XML**, che scarica quel solo file,
@@ -705,6 +731,9 @@ Su ogni riga dell'elenco ci sono poi:
   ritirata allo sportello;
 - **Riprova** — per rimettere in coda una consegna finita in errore, dopo aver corretto
   il problema (di solito un indirizzo sbagliato);
+- **Rimetti da fare** — su una consegna segnata evasa per sbaglio, anche insieme alle
+  altre: torna fra quelle da fare, da stampare o da scaricare di nuovo. Compare solo su
+  quelle evase a mano: una mail partita dal gestionale è arrivata, e non si ritira;
 - **Annulla** — per togliere dalla lista una consegna che non va più fatta. La fattura
   resta invariata.
 
@@ -951,8 +980,12 @@ Dopo aver confermato le fatture, aprire **Consegne** e premere **Prepara**: l'el
 mostra quante buste ci sono da stampare e quante fatture partono da sole. Il filtro
 *Errori* segnala i clienti a cui manca il recapito.
 
-Poi **Stampa** per avere in un solo PDF tutte le fatture da imbucare, e *Evasa* sulle
-righe man mano che le buste partono.
+Poi **Stampa** per avere in un PDF il primo blocco di fatture da imbucare; quando è
+stampato, **Evase le stampate**, e di nuovo **Stampa** per il blocco successivo, finché
+non sono uscite tutte.
+
+Per le fatture elettroniche: **XML**, l'archivio si carica nel box, poi **Evase le
+scaricate**.
 
 ## Una volta al mese
 

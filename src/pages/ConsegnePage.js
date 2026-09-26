@@ -12,16 +12,20 @@ import {
     CONFERMA_PREPARAZIONE,
     canaleLabel,
     canaleSdiTesto,
+    confermaEvase,
     confermaInvio,
     esitoConsegna,
+    esitoEvase,
     esitoInvio,
     esitoPreparazione,
+    esitoStampa,
+    esitoXml,
     modalitaLabel,
     statoClassName,
     statoLabel,
     tipoLabel,
 } from '../config/deliveryModes';
-import { EMPTY_VALUE, formatDate, numberOrZero } from '../utils/formatters';
+import { EMPTY_VALUE, formatGiorno, numberOrZero } from '../utils/formatters';
 
 const VISTE = [
     { value: 'in-coda', label: 'In coda' },
@@ -42,6 +46,7 @@ const riepilogoItems = (riepilogo) => {
     return [
         { label: 'In coda', value: numberOrZero(stati.in_coda) },
         { label: 'Da stampare', value: numberOrZero(riepilogo?.daStampare) },
+        { label: 'Da trasmettere', value: numberOrZero(riepilogo?.daTrasmettere) },
         { label: 'Inviate', value: numberOrZero(stati.inviata), className: 'is-ok' },
         { label: 'In errore', value: numberOrZero(stati.errore), className: 'is-danger' },
         { label: 'Annullate', value: numberOrZero(stati.annullata) },
@@ -129,24 +134,19 @@ const ConsegnePage = () => {
         await esegui(() => consegnaApi.elabora({ limite: PER_PAGINA }), esitoInvio);
     };
 
-    // La stampa non cambia lo stato delle consegne: si stampa, si controlla che
-    // sia uscito tutto, e solo dopo si dichiarano evase.
-    const handleStampa = () => esegui(
-        () => consegnaApi.stampa(),
-        (dati) => (dati.rimaste
-            ? `Stampa pronta. Ne restano ${dati.rimaste}: ripeti per le prossime.`
-            : 'Stampa pronta con tutte le fatture da consegnare.')
-    );
+    // Stampa e XML non chiudono nessuna consegna: si stampa, si controlla che
+    // sia uscito tutto, e solo dopo si dichiarano evase, tutte insieme.
+    const handleStampa = () => esegui(() => consegnaApi.stampa(), esitoStampa);
 
-    const handleXml = () => esegui(
-        () => consegnaApi.scaricaXml(),
-        (dati) => {
-            if (!dati.saltate) return 'Archivio degli XML pronto.';
-            return dati.saltate === 1
-                ? 'Archivio degli XML pronto. Una fattura è rimasta fuori: il motivo è scritto sulla sua riga.'
-                : `Archivio degli XML pronto. ${dati.saltate} fatture sono rimaste fuori: il motivo è scritto sulla loro riga.`;
-        }
-    );
+    const handleXml = () => esegui(() => consegnaApi.scaricaXml(), esitoXml);
+
+    const handleEvaseInBlocco = async (quali) => {
+        const confermato = await confirm(confermaEvase(quali, riepilogo?.[quali]));
+
+        if (!confermato) return;
+
+        await esegui(() => consegnaApi.segnaEvase(quali), esitoEvase);
+    };
 
     // Una fattura per volta: il file esce gia col nome della trasmissione, senza
     // passare dall'archivio di tutte e da un programma per aprirlo.
@@ -165,6 +165,7 @@ const ConsegnePage = () => {
         () => `Consegna ${record.documento || ''} segnata come evasa`
     );
 
+    // Riprova su una fallita, e Rimetti da fare su una evasa per sbaglio.
     const handleRiaccoda = (record) => esegui(
         () => consegnaApi.rimettiInCoda(record._id),
         () => `Consegna ${record.documento || ''} rimessa in coda`
@@ -202,6 +203,13 @@ const ConsegnePage = () => {
             {record.stato === 'errore' && (
                 <Button variant="secondary" icon="refresh" disabled={isWorking} onClick={() => handleRiaccoda(record)}>
                     Riprova
+                </Button>
+            )}
+            {/* Torna indietro solo cio che una persona ha segnato evaso: una mail
+                partita dal gestionale e arrivata, e non si ritira. */}
+            {record.stato === 'inviata' && record.evasa_a_mano && (
+                <Button variant="secondary" icon="refresh" disabled={isWorking} onClick={() => handleRiaccoda(record)}>
+                    Rimetti da fare
                 </Button>
             )}
             {record.stato !== 'annullata' && record.stato !== 'inviata' && (
@@ -251,14 +259,26 @@ const ConsegnePage = () => {
                         >
                             {`Stampa (${numberOrZero(riepilogo?.daStampare)})`}
                         </Button>
+                        {/* Il passo dopo la stampa e lo scarico: compare quando
+                            c'e qualcosa gia uscito da segnare evaso. */}
+                        {numberOrZero(riepilogo?.stampate) > 0 && (
+                            <Button variant="save" icon="check" disabled={isWorking} onClick={() => handleEvaseInBlocco('stampate')}>
+                                {`Evase le stampate (${numberOrZero(riepilogo.stampate)})`}
+                            </Button>
+                        )}
                         <Button
                             variant="secondary"
                             icon="download"
-                            disabled={isWorking || !numberOrZero(riepilogo?.perTipo?.elettronica)}
+                            disabled={isWorking || !numberOrZero(riepilogo?.daTrasmettere)}
                             onClick={handleXml}
                         >
-                            XML
+                            {`XML (${numberOrZero(riepilogo?.daTrasmettere)})`}
                         </Button>
+                        {numberOrZero(riepilogo?.scaricate) > 0 && (
+                            <Button variant="save" icon="check" disabled={isWorking} onClick={() => handleEvaseInBlocco('scaricate')}>
+                                {`Evase le scaricate (${numberOrZero(riepilogo.scaricate)})`}
+                            </Button>
+                        )}
                         <Button variant="secondary" icon="check" disabled={isWorking} onClick={handleProva}>
                             Verifica posta
                         </Button>
@@ -314,7 +334,7 @@ const ConsegnePage = () => {
                         { label: 'Canale', value: (record) => canaleLabel(record.canale) },
                         { label: 'Recapito', value: destinatarioTesto },
                         { label: 'Stato', value: (record) => statoLabel(record.stato) },
-                        { label: 'Inviata il', value: 'data_invio', format: formatDate },
+                        { label: 'Inviata il', value: 'data_invio', format: formatGiorno },
                         { label: 'Esito', value: esitoTesto },
                     ]}
                     containerClassName="billing-preview-table"
