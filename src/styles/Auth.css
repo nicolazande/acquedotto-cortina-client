@@ -55,21 +55,6 @@
     width: 100%;
 }
 
-.auth-footer {
-    margin-top: 18px;
-    color: var(--color-muted);
-    text-align: center;
-}
-
-.auth-footer a {
-    color: var(--color-primary);
-    font-weight: 850;
-}
-
-.auth-footer a:hover {
-    color: var(--color-primary-strong);
-}
-
 .profile-table {
     margin-bottom: 18px;
 }

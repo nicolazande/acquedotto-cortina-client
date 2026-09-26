@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import authApi from '../api/authApi';
 import { consumeSessionMessage } from '../services/auth';
@@ -54,9 +53,6 @@ const LoginPage = ({ onLogin }) => {
                         </Button>
                     </div>
                 </form>
-                <div className="auth-footer">
-                    <Link to="/register">Non hai un account? Registrati</Link>
-                </div>
             </div>
         </div>
     );

@@ -17,7 +17,6 @@ import './styles/App.css';
 // Pagine caricate solo quando servono davvero: login e panoramica restano
 // immediate perche sono le prime cose che si vedono, il resto arriva su richiesta
 // e non pesa sul primo caricamento.
-const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const BillingBatchPage = lazy(() => import('./pages/BillingBatchPage'));
 const CustomerPortalPage = lazy(() => import('./pages/CustomerPortalPage'));
@@ -156,12 +155,6 @@ const App = () => {
                                 path="/login"
                                 render={(props) => (
                                     isAuthenticated ? <Redirect to={defaultPath} /> : <LoginPage {...props} onLogin={handleLogin} />
-                                )}
-                            />
-                            <Route
-                                path="/register"
-                                render={(props) => (
-                                    isAuthenticated ? <Redirect to="/" /> : <RegisterPage {...props} />
                                 )}
                             />
 
