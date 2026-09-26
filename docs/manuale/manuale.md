@@ -41,7 +41,10 @@ e Letture. Fatture, consegne, incassi, scadenze e listini non ci sono — non gl
 e il gestionale glieli rifiuta anche se ne conoscesse l'indirizzo: scrivendone uno viene
 riportato sulla mappa.
 
-**Registra le letture** e può correggerle, ma non modifica le anagrafiche: clienti,
+**Registra le letture** e può correggerle finché nessuna fattura le ha usate: dopo, di
+una lettura si correggono solo le note. Vale per tutti, anche per l'amministratore:
+cambiare il valore di una lettura già fatturata vorrebbe dire far pagare due volte un
+consumo, o non farlo pagare mai. Non modifica le anagrafiche: clienti,
 contatori ed edifici li vede e basta. Su quelle schede i pulsanti «Nuovo», «Modifica»
 ed «Elimina» non compaiono proprio, così non c'è modo di cominciare una cosa che poi
 verrebbe rifiutata.
