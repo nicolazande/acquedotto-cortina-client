@@ -534,7 +534,7 @@ i ritardi* il totale dei clienti. Togliendo la spunta la mora non viene addebita
 **Si addebita una volta sola per scadenza.** Appena la penale entra in una fattura, la
 scadenza che l'ha causata resta segnata e non la fa più scattare: un cliente fatturato
 due volte mentre la stessa posizione resta aperta non la paga due volte. Se si cancella
-la fattura che la portava, la scadenza torna addebitabile.
+la fattura che la portava, o anche solo la sua riga, la scadenza torna addebitabile.
 
 > **Prima di una fatturazione massiva conviene guardarla.** La penale scatta sulle
 > posizioni aperte e scadute: se i pagamenti di un anno non sono ancora stati registrati,
