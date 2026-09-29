@@ -1678,9 +1678,9 @@ input[type="checkbox"] {
     font-weight: 750;
 }
 
-/* Esito della generazione: i clienti non fatturati vanno elencati con il motivo,
-   altrimenti resterebbero invisibili in mezzo a centinaia di righe. */
-.billing-bulk-failures {
+/* Elenchi di cose con il loro motivo: i clienti non fatturati, le bozze non
+   confermate, le letture da guardare. Il bordo dice quanto pesano. */
+.billing-reasons {
     display: grid;
     gap: 6px;
     margin: 10px 0 0;
@@ -1688,7 +1688,7 @@ input[type="checkbox"] {
     list-style: none;
 }
 
-.billing-bulk-failures li {
+.billing-reasons li {
     display: grid;
     gap: 2px;
     padding: 8px 10px;
@@ -1698,12 +1698,20 @@ input[type="checkbox"] {
     border-radius: var(--radius);
 }
 
-.billing-bulk-failures strong {
+.billing-reasons li.is-danger {
+    border-left-color: var(--color-danger);
+}
+
+.billing-reasons li.is-info {
+    border-left-color: var(--color-primary);
+}
+
+.billing-reasons strong {
     color: var(--color-heading);
     font-size: 0.9rem;
 }
 
-.billing-bulk-failures span {
+.billing-reasons span {
     color: var(--color-muted);
     font-size: 0.85rem;
     line-height: 1.35;

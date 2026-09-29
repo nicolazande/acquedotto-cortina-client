@@ -10,11 +10,11 @@ import useRemoteAction from '../hooks/useRemoteAction';
 import useRemoteData from '../hooks/useRemoteData';
 import useSelezione from '../hooks/useSelezione';
 import {
-    EMPTY_VALUE,
     customerName,
     formatDate,
     formatMoney,
     formatNumber,
+    invoiceLabel,
     paymentStatus,
 } from '../utils/formatters';
 
@@ -33,7 +33,9 @@ const oggi = () => new Date().toISOString().slice(0, 10);
 // Lo stesso nome che compare nelle altre liste: `customerName` scarta i
 // segnaposto come il punto singolo che l'anagrafica importata usa per il nome.
 const intestatario = (record) => customerName(record);
-const documento = (record) => (record.anno ? `${record.anno} / ${record.numero ?? EMPTY_VALUE}` : EMPTY_VALUE);
+// La scadenza porta anno e numero della sua fattura; una bozza il numero non
+// l'ha ancora.
+const documento = invoiceLabel;
 // La casella dice "questa riga e selezionata", non "questa e pagata": due
 // significati sulla stessa casella si leggono male, soprattutto nell'elenco
 // delle saldate. Lo stato sta in una colonna sua, con la stessa frase che

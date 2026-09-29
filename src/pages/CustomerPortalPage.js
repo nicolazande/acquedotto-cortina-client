@@ -6,7 +6,7 @@ import { PageHeader } from '../components/shared/PageChrome';
 import RecordTable from '../components/shared/RecordTable';
 import descriviErrore from '../api/descriviErrore';
 import { useFeedback } from '../components/shared/FeedbackProvider';
-import { formatCubicMeters, formatDate, formatMoney, invoiceStatus, join } from '../utils/formatters';
+import { formatCubicMeters, formatDate, formatMoney, invoiceLabel, invoiceStatus, join } from '../utils/formatters';
 import useRemoteData from '../hooks/useRemoteData';
 
 const addressOf = (cliente = {}) => join(
@@ -14,7 +14,7 @@ const addressOf = (cliente = {}) => join(
     cliente.localita_residenza
 );
 
-const invoiceNumber = (fattura) => join(fattura.anno, fattura.numero || fattura.codice);
+const invoiceNumber = (fattura) => invoiceLabel(fattura);
 
 const invoiceColumns = [
     { label: 'Data', value: 'data_fattura', format: formatDate },

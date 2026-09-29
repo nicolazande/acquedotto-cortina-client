@@ -18,6 +18,7 @@ import {
     formatCubicMeters,
     formatDate,
     formatMoney,
+    invoiceLabel,
     invoiceStatus,
     personName,
     join,
@@ -81,7 +82,7 @@ const resourceViews = {
     fatture: risorsa('fatture', {
         get: fatturaApi.getFattura,
         create: fatturaApi.createFattura,
-        title: (record) => join(record.tipo_documento, record.numero, record.ragione_sociale),
+        title: (record) => join(invoiceLabel(record), record.ragione_sociale),
     }),
     letture: risorsa('letture', {
         get: letturaApi.getLettura,
@@ -169,7 +170,7 @@ const relationList = [
             ragione_sociale: personLabel(parent),
         }),
         columns: [
-            { label: 'Documento', value: (record) => join(record.tipo_documento, record.numero) },
+            { label: 'Documento', value: invoiceLabel },
             { label: 'Data', value: (record) => formatDate(record.data_fattura) },
             { label: 'Totale', value: (record) => formatMoney(record.totale_fattura) },
             { label: 'Stato', value: invoiceStatus },
@@ -379,7 +380,7 @@ const relationList = [
             ragione_sociale: personLabel(parent),
         }),
         columns: [
-            { label: 'Documento', value: (record) => join(record.tipo_documento, record.numero) },
+            { label: 'Documento', value: invoiceLabel },
             { label: 'Data', value: (record) => formatDate(record.data_fattura) },
             { label: 'Totale', value: (record) => formatMoney(record.totale_fattura) },
         ],
@@ -421,7 +422,7 @@ const relationList = [
         associate: servizioApi.associateFattura,
         defaultValues: () => ({}),
         columns: [
-            { label: 'Documento', value: (record) => join(record.tipo_documento, record.numero) },
+            { label: 'Documento', value: invoiceLabel },
             { label: 'Cliente', value: (record) => text(record.ragione_sociale) },
             { label: 'Totale', value: (record) => formatMoney(record.totale_fattura) },
         ],

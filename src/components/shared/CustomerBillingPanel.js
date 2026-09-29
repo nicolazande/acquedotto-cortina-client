@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clienteApi from '../../api/clienteApi';
 import {
+    billingGroupNotes,
     canUseFixedCharge,
     isBillablePreview,
     previewReadingId,
@@ -10,8 +11,10 @@ import { formatMoney } from '../../utils/formatters';
 import BillingPanel, {
     BillingActions,
     AnnualFixedChargeOption,
+    BillingReasons,
     BillingState,
     BillingSummary,
+    DelayFeeOption,
 } from './BillingPanel';
 import BillingReadingsTable from './BillingReadingsTable';
 import Button from './Button';
@@ -23,6 +26,7 @@ import descriviErrore from '../../api/descriviErrore';
 const CustomerBillingPanel = ({ recordId }) => {
     const [preview, setPreview] = useState(null);
     const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
+    const [includeDelay, setIncludeDelay] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const { confirm } = useFeedback();
@@ -58,7 +62,7 @@ const CustomerBillingPanel = ({ recordId }) => {
         setError('');
 
         try {
-            const response = await clienteApi.getFatturazionePreview(recordId, { includeFixedCharge });
+            const response = await clienteApi.getFatturazionePreview(recordId, { includeDelay, includeFixedCharge });
             setPreview(response.data);
         } catch (requestError) {
             setPreview(null);
@@ -66,7 +70,7 @@ const CustomerBillingPanel = ({ recordId }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [includeFixedCharge, recordId]);
+    }, [includeDelay, includeFixedCharge, recordId]);
 
     useEffect(() => {
         loadPreview();
@@ -86,6 +90,7 @@ const CustomerBillingPanel = ({ recordId }) => {
         }
 
         await genera(true, () => clienteApi.generateFattura(recordId, {
+            includeDelay,
             includeFixedCharge,
             letture: selectedIds,
         }));
@@ -129,6 +134,12 @@ const CustomerBillingPanel = ({ recordId }) => {
                     total={fixedChargeTotal}
                     onChange={setIncludeFixedCharge}
                 />
+                <DelayFeeOption
+                    checked={includeDelay}
+                    clienti={preview?.mora ? 1 : 0}
+                    importo={preview?.mora?.totals?.totale_fattura}
+                    onChange={setIncludeDelay}
+                />
 
                 {billablePreviews.length === 0 ? (
                     <BillingState>Non ci sono letture non fatturate pronte per questo cliente.</BillingState>
@@ -140,6 +151,7 @@ const CustomerBillingPanel = ({ recordId }) => {
                         onToggleSelection={selezione.alterna}
                     />
                 )}
+                <BillingReasons items={billingGroupNotes(preview || {})} />
             </>
         </BillingPanel>
     );

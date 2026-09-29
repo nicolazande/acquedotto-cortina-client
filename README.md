@@ -8,7 +8,8 @@ Frontend React per il gestionale Acquedotto Zuel.
 - Contatori, edifici e associazioni tra record
 - Letture, servizi, articoli, listini e fasce
 - Fatture, scadenze e generazione bozze da letture
-- Login, registrazione limitata e profilo admin
+- Controlli sulle bozze e conferma in blocco, con la numerazione alla conferma
+- Login e profilo; gli account si creano dal server
 
 ## Avvio locale
 
@@ -77,7 +78,8 @@ PDF con `npm run manuale`. Istruzioni in [docs/manuale/README.md](docs/manuale/R
 - `src/api/*Api.js`: client HTTP per le risorse
 - `src/pages`: pagine principali
 - `src/components`: liste, dettagli ed editor
-- `src/pages/BillingBatchPage.js`: anteprima clienti/letture pronte per fatturazione
+- `src/pages/BillingBatchPage.js`: anteprima clienti/letture pronte per fatturazione, con avvisi e mora
+- `src/pages/InvoiceControlPage.js`: controlli sulle bozze o su un anno, e conferma in blocco
 - `src/pages/ConsegnePage.js`: coda di consegna delle fatture, per canale
 - `src/config/deliveryModes.js`: etichette e testi delle consegne
 - `src/styles/index.css`: tema globale e componenti CRUD condivisi

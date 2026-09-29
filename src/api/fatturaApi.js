@@ -7,6 +7,9 @@ const resource = createResourceApi('fatture');
 const fatturaApi = {
     createFattura: resource.create,
     createFromReadings: (payload) => resource.postCollection('genera-da-letture', payload),
+    // Conferma insieme le bozze indicate: ognuna riceve il suo numero, quelle
+    // che non si possono confermare tornano con il motivo.
+    confermaBozze: (fatture) => resource.postCollection('conferma', { fatture }),
     getControls: (params = {}) => resource.getCollection('controlli', params),
     getGenerationPreview: (params) => resource.getCollection('generazione/anteprima', params),
     applyFixedCharge: (id) => resource.postRelation(id, 'quota-fissa'),

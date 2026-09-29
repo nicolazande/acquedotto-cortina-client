@@ -194,7 +194,7 @@ const viste = {
         defaultSortField: 'data_fattura',
         defaultSortOrder: 'desc',
         summary: {
-            title: (record) => join(record.tipo_documento, record.numero),
+            title: invoiceLabel,
             subtitle: (record) => personName(record.cliente) || record.ragione_sociale,
             meta: (record) => [
                 { label: 'Data', value: formatDate(record.data_fattura) },

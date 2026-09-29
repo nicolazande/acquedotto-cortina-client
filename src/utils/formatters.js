@@ -75,37 +75,39 @@ export const numberOrZero = (value) => Number(value) || 0;
 
 export const boolText = (value) => (value ? 'Si' : 'No');
 
+export const isInvoiceLocked = (record) => (
+    record?.confermata === true || String(record?.stato || '').toLowerCase() === 'confermata'
+);
+
+// Una bozza e una bozza anche se ha gia la sua scadenza: il cliente non l'ha
+// ricevuta, e non e "da pagare". Per un documento confermato conta l'incasso.
 export const invoiceStatus = (record) => {
-    if (record?.scadenza?.saldo) {
-        return 'Pagata';
+    if (!isInvoiceLocked(record)) {
+        return 'Bozza';
     }
 
-    if (record?.scadenza && !record.scadenza.saldo) {
-        return 'Da pagare';
+    if (record?.scadenza) {
+        return record.scadenza.saldo ? 'Pagata' : 'Da pagare';
     }
 
-    if (record?.stato) {
-        return text(record.stato)
-            .replace(/_/g, ' ')
-            .replace(/^\w/, (char) => char.toUpperCase());
-    }
-
-    return record?.confermata ? 'Confermata' : 'Bozza';
+    return 'Confermata';
 };
 
 // Lo stato di incasso, detto come lo direbbe una persona. Vive qui perche la
 // stessa frase serve nella scheda della fattura e ovunque si guardi una
 // scadenza: il "pagato" sta sulla scadenza, non sulla fattura.
 // Come si chiama un documento: 2026/A/12 per quelli emessi da qui, anno/numero
-// per quelli importati, che una serie non ce l'hanno. Il tipo compare solo
+// per quelli importati, che una serie non ce l'hanno, "Bozza" per quelli che il
+// numero non l'hanno ancora: lo ricevono alla conferma. Il tipo compare solo
 // quando non e una fattura: scriverlo su tutte le righe di un elenco di fatture
 // e una colonna che ripete la stessa parola 3.467 volte.
 export const invoiceLabel = (record) => {
-    if (!record?.anno) {
+    const numerata = Number(record?.numero) > 0;
+    if (!numerata && !record?.anno) {
         return EMPTY_VALUE;
     }
 
-    const codice = [record.anno, record.serie, record.numero].filter(Boolean).join('/');
+    const codice = numerata ? [record.anno, record.serie, record.numero].filter(Boolean).join('/') : 'Bozza';
     const tipo = String(record.tipo_documento || '').trim();
 
     return /^fattura$/i.test(tipo) || !tipo ? codice : `${codice} · ${tipo}`;
@@ -128,10 +130,6 @@ export const paymentStatus = (scadenza) => {
         ? `Da incassare · ${formatNumber(ritardo)} ${ritardo === 1 ? 'giorno' : 'giorni'} di ritardo`
         : `Da incassare · scade il ${formatDate(scadenza.scadenza)}`;
 };
-
-export const isInvoiceLocked = (record) => (
-    record?.confermata === true || String(record?.stato || '').toLowerCase() === 'confermata'
-);
 
 const cleanNamePart = (value) => (value && value !== '.' ? value : '');
 

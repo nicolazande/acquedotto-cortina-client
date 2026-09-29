@@ -6,6 +6,7 @@ import letturaApi from '../../api/letturaApi';
 import {
     formatDate,
     formatMoney,
+    invoiceLabel,
     invoiceStatus,
     join,
 } from '../../utils/formatters';
@@ -152,7 +153,7 @@ const BillingPreviewPanel = ({ recordId }) => {
                                     icon="invoice"
                                     onClick={() => history.push(`/fatture/${fattura._id}`)}
                                 >
-                                    {join(fattura.tipo_documento, fattura.numero, invoiceStatus(fattura))}
+                                    {join(invoiceLabel(fattura), invoiceStatus(fattura))}
                                 </Button>
                             ))}
                         </div>

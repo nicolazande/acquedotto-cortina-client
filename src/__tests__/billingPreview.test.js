@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'vitest';
 import {
+    billingGroupNotes,
     canUseFixedCharge,
+    delayFeeHelp,
     fixedChargeAmount,
     fixedChargePreviewHelp,
     isBillablePreview,
@@ -81,5 +83,54 @@ describe('fixedChargePreviewHelp', () => {
     test('quando e esclusa dice cosa non e stato conteggiato', () => {
         expect(fixedChargePreviewHelp({ available: true, applied: false, estimatedTotal: 99 }, false))
             .toMatch(/non selezionata/i);
+    });
+});
+
+describe('delayFeeHelp', () => {
+    test('dice a quanti clienti andrebbe la mora e quanto vale', () => {
+        expect(delayFeeHelp({ checked: true, clienti: 694, importo: 4164 }))
+            .toMatch(/^694 clienti hanno .*4\.164,00\s€ inclusi\. Prima di generare/);
+        expect(delayFeeHelp({ checked: false, clienti: 1, importo: 6 })).toMatch(/^1 cliente ha .*6,00\s€ esclusi\.$/);
+        expect(delayFeeHelp({ checked: true, clienti: 0 })).toMatch(/^Nessun cliente/);
+    });
+});
+
+describe('billingGroupNotes', () => {
+    test('mora, avvisi e letture escluse in un elenco solo, dal meno al piu grave', () => {
+        const note = billingGroupNotes({
+            mora: {
+                inclusa: false,
+                fattura: '2025/1347',
+                scadenza: '2025-12-10T00:00:00.000Z',
+                ritardo: 340,
+                totals: { totale_fattura: 6 },
+            },
+            previews: [anteprima({
+                lettura: { _id: 'l1', data_lettura: '2026-11-01T00:00:00.000Z' },
+                avvisi: [{ tipo: 'consumo_alto', messaggio: 'Consumo di 400 m³' }],
+            })],
+            anomalies: [{
+                lettura: { _id: 'l0', data_lettura: '2021-11-11T00:00:00.000Z' },
+                message: 'Lettura più vecchia di una già fatturata',
+            }],
+        });
+
+        expect(note.map((nota) => nota.tono)).toEqual(['info', 'warning', 'danger']);
+        expect(note[0].titolo).toMatch(/^Mora 6,00\s€ · esclusa$/);
+        expect(note[0].motivo).toMatch(/2025\/1347 scaduta il 10\/12\/2025: 340 giorni/);
+        expect(note[1].titolo).toBe('Da controllare · lettura del 01/11/2026');
+        expect(note[2].titolo).toBe('Non entra in fattura · lettura del 11/11/2021');
+    });
+
+    test('una lettura senza righe dice perche non entra', () => {
+        const note = billingGroupNotes({ previews: [anteprima({ lines: [] })], anomalies: [] });
+
+        expect(note.map((nota) => nota.tono)).toEqual(['info']);
+        expect(note[0].motivo).toMatch(/Nessun consumo/);
+    });
+
+    test('un cliente senza note non ne ha', () => {
+        expect(billingGroupNotes({ previews: [anteprima()], anomalies: [] })).toEqual([]);
+        expect(billingGroupNotes()).toEqual([]);
     });
 });

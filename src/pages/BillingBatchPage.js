@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom';
 import fatturaApi from '../api/fatturaApi';
 import {
+    billingGroupNotes,
     canUseFixedCharge,
     isBillablePreview,
     previewReadingId,
@@ -10,13 +11,16 @@ import {
 import {
     customerName,
     formatMoney,
+    formatNumber,
 } from '../utils/formatters';
 import BillingPanel, {
     BillingActions,
     AnnualFixedChargeOption,
     BillingOption,
+    BillingReasons,
     BillingState,
     BillingSummary,
+    DelayFeeOption,
 } from '../components/shared/BillingPanel';
 import BillingReadingsTable from '../components/shared/BillingReadingsTable';
 import Button from '../components/shared/Button';
@@ -26,9 +30,14 @@ import useInvoiceGeneration from '../hooks/useInvoiceGeneration';
 import useSelezione from '../hooks/useSelezione';
 import descriviErrore from '../api/descriviErrore';
 
+// Quante letture l'anteprima guarda al massimo: il limite del server. Un giro
+// di novembre sono circa novecento; un cliente non viene mai spezzato.
+const LIMITE_LETTURE = 2000;
+
 const BillingBatchPage = () => {
     const [preview, setPreview] = useState(null);
     const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
+    const [includeDelay, setIncludeDelay] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [bulk, setBulk] = useState(null);
@@ -47,6 +56,23 @@ const BillingBatchPage = () => {
     const fixedChargeTotal = useMemo(() => (
         sumFixedCharges(fixedChargeRows)
     ), [fixedChargeRows]);
+    // I clienti in cui non entra niente in fattura: le loro letture vanno
+    // sistemate, e senza questo elenco sparirebbero dalla pagina.
+    const daSistemare = useMemo(() => [
+        ...(preview?.anomalies || []).map((anomalia, indice) => ({
+            key: `generale-${indice}`,
+            tono: 'danger',
+            titolo: 'Lettura senza cliente',
+            motivo: anomalia.message,
+        })),
+        ...(preview?.clienti || [])
+            .filter((group) => !(group.totals?.letture > 0))
+            .flatMap((group) => billingGroupNotes(group).map((nota) => ({
+                ...nota,
+                key: `${group.cliente?._id}-${nota.key}`,
+                titolo: `${customerName(group.cliente)} · ${nota.titolo}`,
+            }))),
+    ], [preview]);
 
     const loadPreview = useCallback(async () => {
         setIsLoading(true);
@@ -54,8 +80,9 @@ const BillingBatchPage = () => {
 
         try {
             const response = await fatturaApi.getGenerationPreview({
+                includeDelay,
                 includeFixedCharge,
-                limit: 1000,
+                limit: LIMITE_LETTURE,
             });
             setPreview(response.data);
         } catch (requestError) {
@@ -64,7 +91,7 @@ const BillingBatchPage = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [includeFixedCharge]);
+    }, [includeDelay, includeFixedCharge]);
 
     useEffect(() => {
         loadPreview();
@@ -76,9 +103,12 @@ const BillingBatchPage = () => {
         group.previews.filter(isBillablePreview).map(previewReadingId).filter(Boolean)
     );
 
+    // "Seleziona tutti" lascia fuori i clienti da verificare: si possono
+    // generare, ma uno alla volta, dopo averli guardati.
     const clientiSelezionabili = useMemo(() => (
-        readyGroups.map((group) => group.cliente?._id).filter(Boolean)
+        readyGroups.filter((group) => !group.daVerificare).map((group) => group.cliente?._id).filter(Boolean)
     ), [readyGroups]);
+    const daVerificare = readyGroups.length - clientiSelezionabili.length;
     const selezione = useSelezione(clientiSelezionabili);
 
     // Dopo una rilettura la selezione riparte da zero: le righe non sono piu
@@ -124,6 +154,7 @@ const BillingBatchPage = () => {
 
             try {
                 const response = await fatturaApi.createFromReadings({
+                    includeDelay,
                     includeFixedCharge,
                     letture: groupReadingIds(group),
                 });
@@ -177,6 +208,7 @@ const BillingBatchPage = () => {
         }
 
         await genera(group.cliente?._id, () => fatturaApi.createFromReadings({
+            includeDelay,
             includeFixedCharge,
             letture,
         }));
@@ -213,12 +245,14 @@ const BillingBatchPage = () => {
                             { label: 'Clienti pronti', value: preview.totals?.clienti || 0 },
                             { label: 'Letture', value: preview.totals?.letture || 0 },
                             { label: 'Totale previsto', value: formatMoney(preview.totals?.totale_fattura) },
-                            { label: 'Anomalie', value: preview.totals?.anomalie || 0 },
+                            { label: 'Da verificare', value: preview.totals?.daVerificare || 0, className: 'is-warning' },
+                            { label: 'Letture escluse', value: preview.totals?.anomalie || 0, className: 'is-danger' },
                         ]}
                         />
                         {preview.hasMore && (
                             <BillingState>
-                                Sono state lette solo le prime {preview.limit} letture non fatturate. Aumentare il limite API per un ciclo completo.
+                                Qui ci sono i primi {formatNumber(preview.totals?.clienti)} clienti: altri {formatNumber(preview.clientiEsclusi)}{' '}
+                                ({formatNumber(preview.lettureEscluse)} letture) compariranno dopo aver generato queste bozze.
                             </BillingState>
                         )}
                         <AnnualFixedChargeOption
@@ -227,15 +261,24 @@ const BillingBatchPage = () => {
                             total={fixedChargeTotal}
                             onChange={setIncludeFixedCharge}
                         />
+                        <DelayFeeOption
+                            checked={includeDelay}
+                            clienti={preview.totals?.mora?.clienti}
+                            importo={preview.totals?.mora?.importo}
+                            onChange={setIncludeDelay}
+                        />
 
                         {readyGroups.length > 0 && (
                             <div className="billing-bulk-bar">
                                 <BillingOption
                                     checked={selezione.tutteSelezionate}
                                     label={selezione.tutteSelezionate ? 'Deseleziona tutti' : 'Seleziona tutti'}
-                                    help={selectedGroups.length > 0
-                                        ? `${selectedGroups.length} clienti selezionati · ${formatMoney(selectedTotal)}`
-                                        : 'Nessun cliente selezionato'}
+                                    help={[
+                                        selectedGroups.length > 0
+                                            ? `${selectedGroups.length} clienti selezionati · ${formatMoney(selectedTotal)}`
+                                            : 'Nessun cliente selezionato',
+                                        daVerificare > 0 ? `${daVerificare} da verificare si selezionano uno alla volta` : '',
+                                    ].filter(Boolean).join(' · ')}
                                     onChange={selezione.alternaTutte}
                                 />
                                 <BillingActions>
@@ -278,6 +321,15 @@ const BillingBatchPage = () => {
                     title={bulk.interrotta ? 'Generazione interrotta' : 'Generazione completata'}
                     actions={(
                         <BillingActions>
+                            {bulk.created.length > 0 && (
+                                <Button
+                                    variant="primary"
+                                    icon="check"
+                                    onClick={() => history.push('/fatture/controlli')}
+                                >
+                                    Controlla e conferma le bozze
+                                </Button>
+                            )}
                             <Button variant="secondary" icon="close" onClick={() => setBulk(null)}>
                                 Chiudi
                             </Button>
@@ -289,19 +341,28 @@ const BillingBatchPage = () => {
                         { label: 'Non riuscite', value: bulk.failed.length },
                     ]}
                     />
-                    {bulk.failed.length > 0 && (
-                        <ul className="billing-bulk-failures">
-                            {bulk.failed.map((esito) => (
-                                <li key={esito.nome}>
-                                    <strong>{esito.nome}</strong>
-                                    <span>{esito.motivo}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                    <BillingReasons items={bulk.failed.map((esito) => ({
+                        key: esito.nome,
+                        tono: 'danger',
+                        titolo: esito.nome,
+                        motivo: esito.motivo,
+                    }))}
+                    />
                     {bulk.failed.length === 0 && bulk.created.length > 0 && (
                         <BillingState>Tutte le bozze selezionate sono state create.</BillingState>
                     )}
+                </BillingPanel>
+            )}
+
+            {!isLoading && daSistemare.length > 0 && (
+                <BillingPanel
+                    eyebrow="Da sistemare"
+                    title="Letture che non entrano in fattura"
+                >
+                    <BillingState>
+                        Queste letture non vengono fatturate finché non le sistemi: il motivo è accanto a ognuna.
+                    </BillingState>
+                    <BillingReasons items={daSistemare} />
                 </BillingPanel>
             )}
 
@@ -320,7 +381,7 @@ const BillingBatchPage = () => {
                         <BillingPanel
                             key={clienteId}
                             className="billing-batch-group"
-                            eyebrow={`${billableRows.length} letture`}
+                            eyebrow={`${billableRows.length} letture${group.daVerificare ? ' · da verificare' : ''}`}
                             title={customerName(group.cliente)}
                             actions={(
                                 <BillingActions>
@@ -355,12 +416,7 @@ const BillingBatchPage = () => {
                             />
 
                             <BillingReadingsTable rows={billableRows} />
-
-                            {group.anomalies.length > 0 && (
-                                <BillingState>
-                                    {group.anomalies.length} letture del cliente richiedono controllo prima della fatturazione.
-                                </BillingState>
-                            )}
+                            <BillingReasons items={billingGroupNotes(group)} />
                         </BillingPanel>
                     );
                 })}

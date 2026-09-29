@@ -1,5 +1,5 @@
 import React from 'react';
-import { fixedChargeSelectionHelp } from '../../utils/billingPreview';
+import { delayFeeHelp, fixedChargeSelectionHelp } from '../../utils/billingPreview';
 
 export const BillingActions = ({ children }) => (
     <div className="billing-preview-actions">{children}</div>
@@ -43,6 +43,35 @@ export const AnnualFixedChargeOption = ({ checked, onChange, rows = [], total })
         label="Quota fissa annuale"
         onChange={onChange}
     />
+);
+
+// L'interruttore della mora, accanto a quello della quota fissa e con la stessa
+// logica: dice a quanti clienti andrebbe e quanto vale, inclusa o no.
+export const DelayFeeOption = ({ checked, clienti = 0, importo = 0, onChange }) => (
+    <BillingOption
+        checked={checked}
+        disabled={clienti === 0}
+        help={delayFeeHelp({ checked, clienti, importo })}
+        label="Mora per i ritardi"
+        onChange={onChange}
+    />
+);
+
+// Un elenco di cose con il loro motivo: i clienti non fatturati, le bozze non
+// confermate, le letture da guardare. Senza il motivo accanto resterebbero
+// invisibili in mezzo a centinaia di righe. Ogni voce ha `titolo` e `motivo`, e
+// un `tono` facoltativo (danger, warning, info).
+export const BillingReasons = ({ items = [] }) => (
+    items.length > 0 ? (
+        <ul className="billing-reasons">
+            {items.map((item, indice) => (
+                <li className={item.tono ? `is-${item.tono}` : undefined} key={item.key || indice}>
+                    <strong>{item.titolo}</strong>
+                    <span>{item.motivo}</span>
+                </li>
+            ))}
+        </ul>
+    ) : null
 );
 
 export const BillingSummary = ({ items }) => (

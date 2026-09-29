@@ -1,4 +1,4 @@
-import { formatMoney } from './formatters';
+import { formatDate, formatMoney, formatNumber } from './formatters';
 
 export const previewReadingId = (preview) => preview.lettura?._id;
 
@@ -25,6 +25,56 @@ export const fixedChargeSelectionHelp = ({ includeFixedCharge, total }) => (
         ? `Il fisso viene incluso dove dovuto: ${formatMoney(total)}.`
         : `Il fisso non viene incluso: ${formatMoney(total)} esclusi.`
 );
+
+// Cosa dire accanto all'interruttore della mora. Il numero dei clienti conta
+// piu dell'importo: se sono centinaia, di solito vuol dire che gli incassi non
+// sono ancora stati registrati, e la mora colpirebbe chi ha pagato.
+export const delayFeeHelp = ({ checked, clienti = 0, importo = 0 }) => {
+    if (!clienti) {
+        return 'Nessun cliente ha la fattura precedente scaduta senza pagamento.';
+    }
+
+    const chi = clienti === 1 ? '1 cliente ha' : `${formatNumber(clienti)} clienti hanno`;
+    return checked
+        ? `${chi} la fattura precedente scaduta o pagata in ritardo: ${formatMoney(importo)} inclusi. `
+            + 'Prima di generare controlla che gli incassi siano registrati.'
+        : `${chi} la fattura precedente scaduta o pagata in ritardo: ${formatMoney(importo)} esclusi.`;
+};
+
+// Le note di un cliente prima di generare, in un elenco solo: la mora che la
+// fattura porterebbe, le letture da guardare, quelle che non entrano in
+// fattura. `tono` dice quanto pesa: le ultime fermano la lettura, le altre no.
+export const billingGroupNotes = (group = {}) => [
+    ...(group.mora ? [{
+        key: 'mora',
+        tono: 'info',
+        titolo: `Mora ${formatMoney(group.mora.totals?.totale_fattura)}${group.mora.inclusa ? '' : ' · esclusa'}`,
+        motivo: `Fattura ${group.mora.fattura || 'precedente'} scaduta il ${formatDate(group.mora.scadenza)}: `
+            + `${formatNumber(group.mora.ritardo)} giorni di ritardo.`,
+    }] : []),
+    ...(group.previews || []).flatMap((preview) => (preview.avvisi || []).map((avviso) => ({
+        key: `${previewReadingId(preview)}-${avviso.tipo}`,
+        tono: 'warning',
+        titolo: `Da controllare · lettura del ${formatDate(preview.lettura?.data_lettura)}`,
+        motivo: avviso.messaggio,
+    }))),
+    // Una lettura senza righe non e un errore, ma resta fra quelle da
+    // fatturare: senza una nota non si capirebbe perche non entra mai.
+    ...(group.previews || []).filter((preview) => !preview.error && !preview.lines?.length).map((preview) => ({
+        key: `${previewReadingId(preview)}-vuota`,
+        tono: 'info',
+        titolo: `Niente da fatturare · lettura del ${formatDate(preview.lettura?.data_lettura)}`,
+        motivo: 'Nessun consumo e nessuna quota fissa da addebitare: la lettura resta fra quelle da fatturare.',
+    })),
+    ...(group.anomalies || []).map((anomalia, indice) => ({
+        key: `anomalia-${anomalia.lettura?._id || indice}`,
+        tono: 'danger',
+        titolo: anomalia.lettura?.data_lettura
+            ? `Non entra in fattura · lettura del ${formatDate(anomalia.lettura.data_lettura)}`
+            : 'Non entra in fattura',
+        motivo: anomalia.message,
+    })),
+];
 
 export const fixedChargePreviewHelp = (fixedCharge, includeFixedCharge) => {
     if (fixedCharge?.alreadyBilled || fixedCharge?.alreadySelected) {

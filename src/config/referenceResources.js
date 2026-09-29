@@ -6,7 +6,7 @@ import fatturaApi from '../api/fatturaApi';
 import letturaApi from '../api/letturaApi';
 import listinoApi from '../api/listinoApi';
 import scadenzaApi from '../api/scadenzaApi';
-import { customerName, formatDate, formatMoney, join } from '../utils/formatters';
+import { customerName, formatDate, formatMoney, invoiceLabel, join } from '../utils/formatters';
 
 const REFERENCE_LIMIT = 25;
 
@@ -64,7 +64,7 @@ const definitions = {
         sortOrder: 'desc',
         placeholder: 'Cerca fattura...',
         label: (record) => compactJoin(
-            join(record.tipo_documento, record.numero),
+            invoiceLabel(record),
             record.ragione_sociale || customerName(record.cliente),
             formatDate(record.data_fattura),
             formatMoney(record.totale_fattura)

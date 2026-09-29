@@ -89,6 +89,10 @@ describe('invoiceStatus', () => {
         expect(invoiceStatus({ stato: 'confermata', scadenza: { saldo: false } })).toBe('Da pagare');
     });
 
+    test('una bozza resta bozza anche con la sua scadenza', () => {
+        expect(invoiceStatus({ stato: 'bozza', scadenza: { saldo: false } })).toBe('Bozza');
+    });
+
     test('senza scadenza mostra lo stato del documento', () => {
         expect(invoiceStatus({ stato: 'bozza' })).toBe('Bozza');
         expect(invoiceStatus({ confermata: true })).toBe('Confermata');
@@ -223,6 +227,11 @@ describe('nome del documento', () => {
         // e informazione: le cinque note di credito, invece, vanno distinte.
         expect(invoiceLabel({ anno: 2025, numero: 8, tipo_documento: 'Nota di Credito' }))
             .toBe('2025/8 · Nota di Credito');
+    });
+
+    test('una bozza il numero non l ha ancora: lo riceve alla conferma', () => {
+        expect(invoiceLabel({ anno: 2026 })).toBe('Bozza');
+        expect(invoiceLabel({ anno: 2026, tipo_documento: 'Nota di Credito' })).toBe('Bozza · Nota di Credito');
     });
 
     test('senza anno non c e un nome da mostrare', () => {

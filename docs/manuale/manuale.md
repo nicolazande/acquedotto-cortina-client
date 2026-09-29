@@ -243,9 +243,11 @@ nulla: il cliente non potrà più entrare, ma i suoi dati restano.
 
 ## Vedere quanto c'e da fatturare per un cliente
 
-Sempre nella scheda, il riquadro **Calcolo fattura** mostra le letture del cliente non
-ancora fatturate e quanto verrebbe la fattura. Da li si può generare direttamente la
-bozza per quel singolo cliente.
+Sempre nella scheda, il riquadro **Letture da fatturare** mostra le letture del cliente
+non ancora fatturate e quanto verrebbe la fattura. Da li si può generare direttamente la
+bozza per quel singolo cliente. Sotto le letture compaiono le stesse note della pagina di
+generazione: la mora che la fattura porterebbe, le letture da controllare e quelle che
+non entrano in fattura, ognuna con il suo motivo.
 
 ---
 
@@ -399,14 +401,47 @@ Dal menu **Fatture** si apre **Genera da letture**, oppure si clicca il riquadro
 *Letture da fatturare* nella panoramica.
 
 La pagina raggruppa **per cliente** tutte le letture non ancora fatturate e mostra per
-ciascuno l'imponibile, l'IVA e il totale previsto. In cima si vedono i totali generali e
-il numero di anomalie.
+ciascuno l'imponibile, l'IVA e il totale previsto. Un cliente è sempre intero: tutte le
+sue letture finiscono nella stessa fattura. In cima si vedono i totali generali:
 
-## 2. Decidere la quota fissa
+- **Clienti pronti**, **Letture** e **Totale previsto**;
+- **Da verificare** — i clienti con una lettura da guardare prima di fatturarla;
+- **Letture escluse** — quelle che non entrano in fattura.
+
+Le **letture escluse** sono elencate nel riquadro *Letture che non entrano in fattura*,
+ognuna con il motivo. I casi più comuni:
+
+- **una lettura più vecchia di una già fatturata** sullo stesso contatore: di solito
+  l'aveva fatturata il vecchio programma senza segnarla. Se è così, aprire la lettura e
+  spuntare *Fatturata*; altrimenti va capito prima di fatturarla;
+- **un riparto condominiale**, che va calcolato a mano (vedi più sotto);
+- un listino senza tariffe valide.
+
+I clienti **da verificare** hanno la scritta *da verificare* sopra il nome e la nota
+accanto alla lettura:
+
+- **una lettura di un anno già chiuso** — per esempio del 2024 fatturata nel 2026:
+  controllare che non sia già stata fatturata;
+- **un consumo fuori misura** — almeno il triplo di quello abituale per quel contatore, e
+  almeno 50 m³ in più: una perdita, o una cifra scritta male.
+
+Si possono fatturare lo stesso, ma uno alla volta, dopo averli guardati: *Seleziona tutti*
+li lascia fuori.
+
+Se le letture da fatturare sono più di 2.000, la pagina mostra i primi clienti e dice
+quanti ne restano: compaiono appena generate le bozze di questi.
+
+## 2. Decidere la quota fissa e la mora
 
 L'interruttore **Quota fissa annuale** decide se includere la quota fissa nelle fatture
 che si stanno per generare. Il gestionale sa già quali contatori l'hanno già pagata
 nell'anno in corso e non la applica due volte.
+
+L'interruttore **Mora per i ritardi** decide se aggiungere la penale di 6 euro ai clienti
+che hanno la fattura precedente scaduta o pagata in ritardo. Accanto c'è scritto **a
+quanti clienti andrebbe** e quanto vale in tutto (vedi il punto 6). Se sono centinaia, di
+solito vuol dire che gli incassi non sono ancora stati registrati: in quel caso si
+toglie la spunta, oppure si registrano prima i pagamenti.
 
 ## 3. Generare
 
@@ -422,11 +457,11 @@ qualsiasi momento: le fatture già create restano.
 
 Alla fine compare un riepilogo con quante bozze sono state create e, soprattutto,
 **l'elenco dei clienti non fatturati con il motivo**. Un cliente che fallisce non blocca
-gli altri.
+gli altri. Dal riepilogo, **Controlla e conferma le bozze** porta al passo successivo.
 
 ![La pagina di generazione: in alto il riepilogo e l'interruttore della quota fissa, poi la selezione multipla e il riquadro di ogni cliente pronto.](immagini/generazione.png)
 
-*La generazione: in alto il riepilogo e l'interruttore della quota fissa, poi la selezione dei clienti da fatturare insieme.*
+*La generazione: in alto il riepilogo, gli interruttori della quota fissa e della mora, la selezione dei clienti da fatturare insieme e le letture che non entrano in fattura.*
 
 ## 4. Se un cliente da errore
 
@@ -440,18 +475,43 @@ I motivi più comuni sono:
 | La lettura deve avere un contatore con listino associato | Il contatore non ha un listino | Aprire il contatore e assegnarlo |
 | Questa lettura usa un riparto condominiale | Va calcolata sul contatore condominiale | Trattare la lettura manualmente |
 
-Le fatture generate nascono sempre come **bozza**: nulla e definitivo finché non si
-conferma.
+Le fatture generate nascono sempre come **bozza, senza numero**: nulla e definitivo
+finché non si conferma.
 
-## 5. La penale per il ritardo
+## 5. Controllare e confermare
 
-Generando una fattura, il gestionale guarda se il cliente ha **una scadenza precedente
-non ancora pagata e gia superata**. Se la trova, aggiunge alla fattura una riga di
-**6 euro** (l'articolo `GG_DELAY`, «spese per ritardato pagamento»).
+Dal menu **Fatture** si apre **Controlli**, oppure si arriva dal riepilogo della
+generazione. La pagina parte da **Bozze da confermare** e controlla **tutte** le bozze:
+che il totale torni con le righe, che le righe corrispondano al listino, che la quota
+fissa ci sia dove è dovuta, che ci siano cliente e scadenza. I problemi compaiono in
+tabella, ognuno con il pulsante per aprire la fattura.
 
-Succede da solo, come nel gestionale precedente. Conviene saperlo prima di generare,
-perché finisce in bolletta: se una fattura mostra 6 euro che non ci si aspettava, è
-questa la riga.
+Il pulsante **Conferma N bozze senza errori** conferma insieme tutte le bozze che non
+hanno errori. È in quel momento che ricevono il **numero**, nell'ordine della loro data
+e poi in quello in cui sono state generate. Alla fine compare l'esito: i numeri
+assegnati (per esempio *da 2026/A/1 a 2026/A/684*) e le bozze rimaste tali, con il
+motivo. Le bozze con un errore restano bozze: si aprono, si sistemano e si confermano
+dalla scheda.
+
+Le fatture confermate entrano nella coda delle consegne al prossimo **Prepara** (vedi
+*Consegnare le fatture*).
+
+Con **Fatture di un anno** la stessa pagina controlla tutte le fatture dell'anno scelto.
+
+![La pagina dei controlli sulle bozze, con il pulsante per confermarle insieme.](immagini/controlli.png)
+
+*I controlli partono dalle bozze da confermare: il pulsante in alto le conferma tutte insieme, quelle con un errore restano bozze.*
+
+## 6. La penale per il ritardo
+
+Generando una fattura, il gestionale guarda se l'ultima fattura **confermata** del
+cliente ha una **scadenza già superata**, senza pagamento o con un pagamento arrivato
+dopo. Se la trova, aggiunge alla fattura una riga di **6 euro** (l'articolo `GG_DELAY`,
+«spese per ritardato pagamento»). Una bozza non conta: il cliente non l'ha ricevuta.
+
+La pagina di generazione lo dice prima: nel riquadro di ogni cliente compare la riga
+*Mora 6,00 €* con la fattura e i giorni di ritardo, e accanto all'interruttore *Mora per
+i ritardi* il totale dei clienti. Togliendo la spunta la mora non viene addebitata.
 
 **Si addebita una volta sola per scadenza.** Appena la penale entra in una fattura, la
 scadenza che l'ha causata resta segnata e non la fa più scattare: un cliente fatturato
@@ -461,7 +521,8 @@ la fattura che la portava, la scadenza torna addebitabile.
 > **Prima di una fatturazione massiva conviene guardarla.** La penale scatta sulle
 > posizioni aperte e scadute: se i pagamenti di un anno non sono ancora stati registrati,
 > partirebbe verso quasi tutti i clienti insieme. Aprire **Incassi** e sistemare i
-> pagamenti arrivati *prima* di generare, non dopo.
+> pagamenti arrivati *prima* di generare, non dopo; se non si fa in tempo, togliere la
+> spunta *Mora per i ritardi*.
 
 ---
 
@@ -528,8 +589,11 @@ esattamente come la dichiara il riepilogo della fattura elettronica.
 
 ## Bozza e confermata
 
-Una fattura nasce **bozza**: si può correggere e cancellare liberamente. Quando i dati
-sono giusti la si **conferma**, e da quel momento è un documento emesso.
+Una fattura nasce **bozza**: si può correggere e cancellare liberamente, e non ha ancora
+un numero. Negli elenchi si chiama *Bozza*, sul PDF il numero è sostituito dalla scritta
+**BOZZA**, e il file XML non si può scaricare. Quando i dati sono giusti la si
+**conferma** — dalla scheda, spuntando *Confermata*, oppure in blocco dai *Controlli* — e
+da quel momento è un documento emesso, con il suo numero.
 
 Una fattura confermata resta protetta: modificarla o cancellarla richiede una
 **conferma esplicita**, e il gestionale registra chi lo ha fatto e quando. Serve per
@@ -542,6 +606,19 @@ I filtri dell'elenco sono *Bozze*, *Confermate* e *Senza scadenza*.
 Le fatture emesse da questo gestionale hanno un numero progressivo che riparte da 1 ogni
 anno, e un codice nella forma `2026/A/1`: anno, serie, numero. Le fatture importate dal
 vecchio programma restano separate e non si mescolano con le nuove.
+
+Il numero arriva **con la conferma**, per questo cancellare una bozza non lascia buchi.
+Qualche regola da sapere:
+
+- **numeri e date vanno nello stesso verso**: una bozza datata prima dell'ultima fattura
+  confermata dell'anno non si conferma, e il gestionale lo dice. Si cambia la data della
+  bozza (la scadenza si sposta con lei) e si conferma. Anche una data nel futuro non si
+  conferma;
+- una fattura confermata e poi **riportata a bozza tiene il suo numero**: può essere già
+  uscita, e confermandola di nuovo riprende lo stesso;
+- cancellando **l'ultima** fattura confermata, se non è mai uscita, il suo numero torna
+  libero e lo prende la prossima. Se era già uscita (stampata e evasa, XML scaricato,
+  data di invio) il numero resta preso per sempre.
 
 > **Il numero delle fatture importate non è quello vero.** L'importazione dal vecchio
 > programma leggeva, al posto del numero del documento, il numero civico dell'indirizzo:
@@ -578,7 +655,8 @@ Il riquadro **Storico modifiche** elenca ogni intervento sulla fattura, con l'au
 Cancellando una fattura il gestionale rimuove anche le sue righe, la scadenza collegata
 e le consegne in coda per quel documento, e **rimette le letture fra quelle da
 fatturare**. È l'operazione da usare quando una bozza e sbagliata: si cancella e si
-rigenera.
+rigenera. Una bozza non ha numero, quindi cancellarla non lascia buchi nella
+numerazione.
 
 La scadenza collegata viene rimossa **solo se nessun'altra fattura la richiama**, e se il
 documento portava la penale per il ritardo quella posizione torna addebitabile: dopo una
@@ -975,9 +1053,14 @@ Il cliente non può modificare nulla e non vede in alcun modo i dati degli altri
 
 ## Ogni volta che si fattura
 
+Prima di generare, nella pagina di generazione guardare **Da verificare**, **Letture
+escluse** e la **mora**: dicono cosa sistemare prima, e a quanti clienti andrebbe la
+penale.
+
 Dopo aver generato le bozze, aprire **Fatture** e usare **Controlli**: il gestionale
-elenca le fatture con anomalie, per esempio un totale che non corrisponde alle righe, una
-quota fissa dovuta e mancante o un cliente non collegato.
+controlla tutte le bozze ed elenca quelle con anomalie, per esempio un totale che non
+corrisponde alle righe, una quota fissa dovuta e mancante o un cliente non collegato. Da
+lì **Conferma N bozze senza errori** le numera e le conferma insieme.
 
 Dopo aver confermato le fatture, aprire **Consegne** e premere **Prepara**: l'elenco
 mostra quante buste ci sono da stampare e quante fatture partono da sole. Il filtro

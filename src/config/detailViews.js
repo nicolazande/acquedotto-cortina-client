@@ -188,13 +188,14 @@ export const detailViews = {
             }),
             // Scarica il file della fattura elettronica sul computer. Il gestionale
             // non lo trasmette: l'invio al Sistema di Interscambio resta separato.
-            (record) => ({
+            // Una bozza non ha ancora il numero, e senza numero non c'e un file.
+            (record) => (isInvoiceLocked(record) ? {
                 icon: 'download',
                 label: 'XML',
                 title: 'Scarica il file della fattura elettronica (non lo invia)',
                 onClick: () => fatturaApi.scaricaXml(record._id),
                 variant: 'secondary',
-            }),
+            } : null),
         ],
         panels: [InvoiceVerificationPanel, InvoiceDeliveryPanel, InvoiceAuditPanel],
         fields: [
