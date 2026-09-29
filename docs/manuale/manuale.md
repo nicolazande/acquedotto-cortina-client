@@ -1069,6 +1069,25 @@ Tre cose di cui si occupa da solo:
 
 ---
 
+# Elenchi
+
+Dal menu **Elenchi** si producono gli elenchi che escono dall'acquedotto. Per ognuno si
+sceglie l'anno, si guarda il riepilogo e, sotto, le cose da controllare prima di
+mandarlo fuori; poi lo si scarica.
+
+- **Consumi** — i consumi dell'anno utenza per utenza, per il BIM che fattura fognatura
+  e depurazione. In Excel, PDF o Word.
+- **Anagrafe Tributaria** — le utenze fatturate nell'anno, nel file a larghezza fissa
+  che chiede l'Agenzia. Chi subentra porta anche i dati catastali.
+- **Fatturato per categoria** — le fatture confermate dell'anno divise per categoria di
+  tariffa: quante fatture e quanti contatori, i metri cubi, i consumi, le quote fisse,
+  con il totale in fondo. È la statistica che Gesco chiamava *Categoria Tariffa*.
+- **Subentri e sostituzioni** — chi è subentrato a chi sullo stesso contatore, e quali
+  contatori sono stati cambiati, con l'ultima lettura di quello vecchio. Sono le due
+  stampe di Gesco *Lista dei subentri* e *Lista delle sostituzioni*, qui divise per anno.
+
+---
+
 # L'area riservata ai clienti
 
 Il cliente che ha ricevuto un accesso entra dallo stesso indirizzo, con le proprie

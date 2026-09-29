@@ -6,7 +6,7 @@ import { PageHeader } from '../components/shared/PageChrome';
 import { useFeedback } from '../components/shared/FeedbackProvider';
 import useRemoteData from '../hooks/useRemoteData';
 import descriviErrore from '../api/descriviErrore';
-import { formatNumber, numberOrZero } from '../utils/formatters';
+import { formatMoney, formatNumber, numberOrZero } from '../utils/formatters';
 
 // L'anno di riferimento e quello appena chiuso: gli elenchi si mandano a inizio
 // anno per l'anno precedente. Gli altri servono a rifare una spedizione vecchia,
@@ -14,9 +14,17 @@ import { formatNumber, numberOrZero } from '../utils/formatters';
 const ANNO_CORRENTE = new Date().getFullYear();
 const ANNI = Array.from({ length: 6 }, (_, i) => ANNO_CORRENTE - i);
 
-// I due elenchi che una volta l'anno escono dall'acquedotto. Sono diversi in
-// tutto - chi li riceve, cosa contengono, in che formato - tranne che nel modo
-// di produrli: si sceglie l'anno, si guarda cosa c'e dentro, si scarica.
+// Gli elenchi che escono dall'acquedotto: i due che una volta l'anno vanno
+// fuori, e le due stampe che Gesco aveva. Sono diversi in tutto - chi li riceve,
+// cosa contengono, in che formato - tranne che nel modo di produrli: si sceglie
+// l'anno, si guarda cosa c'e dentro, si scarica. `quante` dice se c'e qualcosa
+// da scaricare.
+const FORMATI_TABELLA = [
+    { id: 'excel', label: 'Excel', variant: 'save', aiuto: 'Foglio di calcolo, per rielaborare i dati.' },
+    { id: 'pdf', label: 'PDF', variant: 'secondary', aiuto: 'Si apre a schermo: da controllare o da archiviare.' },
+    { id: 'word', label: 'Word', variant: 'secondary', aiuto: 'Da allegare a una lettera.' },
+];
+
 const ELENCHI = [
     {
         id: 'bim',
@@ -24,11 +32,8 @@ const ELENCHI = [
         titolo: (anno) => `Consumi ${anno}`,
         descrizione: "I consumi dell'anno, utenza per utenza, per il BIM che fattura fognatura e depurazione.",
         vuoto: (anno) => `Nel ${anno} non risultano letture: non c'è niente da mandare.`,
-        formati: [
-            { id: 'excel', label: 'Excel', variant: 'save', aiuto: 'Foglio di calcolo, per rielaborare i dati.' },
-            { id: 'pdf', label: 'PDF', variant: 'secondary', aiuto: 'Si apre a schermo: da controllare o da archiviare.' },
-            { id: 'word', label: 'Word', variant: 'secondary', aiuto: 'Da allegare a una lettera.' },
-        ],
+        quante: (dati) => dati?.utenze,
+        formati: FORMATI_TABELLA,
         riepilogo: (dati) => [
             { label: 'Utenze', value: formatNumber(numberOrZero(dati?.utenze)) },
             { label: 'Consumi totali', value: `${formatNumber(numberOrZero(dati?.consumi))} m³` },
@@ -56,6 +61,7 @@ const ELENCHI = [
         titolo: (anno) => `Utenze ${anno}`,
         descrizione: "Le utenze fatturate nell'anno, con metri cubi e importo dei consumi. Chi subentra porta anche i dati catastali.",
         vuoto: (anno) => `Nel ${anno} non risultano utenze: non c'è niente da mandare.`,
+        quante: (dati) => dati?.utenze,
         // Il tracciato lo decide chi lo riceve: un file di testo, non una tabella.
         formati: [
             { id: 'testo', label: 'Scarica il file', variant: 'save', aiuto: 'Il tracciato a larghezza fissa da inviare.' },
@@ -79,6 +85,35 @@ const ELENCHI = [
                 label: 'Righe fatturate senza contatore', value: dati.righeSenzaContatore, className: 'is-warning',
             },
         ],
+    },
+    {
+        id: 'categorie',
+        eyebrow: 'Statistica',
+        titolo: (anno) => `Fatturato ${anno} per categoria`,
+        descrizione: "Le fatture confermate dell'anno per categoria di tariffa: fatture, contatori, metri cubi, consumi e quote fisse.",
+        vuoto: (anno) => `Nel ${anno} non risultano fatture confermate.`,
+        quante: (dati) => dati?.righe,
+        formati: FORMATI_TABELLA,
+        riepilogo: (dati) => [
+            { label: 'Categorie', value: formatNumber(numberOrZero(dati?.righe)) },
+            { label: 'Fatture', value: formatNumber(numberOrZero(dati?.fatture)) },
+            { label: 'Imponibile', value: formatMoney(dati?.imponibile) },
+        ],
+        controlli: () => [],
+    },
+    {
+        id: 'subentri',
+        eyebrow: 'Contatori',
+        titolo: (anno) => `Subentri e sostituzioni ${anno}`,
+        descrizione: "Chi è subentrato a chi sullo stesso contatore, e quali contatori sono stati cambiati, con l'ultima lettura di quello vecchio.",
+        vuoto: (anno) => `Nel ${anno} non risultano subentri né sostituzioni.`,
+        quante: (dati) => dati?.righe,
+        formati: FORMATI_TABELLA,
+        riepilogo: (dati) => [
+            { label: 'Subentri', value: formatNumber(numberOrZero(dati?.subentri)) },
+            { label: 'Sostituzioni', value: formatNumber(numberOrZero(dati?.sostituzioni)) },
+        ],
+        controlli: () => [],
     },
 ];
 
@@ -109,7 +144,7 @@ const PannelloElenco = ({ elenco, anno, disabilitaAnno, onAnno }) => {
         }
     };
 
-    const utenze = numberOrZero(dati?.utenze);
+    const quante = numberOrZero(elenco.quante(dati));
     const sonoInCorso = Boolean(formatoInCorso);
     const controlli = dati ? elenco.controlli(dati).filter(Boolean) : [];
 
@@ -141,7 +176,7 @@ const PannelloElenco = ({ elenco, anno, disabilitaAnno, onAnno }) => {
                             key={id}
                             icon="download"
                             variant={variant}
-                            disabled={sonoInCorso || isLoading || utenze === 0}
+                            disabled={sonoInCorso || isLoading || quante === 0}
                             title={aiuto}
                             onClick={() => scarica(id)}
                         >
@@ -155,7 +190,7 @@ const PannelloElenco = ({ elenco, anno, disabilitaAnno, onAnno }) => {
 
             <BillingSummary items={elenco.riepilogo(dati)} />
 
-            {!isLoading && !error && utenze === 0 && (
+            {!isLoading && !error && quante === 0 && (
                 <BillingState>{elenco.vuoto(anno)}</BillingState>
             )}
 
