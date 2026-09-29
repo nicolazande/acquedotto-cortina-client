@@ -129,6 +129,23 @@ describe('billingGroupNotes', () => {
         expect(note[0].motivo).toMatch(/Nessun consumo/);
     });
 
+    test('la parte del condominiale compare fra le note, con percentuale e consumi', () => {
+        const [nota] = billingGroupNotes({
+            quote: [{
+                riparto: { quota: 33.33, consumoTotale: 43 },
+                contatore: { seriale: '01384351' },
+                lettura: { data_lettura: '2026-10-29T00:00:00.000Z' },
+                billableConsumption: 14.3319,
+                lines: [{ valore_unitario: 4.73 }, { valore_unitario: 11.67, tipo_quota: 'Q.Fissa' }],
+                totals: { totale_fattura: 18.04 },
+            }],
+        });
+
+        expect(nota.tono).toBe('info');
+        expect(nota.titolo).toMatch(/^Quota condominiale 18,04\s€$/);
+        expect(nota.motivo).toBe('33,33% del contatore condominiale 01384351: 14,332 m³ su 43 m³ (lettura del 29/10/2026), con la sua parte di quota fissa.');
+    });
+
     test('un cliente senza note non ne ha', () => {
         expect(billingGroupNotes({ previews: [anteprima()], anomalies: [] })).toEqual([]);
         expect(billingGroupNotes()).toEqual([]);

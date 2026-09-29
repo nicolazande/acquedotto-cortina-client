@@ -314,9 +314,20 @@ cliente che se ne va, poi si cambia il cliente sul contatore. Il gestionale calc
 sempre la differenza rispetto alla lettura precedente di quel contatore, quindi una
 lettura rimasta da fatturare dopo il cambio finirebbe addebitata al cliente nuovo.
 
-Il campo **Quota riparto (%)** riguarda solo i contatori condominiali: indica la
-percentuale di consumo attribuita a quella utenza. Sui contatori normali si lascia
-vuoto.
+Il campo **Quota riparto (%)** riguarda solo le utenze di un edificio con il contatore
+condominiale (tipo *CONDOMINIALE + Utenze Private*): è la percentuale del consumo comune
+che paga quell'utenza. Sui contatori normali si lascia vuoto.
+
+### Il riparto condominiale
+
+In un edificio con il contatore condominiale (tipo *Condominali Ripartiti*) il consumo
+comune si divide fra le utenze dell'edificio, come faceva Gesco. Il contatore
+condominiale non riceve una fattura sua. Ogni utenza paga il proprio contatore e,
+accanto, la sua percentuale del consumo comune e della quota fissa comune, calcolati
+con il listino del condominiale: in fattura sono le righe *Spesa Acqua cont.
+condominiale… Perc. 33,33*. Basta inserire le letture di tutti i contatori, compreso
+quello condominiale: al resto pensa la generazione, e nella pagina di generazione la
+parte di ogni utenza compare fra le note del cliente.
 
 ## Edifici
 
@@ -431,7 +442,6 @@ ognuna con il motivo. I casi più comuni:
 - **una lettura più vecchia di una già fatturata** sullo stesso contatore: di solito
   l'aveva fatturata il vecchio programma senza segnarla. Se è così, aprire la lettura e
   spuntare *Fatturata*; altrimenti va capito prima di fatturarla;
-- **un riparto condominiale**, che va calcolato a mano (vedi più sotto);
 - un listino senza tariffe valide.
 
 I clienti **da verificare** hanno la scritta *da verificare* sopra il nome e la nota
@@ -491,7 +501,7 @@ I motivi più comuni sono:
 | Il listino copre X mc su Y mc | Le fasce non coprono tutto il consumo | Estendere la fascia più alta |
 | Articolo ACQUA mancante | Manca una voce obbligatoria del catalogo articoli | Contattare l'assistenza |
 | La lettura deve avere un contatore con listino associato | Il contatore non ha un listino | Aprire il contatore e assegnarlo |
-| Questa lettura usa un riparto condominiale | Va calcolata sul contatore condominiale | Trattare la lettura manualmente |
+| Contatore condominiale: il suo consumo si divide fra le utenze | È la lettura del contatore comune di un edificio | Niente: entra da sola, in percentuale, nelle fatture delle utenze |
 
 Le fatture generate nascono sempre come **bozza, senza numero**: nulla e definitivo
 finché non si conferma.

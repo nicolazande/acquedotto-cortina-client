@@ -41,10 +41,20 @@ export const delayFeeHelp = ({ checked, clienti = 0, importo = 0 }) => {
         : `${chi} la fattura precedente scaduta o pagata in ritardo: ${formatMoney(importo)} esclusi.`;
 };
 
-// Le note di un cliente prima di generare, in un elenco solo: la mora che la
-// fattura porterebbe, le letture da guardare, quelle che non entrano in
-// fattura. `tono` dice quanto pesa: le ultime fermano la lettura, le altre no.
+// Le note di un cliente prima di generare, in un elenco solo: la parte del
+// contatore condominiale e la mora che la fattura porterebbe, le letture da
+// guardare, quelle che non entrano in fattura. `tono` dice quanto pesa: le
+// ultime fermano la lettura, le altre no.
 export const billingGroupNotes = (group = {}) => [
+    ...(group.quote || []).map((quota, indice) => ({
+        key: `quota-${indice}`,
+        tono: 'info',
+        titolo: `Quota condominiale ${formatMoney(quota.totals?.totale_fattura)}`,
+        motivo: `${formatNumber(quota.riparto?.quota)}% del contatore condominiale ${quota.contatore?.seriale || ''}: `
+            + `${formatNumber(quota.billableConsumption)} m³ su ${formatNumber(quota.riparto?.consumoTotale)} m³ `
+            + `(lettura del ${formatDate(quota.lettura?.data_lettura)})`
+            + `${(quota.lines || []).some((riga) => riga.tipo_quota) ? ', con la sua parte di quota fissa' : ''}.`,
+    })),
     ...(group.mora ? [{
         key: 'mora',
         tono: 'info',
