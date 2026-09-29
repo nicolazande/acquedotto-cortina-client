@@ -349,4 +349,10 @@ const InvoiceVerificationPanel = ({ record, recordId }) => {
     );
 };
 
+// L'intestazione della sezione che lo contiene nella scheda.
+InvoiceVerificationPanel.sezione = {
+    titolo: 'Letture e calcolo',
+    descrizione: 'Le righe della fattura confrontate con il listino',
+};
+
 export default InvoiceVerificationPanel;

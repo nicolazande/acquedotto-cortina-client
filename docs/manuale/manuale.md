@@ -176,9 +176,21 @@ conferma. **Nuovo** crea una scheda vuota.
 
 ## Le schede
 
-La scheda mostra tutti i dati di un record e, sotto, i collegamenti alle schede
-correlate: dal cliente si arriva ai suoi contatori e alle sue fatture, dal contatore alle
-sue letture, e così via.
+La scheda mostra in cima i dati che servono sempre - per un cliente il nome, il codice
+fiscale, i recapiti - e sotto, in **sezioni chiuse**, tutto il resto: la residenza, la
+fatturazione, il pagamento, e gli strumenti come l'accesso all'area clienti o le letture
+da fatturare. Ogni sezione dice accanto al titolo cosa contiene (per la fatturazione,
+l'indirizzo); un clic la apre, un altro la richiude. Il gestionale ricorda quali sezioni
+si tengono aperte: aprendo la fatturazione di un cliente, la si ritrova aperta anche sul
+cliente successivo.
+
+![La scheda di un cliente: in cima i dati principali, sotto le sezioni chiuse con accanto al titolo quello che contengono.](immagini/scheda-cliente.png)
+
+*La scheda di un cliente: i dati che servono sempre in cima, il resto in sezioni che si aprono con un clic.*
+
+Fra i dati e le sezioni degli strumenti ci sono i collegamenti alle schede correlate: dal
+cliente si arriva ai suoi contatori e alle sue fatture, dal contatore alle sue letture, e
+così via.
 
 Il pulsante in fondo riporta indietro e ricorda da dove si e arrivati: se si e aperta la
 scheda di un contatore partendo da un cliente, dira *Torna alla scheda cliente*.
@@ -234,7 +246,7 @@ Sono importanti anche:
 
 ## Dare a un cliente l'accesso all'area riservata
 
-Nella scheda del cliente c'e il riquadro **Accesso portale**. Finché il cliente non ha
+Nella scheda del cliente c'e la sezione **Accesso all'area clienti**. Finché il cliente non ha
 un accesso, il riquadro mostra solo il pulsante **Crea accesso**: premendolo si apre il
 modulo, con il nome utente già proposto, l'email se c'è in anagrafica e la password
 provvisoria (almeno otto caratteri) da comunicare al cliente. *Annulla* lo richiude
@@ -248,7 +260,7 @@ suoi dati restano, e **Riattiva** gli ridà l'accesso.
 
 ## Vedere quanto c'e da fatturare per un cliente
 
-Sempre nella scheda, il riquadro **Letture da fatturare** mostra le letture del cliente
+Sempre nella scheda, la sezione **Letture da fatturare** mostra le letture del cliente
 non ancora fatturate e quanto verrebbe la fattura. Da li si può generare direttamente la
 bozza per quel singolo cliente. Sotto le letture compaiono le stesse note della pagina di
 generazione: la mora che la fattura porterebbe, le letture da controllare e quelle che
@@ -650,11 +662,11 @@ Sistema di Interscambio, detti prima di mandarlo.
 
 ## Verificare che i conti tornino
 
-Nella scheda della fattura, il riquadro **Calcolo fattura** confronta le righe salvate
+Nella scheda della fattura, la sezione **Letture e calcolo** confronta le righe salvate
 con quello che il listino attuale produrrebbe oggi e segnala le differenze. Da qui si
 può anche aggiungere la quota fissa se manca ed e dovuta.
 
-Il riquadro **Storico modifiche** elenca ogni intervento sulla fattura, con l'autore.
+La sezione **Storico modifiche** elenca ogni intervento sulla fattura, con l'autore.
 
 ## Cancellare una fattura
 
@@ -840,7 +852,7 @@ da chi cura il sistema — vedi *Assistenza e aggiornamenti* in fondo al manuale
 
 ## La singola fattura
 
-Nella scheda di ogni fattura il riquadro **Dove va questa fattura** mostra la stessa
+Nella scheda di ogni fattura la sezione **Consegna** mostra la stessa
 cosa per quel solo documento: i canali previsti, i recapiti, cosa è già partito e
 quando - per esempio *Già consegnata: copia di cortesia il 22/01/2026*. Da lì si può
 preparare e inviare la singola fattura, senza passare dall'elenco.
@@ -1005,7 +1017,7 @@ Il gestionale lo dice in due punti:
 
 - **in cima alla panoramica** compare un avviso quando qualche listino sta per scadere,
   con l'elenco e quanti contatori riguarda;
-- **nella scheda del listino**, il riquadro *Prepara l'anno prossimo*.
+- **nella scheda del listino**, la sezione *Prepara l'anno prossimo*.
 
 > **Attenzione.** Le tariffe attuali scadono il **31 dicembre 2026** su quasi tutti i
 > listini. Se non vengono rinnovate, da gennaio le bollette continuano a uscire con i
@@ -1017,7 +1029,7 @@ Il gestionale lo dice in due punti:
 fatturare ai prezzi di oggi. Il riquadro serve quando i prezzi **cambiano**, non per
 tenere in piedi la fatturazione.
 
-Nella scheda del listino, il riquadro **Prepara l'anno prossimo** fa in un colpo quello
+Nella scheda del listino, la sezione **Prepara l'anno prossimo** fa in un colpo quello
 che altrimenti si farebbe fascia per fascia.
 
 Si indicano due cose:
@@ -1123,7 +1135,7 @@ pagina di generazione. Il numero, però, non viene riusato: la nuova fattura avr
 numero successivo.
 
 **Il totale di una fattura non torna.**
-Aprire la fattura e guardare il riquadro *Calcolo fattura*: confronta le righe salvate
+Aprire la fattura e la sezione *Letture e calcolo*: confronta le righe salvate
 con quelle che il listino produrrebbe oggi e indica dove sta la differenza.
 
 **Compare la schermata "Qualcosa e andato storto".**

@@ -1,5 +1,6 @@
 import React from 'react';
 import { delayFeeHelp, fixedChargeSelectionHelp } from '../../utils/billingPreview';
+import { useDentroSezione } from './Sezione';
 
 export const BillingActions = ({ children }) => (
     <div className="billing-preview-actions">{children}</div>
@@ -99,6 +100,8 @@ export const BillingMeta = ({ items }) => {
     );
 };
 
+// Dentro una sezione della scheda (components/shared/Sezione.js) il titolo lo
+// porta gia l'intestazione della sezione: il pannello tiene solo i suoi pulsanti.
 const BillingPanel = ({
     actions,
     children,
@@ -108,20 +111,28 @@ const BillingPanel = ({
     isLoading,
     loadingText,
     title,
-}) => (
-    <section className={`billing-preview ${className}`.trim()}>
-        <div className="billing-preview-heading">
-            <div>
-                <span className="eyebrow">{eyebrow}</span>
-                <h3>{title}</h3>
-            </div>
-            {actions}
-        </div>
+}) => {
+    const dentroSezione = useDentroSezione();
 
-        {isLoading && <BillingState>{loadingText}</BillingState>}
-        {!isLoading && error && <BillingState>{error}</BillingState>}
-        {!isLoading && !error && children}
-    </section>
-);
+    return (
+        <section className={`billing-preview ${dentroSezione ? 'is-in-section' : ''} ${className}`.trim()}>
+            {dentroSezione ? (
+                actions && <div className="billing-preview-heading">{actions}</div>
+            ) : (
+                <div className="billing-preview-heading">
+                    <div>
+                        <span className="eyebrow">{eyebrow}</span>
+                        <h3>{title}</h3>
+                    </div>
+                    {actions}
+                </div>
+            )}
+
+            {isLoading && <BillingState>{loadingText}</BillingState>}
+            {!isLoading && error && <BillingState>{error}</BillingState>}
+            {!isLoading && !error && children}
+        </section>
+    );
+};
 
 export default BillingPanel;

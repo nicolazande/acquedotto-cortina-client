@@ -55,4 +55,10 @@ const InvoiceAuditPanel = ({ recordId }) => {
     );
 };
 
+// L'intestazione della sezione che lo contiene nella scheda.
+InvoiceAuditPanel.sezione = {
+    titolo: 'Storico modifiche',
+    descrizione: 'Chi ha cambiato cosa, e quando',
+};
+
 export default InvoiceAuditPanel;

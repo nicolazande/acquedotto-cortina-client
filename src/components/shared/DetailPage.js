@@ -3,10 +3,11 @@ import { useParams } from 'react-router-dom';
 import NoteAttachmentsPanel from './NoteAttachmentsPanel';
 import RelationLinkGrid from './RelationLinkGrid';
 import { useContextBack } from '../../hooks/useContextBack';
-import { formatFieldValue } from '../../utils/formatters';
+import { EMPTY_VALUE, boolText, formatFieldValue } from '../../utils/formatters';
 import { useFeedback } from './FeedbackProvider';
 import Button from './Button';
 import { PageHeader } from './PageChrome';
+import Sezione from './Sezione';
 import descriviErrore from '../../api/descriviErrore';
 import cancellaRecord, { CONFERMA_CANCELLAZIONE } from './cancellaRecord';
 import { eAmministratore, puoScrivere, useRisorsePermesse } from '../../hooks/useRisorsePermesse';
@@ -14,6 +15,41 @@ import { eAmministratore, puoScrivere, useRisorsePermesse } from '../../hooks/us
 // I messaggi di blocco arrivano dalla configurazione: alcuni finiscono con il
 // punto, altri no. Unirli senza guardare dava "sono bloccate.. Modifica".
 const frase = (testo) => String(testo || '').trim().replace(/\.+$/, '');
+
+// I campi divisi per sezione, nell'ordine in cui compaiono. Quelli senza
+// sezione sono quelli che servono sempre, e restano in vista in cima.
+const raggruppaCampi = (campi) => campi.reduce((gruppi, campo) => {
+    const titolo = campo.sezione || '';
+    let gruppo = gruppi.find((voce) => voce.titolo === titolo);
+    if (!gruppo) {
+        gruppo = { titolo, campi: [] };
+        gruppi.push(gruppo);
+    }
+    gruppo.campi.push(campo);
+    return gruppi;
+}, []);
+
+// Cosa c'e in una sezione chiusa: i primi valori compilati, senza i si e no che
+// da soli non dicono niente.
+const anteprimaCampi = (record, campi) => campi
+    .filter((campo) => campo.format !== boolText)
+    .map((campo) => formatFieldValue(record, campo))
+    .filter((valore) => typeof valore === 'string' && valore.trim() && valore !== EMPTY_VALUE)
+    .slice(0, 3)
+    .join(' · ') || 'Nessun dato';
+
+const TabellaCampi = ({ campi, record }) => (
+    <table className="info-table">
+        <tbody>
+            {campi.map((field) => (
+                <tr key={field.label}>
+                    <th>{field.label}</th>
+                    <td>{formatFieldValue(record, field)}</td>
+                </tr>
+            ))}
+        </tbody>
+    </table>
+);
 
 const DetailPage = ({ config }) => {
     const { id } = useParams();
@@ -109,6 +145,7 @@ const DetailPage = ({ config }) => {
     const campi = config.fields.filter((field) => (
         eAmministratore(ruolo) || typeof field.value !== 'string' || record[field.value] !== undefined
     ));
+    const [principali, ...sezioni] = raggruppaCampi(campi).sort((a, b) => (a.titolo ? 1 : 0) - (b.titolo ? 1 : 0));
     const actions = (config.actions || [])
         .map((action) => (typeof action === 'function' ? action(record) : action))
         .filter(Boolean);
@@ -181,32 +218,47 @@ const DetailPage = ({ config }) => {
                         + 'con conferma esplicita e vengono registrate.'}
                 </div>
             )}
-            <div className="table-container detail-info-card">
-                <table className="info-table">
-                    <tbody>
-                        {campi.map((field) => (
-                            <tr key={field.label}>
-                                <th>{field.label}</th>
-                                <td>{formatFieldValue(record, field)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            {principali?.titolo === '' && (
+                <div className="table-container detail-info-card">
+                    <TabellaCampi campi={principali.campi} record={record} />
+                </div>
+            )}
+            <div className="detail-sections">
+                {[principali, ...sezioni].filter((gruppo) => gruppo?.titolo).map((gruppo) => (
+                    <Sezione
+                        key={gruppo.titolo}
+                        chiave={`${config.resource}:${gruppo.titolo}`}
+                        titolo={gruppo.titolo}
+                        sommario={anteprimaCampi(record, gruppo.campi)}
+                    >
+                        <div className="table-container detail-info-card">
+                            <TabellaCampi campi={gruppo.campi} record={record} />
+                        </div>
+                    </Sezione>
+                ))}
             </div>
             <RelationLinkGrid
                 resource={config.resource}
                 recordId={id}
                 relations={config.relations}
             />
-            {panels.map((Panel) => (
-                <Panel key={Panel.displayName || Panel.name} record={record} recordId={id} />
-            ))}
-            {hasNotes && (
-                <NoteAttachmentsPanel
-                    resource={config.resource}
-                    recordId={id}
-                />
-            )}
+            <div className="detail-sections">
+                {panels.map((Panel) => (
+                    <Sezione
+                        key={Panel.displayName || Panel.name}
+                        chiave={`${config.resource}:${Panel.sezione?.titolo || Panel.name}`}
+                        titolo={Panel.sezione?.titolo}
+                        sommario={Panel.sezione?.descrizione}
+                    >
+                        <Panel record={record} recordId={id} />
+                    </Sezione>
+                ))}
+                {hasNotes && (
+                    <Sezione chiave={`${config.resource}:allegati`} titolo="Allegati" sommario="Documenti e foto allegati alla scheda">
+                        <NoteAttachmentsPanel resource={config.resource} recordId={id} />
+                    </Sezione>
+                )}
+            </div>
             {isEditing && <Editor {...editorProps} />}
             <div className="btn-back-container">
                 <Button onClick={goBack} variant="back" icon="arrowLeft">

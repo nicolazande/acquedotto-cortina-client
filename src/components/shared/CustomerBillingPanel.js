@@ -149,4 +149,10 @@ const CustomerBillingPanel = ({ recordId }) => {
 // Quanto si sta per fatturare a questo cliente: e un importo, non una lettura.
 CustomerBillingPanel.soloAmministratore = true;
 
+// L'intestazione della sezione che lo contiene nella scheda.
+CustomerBillingPanel.sezione = {
+    titolo: 'Letture da fatturare',
+    descrizione: 'Quanto verrebbe la prossima fattura, con mora e avvisi',
+};
+
 export default CustomerBillingPanel;

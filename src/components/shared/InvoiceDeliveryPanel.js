@@ -149,4 +149,10 @@ const InvoiceDeliveryPanel = ({ recordId }) => {
     );
 };
 
+// L'intestazione della sezione che lo contiene nella scheda.
+InvoiceDeliveryPanel.sezione = {
+    titolo: 'Consegna',
+    descrizione: 'Dove va questa fattura e cosa è già partito',
+};
+
 export default InvoiceDeliveryPanel;

@@ -167,4 +167,10 @@ const BillingPreviewPanel = ({ recordId }) => {
 // Il calcolo di quanto costa questa lettura: importi e fasce di prezzo.
 BillingPreviewPanel.soloAmministratore = true;
 
+// L'intestazione della sezione che lo contiene nella scheda.
+BillingPreviewPanel.sezione = {
+    titolo: 'Calcolo fattura',
+    descrizione: 'Quanto costa questa lettura, e in quali fatture è già',
+};
+
 export default BillingPreviewPanel;

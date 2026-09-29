@@ -147,4 +147,10 @@ const TariffRenewalPanel = ({ record, recordId }) => {
     );
 };
 
+// L'intestazione della sezione che lo contiene nella scheda.
+TariffRenewalPanel.sezione = {
+    titolo: 'Prepara l\'anno prossimo',
+    descrizione: 'Le fasce del listino per l\'anno che viene',
+};
+
 export default TariffRenewalPanel;

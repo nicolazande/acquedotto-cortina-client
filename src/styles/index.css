@@ -611,6 +611,111 @@ a {
     margin-bottom: 4px;
 }
 
+/* Le sezioni della scheda: una riga per parte, chiusa di partenza, che si apre
+   al clic. L'intestazione dice cosa c'e dentro senza aprirla. */
+.detail-sections {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.detail-sections:empty {
+    display: none;
+}
+
+.detail-section {
+    min-width: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-subtle);
+}
+
+.detail-section.is-open {
+    border-color: var(--color-border-strong);
+}
+
+.detail-section-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 54px;
+    padding: 12px 16px;
+    color: var(--color-heading);
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.detail-section-toggle:hover {
+    background: var(--color-surface-soft);
+}
+
+.detail-section-toggle:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.detail-section-chevron {
+    flex: none;
+    color: var(--color-primary);
+    transition: transform 0.15s ease;
+}
+
+.detail-section.is-open .detail-section-chevron {
+    transform: rotate(90deg);
+}
+
+.detail-section-title {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    min-width: 0;
+}
+
+.detail-section-title strong {
+    font-size: 0.98rem;
+}
+
+.detail-section-title small {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--color-muted);
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.detail-section-body {
+    padding: 0 16px 16px;
+}
+
+.detail-section-body .detail-info-card {
+    margin: 0;
+}
+
+.detail-section-body .billing-preview.is-in-section {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.detail-section-body .billing-preview.is-in-section > .billing-preview-heading {
+    justify-content: flex-end;
+}
+
+.detail-section-body .note-attachments-panel {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+}
+
 .detail-lock-notice {
     margin: 0 0 14px;
     padding: 10px 12px;

@@ -273,4 +273,10 @@ const CustomerPortalAccessPanel = ({ record, recordId }) => {
 // e attivazione. Chi va a leggere i contatori non c'entra.
 CustomerPortalAccessPanel.soloAmministratore = true;
 
+// L'intestazione della sezione che lo contiene nella scheda.
+CustomerPortalAccessPanel.sezione = {
+    titolo: 'Accesso all\'area clienti',
+    descrizione: 'Nome utente, password e attivazione del portale',
+};
+
 export default CustomerPortalAccessPanel;

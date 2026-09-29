@@ -5,6 +5,7 @@ import { formatDate } from '../../utils/formatters';
 import { useFeedback } from './FeedbackProvider';
 import { puoScrivere, useRisorsePermesse } from '../../hooks/useRisorsePermesse';
 import Button from './Button';
+import { useDentroSezione } from './Sezione';
 
 const MAX_IMAGE_SIDE = 1600;
 const IMAGE_QUALITY = 0.84;
@@ -215,6 +216,7 @@ const AttachmentCard = ({ attachment, onDelete }) => {
 };
 
 const NoteAttachmentsPanel = ({ resource, recordId }) => {
+    const dentroSezione = useDentroSezione();
     const { confirm, notify } = useFeedback();
     const { scrivibili } = useRisorsePermesse();
     // Un allegato vale quanto il documento a cui e attaccato: chi puo solo
@@ -300,10 +302,12 @@ const NoteAttachmentsPanel = ({ resource, recordId }) => {
     return (
         <section className="note-attachments-panel" aria-label="Allegati note">
             <div className="note-attachments-header">
-                <div>
-                    <span className="eyebrow">Note</span>
-                    <h3>Allegati</h3>
-                </div>
+                {!dentroSezione && (
+                    <div>
+                        <span className="eyebrow">Note</span>
+                        <h3>Allegati</h3>
+                    </div>
+                )}
                 {modificabile && (
                     <Button
                         as="label"
