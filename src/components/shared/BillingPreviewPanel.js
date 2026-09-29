@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import fatturaApi from '../../api/fatturaApi';
 import { fixedChargePreviewHelp } from '../../utils/billingPreview';
@@ -18,36 +18,26 @@ import BillingPanel, {
 } from './BillingPanel';
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
-import descriviErrore from '../../api/descriviErrore';
 import { CelleImporto, IntestazioniImporto } from './CelleImporto';
+import useInvoiceGeneration from '../../hooks/useInvoiceGeneration';
+import useRemoteData from '../../hooks/useRemoteData';
 
 const BillingPreviewPanel = ({ recordId }) => {
-    const [calculation, setCalculation] = useState(null);
     const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [error, setError] = useState('');
     const history = useHistory();
-    const { confirm, notify } = useFeedback();
+    const { confirm } = useFeedback();
 
-    const loadCalculation = useCallback(async () => {
-        setIsLoading(true);
-        setError('');
-
-        try {
-            const response = await letturaApi.getCalcolo(recordId, { includeFixedCharge });
-            setCalculation(response.data);
-        } catch (requestError) {
-            setCalculation(null);
-            setError(descriviErrore(requestError, 'Calcolo non disponibile per questa lettura.'));
-        } finally {
-            setIsLoading(false);
-        }
-    }, [includeFixedCharge, recordId]);
-
-    useEffect(() => {
-        loadCalculation();
-    }, [loadCalculation]);
+    const richiesta = useCallback(
+        async () => (await letturaApi.getCalcolo(recordId, { includeFixedCharge })).data,
+        [includeFixedCharge, recordId]
+    );
+    const {
+        dati: calculation,
+        error,
+        isLoading,
+        ricarica: loadCalculation,
+    } = useRemoteData(richiesta, { messaggioErrore: 'Calcolo non disponibile per questa lettura.' });
+    const { genera, inCorso: isGenerating } = useInvoiceGeneration(loadCalculation);
 
     const linkedInvoices = calculation?.linkedInvoices || [];
     const isAlreadyBilled = Boolean(calculation?.lettura?.fatturata || linkedInvoices.length > 0);
@@ -65,9 +55,12 @@ const BillingPreviewPanel = ({ recordId }) => {
             return;
         }
 
+        // La mora qui non si vede: la calcola la generazione guardando le
+        // fatture del cliente. Chi vuole vederla prima usa la scheda del cliente.
         const confirmed = await confirm({
             title: 'Genera fattura',
-            message: 'Creo una bozza fattura con le righe calcolate da questa lettura?',
+            message: 'Creo una bozza fattura con le righe calcolate da questa lettura? Se il cliente ha la '
+                + 'fattura precedente scaduta, la bozza porta anche la mora.',
             confirmLabel: 'Genera',
         });
 
@@ -75,24 +68,10 @@ const BillingPreviewPanel = ({ recordId }) => {
             return;
         }
 
-        setIsGenerating(true);
-        try {
-            const response = await fatturaApi.createFromReadings({
-                includeFixedCharge,
-                letture: [recordId],
-            });
-            const fatturaId = response.data?.fattura?._id;
-            notify('Fattura generata correttamente', 'success');
-            if (fatturaId) {
-                history.push(`/fatture/${fatturaId}`);
-            } else {
-                await loadCalculation();
-            }
-        } catch (requestError) {
-            notify(descriviErrore(requestError, 'Errore durante la generazione della fattura'), 'error');
-        } finally {
-            setIsGenerating(false);
-        }
+        await genera(true, () => fatturaApi.createFromReadings({
+            includeFixedCharge,
+            letture: [recordId],
+        }));
     };
 
     return (

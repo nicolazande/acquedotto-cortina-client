@@ -1103,13 +1103,12 @@ a {
 
 .customer-portal-access-form {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
     align-items: end;
-}
-
-.customer-portal-access-form.is-compact {
-    grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
 }
 
 .customer-portal-access-actions {
@@ -1120,17 +1119,35 @@ a {
     gap: 8px;
 }
 
-.customer-portal-access-form.is-compact .customer-portal-access-actions {
-    grid-column: auto;
-}
-
 .customer-portal-access-actions .btn {
     width: auto;
 }
 
-.customer-portal-account {
+/* L'account esistente, in una riga: chi e e cosa se ne puo fare. */
+.customer-portal-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 28px;
+}
+
+.customer-portal-summary > span {
     display: grid;
-    gap: 14px;
+    gap: 2px;
+}
+
+.customer-portal-summary small {
+    color: var(--color-muted);
+    font-size: 0.76rem;
+    font-weight: 750;
+}
+
+.customer-portal-summary strong {
+    color: var(--color-heading);
+}
+
+.customer-portal-summary .customer-portal-access-actions {
+    margin-left: auto;
 }
 
 .portal-status {
@@ -1157,15 +1174,6 @@ a {
     color: var(--color-danger-strong);
     background: #fff2f3;
     border-color: rgba(168, 56, 63, 0.24);
-}
-
-.customer-portal-reset-form {
-    display: grid;
-    grid-template-columns: minmax(220px, 360px) auto;
-    align-items: end;
-    gap: 12px;
-    padding-top: 14px;
-    border-top: 1px solid var(--color-border);
 }
 
 .customer-portal-grid {
@@ -1856,13 +1864,11 @@ input[type="checkbox"] {
         grid-template-columns: 1fr;
     }
 
-    .customer-portal-access-form.is-compact,
-    .customer-portal-reset-form {
-        grid-template-columns: 1fr;
+    .customer-portal-summary .customer-portal-access-actions {
+        margin-left: 0;
     }
 
-    .customer-portal-access-actions .btn,
-    .customer-portal-reset-form .btn {
+    .customer-portal-access-actions .btn {
         flex: 1 1 150px;
         width: 100%;
     }

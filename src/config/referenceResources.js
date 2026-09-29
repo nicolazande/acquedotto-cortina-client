@@ -6,7 +6,7 @@ import fatturaApi from '../api/fatturaApi';
 import letturaApi from '../api/letturaApi';
 import listinoApi from '../api/listinoApi';
 import scadenzaApi from '../api/scadenzaApi';
-import { customerName, formatDate, formatMoney, invoiceLabel, join } from '../utils/formatters';
+import { customerName, formatDate, formatMoney, invoiceLabel, join, recordId } from '../utils/formatters';
 
 const REFERENCE_LIMIT = 25;
 
@@ -15,12 +15,6 @@ const compactJoin = (...parts) => (
         .filter((part) => part !== undefined && part !== null && part !== '' && part !== '-')
         .join(' - ')
 );
-
-const recordId = (record) => {
-    if (!record) return '';
-    if (typeof record === 'string') return record;
-    return record._id || record.id || '';
-};
 
 const listResponseData = (response, fallbackPage) => {
     const records = response?.data?.data || response?.data || [];
@@ -100,7 +94,6 @@ const definitions = {
     },
 };
 
-export const getReferenceRecordId = recordId;
 
 export const getReferenceLabel = (resource, record) => {
     if (!record) return '';

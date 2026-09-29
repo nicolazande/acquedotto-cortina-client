@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     getReferenceLabel,
     getReferencePlaceholder,
-    getReferenceRecordId,
     loadReferenceOptions,
 } from '../../config/referenceResources';
+import { recordId } from '../../utils/formatters';
 import Button from './Button';
 
 const mergeReferenceOptions = (...recordGroups) => {
@@ -15,7 +15,7 @@ const mergeReferenceOptions = (...recordGroups) => {
         const group = Array.isArray(records) ? records : [records];
 
         group.forEach((record) => {
-            const id = getReferenceRecordId(record);
+            const id = recordId(record);
 
             if (!id || seenIds.has(id)) {
                 return;
@@ -109,7 +109,7 @@ const ReferenceField = ({
     }, [currentPage, isLoading, isPickerOpen]);
 
     const fieldOptions = mergeReferenceOptions(selectedReference, options);
-    const selectedOption = fieldOptions.find((record) => getReferenceRecordId(record) === value);
+    const selectedOption = fieldOptions.find((record) => recordId(record) === value);
     const selectedLabel = selectedOption ? getReferenceLabel(field.resource, selectedOption) : '';
     const hasPreviousResults = currentPage > 1;
     const hasMoreResults = currentPage < totalPages;
@@ -129,7 +129,7 @@ const ReferenceField = ({
     };
 
     const handleSelect = (record) => {
-        onReferenceChange(field, getReferenceRecordId(record), record);
+        onReferenceChange(field, recordId(record), record);
         setIsPickerOpen(false);
     };
 
@@ -197,7 +197,7 @@ const ReferenceField = ({
                     {!isLoading && options.length > 0 && (
                         <div className="reference-result-list" ref={resultListRef}>
                             {options.map((option) => {
-                                const optionId = getReferenceRecordId(option);
+                                const optionId = recordId(option);
                                 const isSelected = optionId === value;
 
                                 return (

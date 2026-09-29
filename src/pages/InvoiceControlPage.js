@@ -15,7 +15,6 @@ import RecordTable from '../components/shared/RecordTable';
 import useRemoteData from '../hooks/useRemoteData';
 import {
     EMPTY_VALUE,
-    customerName,
     formatDate,
     formatMoney,
     formatNumber,
@@ -37,9 +36,7 @@ const severityLabel = {
     info: 'Nota',
 };
 
-const customerLabel = (record) => (
-    customerName(record.cliente) !== EMPTY_VALUE ? customerName(record.cliente) : record.clienteLabel || EMPTY_VALUE
-);
+const customerLabel = (record) => record.clienteLabel || EMPTY_VALUE;
 
 const deltaLabel = (record) => (
     Number.isFinite(Number(record.delta)) ? formatMoney(record.delta) : EMPTY_VALUE

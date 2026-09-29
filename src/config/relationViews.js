@@ -22,12 +22,12 @@ import {
     invoiceStatus,
     personName,
     join,
+    recordId,
     text,
 } from '../utils/formatters';
 
 // Mostrato da solo in un titolo o in una scheda: qui il segnaposto ci vuole.
 const personLabel = (record) => personName(record) || EMPTY_VALUE;
-const recordId = (record) => record && record._id;
 const createdRecordId = (response) => response?.data?._id;
 export const responseData = (response) => response.data;
 

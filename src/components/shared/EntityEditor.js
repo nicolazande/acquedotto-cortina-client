@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { getReferenceRecordId } from '../../config/referenceResources';
+import { recordId } from '../../utils/formatters';
 import Button, { ActionBar } from './Button';
 import ReferenceField from './ReferenceField';
 
@@ -33,7 +33,7 @@ export const prepareInitialData = (record = {}, fields) => {
         }
 
         if (field.type === 'reference') {
-            data[field.name] = getReferenceRecordId(record[field.name]);
+            data[field.name] = recordId(record[field.name]);
         }
     });
 

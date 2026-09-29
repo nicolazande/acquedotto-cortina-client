@@ -27,25 +27,36 @@ import Button from '../components/shared/Button';
 import { PageHeader } from '../components/shared/PageChrome';
 import { useFeedback } from '../components/shared/FeedbackProvider';
 import useInvoiceGeneration from '../hooks/useInvoiceGeneration';
+import useRemoteData from '../hooks/useRemoteData';
 import useSelezione from '../hooks/useSelezione';
 import descriviErrore from '../api/descriviErrore';
 
 // Quante letture l'anteprima guarda al massimo: il limite del server. Un giro
 // di novembre sono circa novecento; un cliente non viene mai spezzato.
 const LIMITE_LETTURE = 2000;
+const GENERAZIONI_INSIEME = 4;
 
 const BillingBatchPage = () => {
-    const [preview, setPreview] = useState(null);
     const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
     const [includeDelay, setIncludeDelay] = useState(true);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
     const [bulk, setBulk] = useState(null);
     // Il flag di interruzione sta in un ref perche il ciclo in corso deve
     // vederlo cambiare senza aspettare un nuovo render.
     const stopRequested = useRef(false);
     const history = useHistory();
     const { confirm, notify } = useFeedback();
+
+    const richiesta = useCallback(async () => (await fatturaApi.getGenerationPreview({
+        includeDelay,
+        includeFixedCharge,
+        limit: LIMITE_LETTURE,
+    })).data, [includeDelay, includeFixedCharge]);
+    const {
+        dati: preview,
+        error,
+        isLoading,
+        ricarica: loadPreview,
+    } = useRemoteData(richiesta, { messaggioErrore: 'Anteprima generazione non disponibile.' });
 
     const readyGroups = useMemo(() => (
         preview?.clienti?.filter((group) => group.totals?.letture > 0) || []
@@ -73,29 +84,6 @@ const BillingBatchPage = () => {
                 titolo: `${customerName(group.cliente)} · ${nota.titolo}`,
             }))),
     ], [preview]);
-
-    const loadPreview = useCallback(async () => {
-        setIsLoading(true);
-        setError('');
-
-        try {
-            const response = await fatturaApi.getGenerationPreview({
-                includeDelay,
-                includeFixedCharge,
-                limit: LIMITE_LETTURE,
-            });
-            setPreview(response.data);
-        } catch (requestError) {
-            setPreview(null);
-            setError(descriviErrore(requestError, 'Anteprima generazione non disponibile.'));
-        } finally {
-            setIsLoading(false);
-        }
-    }, [includeDelay, includeFixedCharge]);
-
-    useEffect(() => {
-        loadPreview();
-    }, [loadPreview]);
 
     const { genera, inCorso: generatingCustomerId } = useInvoiceGeneration(loadPreview);
 
@@ -125,9 +113,11 @@ const BillingBatchPage = () => {
         0
     );
 
-    // Le fatture si generano una alla volta di proposito: la quota fissa annuale
-    // e unica per contatore, quindi ogni generazione deve vedere quelle gia
-    // salvate. In parallelo due clienti potrebbero riceverla entrambi.
+    // Le bozze si generano qualcuna alla volta. Si temeva che due generazioni
+    // insieme dessero a due clienti la stessa quota fissa annuale, ma la quota e
+    // di un contatore e un contatore appartiene a un cliente solo: ogni bozza
+    // tocca solo i contatori del suo cliente. Una alla volta, un giro di
+    // novecento clienti chiedeva molti minuti di attesa.
     const handleGenerateSelected = async () => {
         const confirmed = await confirm({
             title: 'Genera bozze',
@@ -144,12 +134,9 @@ const BillingBatchPage = () => {
 
         const created = [];
         const failed = [];
+        let prossimo = 0;
 
-        for (const group of selectedGroups) {
-            if (stopRequested.current) {
-                break;
-            }
-
+        const generaBozza = async (group) => {
             const nome = customerName(group.cliente);
 
             try {
@@ -173,7 +160,18 @@ const BillingBatchPage = () => {
                 created: [...created],
                 failed: [...failed],
             });
-        }
+        };
+
+        // Interrompere ferma le partenze: quelle gia avviate finiscono.
+        const generaIlProssimo = async () => {
+            while (prossimo < selectedGroups.length && !stopRequested.current) {
+                const group = selectedGroups[prossimo];
+                prossimo += 1;
+                await generaBozza(group);
+            }
+        };
+
+        await Promise.all(Array.from({ length: Math.min(GENERAZIONI_INSIEME, selectedGroups.length) }, generaIlProssimo));
 
         const interrotta = stopRequested.current;
         setBulk({
@@ -196,7 +194,7 @@ const BillingBatchPage = () => {
     };
 
     const handleGenerate = async (group) => {
-        const letture = group.previews.filter(isBillablePreview).map(previewReadingId).filter(Boolean);
+        const letture = groupReadingIds(group);
         const confirmed = await confirm({
             title: 'Genera fattura',
             message: `Creo una bozza fattura per ${customerName(group.cliente)} con ${letture.length} letture?`,

@@ -6,10 +6,13 @@ import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
 import descriviErrore from '../../api/descriviErrore';
 
+// La lunghezza minima che il server chiede (User.LUNGHEZZA_MINIMA_PASSWORD).
+const LUNGHEZZA_MINIMA_PASSWORD = 8;
+
 const cleanUsernamePart = (value = '') => String(value)
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '.')
     .replace(/^\.+|\.+$/g, '');
 
@@ -19,26 +22,30 @@ const defaultUsername = (cliente = {}) => {
     return code ? `cliente.${code}` : name ? `cliente.${name}` : '';
 };
 
-const requestError = (error, fallback) => descriviErrore(error, fallback);
+const Campo = ({ id, label, ...input }) => (
+    <div className="form-group">
+        <label htmlFor={id}>{label}</label>
+        <input id={id} {...input} />
+    </div>
+);
 
+// L'accesso del cliente alla sua area riservata. Resta chiuso finche non serve:
+// prima i moduli erano sempre aperti in fondo alla scheda, e si confondevano con
+// i dati del cliente. Senza account c'e solo il pulsante per crearlo; con
+// l'account, i suoi dati e le tre cose che si fanno - modificarlo, dare una
+// password nuova, disattivarlo. Un modulo alla volta, aperto dal suo pulsante.
 const CustomerPortalAccessPanel = ({ record, recordId }) => {
     const { confirm, notify } = useFeedback();
     const suggestedUsername = useMemo(() => defaultUsername(record), [record]);
     const recordEmail = record?.email || '';
     const [portalUser, setPortalUser] = useState(null);
-    const [username, setUsername] = useState(suggestedUsername);
-    const [email, setEmail] = useState(recordEmail);
+    const [modulo, setModulo] = useState('');
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState('');
-
-    const setAccountForm = useCallback((user) => {
-        setPortalUser(user);
-        setUsername(user?.username || suggestedUsername);
-        setEmail(user?.email || recordEmail);
-    }, [recordEmail, suggestedUsername]);
 
     const loadPortalUser = useCallback(async () => {
         if (!recordId) return;
@@ -48,57 +55,69 @@ const CustomerPortalAccessPanel = ({ record, recordId }) => {
 
         try {
             const response = await clienteApi.getPortalUser(recordId);
-            setAccountForm(response.data);
+            setPortalUser(response.data);
         } catch (loadError) {
-            setError(requestError(loadError, 'Accesso portale non disponibile.'));
+            setError(descriviErrore(loadError, 'Accesso portale non disponibile.'));
         } finally {
             setIsLoading(false);
         }
-    }, [recordId, setAccountForm]);
+    }, [recordId]);
 
     useEffect(() => {
         loadPortalUser();
     }, [loadPortalUser]);
 
-    const savePortalUser = async (payload, successMessage) => {
+    // Ogni modulo parte dai dati attuali: quelli dell'account, oppure quelli
+    // proposti dalla scheda del cliente.
+    const apri = (quale) => {
+        setUsername(portalUser?.username || suggestedUsername);
+        setEmail(portalUser?.email || recordEmail);
+        setPassword('');
+        setModulo(quale);
+    };
+    const chiudi = () => setModulo('');
+
+    // Una sola strada per salvare: crea o aggiorna, avvisa, chiude il modulo.
+    const salva = async (richiesta, riuscito, fallito) => {
         setIsSaving(true);
 
         try {
-            const response = await clienteApi.updatePortalUser(recordId, payload);
-            setAccountForm(response.data);
-            notify(successMessage, 'success');
-            return true;
+            const response = await richiesta();
+            setPortalUser(response.data);
+            setModulo('');
+            notify(riuscito, 'success');
         } catch (saveError) {
-            notify(requestError(saveError, 'Errore durante aggiornamento account cliente'), 'error');
-            return false;
+            notify(descriviErrore(saveError, fallito), 'error');
         } finally {
             setIsSaving(false);
         }
     };
 
-    const handleCreate = async (event) => {
+    const handleCreate = (event) => {
         event.preventDefault();
-        setIsSaving(true);
-
-        try {
-            const response = await clienteApi.createPortalUser(recordId, {
-                email: email || undefined,
-                password,
-                username: username.trim(),
-            });
-            setAccountForm(response.data);
-            setPassword('');
-            notify('Account area clienti creato', 'success');
-        } catch (createError) {
-            notify(requestError(createError, 'Errore durante la creazione account cliente'), 'error');
-        } finally {
-            setIsSaving(false);
-        }
+        salva(
+            () => clienteApi.createPortalUser(recordId, { email: email || undefined, password, username: username.trim() }),
+            'Accesso all\'area clienti creato',
+            'Creazione dell\'accesso non riuscita.'
+        );
     };
 
     const handleSaveAccount = (event) => {
         event.preventDefault();
-        savePortalUser({ email, username: username.trim() }, 'Account cliente aggiornato');
+        salva(
+            () => clienteApi.updatePortalUser(recordId, { email, username: username.trim() }),
+            'Accesso aggiornato',
+            'Modifica dell\'accesso non riuscita.'
+        );
+    };
+
+    const handleResetPassword = (event) => {
+        event.preventDefault();
+        salva(
+            () => clienteApi.updatePortalUser(recordId, { password }),
+            'Password temporanea aggiornata',
+            'Aggiornamento della password non riuscito.'
+        );
     };
 
     const handleToggleActive = async () => {
@@ -113,21 +132,57 @@ const CustomerPortalAccessPanel = ({ record, recordId }) => {
             if (!confirmed) return;
         }
 
-        savePortalUser(
-            { active: nextActive },
-            nextActive ? 'Accesso cliente riattivato' : 'Accesso cliente disattivato'
+        salva(
+            () => clienteApi.updatePortalUser(recordId, { active: nextActive }),
+            nextActive ? 'Accesso cliente riattivato' : 'Accesso cliente disattivato',
+            'Modifica dell\'accesso non riuscita.'
         );
     };
 
-    const handleResetPassword = async (event) => {
-        event.preventDefault();
-        const saved = await savePortalUser({ password: newPassword }, 'Password temporanea aggiornata');
-        if (saved) {
-            setNewPassword('');
-        }
-    };
-
     const isActive = portalUser?.active !== false;
+    const pulsantiModulo = (etichetta) => (
+        <div className="customer-portal-access-actions">
+            <Button type="submit" variant="primary" icon="check" disabled={isSaving}>
+                {isSaving ? 'Salvataggio...' : etichetta}
+            </Button>
+            <Button variant="secondary" icon="close" disabled={isSaving} onClick={chiudi}>
+                Annulla
+            </Button>
+        </div>
+    );
+    const campoPassword = (label) => (
+        <Campo
+            id="portal-password"
+            label={label}
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            minLength={LUNGHEZZA_MINIMA_PASSWORD}
+            autoComplete="new-password"
+            required
+        />
+    );
+    const campiAccount = (
+        <>
+            <Campo
+                id="portal-username"
+                label="Username"
+                type="text"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                placeholder={suggestedUsername || 'cliente.codice'}
+                required
+            />
+            <Campo
+                id="portal-email"
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="cliente@example.com"
+            />
+        </>
+    );
 
     return (
         <BillingPanel
@@ -137,85 +192,44 @@ const CustomerPortalAccessPanel = ({ record, recordId }) => {
             isLoading={isLoading}
             loadingText="Verifica account cliente..."
             error={error}
-            actions={portalUser && (
+            actions={(
                 <BillingActions>
-                    <span className={`portal-status ${isActive ? 'is-active' : 'is-disabled'}`}>
-                        {isActive ? 'Attivo' : 'Disattivato'}
-                    </span>
+                    {portalUser ? (
+                        <span className={`portal-status ${isActive ? 'is-active' : 'is-disabled'}`}>
+                            {isActive ? 'Attivo' : 'Disattivato'}
+                        </span>
+                    ) : !modulo && (
+                        <Button variant="primary" icon="plus" onClick={() => apri('crea')}>
+                            Crea accesso
+                        </Button>
+                    )}
                 </BillingActions>
             )}
         >
-            {!portalUser ? (
-                <>
-                    <BillingState>
-                        Nessun account collegato. Crea credenziali temporanee da comunicare al cliente.
-                    </BillingState>
-                    <form className="customer-portal-access-form" onSubmit={handleCreate}>
-                        <div className="form-group">
-                            <label htmlFor="portal-username">Username</label>
-                            <input
-                                id="portal-username"
-                                type="text"
-                                value={username}
-                                onChange={(event) => setUsername(event.target.value)}
-                                placeholder={suggestedUsername || 'cliente.codice'}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="portal-email">Email</label>
-                            <input
-                                id="portal-email"
-                                type="email"
-                                value={email}
-                                onChange={(event) => setEmail(event.target.value)}
-                                placeholder="cliente@example.com"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="portal-password">Password temporanea</label>
-                            <input
-                                id="portal-password"
-                                type="password"
-                                value={password}
-                                onChange={(event) => setPassword(event.target.value)}
-                                minLength={8}
-                                required
-                            />
-                        </div>
+            {!portalUser && !modulo && (
+                <BillingState>
+                    Il cliente non ha ancora l&apos;accesso alla sua area riservata. Con «Crea accesso» si
+                    scelgono username e password temporanea da comunicargli.
+                </BillingState>
+            )}
+
+            {portalUser && (
+                <div className="customer-portal-summary">
+                    <span>
+                        <small>Username</small>
+                        <strong>{portalUser.username}</strong>
+                    </span>
+                    <span>
+                        <small>Email</small>
+                        <strong>{portalUser.email || 'nessuna'}</strong>
+                    </span>
+                    {!modulo && (
                         <div className="customer-portal-access-actions">
-                            <Button type="submit" variant="primary" icon="plus" disabled={isSaving}>
-                                {isSaving ? 'Creazione...' : 'Crea accesso cliente'}
+                            <Button variant="secondary" icon="edit" disabled={isSaving} onClick={() => apri('modifica')}>
+                                Modifica
                             </Button>
-                        </div>
-                    </form>
-                </>
-            ) : (
-                <div className="customer-portal-account">
-                    <form className="customer-portal-access-form is-compact" onSubmit={handleSaveAccount}>
-                        <div className="form-group">
-                            <label htmlFor="portal-existing-username">Username</label>
-                            <input
-                                id="portal-existing-username"
-                                type="text"
-                                value={username}
-                                onChange={(event) => setUsername(event.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="portal-existing-email">Email</label>
-                            <input
-                                id="portal-existing-email"
-                                type="email"
-                                value={email}
-                                onChange={(event) => setEmail(event.target.value)}
-                                placeholder="cliente@example.com"
-                            />
-                        </div>
-                        <div className="customer-portal-access-actions">
-                            <Button type="submit" variant="save" icon="check" disabled={isSaving}>
-                                Salva
+                            <Button variant="secondary" icon="refresh" disabled={isSaving} onClick={() => apri('password')}>
+                                Nuova password
                             </Button>
                             <Button
                                 variant={isActive ? 'delete' : 'secondary'}
@@ -226,30 +240,30 @@ const CustomerPortalAccessPanel = ({ record, recordId }) => {
                                 {isActive ? 'Disattiva' : 'Riattiva'}
                             </Button>
                         </div>
-                    </form>
-
-                    <form className="customer-portal-reset-form" onSubmit={handleResetPassword}>
-                        <div className="form-group">
-                            <label htmlFor="portal-reset-password">Nuova password temporanea</label>
-                            <input
-                                id="portal-reset-password"
-                                type="password"
-                                value={newPassword}
-                                onChange={(event) => setNewPassword(event.target.value)}
-                                minLength={8}
-                                required
-                            />
-                        </div>
-                        <Button
-                            type="submit"
-                            variant="secondary"
-                            icon="refresh"
-                            disabled={isSaving || newPassword.length < 8}
-                        >
-                            Aggiorna password
-                        </Button>
-                    </form>
+                    )}
                 </div>
+            )}
+
+            {modulo === 'crea' && (
+                <form className="customer-portal-access-form" onSubmit={handleCreate}>
+                    {campiAccount}
+                    {campoPassword('Password temporanea')}
+                    {pulsantiModulo('Crea accesso')}
+                </form>
+            )}
+
+            {modulo === 'modifica' && (
+                <form className="customer-portal-access-form" onSubmit={handleSaveAccount}>
+                    {campiAccount}
+                    {pulsantiModulo('Salva')}
+                </form>
+            )}
+
+            {modulo === 'password' && (
+                <form className="customer-portal-access-form" onSubmit={handleResetPassword}>
+                    {campoPassword('Nuova password temporanea')}
+                    {pulsantiModulo('Aggiorna password')}
+                </form>
             )}
         </BillingPanel>
     );

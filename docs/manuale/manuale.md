@@ -234,12 +234,17 @@ Sono importanti anche:
 
 ## Dare a un cliente l'accesso all'area riservata
 
-Nella scheda del cliente c'e il riquadro **Accesso portale**. Si inseriscono un nome
-utente e una password provvisoria di almeno otto caratteri, e l'accesso è creato. Il
-cliente potrà cambiare la password da solo dopo il primo ingresso.
+Nella scheda del cliente c'e il riquadro **Accesso portale**. Finché il cliente non ha
+un accesso, il riquadro mostra solo il pulsante **Crea accesso**: premendolo si apre il
+modulo, con il nome utente già proposto, l'email se c'è in anagrafica e la password
+provvisoria (almeno otto caratteri) da comunicare al cliente. *Annulla* lo richiude
+senza creare nulla. Il cliente potrà cambiare la password da solo dopo il primo ingresso.
 
-Dallo stesso riquadro si può in seguito **disattivare** l'accesso, senza cancellare
-nulla: il cliente non potrà più entrare, ma i suoi dati restano.
+Quando l'accesso esiste, il riquadro mostra nome utente, email e stato, con tre
+pulsanti: **Modifica** (nome utente ed email), **Nuova password** (una password
+provvisoria nuova, per chi l'ha dimenticata) e **Disattiva**. Ognuno apre il suo modulo,
+uno alla volta. Disattivare non cancella nulla: il cliente non potrà più entrare, ma i
+suoi dati restano, e **Riattiva** gli ridà l'accesso.
 
 ## Vedere quanto c'e da fatturare per un cliente
 
@@ -452,8 +457,9 @@ il gestionale apre direttamente la fattura creata.
 
 **Molti clienti insieme:** si spuntano le caselle *Seleziona* dei clienti desiderati,
 oppure si usa *Seleziona tutti* in cima, e si preme **Genera N bozze**. Il gestionale
-procede un cliente alla volta mostrando l'avanzamento, e si può **interrompere** in
-qualsiasi momento: le fatture già create restano.
+genera quattro bozze alla volta mostrando l'avanzamento (sui dati di prova, settecento
+bozze in circa un minuto), e si può **interrompere** in qualsiasi momento: le fatture
+già create restano.
 
 Alla fine compare un riepilogo con quante bozze sono state create e, soprattutto,
 **l'elenco dei clienti non fatturati con il motivo**. Un cliente che fallisce non blocca

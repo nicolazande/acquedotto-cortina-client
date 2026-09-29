@@ -20,16 +20,24 @@ import BillingReadingsTable from './BillingReadingsTable';
 import Button from './Button';
 import { useFeedback } from './FeedbackProvider';
 import useInvoiceGeneration from '../../hooks/useInvoiceGeneration';
+import useRemoteData from '../../hooks/useRemoteData';
 import useSelezione from '../../hooks/useSelezione';
-import descriviErrore from '../../api/descriviErrore';
 
 const CustomerBillingPanel = ({ recordId }) => {
-    const [preview, setPreview] = useState(null);
     const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
     const [includeDelay, setIncludeDelay] = useState(true);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
     const { confirm } = useFeedback();
+
+    const richiesta = useCallback(
+        async () => (await clienteApi.getFatturazionePreview(recordId, { includeDelay, includeFixedCharge })).data,
+        [includeDelay, includeFixedCharge, recordId]
+    );
+    const {
+        dati: preview,
+        error,
+        isLoading,
+        ricarica: loadPreview,
+    } = useRemoteData(richiesta, { messaggioErrore: 'Anteprima fatturazione non disponibile.' });
 
     const billablePreviews = useMemo(() => (
         preview?.previews?.filter(isBillablePreview) || []
@@ -56,25 +64,6 @@ const CustomerBillingPanel = ({ recordId }) => {
     const fixedChargeTotal = useMemo(() => (
         sumFixedCharges(fixedChargeRows, selectedIds)
     ), [fixedChargeRows, selectedIds]);
-
-    const loadPreview = useCallback(async () => {
-        setIsLoading(true);
-        setError('');
-
-        try {
-            const response = await clienteApi.getFatturazionePreview(recordId, { includeDelay, includeFixedCharge });
-            setPreview(response.data);
-        } catch (requestError) {
-            setPreview(null);
-            setError(descriviErrore(requestError, 'Anteprima fatturazione non disponibile.'));
-        } finally {
-            setIsLoading(false);
-        }
-    }, [includeDelay, includeFixedCharge, recordId]);
-
-    useEffect(() => {
-        loadPreview();
-    }, [loadPreview]);
 
     const { genera, inCorso: isGenerating } = useInvoiceGeneration(loadPreview);
 

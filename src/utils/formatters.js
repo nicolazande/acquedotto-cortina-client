@@ -151,6 +151,13 @@ export const personName = (record) => {
 
 export const join = (...parts) => parts.filter((part) => !isEmptyValue(part)).join(' - ') || EMPTY_VALUE;
 
+// L'identificativo di un record, che arrivi intero (popolato) o gia come id.
+export const recordId = (record) => {
+    if (!record) return '';
+    if (typeof record === 'string') return record;
+    return record._id || record.id || '';
+};
+
 export const getPathValue = (record, path) => (
     path.split('.').reduce((value, key) => (value == null ? value : value[key]), record)
 );
