@@ -27,6 +27,17 @@ import {
 } from '../config/deliveryModes';
 import { EMPTY_VALUE, formatGiorno, numberOrZero } from '../utils/formatters';
 
+// In che ordine escono le buste. Si ricorda in questo browser: chi imbusta per
+// localita lo sceglie una volta. Se la memoria non c'e, si parte per nome.
+const ORDINE_BUSTE = 'acquedotto.ordineBuste';
+const ordineRicordato = () => {
+    try {
+        return window.localStorage.getItem(ORDINE_BUSTE) === 'localita' ? 'localita' : 'nome';
+    } catch {
+        return 'nome';
+    }
+};
+
 const VISTE = [
     { value: 'in-coda', label: 'In coda' },
     { value: 'da-stampare', label: 'Da stampare' },
@@ -90,6 +101,7 @@ const destinatarioTesto = (record) => record.destinatario || EMPTY_VALUE;
 const esitoTesto = (record) => esitoConsegna(record) || EMPTY_VALUE;
 
 const ConsegnePage = () => {
+    const [ordineBuste, setOrdineBuste] = useState(ordineRicordato);
     const history = useHistory();
     const { confirm } = useFeedback();
     const [vista, setVista] = useState('in-coda');
@@ -136,7 +148,15 @@ const ConsegnePage = () => {
 
     // Stampa e XML non chiudono nessuna consegna: si stampa, si controlla che
     // sia uscito tutto, e solo dopo si dichiarano evase, tutte insieme.
-    const handleStampa = () => esegui(() => consegnaApi.stampa(), esitoStampa);
+    const handleStampa = () => esegui(() => consegnaApi.stampa({ ordine: ordineBuste }), esitoStampa);
+    const scegliOrdine = (valore) => {
+        setOrdineBuste(valore);
+        try {
+            window.localStorage.setItem(ORDINE_BUSTE, valore);
+        } catch {
+            // Senza memoria vale solo per questa volta.
+        }
+    };
 
     const handleXml = () => esegui(() => consegnaApi.scaricaXml(), esitoXml);
 
@@ -251,6 +271,16 @@ const ConsegnePage = () => {
                         <Button variant="secondary" icon="list" disabled={isWorking} onClick={handlePianifica}>
                             Prepara
                         </Button>
+                        <select
+                            className="ordine-buste"
+                            value={ordineBuste}
+                            onChange={(event) => scegliOrdine(event.target.value)}
+                            aria-label="Ordine delle buste"
+                            title="In che ordine escono le fatture da imbustare"
+                        >
+                            <option value="nome">Buste per nome</option>
+                            <option value="localita">Buste per località e via</option>
+                        </select>
                         <Button
                             variant="secondary"
                             icon="download"

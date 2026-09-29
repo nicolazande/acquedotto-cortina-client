@@ -19,9 +19,10 @@ const consegnaApi = {
     // Un unico PDF con le fatture da imbustare, e l'archivio degli XML ancora
     // da trasmettere. Non chiudono nessuna consegna: si stampa, si controlla, e
     // solo dopo si dichiarano evase, anche tutte insieme (`segnaEvase`).
-    stampa: async (limite) => {
+    // `ordine`: 'nome' oppure 'localita' (localita e poi via).
+    stampa: async ({ limite, ordine } = {}) => {
         const risposta = await scaricaFile(
-            () => axios.post(`${resource.baseUrl}/stampa`, { limite }, { responseType: 'blob' }),
+            () => axios.post(`${resource.baseUrl}/stampa`, { limite, ordine }, { responseType: 'blob' }),
             'fatture-da-consegnare.pdf',
         );
 

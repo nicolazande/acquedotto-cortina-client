@@ -1774,6 +1774,18 @@ input[type="checkbox"] {
 
 /* Barra di selezione della generazione massiva: la casella "seleziona tutti" a
    sinistra, l'azione a destra, cosi il conteggio resta accanto alla scelta. */
+/* La scelta dell'ordine delle buste, accanto a Stampa: alta come i pulsanti. */
+.ordine-buste {
+    width: auto;
+    min-height: 38px;
+    padding: 6px 10px;
+    color: var(--color-heading);
+    font-weight: 650;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius);
+}
+
 .billing-bulk-bar {
     display: flex;
     flex-wrap: wrap;

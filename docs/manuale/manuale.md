@@ -787,6 +787,12 @@ Se le fatture sono molte il gestionale ne prepara **un blocco di duecento alla v
 nell'ordine delle buste, e dice quante aspettano dopo: un PDF da centinaia di pagine la
 stampante non lo regge.
 
+L'ordine lo si sceglie accanto al pulsante: **Buste per nome** (in ordine alfabetico)
+oppure **Buste per località e via**, che mette insieme le buste di Cortina strada per
+strada e raggruppa quelle fuori paese per città. La scelta resta per le stampe
+successive. Gli indirizzi scritti «Loc. …» o «Località …» finiscono sotto la L: per
+averli vicini alla loro zona conviene scriverli senza il prefisso.
+
 Stampare **non chiude niente**: finché non le si segna evase, *Stampa* ripete lo stesso
 blocco. Se la stampante si inceppa, o il PDF si chiude per sbaglio, basta ripremere.
 Quando il blocco è uscito si preme **Evase le stampate (N)**: le fatture stampate escono
