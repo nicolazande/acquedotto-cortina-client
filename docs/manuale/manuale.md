@@ -246,7 +246,12 @@ Sono importanti anche:
 - **Consegna copia**, cioè come riceve la fattura: posta, email, PEC, sportello o
   niente. Vedi il capitolo *Consegnare le fatture*;
 - **Codice destinatario** e **Email PEC**, che sono i recapiti della fattura
-  elettronica: li comunica il cliente, non si inventano.
+  elettronica: li comunica il cliente, non si inventano. Nel campo PEC va una casella
+  PEC vera (…@pec.it, …@legalmail.it): un indirizzo normale come un gmail non vale, e
+  la fattura va nel cassetto fiscale del cliente. Con il codice destinatario la PEC
+  non serve.
+- **Residenza**: è la sede che compare nella fattura elettronica. L'indirizzo di
+  fatturazione serve per la busta.
 
 ## Dare a un cliente l'accesso all'area riservata
 
