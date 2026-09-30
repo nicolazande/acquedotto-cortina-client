@@ -55,12 +55,13 @@ const BillingPreviewPanel = ({ recordId }) => {
             return;
         }
 
-        // La mora qui non si vede: la calcola la generazione guardando le
-        // fatture del cliente. Chi vuole vederla prima usa la scheda del cliente.
+        // Da qui la mora non entra mai: qui non si vede, e gli incassi si
+        // registrano altrove. Chi la vuole genera dalla scheda del cliente, dove
+        // la vede prima e la sceglie.
         const confirmed = await confirm({
             title: 'Genera fattura',
-            message: 'Creo una bozza fattura con le righe calcolate da questa lettura? Se il cliente ha la '
-                + 'fattura precedente scaduta, la bozza porta anche la mora.',
+            message: 'Creo una bozza fattura con le righe calcolate da questa lettura? La mora non viene '
+                + 'aggiunta: se serve, si genera dalla scheda del cliente.',
             confirmLabel: 'Genera',
         });
 

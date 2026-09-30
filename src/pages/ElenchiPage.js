@@ -15,7 +15,8 @@ const ANNO_CORRENTE = new Date().getFullYear();
 const ANNI = Array.from({ length: 6 }, (_, i) => ANNO_CORRENTE - i);
 
 // Gli elenchi che escono dall'acquedotto: i due che una volta l'anno vanno
-// fuori, e le due stampe che Gesco aveva. Sono diversi in tutto - chi li riceve,
+// fuori, le due stampe che Gesco aveva e la distinta degli addebiti per la
+// banca. Sono diversi in tutto - chi li riceve,
 // cosa contengono, in che formato - tranne che nel modo di produrli: si sceglie
 // l'anno, si guarda cosa c'e dentro, si scarica. `quante` dice se c'e qualcosa
 // da scaricare.
@@ -26,6 +27,30 @@ const FORMATI_TABELLA = [
 ];
 
 const ELENCHI = [
+    {
+        id: 'addebiti',
+        // Si fa per la fatturazione in corso, non per l'anno chiuso: ha il suo
+        // anno, che parte da quello di oggi.
+        annoProprio: true,
+        eyebrow: 'Banca',
+        titolo: (anno) => `Addebiti ${anno}`,
+        descrizione: "Le fatture dell'anno ancora da pagare dei clienti che hanno dato l'IBAN: "
+            + 'conto, data del mandato, scadenza e importo, da passare alla banca per gli addebiti.',
+        vuoto: (anno) => `Nel ${anno} non ci sono addebiti da chiedere: nessuna fattura aperta di clienti con l'IBAN.`,
+        quante: (dati) => dati?.righe,
+        formati: FORMATI_TABELLA,
+        riepilogo: (dati) => [
+            { label: 'Addebiti', value: formatNumber(numberOrZero(dati?.righe)) },
+            { label: 'Clienti', value: formatNumber(numberOrZero(dati?.clienti)) },
+            { label: 'Totale', value: formatMoney(dati?.totale) },
+        ],
+        controlli: (dati) => [
+            dati.daSistemare > 0 && {
+                // IBAN che non torna o mandato senza data: la banca li rifiuta.
+                label: 'Da sistemare prima di mandarlo', value: dati.daSistemare, className: 'is-danger',
+            },
+        ],
+    },
     {
         id: 'bim',
         eyebrow: 'Consumi',
@@ -208,9 +233,11 @@ const PannelloElenco = ({ elenco, anno, disabilitaAnno, onAnno }) => {
 };
 
 const ElenchiPage = () => {
-    // L'anno e uno solo per tutti e due: si manda la stessa annata a entrambi
-    // gli enti, e due selettori scollegati sarebbero un invito a sbagliare.
+    // L'anno degli elenchi annuali e uno solo: si manda la stessa annata a
+    // tutti, e selettori scollegati sarebbero un invito a sbagliare. Gli
+    // addebiti hanno il loro, perche riguardano la fatturazione in corso.
     const [anno, setAnno] = useState(ANNO_CORRENTE - 1);
+    const [annoCorrente, setAnnoCorrente] = useState(ANNO_CORRENTE);
 
     return (
         <div className="page-stack">
@@ -225,8 +252,8 @@ const ElenchiPage = () => {
                 <PannelloElenco
                     key={elenco.id}
                     elenco={elenco}
-                    anno={anno}
-                    onAnno={setAnno}
+                    anno={elenco.annoProprio ? annoCorrente : anno}
+                    onAnno={elenco.annoProprio ? setAnnoCorrente : setAnno}
                 />
             ))}
         </div>

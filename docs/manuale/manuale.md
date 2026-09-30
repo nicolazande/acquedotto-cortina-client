@@ -236,7 +236,11 @@ Sono importanti anche:
 
 - **Destinazione e indirizzo di fatturazione**, se la fattura va spedita a un indirizzo
   diverso dalla residenza;
-- **Pagamento** e **IBAN**, se il cliente paga con addebito;
+- **IBAN** e **data del mandato**, se il cliente paga con addebito in conto. **Chi ha
+  l'IBAN paga con addebito**: in fattura, al posto del bonifico, c'è scritto *Addebito in
+  conto a scadenza* con il suo conto (solo le prime e le ultime cifre), e la fattura entra
+  nell'elenco *Addebiti* da passare alla banca. Chi non paga più così va tolto l'IBAN.
+  Il campo **Pagamento** dice invece quando si paga (30 giorni, a vista);
 - **Email**, indispensabile per dargli accesso all'area riservata e per potergli
   mandare la fattura per posta elettronica;
 - **Consegna copia**, cioè come riceve la fattura: posta, email, PEC, sportello o
@@ -465,10 +469,12 @@ che si stanno per generare. Il gestionale sa già quali contatori l'hanno già p
 nell'anno in corso e non la applica due volte.
 
 L'interruttore **Mora per i ritardi** decide se aggiungere la penale di 6 euro ai clienti
-che hanno la fattura precedente scaduta o pagata in ritardo. Accanto c'è scritto **a
-quanti clienti andrebbe** e quanto vale in tutto (vedi il punto 6). Se sono centinaia, di
-solito vuol dire che gli incassi non sono ancora stati registrati: in quel caso si
-toglie la spunta, oppure si registrano prima i pagamenti.
+che hanno la fattura precedente scaduta o pagata in ritardo. **Parte spento**: gli
+incassi si registrano nel programma di contabilità, e senza di loro la penale andrebbe
+anche a chi ha pagato. Accanto c'è scritto **a quanti clienti andrebbe** e quanto vale in
+tutto (vedi il punto 6). Se sono centinaia, di solito vuol dire che gli incassi non sono
+ancora stati registrati: in quel caso la si lascia spenta, oppure si registrano prima i
+pagamenti.
 
 ## 3. Generare
 
@@ -539,7 +545,8 @@ dopo. Se la trova, aggiunge alla fattura una riga di **6 euro** (l'articolo `GG_
 
 La pagina di generazione lo dice prima: nel riquadro di ogni cliente compare la riga
 *Mora 6,00 €* con la fattura e i giorni di ritardo, e accanto all'interruttore *Mora per
-i ritardi* il totale dei clienti. Togliendo la spunta la mora non viene addebitata.
+i ritardi* il totale dei clienti. La mora si addebita solo con la spunta, che parte
+tolta; generando dalla scheda di una lettura non si addebita mai.
 
 **Si addebita una volta sola per scadenza.** Appena la penale entra in una fattura, la
 scadenza che l'ha causata resta segnata e non la fa più scattare: un cliente fatturato
@@ -549,8 +556,8 @@ la fattura che la portava, o anche solo la sua riga, la scadenza torna addebitab
 > **Prima di una fatturazione massiva conviene guardarla.** La penale scatta sulle
 > posizioni aperte e scadute: se i pagamenti di un anno non sono ancora stati registrati,
 > partirebbe verso quasi tutti i clienti insieme. Aprire **Incassi** e sistemare i
-> pagamenti arrivati *prima* di generare, non dopo; se non si fa in tempo, togliere la
-> spunta *Mora per i ritardi*.
+> pagamenti arrivati *prima* di generare, non dopo; se non si fa in tempo, lasciare
+> spenta *Mora per i ritardi*.
 
 ---
 
@@ -788,10 +795,20 @@ nell'ordine delle buste, e dice quante aspettano dopo: un PDF da centinaia di pa
 stampante non lo regge.
 
 L'ordine lo si sceglie accanto al pulsante: **Buste per nome** (in ordine alfabetico)
-oppure **Buste per località e via**, che mette insieme le buste di Cortina strada per
-strada e raggruppa quelle fuori paese per città. La scelta resta per le stampe
-successive. Gli indirizzi scritti «Loc. …» o «Località …» finiscono sotto la L: per
-averli vicini alla loro zona conviene scriverli senza il prefisso.
+oppure **Buste per zona e via**. La **zona** è la frazione per chi sta a Cortina — Zuel,
+Acquabona, Pian da Lago, Peziè, Manaigo, Boschedel, Socus, Ronco, Campo — riconosciuta
+dall'indirizzo anche se è scritto «Loc. Acquabona» o «Via Acquabona»; le vie del centro
+stanno insieme sotto *Cortina d'Ampezzo*, e chi abita fuori paese sta sotto la sua città.
+Le buste di Cortina restano tutte insieme, frazione per frazione e via per via; quelle
+fuori paese sono raggruppate per città. La scelta dell'ordine resta per le stampe
+successive.
+
+Accanto c'è la scelta della **zona da stampare**: *Tutte le zone*, oppure una sola, con
+fra parentesi quante buste ha. Serve per le fatture da portare a mano — solo Zuel, solo
+Acquabona — o per quelle da consegnare a un amministratore. Il pulsante diventa
+**Stampa ZUEL (N)** e stampa solo quelle, e **Evase le stampate ZUEL (N)** segna evase solo
+le buste stampate di quella zona. La zona non resta scelta: la volta dopo si riparte da
+tutte. Le zone si aggiornano con **Prepara**.
 
 Stampare **non chiude niente**: finché non le si segna evase, *Stampa* ripete lo stesso
 blocco. Se la stampante si inceppa, o il PDF si chiude per sbaglio, basta ripremere.
@@ -1002,6 +1019,10 @@ messaggio *il listino copre X mc su Y mc*.
 Le fasce il cui tipo contiene la parola *fisso* sono la **quota fissa**: valgono una
 volta l'anno per contatore, a prescindere dal consumo.
 
+Chi paga **più quote fisse** ha un contatore in più per ognuna, con la matricola del
+contatore vero seguita da *fisso2*, *fisso3* e così via. In fattura la riga si chiama
+**Quota fissa aggiuntiva 2**, **Quota fissa aggiuntiva 3**, qualunque sia il listino.
+
 ## Cambiare un prezzo
 
 Il modo corretto per aumentare una tariffa da una certa data **non** e modificare la
@@ -1085,6 +1106,12 @@ mandarlo fuori; poi lo si scarica.
 - **Subentri e sostituzioni** — chi è subentrato a chi sullo stesso contatore, e quali
   contatori sono stati cambiati, con l'ultima lettura di quello vecchio. Sono le due
   stampe di Gesco *Lista dei subentri* e *Lista delle sostituzioni*, qui divise per anno.
+- **Addebiti** — la distinta per la banca: le fatture dell'anno ancora da pagare dei
+  clienti che hanno dato l'IBAN, in ordine di scadenza, con IBAN, data del mandato,
+  numero della fattura e importo, e il totale in fondo. Ha un anno suo, che parte da
+  quello in corso. La colonna *Da sistemare* dice cosa la banca rifiuterebbe — un IBAN
+  che non torna, un mandato senza data —: si corregge nella scheda del cliente prima di
+  mandarla. Una fattura segnata pagata in *Incassi* esce dall'elenco.
 
 ---
 

@@ -19,15 +19,17 @@ const consegnaApi = {
     // Un unico PDF con le fatture da imbustare, e l'archivio degli XML ancora
     // da trasmettere. Non chiudono nessuna consegna: si stampa, si controlla, e
     // solo dopo si dichiarano evase, anche tutte insieme (`segnaEvase`).
-    // `ordine`: 'nome' oppure 'localita' (localita e poi via).
-    stampa: async ({ limite, ordine } = {}) => {
+    // `ordine`: 'nome' oppure 'zona' (zona e poi via); `zona`: solo le buste
+    // di quella zona, come le elenca il riepilogo.
+    stampa: async ({ limite, ordine, zona } = {}) => {
         const risposta = await scaricaFile(
-            () => axios.post(`${resource.baseUrl}/stampa`, { limite, ordine }, { responseType: 'blob' }),
+            () => axios.post(`${resource.baseUrl}/stampa`, { limite, ordine, zona }, { responseType: 'blob' }),
             'fatture-da-consegnare.pdf',
         );
 
         return {
             data: {
+                zona,
                 rimaste: Number(risposta.headers['x-consegne-rimaste']) || 0,
                 bloccate: Number(risposta.headers['x-consegne-bloccate']) || 0,
             },
@@ -57,7 +59,8 @@ const consegnaApi = {
     ),
     segnaEvasa: (id, note) => resource.postRelation(id, 'evasa', { note }),
     // Tutte insieme quelle gia uscite dal gestionale: `stampate` o `scaricate`.
-    segnaEvase: (quali) => resource.postCollection('evase', { quali }),
+    // `zona`, per le stampate: solo quelle della zona stampata.
+    segnaEvase: (quali, zona) => resource.postCollection('evase', { quali, zona }),
     // Una fallita, annullata o evasa per sbaglio torna fra quelle da fare.
     rimettiInCoda: (id) => resource.postRelation(id, 'coda', {}),
     annulla: (id, note) => resource.postRelation(id, 'annulla', { note }),

@@ -25,7 +25,10 @@ import useSelezione from '../../hooks/useSelezione';
 
 const CustomerBillingPanel = ({ recordId }) => {
     const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
-    const [includeDelay, setIncludeDelay] = useState(true);
+    // La mora parte spenta: gli incassi si registrano nel programma di
+    // contabilita, e qui una scadenza pagata puo risultare ancora aperta. Chi
+    // la vuole la accende sapendo di averli registrati.
+    const [includeDelay, setIncludeDelay] = useState(false);
     const { confirm } = useFeedback();
 
     const richiesta = useCallback(

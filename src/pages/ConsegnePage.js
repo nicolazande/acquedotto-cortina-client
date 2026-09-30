@@ -28,11 +28,13 @@ import {
 import { EMPTY_VALUE, formatGiorno, numberOrZero } from '../utils/formatters';
 
 // In che ordine escono le buste. Si ricorda in questo browser: chi imbusta per
-// localita lo sceglie una volta. Se la memoria non c'e, si parte per nome.
+// zona lo sceglie una volta. Se la memoria non c'e, si parte per nome. La zona
+// da stampare invece non si ricorda: ritrovarla scelta il giorno dopo farebbe
+// stampare una zona sola credendo di stamparle tutte.
 const ORDINE_BUSTE = 'acquedotto.ordineBuste';
 const ordineRicordato = () => {
     try {
-        return window.localStorage.getItem(ORDINE_BUSTE) === 'localita' ? 'localita' : 'nome';
+        return window.localStorage.getItem(ORDINE_BUSTE) === 'zona' ? 'zona' : 'nome';
     } catch {
         return 'nome';
     }
@@ -102,6 +104,7 @@ const esitoTesto = (record) => esitoConsegna(record) || EMPTY_VALUE;
 
 const ConsegnePage = () => {
     const [ordineBuste, setOrdineBuste] = useState(ordineRicordato);
+    const [zona, setZona] = useState('');
     const history = useHistory();
     const { confirm } = useFeedback();
     const [vista, setVista] = useState('in-coda');
@@ -148,7 +151,18 @@ const ConsegnePage = () => {
 
     // Stampa e XML non chiudono nessuna consegna: si stampa, si controlla che
     // sia uscito tutto, e solo dopo si dichiarano evase, tutte insieme.
-    const handleStampa = () => esegui(() => consegnaApi.stampa({ ordine: ordineBuste }), esitoStampa);
+    // Le zone con qualcosa da stampare. Una zona scelta e poi finita - stampata
+    // e segnata evasa - torna a "tutte".
+    const zone = (riepilogo?.zone || []).filter((riga) => riga.zona);
+    const zonaScelta = zone.find((riga) => riga.zona === zona);
+    const daStampare = zonaScelta ? zonaScelta.quante : numberOrZero(riepilogo?.daStampare);
+    // Con una zona scelta si chiudono solo le sue buste stampate: quelle di
+    // un'altra zona, rimaste da un blocco andato storto, non sono mai uscite.
+    const stampate = zonaScelta ? zonaScelta.stampate : numberOrZero(riepilogo?.stampate);
+    const handleStampa = () => esegui(
+        () => consegnaApi.stampa({ ordine: ordineBuste, zona: zonaScelta?.zona }),
+        esitoStampa,
+    );
     const scegliOrdine = (valore) => {
         setOrdineBuste(valore);
         try {
@@ -161,11 +175,12 @@ const ConsegnePage = () => {
     const handleXml = () => esegui(() => consegnaApi.scaricaXml(), esitoXml);
 
     const handleEvaseInBlocco = async (quali) => {
-        const confermato = await confirm(confermaEvase(quali, riepilogo?.[quali]));
+        const perZona = quali === 'stampate' ? zonaScelta?.zona : undefined;
+        const confermato = await confirm(confermaEvase(quali, quali === 'stampate' ? stampate : riepilogo?.[quali], perZona));
 
         if (!confermato) return;
 
-        await esegui(() => consegnaApi.segnaEvase(quali), esitoEvase);
+        await esegui(() => consegnaApi.segnaEvase(quali, perZona), esitoEvase);
     };
 
     // Una fattura per volta: il file esce gia col nome della trasmissione, senza
@@ -279,21 +294,35 @@ const ConsegnePage = () => {
                             title="In che ordine escono le fatture da imbustare"
                         >
                             <option value="nome">Buste per nome</option>
-                            <option value="localita">Buste per località e via</option>
+                            <option value="zona">Buste per zona e via</option>
                         </select>
+                        {zone.length > 1 && (
+                            <select
+                                className="ordine-buste"
+                                value={zonaScelta?.zona || ''}
+                                onChange={(event) => setZona(event.target.value)}
+                                aria-label="Zona da stampare"
+                                title="Solo le buste di una zona: la frazione in paese, la città fuori"
+                            >
+                                <option value="">Tutte le zone</option>
+                                {zone.map((riga) => (
+                                    <option key={riga.zona} value={riga.zona}>{`${riga.zona} (${riga.quante})`}</option>
+                                ))}
+                            </select>
+                        )}
                         <Button
                             variant="secondary"
                             icon="download"
-                            disabled={isWorking || !numberOrZero(riepilogo?.daStampare)}
+                            disabled={isWorking || !daStampare}
                             onClick={handleStampa}
                         >
-                            {`Stampa (${numberOrZero(riepilogo?.daStampare)})`}
+                            {zonaScelta ? `Stampa ${zonaScelta.zona} (${daStampare})` : `Stampa (${daStampare})`}
                         </Button>
                         {/* Il passo dopo la stampa e lo scarico: compare quando
                             c'e qualcosa gia uscito da segnare evaso. */}
-                        {numberOrZero(riepilogo?.stampate) > 0 && (
+                        {stampate > 0 && (
                             <Button variant="save" icon="check" disabled={isWorking} onClick={() => handleEvaseInBlocco('stampate')}>
-                                {`Evase le stampate (${numberOrZero(riepilogo.stampate)})`}
+                                {zonaScelta ? `Evase le stampate ${zonaScelta.zona} (${stampate})` : `Evase le stampate (${stampate})`}
                             </Button>
                         )}
                         <Button

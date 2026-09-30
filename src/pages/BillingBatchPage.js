@@ -38,7 +38,10 @@ const GENERAZIONI_INSIEME = 4;
 
 const BillingBatchPage = () => {
     const [includeFixedCharge, setIncludeFixedCharge] = useState(true);
-    const [includeDelay, setIncludeDelay] = useState(true);
+    // La mora parte spenta: gli incassi si registrano nel programma di
+    // contabilita, e qui una scadenza pagata puo risultare ancora aperta. Chi
+    // la vuole la accende sapendo di averli registrati.
+    const [includeDelay, setIncludeDelay] = useState(false);
     const [bulk, setBulk] = useState(null);
     // Il flag di interruzione sta in un ref perche il ciclo in corso deve
     // vederlo cambiare senza aspettare un nuovo render.

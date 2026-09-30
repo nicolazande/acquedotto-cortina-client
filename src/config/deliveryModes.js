@@ -170,10 +170,12 @@ export const esitoStampa = (dati) => {
     }
 
     if (rimaste) {
-        return `Stampa pronta. ${poi}: poi la stampa passa alle successive. Ne aspettano altre ${formatNumber(rimaste)}.${fuori}`;
+        return `Stampa pronta. ${poi}: poi la stampa passa alle successive. `
+            + `Ne aspettano altre ${formatNumber(rimaste)}${dati?.zona ? ` per ${dati.zona}` : ''}.${fuori}`;
     }
 
-    return `Stampa pronta${bloccate ? '' : ' con tutte le fatture da consegnare'}. ${poi}.${fuori}`;
+    const tutte = dati?.zona ? ` con tutte le fatture per ${dati.zona}` : ' con tutte le fatture da consegnare';
+    return `Stampa pronta${bloccate ? '' : tutte}. ${poi}.${fuori}`;
 };
 
 // Cosa dire dopo "XML": cosa fare dopo, quali sono rimaste fuori e perche, e
@@ -209,15 +211,17 @@ const IN_BLOCCO = {
     },
 };
 
-export const confermaEvase = (quali, quante) => {
+// `zona`: solo le stampate di quella zona, e lo si dice.
+export const confermaEvase = (quali, quante, zona) => {
     const numero = numberOrZero(quante);
     const testi = IN_BLOCCO[quali];
+    const diZona = zona ? ` Solo quelle per ${zona}: le altre zone restano da segnare.` : '';
 
     return {
         title: testi.title,
         message: numero === 1
-            ? `${testi.una} Se va rifatta, dalla sua riga la rimetti da fare.`
-            : `${testi.tante(formatNumber(numero))} Se una va rifatta, dalla sua riga la rimetti da fare.`,
+            ? `${testi.una}${diZona} Se va rifatta, dalla sua riga la rimetti da fare.`
+            : `${testi.tante(formatNumber(numero))}${diZona} Se una va rifatta, dalla sua riga la rimetti da fare.`,
         confirmLabel: 'Segna evase',
     };
 };

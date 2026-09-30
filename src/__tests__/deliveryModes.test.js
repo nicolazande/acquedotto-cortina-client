@@ -209,6 +209,21 @@ describe('stampa, XML e consegne segnate evase in blocco', () => {
             .toBe('Stampa pronta con tutte le fatture da consegnare. Quando sono stampate, segnale evase con «Evase le stampate».');
     });
 
+    test('segnando evase le stampate di una zona dice che le altre restano', () => {
+        expect(confermaEvase('stampate', 12, 'ZUEL').message)
+            .toBe('Segno evase le 12 copie già stampate. Fallo quando sono imbustate o pronte da consegnare: '
+                + 'la stampa passa alle successive. Solo quelle per ZUEL: le altre zone restano da segnare. '
+                + 'Se una va rifatta, dalla sua riga la rimetti da fare.');
+    });
+
+    test('con una zona scelta parla delle buste di quella zona', () => {
+        expect(esitoStampa({ zona: 'ZUEL', rimaste: 12 }))
+            .toBe('Stampa pronta. Quando sono stampate, segnale evase con «Evase le stampate»: '
+                + 'poi la stampa passa alle successive. Ne aspettano altre 12 per ZUEL.');
+        expect(esitoStampa({ zona: 'ZUEL', rimaste: 0 }))
+            .toBe('Stampa pronta con tutte le fatture per ZUEL. Quando sono stampate, segnale evase con «Evase le stampate».');
+    });
+
     test('dice quante copie non si stampano per un problema sulla riga', () => {
         // Senza, "Stampa (N)" non arriverebbe mai a zero e non si capirebbe perche.
         expect(esitoStampa({ rimaste: 0, bloccate: 1 }))
