@@ -42,16 +42,8 @@ const deltaLabel = (record) => (
     Number.isFinite(Number(record.delta)) ? formatMoney(record.delta) : EMPTY_VALUE
 );
 
-const strongIssueCount = (summary) => (
-    numberOrZero(summary.senzaCliente)
-    + numberOrZero(summary.scostamentoFattura)
-    + numberOrZero(summary.erroriCalcolo)
-);
-
-const reviewIssueCount = (summary) => (
-    numberOrZero(summary.senzaScadenza)
-    + numberOrZero(summary.quotaFissaApplicabile)
-);
+// Quanti problemi per gravita li conta il server, che la gravita la decide.
+const quantiPer = (summary, gravita) => numberOrZero(summary.perGravita?.[gravita]);
 
 // I numeri delle fatture appena confermate, dal piu basso al piu alto. Non
 // sempre sono quelli appena dati: una fattura riportata a bozza riprende il suo.
@@ -72,8 +64,8 @@ const summaryItems = (summary) => [
     { label: 'Fatture controllate', value: numberOrZero(summary.controllate) },
     { label: 'Confermate', value: numberOrZero(summary.confermate), className: 'is-ok' },
     { label: 'Bozze', value: numberOrZero(summary.bozze) },
-    { label: 'Errori forti', value: strongIssueCount(summary), className: 'is-danger' },
-    { label: 'Da controllare', value: reviewIssueCount(summary), className: 'is-warning' },
+    { label: 'Errori forti', value: quantiPer(summary, 'danger'), className: 'is-danger' },
+    { label: 'Da controllare', value: quantiPer(summary, 'warning'), className: 'is-warning' },
 ];
 
 const InvoiceControlPage = () => {

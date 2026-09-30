@@ -7,6 +7,7 @@ import {
     esitoConsegna,
     esitoInvio,
     esitoPreparazione,
+    statoClassName,
     statoLabel,
     tipoLabel,
 } from '../../config/deliveryModes';
@@ -23,11 +24,11 @@ const perTipo = (registrate = []) => new Map(registrate.map((consegna) => [conse
 
 const statoRiga = (registrata) => (registrata ? statoLabel(registrata.stato) : 'Non in coda');
 
+// Il colore dello stato e quello dell'elenco delle consegne (`statoClassName`);
+// prima veniva un problema che il piano vede oggi, dopo una nota.
 const classeRiga = (voce, registrata) => {
-    if (registrata?.stato === 'errore' || voce.problema) return 'is-danger';
-    if (registrata?.stato === 'inviata') return 'is-ok';
-    if (voce.nota) return 'is-warning';
-    return '';
+    if (voce.problema) return 'is-danger';
+    return (registrata && statoClassName(registrata.stato)) || (voce.nota ? 'is-warning' : '');
 };
 
 // Il problema che il piano vede oggi viene prima; poi cio che dice la consegna

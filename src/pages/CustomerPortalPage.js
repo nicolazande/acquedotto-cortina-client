@@ -14,18 +14,16 @@ const addressOf = (cliente = {}) => join(
     cliente.localita_residenza
 );
 
-const invoiceNumber = (fattura) => invoiceLabel(fattura);
-
 const invoiceColumns = [
     { label: 'Data', value: 'data_fattura', format: formatDate },
-    { label: 'Numero', value: invoiceNumber },
+    { label: 'Numero', value: invoiceLabel },
     { label: 'Stato', value: invoiceStatus },
     { label: 'Scadenza', value: 'scadenza.scadenza', format: formatDate },
     { label: 'Totale', value: 'totale_fattura', format: formatMoney },
 ];
 
 const invoiceSummary = {
-    title: invoiceNumber,
+    title: invoiceLabel,
     subtitle: (fattura) => formatMoney(fattura.totale_fattura),
     meta: (fattura) => [
         { label: 'Stato', value: invoiceStatus(fattura) },

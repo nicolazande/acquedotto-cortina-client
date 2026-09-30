@@ -26,7 +26,8 @@ import {
     text,
 } from '../utils/formatters';
 
-// Mostrato da solo in un titolo o in una scheda: qui il segnaposto ci vuole.
+// Mostrato da solo in un titolo o in una scheda: qui il segnaposto ci vuole. Nei
+// valori predefiniti di un modulo invece no: il "-" finiva salvato come nome.
 const personLabel = (record) => personName(record) || EMPTY_VALUE;
 const createdRecordId = (response) => response?.data?._id;
 export const responseData = (response) => response.data;
@@ -150,7 +151,7 @@ const relationList = [
         associate: clienteApi.associateContatore,
         defaultValues: (parent) => ({
             cliente: recordId(parent),
-            nome_cliente: personLabel(parent),
+            nome_cliente: personName(parent),
         }),
         columns: [
             { label: 'Edificio', value: (record) => text(record.nome_edificio) },
@@ -167,7 +168,7 @@ const relationList = [
         associate: clienteApi.associateFattura,
         defaultValues: (parent) => ({
             cliente: recordId(parent),
-            ragione_sociale: personLabel(parent),
+            ragione_sociale: personName(parent),
         }),
         columns: [
             { label: 'Documento', value: invoiceLabel },
@@ -183,7 +184,8 @@ const relationList = [
         description: 'Anagrafica titolare del contatore.',
         getRelated: contatoreApi.getCliente,
         associate: contatoreApi.associateCliente,
-        defaultValues: (parent) => ({ contatore: recordId(parent) }),
+        // Un cliente non ha un campo contatore: il legame lo scrive l'associazione.
+        defaultValues: () => ({}),
         columns: [
             { label: 'Nome', value: (record) => text(record.nome) },
             { label: 'Cognome', value: (record) => text(record.cognome) },
@@ -297,10 +299,18 @@ const relationList = [
         description: 'Termine di pagamento collegato al documento.',
         getRelated: fatturaApi.getScadenza,
         associate: fatturaApi.associateScadenza,
+        // La crea il server, con anno, serie, numero, intestatario e totale della
+        // fattura: il modulo generico la faceva senza anno ne numero, e mora e
+        // incassi, che cercano le scadenze cosi, non la trovavano. Dal modulo
+        // contano la data (vuota, vale il termine di pagamento) e, se e gia
+        // pagata, la spunta e il giorno dell'incasso; il resto il modulo lo
+        // mostra gia com'e sulla fattura.
+        crea: ({ parentId, values }) => fatturaApi.creaScadenza(parentId, values),
         defaultValues: (parent) => ({
-            fattura: recordId(parent),
+            anno: parent.anno,
+            numero: parent.numero,
+            cognome: parent.cliente?.cognome || personName(parent.cliente) || parent.ragione_sociale,
             nome: parent.cliente?.nome,
-            cognome: parent.cliente?.cognome,
             totale: parent.totale_fattura,
         }),
         columns: [
@@ -333,7 +343,6 @@ const relationList = [
         defaultValues: (parent) => ({
             lettura: recordId(parent),
             data_lettura: parent.data_lettura,
-            valore: parent.consumo,
         }),
         columns: [
             { label: 'Descrizione', value: (record) => text(record.descrizione) },
@@ -377,7 +386,7 @@ const relationList = [
         defaultValues: (parent) => ({
             scadenza: recordId(parent),
             totale_fattura: parent.totale,
-            ragione_sociale: personLabel(parent),
+            ragione_sociale: personName(parent),
         }),
         columns: [
             { label: 'Documento', value: invoiceLabel },
@@ -437,7 +446,7 @@ export const relationViews = relationList.reduce((views, item) => {
             ...parentViews,
             [item.key]: {
                 ...item,
-                createAndAssociate: (params) => createAndAssociate({ ...params, config: item }),
+                createAndAssociate: item.crea || ((params) => createAndAssociate({ ...params, config: item })),
             },
         },
     };

@@ -4,7 +4,7 @@ import Button from '../components/shared/Button';
 import '../styles/Auth.css';
 import descriviErrore from '../api/descriviErrore';
 import { NOME_DEL_RUOLO } from '../hooks/useRisorsePermesse';
-import { EMPTY_VALUE } from '../utils/formatters';
+import { EMPTY_VALUE, personName } from '../utils/formatters';
 
 const ProfilePage = () => {
     const [isEditing, setIsEditing] = useState(false);
@@ -66,7 +66,7 @@ const ProfilePage = () => {
                         {cliente && (
                             <tr>
                                 <td>Cliente collegato</td>
-                                <td>{cliente.ragione_sociale || [cliente.cognome, cliente.nome].filter(Boolean).join(' ')}</td>
+                                <td>{personName(cliente) || EMPTY_VALUE}</td>
                             </tr>
                         )}
                         <tr>

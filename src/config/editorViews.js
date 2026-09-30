@@ -1,5 +1,5 @@
 import { modalitaOptions } from './deliveryModes';
-import { customerName } from '../utils/formatters';
+import { personName } from '../utils/formatters';
 import { inCentesimi, inEuro, ivaSuCentesimi } from '../utils/money';
 import provinciaApi from '../api/provinciaApi';
 
@@ -102,8 +102,7 @@ const ricalcolaIndirizzoCliente = (dati, campoModificato) => {
     return Object.fromEntries(daCopiare.map((campo) => [`${campo}_fatturazione`, dati[`${campo}_residenza`] ?? '']));
 };
 
-const cleanValue = (value) => (value === '-' ? '' : value);
-const clienteName = (record) => cleanValue(customerName(record)) || record?.nome_cliente || '';
+const clienteName = (record) => personName(record) || record?.nome_cliente || '';
 const buildingName = (record) => record?.descrizione || record?.nome_edificio || '';
 
 export const editorViews = {

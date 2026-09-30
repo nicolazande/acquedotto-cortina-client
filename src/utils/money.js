@@ -37,6 +37,12 @@ export const inCentesimi = (valore) => {
 
 export const inEuro = (centesimi) => Number((centesimi / CENTESIMI).toFixed(2));
 
+// La somma di piu importi, in centesimi interi: sommati in virgola mobile,
+// cento totali finiscono in ,0000000001.
+export const sommaInEuro = (elementi, importo) => inEuro(
+    elementi.reduce((centesimi, elemento) => centesimi + inCentesimi(importo(elemento)), 0)
+);
+
 // L'IVA di un imponibile, con l'aliquota in percentuale. L'arrotondamento e
 // commerciale (mezzo verso l'alto) e avviene una volta sola, sul risultato.
 export const ivaSuCentesimi = (centesimi, percentuale) => {

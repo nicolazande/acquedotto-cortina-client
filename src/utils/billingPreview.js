@@ -1,4 +1,5 @@
 import { formatDate, formatMoney, formatNumber } from './formatters';
+import { sommaInEuro } from './money';
 
 export const previewReadingId = (preview) => preview.lettura?._id;
 
@@ -14,10 +15,9 @@ export const fixedChargeAmount = (fixedCharge = {}) => (
     Number(fixedCharge.estimatedTotal || fixedCharge.total || 0)
 );
 
-export const sumFixedCharges = (previews, selectedIds) => (
-    previews
-        .filter((preview) => !selectedIds || selectedIds.includes(previewReadingId(preview)))
-        .reduce((total, preview) => total + fixedChargeAmount(preview.fixedCharge), 0)
+export const sumFixedCharges = (previews, selectedIds) => sommaInEuro(
+    previews.filter((preview) => !selectedIds || selectedIds.includes(previewReadingId(preview))),
+    (preview) => fixedChargeAmount(preview.fixedCharge)
 );
 
 export const fixedChargeSelectionHelp = ({ includeFixedCharge, total }) => (

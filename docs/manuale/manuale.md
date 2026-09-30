@@ -288,7 +288,8 @@ trova e il **listino** con cui si calcolano i suoi consumi.
 > generazione il gestionale si ferma e lo segnala. Conviene verificarlo appena si
 > inserisce un contatore nuovo.
 
-I filtri disponibili sono *Attivi*, *Inattivi* e *Condominiali*.
+I filtri disponibili sono *Attivi*, *Inattivi* e *Condominiali*, che mostra i
+contatori dei riparti: quello comune dell'edificio e le utenze che ne pagano una parte.
 
 ### Se il contatore viene sostituito
 
@@ -687,6 +688,16 @@ Sistema di Interscambio, detti prima di mandarlo.
 Nella scheda della fattura, la sezione **Letture e calcolo** confronta le righe salvate
 con quello che il listino attuale produrrebbe oggi e segnala le differenze. Da qui si
 può anche aggiungere la quota fissa se manca ed e dovuta.
+
+In cima c'è il giudizio, lo stesso della pagina **Controlli**: *Totale fattura diverso
+dalle righe* (da correggere prima di mandarla), *Quota fissa applicabile non presente*,
+*Righe salvate diverse dalla stima listino* (una tariffa storica o una correzione a
+mano), oppure *Coerente*. La mora e le righe scritte a mano non contano come
+differenza: non vengono dal listino.
+
+Se la fattura non ha la scadenza, la si crea dalla relazione **Scadenza**: il gestionale
+la compila con anno, numero, intestatario e totale della fattura; basta scegliere la
+data, o lasciarla vuota per il termine di pagamento.
 
 La sezione **Storico modifiche** elenca ogni intervento sulla fattura, con l'autore.
 

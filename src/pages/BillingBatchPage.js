@@ -30,6 +30,7 @@ import useInvoiceGeneration from '../hooks/useInvoiceGeneration';
 import useRemoteData from '../hooks/useRemoteData';
 import useSelezione from '../hooks/useSelezione';
 import descriviErrore from '../api/descriviErrore';
+import { sommaInEuro } from '../utils/money';
 
 // Quante letture l'anteprima guarda al massimo: il limite del server. Un giro
 // di novembre sono circa novecento; un cliente non viene mai spezzato.
@@ -111,10 +112,7 @@ const BillingBatchPage = () => {
     }, [preview, seleziona]);
 
     const selectedGroups = readyGroups.filter((group) => selezione.contiene(group.cliente?._id));
-    const selectedTotal = selectedGroups.reduce(
-        (totale, group) => totale + Number(group.totals?.totale_fattura || 0),
-        0
-    );
+    const selectedTotal = sommaInEuro(selectedGroups, (group) => group.totals?.totale_fattura);
 
     // Le bozze si generano qualcuna alla volta. Si temeva che due generazioni
     // insieme dessero a due clienti la stessa quota fissa annuale, ma la quota e

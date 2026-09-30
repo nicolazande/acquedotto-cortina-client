@@ -34,6 +34,12 @@ const fatturaApi = {
     associateCliente: (fatturaId, clienteId) => resource.postRelation(fatturaId, `cliente/${clienteId}`),
     associateServizio: (fatturaId, servizioId) => resource.postRelation(fatturaId, `servizio/${servizioId}`),
     associateScadenza: (fatturaId, scadenzaId) => resource.postRelation(fatturaId, `scadenza/${scadenzaId}`),
+    // La scadenza che manca, creata dal server con i dati della fattura: anno,
+    // serie, numero, intestatario e totale. Si sceglie la data e, se e gia
+    // pagata, la spunta e il giorno dell'incasso.
+    creaScadenza: (fatturaId, { scadenza, saldo, pagamento } = {}) => (
+        resource.postRelation(fatturaId, 'scadenza', { scadenza, saldo, pagamento })
+    ),
     getCliente: (id) => resource.getRelation(id, 'cliente'),
     getServizi: (id) => resource.getRelation(id, 'servizi'),
     getScadenza: (id) => resource.getRelation(id, 'scadenza'),

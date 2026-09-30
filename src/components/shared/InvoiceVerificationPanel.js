@@ -21,17 +21,19 @@ import { CelleImporto, IntestazioniImporto } from './CelleImporto';
 
 const lineCode = (line) => line.articolo_dettaglio?.codice || line.articolo?.codice || line.articolo || '-';
 const lineLabel = (line) => join(line.tipo_tariffa, line.tipo_quota);
-const MONEY_TOLERANCE = 0.01;
 
-const money = (value) => Number(Number(value || 0).toFixed(2));
-const moneyDelta = (left, right) => money(money(left) - money(right));
-const isDifferent = (value) => Math.abs(money(value)) > MONEY_TOLERANCE;
-const formatDelta = (value) => `${money(value) > 0 ? '+' : ''}${formatMoney(value)}`;
-const hasMoney = (value) => isDifferent(value);
+// Il giudizio lo da il server (`summary.esito`), con le stesse regole della
+// pagina Controlli: qui si mostra e basta. Prima il pannello rifaceva il conto a
+// modo suo, confrontando tutto l'imponibile con il listino, e ogni fattura con
+// la mora o con una riga scritta a mano risultava "conguaglio" qui e pulita nei
+// controlli.
+const CLASSE_PER_GRAVITA = { danger: 'is-danger', warning: 'is-warning', info: 'is-warning', ok: 'is-ok' };
+
+// Un importo diverso da zero, al centesimo.
+const nonZero = (value) => Math.round(Number(value || 0) * 100) !== 0;
+const formatDelta = (value) => `${Number(value) > 0 ? '+' : ''}${formatMoney(value)}`;
 
 const getFixedChargeHelp = (summary = {}, locked = false) => {
-    const extraTotal = money(summary.extraImponibile);
-
     if (summary.quotaFissaPresente) {
         return `Presente nelle righe fattura: ${formatMoney(summary.quotaFissaImponibile)}.`;
     }
@@ -40,90 +42,11 @@ const getFixedChargeHelp = (summary = {}, locked = false) => {
         return 'Fattura confermata: la quota fissa non può essere modificata direttamente.';
     }
 
-    if (summary.quotaFissaBlocco && !summary.quotaFissaApplicabile) {
-        return summary.quotaFissaBlocco;
-    }
-
-    if (money(summary.quotaFissaMancante) > MONEY_TOLERANCE) {
-        if (hasMoney(extraTotal)) {
-            return `Aggiunge ${formatMoney(summary.quotaFissaMancante)}. Restano righe extra/conguagli per ${formatDelta(extraTotal)}.`;
-        }
+    if (summary.quotaFissaApplicabile) {
         return `Non presente nella fattura. Clicca per aggiungere ${formatMoney(summary.quotaFissaMancante)}.`;
     }
 
-    return 'Nessuna quota fissa salvata nella fattura.';
-};
-
-const getVerificationStatus = (summary = {}) => {
-    const fatturaVsRighe = money(summary.deltaFattura);
-    const fatturaVsListino = moneyDelta(summary.fatturaImponibile, summary.calcolatoImponibile);
-    const missingFixedCharge = money(summary.quotaFissaMancante);
-    const extraTotal = money(summary.extraImponibile);
-    const onlyMissingFixedCharge = (
-        missingFixedCharge > MONEY_TOLERANCE
-        && Math.abs(money(fatturaVsListino + missingFixedCharge)) <= MONEY_TOLERANCE
-    );
-    const extraAndMissingFixedCharge = (
-        hasMoney(extraTotal)
-        && missingFixedCharge > MONEY_TOLERANCE
-        && Math.abs(money(fatturaVsListino - extraTotal + missingFixedCharge)) <= MONEY_TOLERANCE
-    );
-    const onlyExtraLines = (
-        hasMoney(extraTotal)
-        && Math.abs(money(fatturaVsListino - extraTotal)) <= MONEY_TOLERANCE
-    );
-
-    if (isDifferent(fatturaVsRighe)) {
-        return {
-            className: 'is-danger',
-            label: 'Errore righe',
-            delta: fatturaVsListino,
-            message: 'Il totale della fattura non coincide con le righe salvate. Controllare prima di inviare o ristampare.',
-        };
-    }
-
-    if (extraAndMissingFixedCharge) {
-        return {
-            className: 'is-warning',
-            label: 'Conguaglio + fisso',
-            delta: fatturaVsListino,
-            message: `La differenza è spiegata da righe extra/conguagli per ${formatDelta(extraTotal)} e dalla quota fissa non presente per ${formatMoney(missingFixedCharge)}.`,
-        };
-    }
-
-    if (onlyExtraLines) {
-        return {
-            className: 'is-warning',
-            label: 'Conguaglio',
-            delta: fatturaVsListino,
-            message: `La differenza è spiegata da righe extra/conguagli salvati in fattura per ${formatDelta(extraTotal)}.`,
-        };
-    }
-
-    if (onlyMissingFixedCharge) {
-        return {
-            className: 'is-warning',
-            label: 'Fisso non selezionato',
-            delta: fatturaVsListino,
-            message: 'La differenza coincide con la quota fissa annuale: la fattura salvata non la contiene. Nelle anteprime puoi abilitarla con la checkbox dedicata.',
-        };
-    }
-
-    if (isDifferent(fatturaVsListino)) {
-        return {
-            className: 'is-warning',
-            label: 'Da controllare',
-            delta: fatturaVsListino,
-            message: 'La fattura salvata differisce dalla stima listino. Controllare quota fissa, righe extra o tariffe storiche.',
-        };
-    }
-
-    return {
-        className: 'is-ok',
-        label: 'Coerente',
-        delta: 0,
-        message: 'La fattura salvata coincide con il calcolo disponibile.',
-    };
+    return summary.quotaFissaBlocco || 'Nessuna quota fissa salvata nella fattura.';
 };
 
 const sectionTitle = (children) => (
@@ -133,12 +56,12 @@ const sectionTitle = (children) => (
 const getSummaryItems = (summary) => [
     { label: 'Imponibile fattura', value: formatMoney(summary.fatturaImponibile) },
     { label: 'Imponibile listino', value: formatMoney(summary.calcolatoImponibile) },
-    hasMoney(summary.extraImponibile) && {
+    nonZero(summary.extraImponibile) && {
         label: 'Righe extra / conguagli',
         value: formatDelta(summary.extraImponibile),
         className: 'is-warning',
     },
-    money(summary.quotaFissaMancante) > MONEY_TOLERANCE && {
+    summary.quotaFissaApplicabile && {
         label: 'Fisso mancante',
         value: formatMoney(summary.quotaFissaMancante),
         className: 'is-warning',
@@ -194,7 +117,7 @@ const InvoiceVerificationPanel = ({ record, recordId }) => {
             setIsApplyingFixedCharge(false);
         }
     };
-    const status = getVerificationStatus(summary);
+    const esito = summary?.esito || {};
     const locked = isInvoiceLocked(record);
     const fixedChargeDisabled = Boolean(
         isApplyingFixedCharge
@@ -229,17 +152,17 @@ const InvoiceVerificationPanel = ({ record, recordId }) => {
         >
             {verification && (
                 <>
-                    <div className={`invoice-check-overview ${status.className}`}>
+                    <div className={`invoice-check-overview ${CLASSE_PER_GRAVITA[esito.gravita] || ''}`}>
                         <div className="invoice-check-status">
                             <div className="invoice-check-title">
                                 <span className="eyebrow">Stato verifica</span>
-                                <strong>{status.label}</strong>
+                                <strong>{esito.messaggio}</strong>
                             </div>
-                            <p>{status.message}</p>
+                            <p>{esito.spiegazione}</p>
                         </div>
                         <div className="invoice-check-delta">
                             <small>Scostamento</small>
-                            <strong>{formatDelta(status.delta)}</strong>
+                            <strong>{formatDelta(esito.delta)}</strong>
                         </div>
                     </div>
 

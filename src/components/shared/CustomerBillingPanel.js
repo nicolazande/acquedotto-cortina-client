@@ -8,6 +8,7 @@ import {
     sumFixedCharges,
 } from '../../utils/billingPreview';
 import { formatMoney } from '../../utils/formatters';
+import { sommaInEuro } from '../../utils/money';
 import BillingPanel, {
     BillingActions,
     AnnualFixedChargeOption,
@@ -56,11 +57,19 @@ const CustomerBillingPanel = ({ recordId }) => {
         seleziona(billablePreviews.map(previewReadingId));
     }, [billablePreviews, seleziona]);
 
+    // Con tutte le letture spuntate il totale e quello della bozza, calcolato dal
+    // server con la parte del condominiale e la mora se inclusa. Con una parte e
+    // la somma delle letture scelte, e lo si dice: condominiale e mora si
+    // aggiungono in fattura.
+    const tutteSelezionate = selectedIds.length === billablePreviews.length;
     const selectedTotal = useMemo(() => (
-        billablePreviews
-            .filter((item) => selectedIds.includes(previewReadingId(item)))
-            .reduce((total, item) => total + Number(item.totals?.totale_fattura || 0), 0)
-    ), [billablePreviews, selectedIds]);
+        tutteSelezionate
+            ? preview?.totals?.totale_fattura
+            : sommaInEuro(
+                billablePreviews.filter((item) => selectedIds.includes(previewReadingId(item))),
+                (item) => item.totals?.totale_fattura
+            )
+    ), [billablePreviews, preview, selectedIds, tutteSelezionate]);
     const fixedChargeRows = useMemo(() => (
         billablePreviews.filter(canUseFixedCharge)
     ), [billablePreviews]);
@@ -116,7 +125,7 @@ const CustomerBillingPanel = ({ recordId }) => {
                 <BillingSummary items={[
                     { label: 'Letture pronte', value: billablePreviews.length },
                     { label: 'Selezionate', value: selectedIds.length },
-                    { label: 'Totale selezionato', value: formatMoney(selectedTotal) },
+                    { label: tutteSelezionate ? 'Totale fattura' : 'Totale letture scelte', value: formatMoney(selectedTotal) },
                 ]}
                 />
 
